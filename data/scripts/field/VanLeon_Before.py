@@ -1,0 +1,2 @@
+VON_LEON_NPC = 2161000
+sm.spawnNpc(VON_LEON_NPC, -10, -181)

@@ -1,0 +1,25 @@
+# Start [Morass] One Last Chance
+
+JEAN = 3003406
+
+sm.setPlayerBoxChat()
+sm.sendNext("Is it over?")
+sm.setNpcBoxChat(JEAN)
+sm.sendNext("#face2#Cough...No, not yet. #h0#.")
+sm.setPlayerBoxChat()
+sm.sendNext("Jean?! You're alive!")
+sm.createQuestWithQRValue(34271, "20=h0;21=h0;22=h0;23=h0;28=h0;29=h0;30=h0;31=h0;32=h0;33=h1;36=h0;53=h0;54=h0")
+sm.setNpcBoxChat(JEAN)
+sm.sendNext("#face2#It's me... Flying Fish...")
+sm.setPlayerBoxChat()
+sm.sendNext("What? How?!")
+sm.setNpcBoxChat(JEAN)
+sm.sendNext("#face2# I told you there would be #banother chance#k.")
+sm.sendNext("#face2# I gained useful information by entering Jean's consciousness, but for a while, I lost myself.")
+sm.setPlayerBoxChat()
+sm.sendNext("Are you okay?")
+sm.setNpcBoxChat(JEAN)
+sm.sendNext("#face2# As the will of Erda, my consciousness isn't as fragile as yours, however this new form is much more cumbersome.")
+sm.sendNext("#face2# But you must go to the tower. There's one more magic seal.\r\nArkarium will have taken Tana there to try stealing her power one last time.")
+sm.sendNext("#face2# Go. I'll be right behind you.")
+sm.startQuest(34267)

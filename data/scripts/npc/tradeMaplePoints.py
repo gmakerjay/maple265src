@@ -1,0 +1,1 @@
+sm.tradePoints(False)

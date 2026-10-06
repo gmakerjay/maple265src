@@ -1,0 +1,1 @@
+sm.sendSayOkay("Her Highness is much, MUCH too exhausted to see any visitors.")

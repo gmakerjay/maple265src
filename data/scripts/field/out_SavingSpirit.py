@@ -1,0 +1,1 @@
+sm.showEffect("Map/Effect2.img/event/gameover")

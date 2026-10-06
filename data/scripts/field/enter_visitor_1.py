@@ -1,0 +1,1 @@
+sm.showEffect("Map/Effect.img/Visitor/Stage1")

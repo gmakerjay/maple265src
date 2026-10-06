@@ -1,0 +1,45 @@
+# id 37175 ([Elodin] Tone Deaf No More), field 101084400
+sm.lockInGameUI(True, False)
+sm.removeAdditionalEffect()
+sm.sendDelay(3000)
+sm.setSpeakerID(1501007) # Baby Bird
+sm.setParam(3)
+sm.sendNext("(Cái này giống như tài năng lỏng hay gì đó vậy.)")
+sm.setParam(5)
+sm.setSpeakerID(1501015) # Shimmer Songbird
+sm.sendSay("Ahh! Đợi đã! Dừng lại!")
+sm.sendDelay(2000)
+sm.sendDelay(1000)
+sm.setParam(4)
+sm.setSpeakerID(1501010) # Baby Bird
+sm.sendNext("Cái gì? Có chuyện gì vậy? Con hát hay hơn bao giờ hết!")
+sm.setSpeakerID(1501015) # Shimmer Songbird
+sm.sendSay("Mẹ vừa mới nhận ra nguồn gốc của tiếng hét đó.")
+sm.setParam(2)
+sm.sendSay("Đúng rồi, và bạn đã tạo ra thảm họa âm thanh nhỏ đó.")
+sm.setParam(4)
+sm.setSpeakerID(1501010) # Baby Bird
+sm.sendSay("Hả? Tôi không nghe thấy bạn nói gì cả.")
+sm.setSpeakerID(1501015) # Shimmer Songbird
+sm.sendSay("Chúng ta vừa thảo luận về cuốn sách tuyệt vời của con, con thân mến.")
+sm.setParam(2)
+sm.sendSay("......")
+sm.setParam(4)
+sm.sendSay("Con thực sự có năng khiếu, nhưng chúng ta nên cải thiện khả năng kiểm soát của con một chút.")
+sm.setParam(2)
+sm.sendSay("Chỉ có người mẹ mới yêu được tiếng thét đó.")
+sm.setParam(4)
+sm.sendSay("Hãy cho em ấy một cơ hội.")
+sm.setSpeakerID(1501010) # Baby Bird
+sm.sendSay("Hai người đang nói chuyện gì vậy?")
+sm.setParam(2)
+sm.sendSay("Không có gì quan trọng cả.")
+sm.sendDelay(1000)
+sm.showFadeTransition(0, 1000, 3000)
+sm.zoomCamera(0, 1000, 2147483647, 2147483647, 2147483647)
+sm.moveCamera(True, 0, 0, 0)
+sm.sendDelay(300)
+sm.removeOverlapScreen(1000)
+sm.moveCamera(True, 0, 0, 0)
+sm.lockInGameUI(False, True)
+sm.completeQuest(parentID)

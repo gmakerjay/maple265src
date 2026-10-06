@@ -1,0 +1,2 @@
+ALTER TABLE `characters`
+ADD COLUMN `orderid` INT NULL DEFAULT NULL AFTER `accid`;

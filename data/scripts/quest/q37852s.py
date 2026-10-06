@@ -1,0 +1,35 @@
+OLLIE = 3003500
+MELANGE = 3003501
+SHUBERT = 3003502
+
+sm.setSpeakerID(OLLIE)
+sm.setBoxChat()
+sm.sendNext("#face0# Ồ! #h0#! Bạn đây rồi. Nhìn kìa, có một luồng sáng kỳ lạ phát ra từ cánh cửa")
+sm.sendNext("#face0# Bạn có cảm thấy vậy không? Liệu đó có thực sự là sức mạnh của #bTranscendent#k như Melange đã nói không?")
+sm.setPlayerBoxChat()
+sm.sendNext("Ừm... Tôi không chắc lắm, nhưng tôi có linh cảm.")
+sm.sendNext("(Vì Liên minh không biết chuyện gì đã xảy ra ở đây nên bạn hãy giải thích ngắn gọn về những sự kiện gần đây.)")
+sm.setSpeakerID(OLLIE)
+sm.setBoxChat()
+sm.sendNext("#face1# Hử. Cô gái đó, Tana... Bạn nghĩ cô ấy là...?")
+sm.setSpeakerID(SHUBERT)
+sm.setBoxChat()
+sm.sendNext("#face0# Chúng ta hãy lo về chuyện đó sau nhé, được không?")
+sm.sendNext("#face0# Bây giờ, chúng ta phải tìm cách vượt qua cánh cửa này thôi. Nó đóng chặt lắm rồi. Giờ thì tôi có thuốc nổ rồi...")
+sm.setSpeakerID(MELANGE)
+sm.setBoxChat()
+sm.sendNext("#face0# Thế thì ồn quá. Sao chúng ta không dùng #bchìa khóa#k nhỉ?")
+sm.setPlayerBoxChat()
+sm.sendNext("Bạn có chìa khoá à?")
+sm.setSpeakerID(MELANGE)
+sm.setBoxChat()
+sm.sendNext("#face0# Bạn không cảm thấy gì à? Bạn chính là chìa khoá đó.")
+if sm.sendAskYesNo("#face0# Nào, lại đây. Đừng ngại ngùng.\r\n\r\n#b#e(Nếu bạn chấp nhận, bạn sẽ tiến hành mở cửa.)#n#k"):
+    sm.setPlayerBoxChat()
+    sm.sendNext("#b#eĐã tự động bỏ qua phần cắt cảnh.#n#k")
+    sm.startQuest(parentID)
+    sm.completeQuest(parentID)
+    sm.createQuestWithQRValue(34560, "40=h0;41=h1;77=h0;78=h0")
+    sm.warp(450007000)
+else:
+    sm.sendNext("#face0# Bạn còn chờ đợi điều gì nữa?")

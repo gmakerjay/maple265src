@@ -1,0 +1,53 @@
+# Java build output
+*.class
+bin/
+/bin/
+target/
+out/
+*.jar
+*.war
+*.ear
+
+# IDE & Editor
+.idea/
+.vscode/
+*.iml
+*.MF
+Maple-Coin-Server.iml
+
+# WZ & DAT game data (WZ files excluded as requested)
+data/wz265/
+data/wz263/
+data/wz/
+data/dat265/
+data/dat263/
+data/dat/
+WZ/
+WZ263/
+WZ265/
+wz/
+wz263/
+wz265/
+dat/
+dat263/
+dat265/
+info txts/
+resourcesMap
+resourcesMob
+resourcesNpc
+resourcesSkill.txt
+Exclude/
+
+# Server logs and runtime
+logs/
+*.log
+
+# Portable JDK and Maven binaries
+jdk21/
+apache-maven-*/
+
+# Temp and OS
+*.tmp
+*.bak
+Thumbs.db
+.DS_Store

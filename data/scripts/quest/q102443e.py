@@ -1,0 +1,30 @@
+# [Tera Blink] Equipment Transfer Time!
+SPIEGELMANN = 9063175
+
+sm.createQuestWithQRValue(parentID, "star=7;step=done;toad=1")
+sm.makeDescOnUI(993236800, 4, "", "")
+sm.closeUI(278)
+sm.closeUI(0)
+sm.openUI(1561)
+sm.closeUI(1561)
+sm.closeUI(1562)
+sm.removeBlowWeather()
+if not sm.isEquipped(1122445):
+    sm.blowWeather(5120243, "Bạn đã hoàn thành việc chuyển giao trang thiết bị. Hãy nói chuyện với Spiegelmann để tiếp tục nhiệm vụ tiếp theo!", 4)
+    sm.setSpeakerID(SPIEGELMANN)
+    sm.setBoxChat()
+    sm.sendNext("#face0# Hãy trang bị #vòng cổ lộng lẫy của Spiegelmann#k rồi nói chuyện lại với tôi.")
+else:
+    sm.completeQuest(parentID)
+    sm.createQuestWithQRValue(parentID, "star=7;step=done;toad=1;exp=1")
+    sm.setSpeakerID(SPIEGELMANN)
+    sm.setBoxChat()
+    sm.sendNext("#face0# #b8 sao Spiegelmann's Ordinary Necklace#k của bạn đã được dùng để tạo ra #b7 sao Spiegelmann's Splendid Necklace#k!")
+    sm.sendNext("#face0# Nhưng việc chuyển đổi trang bị không hề rẻ.\r\nViệc chuyển đổi chỉ số luôn đi kèm với một khoản phí.")
+    sm.sendNext("#face0# Khi bạn chuyển chỉ số bằng lệnh #bEquipment Transfer#k, trang bị phải có ít nhất 1 lần nâng cấp Star Force để khả năng của nó được trích xuất.")
+    sm.sendNext("#face0# Ồ, nhưng đừng quên! Khi chuyển các vật phẩm cấp Epic trở lên có #bPotential#k, #brank của vật phẩm sẽ giảm xuống Epic#k, và Potential của nó sẽ được điều chỉnh thành giá trị cấp #bEpic#k.")
+    sm.sendNext("#face0# Các điều kiện cho việc #chuyển giao thiết bị#k hơi đặc biệt, vì vậy hãy lắng nghe kỹ.")
+    sm.sendNext("#face0# #bEquipment Transfer#k chỉ hoạt động trên hai #bvật phẩm cùng loại#k,..và trang bị cần ít nhất #b1 lần nâng cấp Sức Mạnh Sao#k..để khả năng của nó được chuyển giao.")
+    sm.sendNext("#face0# Nhưng hãy để ý đến cấp độ vật phẩm nữa! Nếu vật phẩm cần chiết xuất có cấp độ #b119 trở xuống#k, bạn có thể chuyển chỉ số sang các vật phẩm có cấp độ cao hơn #b1-20 cấp#k. Nếu vật phẩm cần chiết xuất có cấp độ #b120 trở lên#k, bạn có thể chuyển chỉ số sang các vật phẩm có cấp độ cao hơn #b1-10 cấp#k.")
+    sm.sendNext("#face0# Tóm lại: hãy tận dụng tối đa tính năng #bEquipment Transfers#k khi bạn còn có thể.")
+    sm.sendNext("#face0# Trong những chuyến đi của bạn, bạn đã bao giờ nhìn thấy những con quái vật khổng lồ chưa? Những con to lớn và oai vệ hơn những con khác rất nhiều?")

@@ -1,0 +1,10 @@
+# Epic Lulz Damage Skin
+sm.setSpeakerID(9010000)
+sm.flipDialogue()
+response = sm.sendAskYesNo("Would you like to replace the #v"+str(sm.getActivatedDamageSkin())+"# #b#t"+str(sm.getActivatedDamageSkin())+"##k\r\nthat is currently active with the new #v2435543# #b#t2435543##k?")
+if response:
+    if sm.hasDamageSkin(2435543):
+        sm.sendSayOkay("You already have this damage skin. Please try another.")
+    else:
+        sm.addDamageSkin(2435543)
+        sm.chat("The Epic Lulz Damage Skin has been added to your account's damage skin collection.")

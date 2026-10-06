@@ -1,0 +1,1 @@
+sm.sendSayOkay("Sniff...sniff... I just want to go back to the way I was. I only wanted to be brave... Now I feel like even my heart is going cold...")

@@ -1,0 +1,16 @@
+# id 2431769 (Schoolgirls' Note), field 101072700
+sm.createQuestWithQRValue(32158, "female=1;male=1")
+sm.setSpeakerType(3)
+sm.setParam(5)
+sm.setSpeakerID(1500030) # Mẩu Ghi Chú Của Các Cô Bé Học Sinh
+sm.sendNext("Có rất nhiều cựu học sinh xinh đẹp, nhưng không ai bằng tôi cả.")
+sm.setParam(17)
+sm.sendSay("...Toàn là mấy thứ trẻ con vô dụng! Mình còn phải đọc bao nhiêu mẩu ghi chú nữa đây?")
+sm.setParam(5)
+sm.sendNext("Có rất nhiều cựu học sinh xinh đẹp, nhưng không ai bằng tôi cả.")
+sm.setParam(17)
+sm.sendSay("...Toàn là mấy thứ trẻ con vô dụng! Mình còn phải đọc bao nhiêu mẩu ghi chú nữa đây?")
+sm.startQuest(32134)
+sm.createQuestWithQRValue(32134, "1")
+sm.updateQRValue(32134, False)
+sm.consumeItem(2431769)

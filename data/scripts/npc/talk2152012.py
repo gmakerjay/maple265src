@@ -1,0 +1,1 @@
+sm.sendSayOkay("Please line up in the back if you want a balloon from Checky.")

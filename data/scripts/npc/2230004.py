@@ -1,0 +1,1 @@
+sm.sendSayOkay("The academy's one thing, but did they have to close the cafeteria, too?")

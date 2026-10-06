@@ -1,0 +1,1 @@
+chr.getClient().getChannelInstance().removeMCBattleField(chr, 0)

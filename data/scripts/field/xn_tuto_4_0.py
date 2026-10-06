@@ -1,0 +1,30 @@
+# Character field ID when accessed: 931060081
+# ParentID: 931060081
+# ObjectID: 0
+from net.swordie.ms.world.field.fieldeffect import GreyFieldType
+sm.lockInGameUI(True, False)
+sm.playExclSoundWithDownBGM("Bgm40.img/SecretMission", 100)
+sm.setFieldColour(GreyFieldType.Field, 0, 0, 0, 0)
+sm.hideUser(True)
+sm.sendDelay(1000)
+sm.showFieldEffect("Map/Effect.img/xenon/text1")
+sm.sendDelay(3000)
+sm.showFieldEffect("Map/Effect.img/xenon/text2")
+sm.sendDelay(3000)
+sm.showFieldEffect("Map/Effect.img/xenon/text3")
+sm.sendDelay(3000)
+sm.showFieldEffect("Map/Effect.img/xenon/text4")
+sm.sendDelay(3000)
+sm.showFieldEffect("Map/Effect.img/xenon/text5")
+sm.sendDelay(3000)
+sm.showFieldEffect("Map/Effect.img/xenon/text6")
+sm.sendDelay(3000)
+sm.showFieldEffect("Map/Effect.img/xenon/text7")
+sm.sendDelay(3000)
+sm.showFieldEffect("Map/Effect.img/xenon/text8")
+sm.sendDelay(3000)
+sm.setFieldColour(GreyFieldType.Field, 255, 255, 255, 0)
+
+sm.hideUser(False)
+sm.warp(931050930)
+sm.lockInGameUI(False, False)

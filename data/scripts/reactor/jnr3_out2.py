@@ -1,0 +1,9 @@
+if sm.getInstance() is not None:
+    if sm.hasItem(4001133) and not sm.getInstance().hasProperty("juliet4door2"):
+        sm.consumeItem(4001133)
+        sm.getInstance().addProperty("juliet4door2", 926110202)
+        sm.increaseReactorState(reactor.getTemplateId(), 0)
+    else:
+        sm.chat("Cánh cổng này đã bị khoá.")
+else:
+    sm.warp(261000021)

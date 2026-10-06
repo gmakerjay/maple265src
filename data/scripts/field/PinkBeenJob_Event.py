@@ -1,0 +1,21 @@
+from net.swordie.ms.constants import GameConstants
+
+#Map Boss
+PINK_BEAN_MAP = 270050100 
+CHAOS_PINK_BEAN_MAP = 270051100
+#Monster
+FINAL_STATUE = 8820002
+CHAOS_FINAL_STATUE = 8820102
+IMMORTAL_PINKBEAN = 8820000
+CHAOS_IMMORTAL_PINKBEAN = 8820100
+INITIAL_MOB = 8820009# + chaos
+CHAOS_INITIAL_MOB = 8820109# + chaos
+
+
+if sm.getFieldID() == PINK_BEAN_MAP:
+    sm.waitForMobDeath(FINAL_STATUE)
+    sm.killMob(IMMORTAL_PINKBEAN, True)
+    
+if sm.getFieldID() == CHAOS_PINK_BEAN_MAP:
+    sm.waitForMobDeath(CHAOS_FINAL_STATUE)
+    sm.killMob(CHAOS_IMMORTAL_PINKBEAN, True)

@@ -1,0 +1,2 @@
+sm.flipDialoguePlayerAsSpeaker()
+sm.sendSayOkay("There's a strange energy flowing from this portal. This could definitely teleport me... somewhere.\r\n\r\n#b(Press the up arrow key to enter the portal.)#k")

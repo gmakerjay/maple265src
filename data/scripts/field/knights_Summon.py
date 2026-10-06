@@ -1,0 +1,5 @@
+sm.spawnMob(8610010, -143, 112, False)
+sm.spawnMob(8610011, -400, 112, False)
+sm.spawnMob(8610012, -622, 112, False)
+sm.spawnMob(8610013, -920, 112, False)
+sm.spawnMob(8610014, -1097, 112, False)

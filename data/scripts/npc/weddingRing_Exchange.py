@@ -1,0 +1,1 @@
+sm.sendNext("I'm Jayne, I only talk with the married couples.")

@@ -1,0 +1,23 @@
+MELANGE = 3003654
+
+sm.setPlayerBoxChat()
+sm.sendNext("Executors. One told us they lost their names and their forms...")
+sm.setSpeakerID(MELANGE)
+sm.setBoxChat()
+sm.sendNext("#face0#They were one of the smaller races of Grandis that vanished long ago.")
+sm.sendNext("#face0#They wanted to find the domain of the gods, and were mocked for it.")
+sm.setPlayerBoxChat()
+sm.sendNext("(This is all new to me... And I don't think anyone has seen these things before...)")
+sm.sendNext("(So how does Melange know all of that?)")
+sm.sendNext("Looks like they succeeded.")
+sm.setSpeakerID(MELANGE)
+sm.setBoxChat()
+sm.sendNext("#face0#But the Executors here are not real. These are formed from Mirror World.")
+sm.sendNext("#face0#Hunt them, and recharge the staff.")
+sm.setSpeakerID(MELANGE)
+sm.setBoxChat()
+if sm.sendAskAccept("#face0##bLight Executor x200#k will be enough."):
+    sm.startQuest(34582)
+    sm.setSpeakerID(MELANGE)
+    sm.setBoxChat()
+    sm.sendNext("#face0#Be careful. We're nothing more than intruders to them.")

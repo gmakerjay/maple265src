@@ -1,0 +1,1 @@
+sm.sendSayOkay("I'm the kingdom's--no, the world's fanciest chef!")

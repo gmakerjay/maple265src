@@ -1,0 +1,2 @@
+ALTER TABLE `inventories` 
+CHANGE COLUMN `slots` `slots` SMALLINT NULL DEFAULT NULL;

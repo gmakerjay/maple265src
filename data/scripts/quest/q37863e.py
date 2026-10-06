@@ -1,0 +1,31 @@
+LIGHT_EXECUTOR = 3003504
+OLLIE = 3003500
+
+sm.setSpeakerID(LIGHT_EXECUTOR)
+sm.setBoxChat()
+sm.sendNext("#face0# Họ ở đây.")
+sm.setSpeakerID(OLLIE)
+sm.setBoxChat()
+sm.sendNext("#face0# Họ có phải là... linh mục giống như bạn không?")
+sm.setSpeakerID(LIGHT_EXECUTOR)
+sm.setBoxChat()
+sm.sendNext("#face0# Họ là người giữ cửa. Những mảnh vỡ của quyền lực.")
+sm.sendNext("#face0# Họ chống lại lũ nhện. Điều quan trọng bây giờ là #bErda#k.")
+sm.setSpeakerID(OLLIE)
+sm.setBoxChat()
+sm.sendNext("#face0# Erda...? À, có một kệ sách ở đó, trên mặt đất. Giống như lúc Erda mang hình dạng một tấm bia mộ lúc trước vậy.")
+sm.sendNext("#face0# Nghĩ lại thì, cảnh vật xung quanh có thay đổi không? Nghĩa là chúng ta đang đến gần hơn sao?")
+sm.setSpeakerID(LIGHT_EXECUTOR)
+sm.setBoxChat()
+sm.sendNext("#face0# Không còn thời gian nữa. Nhanh lên.")
+sm.setSpeakerID(OLLIE)
+sm.setBoxChat()
+if sm.sendAskYesNo("#face0# Tôi nghĩ chúng ta nên xem xét Erda. Bạn đã sẵn sàng chưa?\r\n\r\n#b#e(Nếu bạn đồng ý, bạn sẽ được dịch chuyển đến Mirror-touched Sea.)#n#k"):
+    sm.setPlayerBoxChat()
+    sm.sendNext("#b#eĐã tự động bỏ qua phần cắt cảnh.#n#k")
+    sm.completeQuest(parentID)
+    sm.createQuestWithQRValue(34560, "30=h0;31=h1;32=h1;40=h0;41=h0;42=h0;44=h0;45=h0;46=h0;47=h0;48=h0;49=h1;52=h0;77=h0;78=h0;79=h0;80=h0")
+else:
+    sm.setSpeakerID(OLLIE)
+    sm.setBoxChat()
+    sm.sendNext("#face0# Đừng lo lắng về lũ nhện. Người trông coi sẽ đuổi chúng đi.")

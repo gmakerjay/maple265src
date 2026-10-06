@@ -1,0 +1,22 @@
+# Character field ID when accessed: 620100041
+# ParentID: 620100041
+# ObjectID: 0
+sm.removeEscapeButton()
+sm.setPlayerBoxChat()
+sm.sendNext("#b(The ship is a wreck!)")
+sm.sendNext("#b(Wha-what happened? Burke and I took of, those guards were scorching our backsides with their batteries....)")
+sm.sendNext("#b(The emergency lights came on and everything started shaking. Musta ruptured our photon lines and caused a backlash wormhole! Can't believe I made it out alive...\r\nWhere's Burke?)")
+sm.showBalloonMsg("Effect/DirectionNewPirate.img/newPirate/balloonMsg1/10",2000)
+sm.sendDelay(2000)
+sm.showBalloonMsg("Effect/DirectionNewPirate.img/newPirate/balloonMsg1/9",2000)
+sm.sendDelay(2000)
+sm.sendNext("Wh-Where...where is...")
+sm.showBalloonMsg("Effect/DirectionNewPirate.img/newPirate/balloonMsg1/12",2000)
+sm.sendDelay(2000)
+sm.showBalloonMsg("Effect/DirectionNewPirate.img/newPirate/balloonMsg1/13",2000)
+sm.sendDelay(2000)
+sm.sendNext("#b(I must've dropped it when we crashed! I've gotta find it!)")
+sm.sendNext("#b(The core must have saved my hide....but I don't feel its power anymore...)")
+sm.sendNext("Wait, but...Burke...Where is Burke? Surely he survived the crash...")
+sm.sendNext("I should ask that person.")
+sm.lockInGameUI(False,False)

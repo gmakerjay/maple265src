@@ -1,0 +1,28 @@
+Cartalion = 3000000
+Rondo = 1520001
+
+sm.setSpeakerID(Cartalion)
+sm.sendNext("I'm reminded of the #bAnima#k tribe. They live here in Grandis, along with us Nova. I hear they posses the traits of animals , but all I know for certain is that war has turned a great many of them into refugees.")
+sm.setSpeakerID(Rondo)
+sm.flipDialogue()
+sm.sendSay("Where can I find them?")
+sm.setSpeakerID(Cartalion)
+sm.sendSay("I am not sure... We were never that close with the Anima.")
+sm.setSpeakerID(Rondo)
+sm.flipDialogue()
+sm.sendSay("Can you at least tell me where they used to live?")
+sm.setSpeakerID(Cartalion)
+sm.sendSay("You wish to go to the Anima city? That would be far too perilous a journey. Though the Pantheon is protected, we cannot spare anyone to guard out outside our walls.")
+sm.setSpeakerID(Rondo)
+sm.flipDialogue()
+sm.sendSay(".")
+sm.flipSpeaker()
+sm.flipDialoguePlayerAsSpeaker()
+sm.sendSay("There's got to be a way!")
+sm.setSpeakerID(Cartalion)
+sm.sendSay("Since you are clearly beggin me, I will escort you to the border, but no further. I want you to see how dangerous it is for yourselves.")
+if sm.sendAskYesNo("Very well... Are you ready?\r\n\r\n#e#b<Press Yes to move to the battlefield.>#k#n"):
+    sm.setSpeakerID(Cartalion)
+    sm.sendNext("Then we go at once. Stay alert. Danger will be everywhere.")
+    sm.startQuest(32250)
+    sm.warpInstanceIn(chr, 400052300)

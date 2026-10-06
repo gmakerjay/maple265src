@@ -1,0 +1,1 @@
+sm.initCharacterPotential(12395)

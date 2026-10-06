@@ -1,0 +1,1 @@
+sm.addPopUpSay(2170016, 5000, "A sparkling bush! Press the Space bar to try to lift it.", "FarmSE.img/boxResult")

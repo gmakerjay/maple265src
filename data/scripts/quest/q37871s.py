@@ -1,0 +1,36 @@
+MELANGE = 3003501
+
+sm.setSpeakerID(MELANGE)
+sm.setBoxChat()
+sm.sendNext("#face0# Tôi nghĩ cuối cùng tôi đã biết tất cả những gì tôi cần biết.")
+sm.sendNext("#face0# Với tốc độ này, sức mạnh của các #r#eSiêu việt từ hai thế giới#n#k sẽ hòa làm một. Tôi cho rằng việc chiến đấu với một thế lực hùng mạnh như vậy sẽ là vô vọng.")
+sm.setPlayerBoxChat()
+sm.sendNext("...")
+sm.setSpeakerID(MELANGE)
+sm.setBoxChat()
+sm.sendNext("#face0# Cánh cửa mà Tana nhắc đến sẽ dẫn chúng ta đến một Thế giới Gương khác bên trong Thế giới Gương.")
+sm.sendNext("#face0# Tôi không thể làm gì khác cho anh được. Tôi không thể chiến đấu trong Thế giới Gương của anh ta.")
+sm.setPlayerBoxChat()
+if sm.sendAskYesNo("Có vẻ như đúng rồi. Tôi vào đây."):
+    sm.setSpeakerID(MELANGE)
+    sm.setBoxChat()
+    sm.sendNext("#face0# Bạn vẫn có thể nghe thấy giọng nói của tôi, vì vậy tôi sẽ tư vấn cho bạn nhiều nhất có thể từ đây.")
+    sm.setPlayerBoxChat()
+    sm.sendNext("(Đi vào gương và đối mặt với Will.)")
+    sm.setPlayerBoxChat()
+    sm.sendNext("#b#eĐã tự động bỏ qua phần cắt cảnh.#n#k")
+    if sm.getEmptyInventorySlots(1) >= 1 and sm.getEmptyInventorySlots(2) and sm.getEmptyInventorySlots(3) >= 1:
+        sm.startQuest(37871)
+        sm.completeQuest(37871)
+        sm.giveSymbol(1712006, 1, 37871)
+        sm.giveItem(2438411, 1)
+        sm.giveItem(3018045, 1)
+        sm.createQuestWithQRValue(34560, "30=h1;31=h1;32=h1;33=h1;40=h0;41=h0;42=h0;44=h0;45=h0;46=h0;47=h0;48=h0;49=h0;50=h0;51=h0;52=h0;53=h0;54=h0;55=h0;56=h0;57=h0;58=h0;77=h0;78=h0;79=h0;80=h0")
+        sm.createQuestWithQRValue(37900, "01=h1")
+        sm.warp(450007040)
+    else:
+        sm.setSpeakerID(MELANGE)
+        sm.setBoxChat()
+        sm.sendNext("Không đủ ô chứa trong túi EQUIP hoặc USE hoặc INSTALL để nhận phần thưởng chuỗi nhiệm vụ Esfera!")
+else:
+    sm.sendNext("#face0# (Hmm... Bạn có vẻ hơi sợ chăng?)")

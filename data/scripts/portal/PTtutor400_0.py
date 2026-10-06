@@ -1,0 +1,5 @@
+sm.lockInGameUI(True,False)
+sm.removeEscapeButton()
+sm.setPlayerBoxChat()
+sm.sendSayOkay("I'm late, I'm late! I can't be late!")
+sm.lockInGameUI(False,False)

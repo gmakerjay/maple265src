@@ -1,0 +1,1 @@
+sm.sendSayOkay("It's hard to run an academy when you're the only teacher left.")

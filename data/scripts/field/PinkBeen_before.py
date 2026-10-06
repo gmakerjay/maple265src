@@ -1,0 +1,2 @@
+NPC_KIRSTION = 2141000
+sm.spawnNpc(NPC_KIRSTION, -174, -42)

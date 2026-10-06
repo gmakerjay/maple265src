@@ -1,0 +1,1 @@
+sm.sendSayOkay("A spell's good, but so's a fist to the nose.")

@@ -1,0 +1,1 @@
+sm.progressMessageFont("The way out of the Cave of Repose is to the right. Help Kao and escape the cave.")

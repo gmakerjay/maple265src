@@ -1,0 +1,465 @@
+package net.swordie.ms.client.jobs.Jianghu;
+
+import net.swordie.ms.ServerConfig;
+import net.swordie.ms.client.Client;
+import net.swordie.ms.client.character.Char;
+import net.swordie.ms.client.character.CharacterStat;
+import net.swordie.ms.client.character.skills.Option;
+import net.swordie.ms.client.character.skills.Skill;
+import net.swordie.ms.client.character.skills.info.AttackInfo;
+import net.swordie.ms.client.character.skills.info.SkillInfo;
+import net.swordie.ms.client.character.skills.info.SkillUseInfo;
+import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
+import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
+import net.swordie.ms.client.jobs.Job;
+import net.swordie.ms.connection.InPacket;
+import net.swordie.ms.connection.packet.Effect;
+import net.swordie.ms.connection.packet.UserPacket;
+import net.swordie.ms.connection.packet.WvsContext;
+import net.swordie.ms.constants.FieldConstants;
+import net.swordie.ms.constants.JobConstants;
+import net.swordie.ms.handlers.GlobalTimerManager;
+import net.swordie.ms.life.mob.Mob;
+import net.swordie.ms.life.mob.MobTemporaryStat;
+import net.swordie.ms.loaders.SkillData;
+import net.swordie.ms.scripts.ScriptManagerImpl;
+import net.swordie.ms.util.Util;
+import net.swordie.ms.world.field.Field;
+
+import java.util.EnumMap;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static net.swordie.ms.client.character.skills.SkillStat.*;
+import static net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat.*;
+
+public class MoXuan extends Job {
+
+    public static final int XUANSHAN_SPIRIT = 170000001;
+    public static final int RETURN_TO_XUANSHAN = 170001000;
+    public static final int WILL_OF_THE_ALLIANCE = 170000190;
+
+    public static final int AWAKEN = 175000006; // Restores #x% of Max HP/MP every #w sec, even in combat
+
+    public static final int XUANSHAN_ARTS_TIAN = 175001000;
+    public static final int XUANSHAN_STRIKE_TIAN = 175001002;
+    public static final int XUANSHAN_CROSS_TIAN = 175121001;
+    public static final int DIVINE_ART_ERUPTING_FLAME = 175001003;
+
+    public static final int XUANSHAN_ARTS_DI = 175101003;
+    public static final int XUANSHAN_STRIKE_DI = 175101001;
+    public static final int XUANSHAN_CROSS_DI = 175121002;
+    public static final int DIVINE_ART_TEARING_WIND = 175101004;
+    public static final int DIVINE_ART_BURNING_IRON = 175101005;
+    public static final int SECRET_ART_ARROW_FLIGHT = 175101007; // Secret Art: Arrow Flight
+
+    public static final int THE_HOLY_MOUNTAIN = 175110010;
+    public static final int DIVINE_ART_RIGHTEOUS_THUNDER = 175111001;
+    public static final int DIVINE_ART_SWIRLING_TIDE = 175111002; // MukHyun_SEON_PUNG_GAG(10) // Buff
+    public static final int DIVINE_ART_SWIRLING_TIDE_2 = 175111003;
+    public static final int SECRET_ART_QI_PROJECTION = 175111004; // IndiePeriodicalSkillActivation(132160, 132159, 132158, 132157)
+    public static final int SECRET_ART_QI_PROJECTION_ATOM = 175111011;
+
+    public static final int HEIR_OF_THE_DIVINE = 175120016; // MukHyunDivine(2)
+    public static final int DIVINE_FIST_PERSIST = 175120039;
+    public static final int DIVINE_ART_HOWLING_STROM_ATTACK = 175121003; // IndieDamReduceR(50) + IndieAntiMagicShell(1) + IndieCheckTimeByClient(1)
+    public static final int SECRET_ART_QI_DISRUPTION = 175121005; // IndieNotDamaged(1)
+    public static final int SECRET_ART_QI_SHIELD = 175121009; // MukHyun_HO_SIN_GANG_GI(100)
+
+    public static final int SOUL_ART_BLACK_WIND = 175121040;
+    public static final int SECRET_ART_STRENGTH_WITHIN = 175121041;
+    public static final int AURA_OF_DESTINY = 175121042;
+
+    // V Skills
+    public static final int SOUL_ART_BENEATH_HEAVEN = 400051084;
+    public static final int SOUL_ART_THE_CONQUERED_SELF = 400051086;
+    public static final int SOUL_ART_THE_CONQUERED_SELF_ATOM = 400051087;
+    public static final int SOUL_ART_THE_OPENED_GATE = 400051088;
+    public static final int DIVINE_ART_CRASHING_EARTH = 400051089;
+
+    // HEXA Boosts
+    public static final int HEXA_SOUL_ART_THE_OPENED_GATE = 500061070;
+
+    // EFFECT 106:
+    // 175120016 - Heir of the Divine => 01 01 00 => khi dùng 175001003 - Divine Art: Erupting Flame
+    // 175120016 - Heir of the Divine => 01 01 00 => khi dùng 175111001 - Divine Art: Righteous Thunder
+    // 175120016 - Heir of the Divine => 02 01 00 => khi dùng 175101004 - Divine Art: Tearing Wind
+    // 175120016 - Heir of the Divine => 02 01 00 => khi dùng 175111002 - Divine Art: Swirling Tide
+    // 175120016 - Heir of the Divine => 01 02 00 => khi dùng 175121003 - Divine Art: Howling Storm chưa đủ nộ
+    // 175120016 - Heir of the Divine => 01 02 01 => khi dùng 175121003 - Divine Art: Howling Storm đủ nộ
+    // 175121009 - Secret Art: Qi Shield => int 100 (64 00 00 00) => khi dùng 175121009 - Secret Art: Qi Shield
+    // 175110010 - Khi Di 2 cái
+
+    private final int[] addedSkills = new int[]{
+            XUANSHAN_SPIRIT, RETURN_TO_XUANSHAN, WILL_OF_THE_ALLIANCE, DIVINE_ART_ERUPTING_FLAME, AWAKEN,
+            THE_HOLY_MOUNTAIN, HEIR_OF_THE_DIVINE,
+    };
+
+    public AtomicInteger godPower = new AtomicInteger(0);
+    public AtomicInteger powerType = new AtomicInteger(0);
+    public ScheduledFuture<?> powerTimer;
+    public long awaken = 0L;
+
+    public MoXuan(Char chr) {
+        super(chr);
+        if (chr.getId() != 0 && isHandlerOfJob(chr.getJob())) {
+            for (int id : addedSkills) {
+                if (!chr.hasSkill(id)) {
+                    Skill skill = SkillData.getSkillDeepCopyById(id);
+                    if (skill != null) {
+                        skill.setCurrentLevel(skill.getMasterLevel());
+                        chr.addSkill(skill);
+                    }
+                }
+            }
+        }
+    }
+
+    public int getGodPower() {
+        return godPower.get();
+    }
+
+    public void setGodPower(int godPower) {
+        this.godPower.set(godPower);
+    }
+
+    @Override
+    public boolean isHandlerOfJob(short id) {
+        return JobConstants.isMoXuan(id);
+    }
+
+
+    // Attack related methods ------------------------------------------------------------------------------------------
+    @Override
+    public void handleDebuffOnMob(Client c, Mob mob, SkillInfo si, int skillID, int slv, long damage) {
+        Char chr = c.getChr();
+        Option o = new Option();
+        MobTemporaryStat mts = mob.getTemporaryStat();
+        switch (skillID) {
+
+        }
+        super.handleDebuffOnMob(c, mob, si, skillID, slv, damage);
+    }
+
+    @Override
+    public void handleAttack(Client c, AttackInfo attackInfo, SkillInfo si, long now) {
+        Char chr = c.getChr();
+        super.handleAttack(c, attackInfo, si, now);
+        TemporaryStatManager tsm = chr.getTemporaryStatManager();
+        int skillID = attackInfo.skillId;
+        boolean hasHitMobs = !attackInfo.mobAttackInfo.isEmpty();
+        int slv = attackInfo.slv;
+        EnumMap<CharacterTemporaryStat, Option> newStats = new EnumMap<>(CharacterTemporaryStat.class);
+        Option o1 = new Option();
+        Option o2 = new Option();
+        handleSpecialEffect(skillID);
+        switch (skillID) {
+            case DIVINE_ART_SWIRLING_TIDE:
+                o1.nOption = 10;
+                o1.rOption = skillID;
+                o1.tOption = 5;
+                tsm.sendStat(MukHyun_SEON_PUNG_GAG, o1);
+                break;
+            case DIVINE_ART_SWIRLING_TIDE_2:
+                o1.nOption = 2010; // 10010
+                o1.rOption = skillID;
+                o1.tOption = 5;
+                tsm.sendStat(MukHyun_SEON_PUNG_GAG, o1);
+                break;
+            case SECRET_ART_QI_DISRUPTION:
+            case SOUL_ART_BLACK_WIND:
+            case SOUL_ART_BENEATH_HEAVEN:
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = si.getValue(ndTime, slv);
+                o1.isInMillis = true;
+                tsm.sendStat(IndieNotDamaged, o1);
+                break;
+            case DIVINE_ART_HOWLING_STROM_ATTACK:
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 4;
+                newStats.put(IndieDamReduceR, o1);
+                o2.nValue = 1;
+                o2.nReason = skillID;
+                o2.tTerm = 4;
+                newStats.put(IndieAntiMagicShell, o2);
+                tsm.sendStat(newStats);
+                break;
+        }
+    }
+
+    private void handleSpecialEffect(int skillID) {
+        boolean stack = false;
+        chr.chatScriptMessage("powerType : " + this.powerType + " | godPower : " + this.godPower);
+        switch (skillID) {
+            case XUANSHAN_ARTS_TIAN:
+            case XUANSHAN_STRIKE_TIAN:
+            case XUANSHAN_CROSS_TIAN:
+                if (this.godPower.get() == 110) {
+                    this.godPower.set(120);
+                } else {
+                    this.godPower.set(110);
+                }
+                chr.write(WvsContext.sendMoXuanStack(this.powerType.get(), this.godPower.get()));
+                break;
+            case XUANSHAN_ARTS_DI:
+            case XUANSHAN_STRIKE_DI:
+            case XUANSHAN_CROSS_DI:
+                if (this.godPower.get() == 210) {
+                    this.godPower.set(220);
+                } else {
+                    this.godPower.set(210);
+                }
+                chr.write(WvsContext.sendMoXuanStack(this.powerType.get(), this.godPower.get()));
+                break;
+            case DIVINE_ART_RIGHTEOUS_THUNDER:
+            case DIVINE_ART_ERUPTING_FLAME:
+                chr.write(UserPacket.effect(Effect.sendMoXuanEff(1, 1, 0, 0)));
+                this.powerType.set(2);
+                this.godPower.set(1);
+                chr.write(WvsContext.sendMoXuanStack(this.powerType.get(), this.godPower.get()));
+                stack = true;
+                break;
+            case DIVINE_ART_TEARING_WIND:
+                chr.write(UserPacket.effect(Effect.sendMoXuanEff(2, 1, 0, 0)));
+                this.powerType.set(2);
+                this.godPower.set(2);
+                chr.write(WvsContext.sendMoXuanStack(this.powerType.get(), this.godPower.get()));
+                stack = true;
+                break;
+            case DIVINE_ART_SWIRLING_TIDE:
+                chr.write(UserPacket.effect(Effect.sendMoXuanEff(2, 1, 1, 0)));
+                this.powerType.set(2);
+                this.godPower.set(0);
+                chr.write(WvsContext.sendMoXuanStack(this.powerType.get(), this.godPower.get()));
+                stack = true;
+                break;
+            case (DIVINE_ART_SWIRLING_TIDE + 1):
+                this.powerType.set(1000);
+                this.godPower.set(0);
+                chr.write(WvsContext.sendMoXuanStack(this.powerType.get(), this.godPower.get()));
+                stack = true;
+                break;
+            case DIVINE_ART_HOWLING_STROM_ATTACK:
+                chr.write(UserPacket.effect(Effect.sendMoXuanEff(1, 2, Util.getRandom(0, 1), 0)));
+                this.powerType.set(2);
+                this.godPower.set(1);
+                chr.write(WvsContext.sendMoXuanStack(this.powerType.get(), this.godPower.get()));
+                stack = true;
+                break;
+            case SECRET_ART_QI_SHIELD:
+                chr.write(UserPacket.effect(Effect.sendMoXuanEff(0, 0, 0, 100)));
+                break;
+        }
+        if (stack && chr.hasSkill(MoXuan.HEIR_OF_THE_DIVINE)) {
+            TemporaryStatManager tsm = chr.getTemporaryStatManager();
+            Option o1 = new Option();
+            o1.nOption = tsm.hasStat(MukHyunDivine) ? (int) Math.max(tsm.getTotalNOptionOfStat(MukHyunDivine) + 1, 5) : 1;
+            o1.rOption = MoXuan.HEIR_OF_THE_DIVINE;
+            o1.tOption = 60;
+            tsm.sendStat(MukHyunDivine, o1);
+        }
+    }
+
+    // Skill related methods -------------------------------------------------------------------------------------------
+    @Override
+    public void handleSkill(Client c, InPacket inPacket, SkillUseInfo skillUseInfo) {
+        super.handleSkill(c, inPacket, skillUseInfo);
+        Char chr = c.getChr();
+        SkillInfo si = skillUseInfo.skillInfo;
+        int slv = skillUseInfo.slv;
+        int skillID = skillUseInfo.skillID;
+        handleSpecialEffect(skillID);
+        EnumMap<CharacterTemporaryStat, Option> newStats = new EnumMap<>(CharacterTemporaryStat.class);
+        TemporaryStatManager tsm = chr.getTemporaryStatManager();
+        Option o1 = new Option();
+        switch (skillID) {
+            case RETURN_TO_XUANSHAN:
+                Field toField = chr.getOrCreateFieldByCurrentInstanceType(si.getValue(x, slv));
+                chr.warp(toField);
+                break;
+            case SECRET_ART_ARROW_FLIGHT:
+                if (!tsm.hasStat(CannonShooter_BFCannonBall)) {
+                    o1.nOption = si.getValue(y, slv);
+                    o1.rOption = skillID;
+                    tsm.sendStat(CannonShooter_BFCannonBall, o1);
+                } else {
+                    o1.nOption = (int) Math.max(tsm.getTotalNOptionOfStat(CannonShooter_BFCannonBall) - 1, 0);
+                    o1.rOption = skillID;
+                    tsm.sendStat(CannonShooter_BFCannonBall, o1);
+                }
+                break;
+            case SECRET_ART_QI_SHIELD:
+                o1.nOption = si.getValue(x, slv);
+                o1.rOption = skillID;
+                o1.tOption = si.getValue(time, slv);
+                tsm.sendStat(MukHyun_HO_SIN_GANG_GI, o1);
+                break;
+            case SECRET_ART_QI_PROJECTION:
+                if (tsm.hasStatBySkillId(skillID)) {
+                    tsm.removeStatsBySkill(skillID);
+                } else {
+                    tsm.removeStatsBySkill(SOUL_ART_THE_CONQUERED_SELF);
+                    o1.nValue = 132160; // min 132140
+                    o1.nReason = skillID;
+                    tsm.sendStat(IndiePeriodicalSkillActivation, o1);
+                }
+                break;
+            case SOUL_ART_THE_CONQUERED_SELF:
+                if (tsm.hasStatBySkillId(skillID)) {
+                    tsm.removeStatsBySkill(skillID);
+                } else {
+                    tsm.removeStatsBySkill(SECRET_ART_QI_PROJECTION);
+                    o1.nValue = 132160; // min 132140
+                    o1.nReason = skillID;
+                    tsm.sendStat(IndiePeriodicalSkillActivation, o1);
+                }
+                break;
+            case SECRET_ART_STRENGTH_WITHIN:
+                this.powerType.set(2);
+                this.godPower.set(1);
+                chr.write(WvsContext.sendMoXuanStack(this.powerType.get(), this.godPower.get()));
+                break;
+            case AURA_OF_DESTINY:
+                o1.nValue = si.getValue(indieDamR, slv);
+                o1.nReason = skillID;
+                o1.tTerm = si.getValue(time, slv);
+                tsm.sendStat(IndieDamR, o1);
+                break;
+        }
+    }
+
+    public void increaseArrowFlight() {
+        if (!chr.hasSkill(SECRET_ART_ARROW_FLIGHT)) {
+            return;
+        }
+        TemporaryStatManager tsm = chr.getTemporaryStatManager();
+        SkillInfo si = SkillData.getSkillInfoById(SECRET_ART_ARROW_FLIGHT);
+        int max = si.getValue(y, chr.getSkillLevel(SECRET_ART_ARROW_FLIGHT));
+        int count = 1;
+        if (tsm.hasStat(CannonShooter_BFCannonBall)) {
+            count = tsm.getOption(CannonShooter_BFCannonBall).nOption;
+            if (count < max) {
+                count++;
+            }
+        }
+        updateVSkillStackBuff(chr, count);
+    }
+
+    private void awaken() {
+        if (!chr.hasSkill(AWAKEN)) {
+            return;
+        }
+        SkillInfo si = SkillData.getSkillInfoById(AWAKEN);
+        if (si != null) {
+            int slv = chr.getSkillLevel(AWAKEN);
+            if (chr.getHP() < chr.getMaxHP()) {
+                int healAmount = (int) (chr.getMaxHP() * si.getValue(x, slv) / 100);
+                chr.heal(healAmount);
+            }
+        }
+    }
+
+    @Override
+    public void update(long now) {
+        super.update(now);
+        if (this.awaken == 0 || now - this.awaken >= 3000L) {
+            awaken();
+        }
+    }
+
+    @Override
+    public void setCharCreationStats(Char chr) {
+        super.setCharCreationStats(chr);
+        CharacterStat cs = chr.getAvatarData().getCharacterStat();
+        cs.setPosMap(FieldConstants.HOME_MAP);
+        cs.setJob(JobConstants.JobEnum.MOXUAN_1.getJobId());
+        cs.setLevel(10);
+        cs.setStr(4);
+        cs.setDex(45);
+        cs.setInt(4);
+        cs.setLuk(4);
+        cs.setHp(1000);
+        cs.setMaxHp(1000);
+        cs.setMp(500);
+        cs.setMaxMp(500);
+        cs.getExtendSP().addSpToJobLevel(1, 5);
+    }
+
+    @Override
+    public void handleJobAdvance() {
+        ScriptManagerImpl sm = chr.getScriptManager();
+        if (chr.getJob() == JobConstants.JobEnum.MOXUAN_1.getJobId()) {
+            if (chr.getLevel() < 30) {
+                sm.sendSayOkay("#eThis jobs require the player to be at least level #r30#k prior to advancement");
+                return;
+            }
+            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
+                if (sm.getEmptyInventorySlots(1) < 1) {
+                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
+                    return;
+                }
+                sm.jobAdvance(JobConstants.JobEnum.MOXUAN_2.getJobId());
+            }
+        } else if (chr.getJob() == JobConstants.JobEnum.MOXUAN_2.getJobId()) {
+            if (chr.getLevel() < 60) {
+                sm.sendSayOkay("#eThis jobs require the player to be at least level #r60#k prior to advancement");
+                return;
+            }
+            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
+                if (sm.getEmptyInventorySlots(1) < 1) {
+                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
+                    return;
+                }
+                sm.jobAdvance(JobConstants.JobEnum.MOXUAN_3.getJobId());
+            }
+        } else if (chr.getJob() == JobConstants.JobEnum.MOXUAN_3.getJobId()) {
+            if (chr.getLevel() < 100) {
+                sm.sendSayOkay("#eThis jobs require the player to be at least level #r100#k prior to advancement");
+                return;
+            }
+            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
+                if (sm.getEmptyInventorySlots(1) < 1) {
+                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
+                    return;
+                }
+                sm.jobAdvance(JobConstants.JobEnum.MOXUAN_4.getJobId());
+            }
+        } else {
+            sm.sendSayOkay("#eYou may not advance at the current state.");
+        }
+    }
+
+    @Override
+    public void handleCancelTimer(Char chr) {
+        if (powerTimer != null) {
+            powerTimer.cancel(true);
+        }
+        super.handleCancelTimer(chr);
+    }
+
+    @Override
+    public void handleInitAfterMigrate(Char chr) {
+        TemporaryStatManager tsm = chr.getTemporaryStatManager();
+        if (!tsm.hasStat(MukHyunDivine) && chr.hasSkill(MoXuan.HEIR_OF_THE_DIVINE)) {
+            Option o1 = new Option();
+            o1.nOption = 0;
+            o1.rOption = MoXuan.HEIR_OF_THE_DIVINE;
+            tsm.sendStat(MukHyunDivine, o1);
+        }
+        if (this.powerTimer == null || this.powerTimer.isCancelled()) {
+            ScheduledFuture<?> sf = chr.getTimer().addFixedRateEvent(() -> {
+                this.powerType.set(0);
+                this.godPower.set(0);
+                chr.write(WvsContext.sendExtraSystemStack(0, -1639974713, (byte) 246));
+                chr.write(WvsContext.sendExtraSystemStack(1, -1639974713, (byte) 247));
+                chr.write(WvsContext.sendExtraSystemStack(2, -1639974713, (byte) 248));
+                chr.write(WvsContext.sendExtraSystemInit());
+            }, 3000, 5000, false);
+            this.powerTimer = sf;
+            GlobalTimerManager.addCharTimer(chr.getId(), sf);
+        }
+        super.handleInitAfterMigrate(chr);
+    }
+}

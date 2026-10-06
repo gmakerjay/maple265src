@@ -1,0 +1,22 @@
+# [Tera Blink] Unlock Your Hidden Potential!
+SPIEGELMANN = 9063175
+
+sm.closeUI(1561)
+sm.closeUI(1562)
+sm.createQuestWithQRValue(parentID, "honorItem=1;step=done;give=1")
+sm.closeUI(1562)
+sm.closeUI(0)
+sm.openUI(1561)
+sm.removeBlowWeather()
+sm.blowWeather(5120243, "Bạn đã dùng Huân chương Danh dự để nhận điểm kinh nghiệm Danh dự! Hãy nói chuyện với Spiegelmann để tiếp tục nhiệm vụ tiếp theo!", 4)
+sm.closeUI(1562)
+sm.levelUntil(80)
+sm.setSpeakerID(SPIEGELMANN)
+sm.setBoxChat()
+sm.sendNext("#face0# Bạn đã sử dụng #i2631913:# #b#t2631913:##k để nhận điểm kinh nghiệm Danh dự!\r\nĐừng quên rằng điểm kinh nghiệm Danh dự được dùng để thiết lập lại Khả năng!")
+sm.sendNext("#face0# Khi cấp độ Kỹ năng tăng lên, #càng nhiều phần thưởng hữu ích hơn#k sẽ xuất hiện.\r\nChúc bạn may mắn!")
+sm.initCharacterPotential(12394)
+sm.initCharacterPotential(12395)
+sm.initCharacterPotential(12396)
+sm.completeQuest(parentID)
+sm.removeBlowWeather()

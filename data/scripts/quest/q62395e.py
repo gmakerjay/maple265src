@@ -1,0 +1,1 @@
+sm.completeQuest(parentID)

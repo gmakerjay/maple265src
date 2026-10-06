@@ -1,0 +1,40 @@
+SKIPPER = 1096000
+REITING = 1096001
+EXPLORER = 2470018
+sm.startQuest(2573)
+sm.removeEscapeButton()
+sm.lockInGameUI(True,False)
+sm.setSpeakerID(EXPLORER)
+sm.setBoxChat()
+if sm.sendAskYesNo("Would you like to skip the intro?"):
+    sm.completeQuestNoRewards(2568)
+    sm.completeQuestNoRewards(2569)
+    sm.completeQuestNoRewards(2570)
+    sm.levelUntil(10)
+    sm.giveItem(1532000)
+    sm.giveItem(1002610)
+    sm.giveItem(1052095)
+    sm.giveItem(1142107)
+    sm.completeQuest(29900)
+    sm.jobAdvance(501)
+    sm.giveSkill(109, 1, 1)
+    sm.setAP(35)
+    sm.setDEX(4)
+    sm.setSTR(23)
+    sm.startQuest(17903)
+    sm.completeQuest(17903)
+    sm.systemMessage("You cleared the Adventure Journal mission.")
+    sm.lockInGameUI(False,False)
+    sm.warp(912060500)
+    #sm.dispose()
+else:
+    sm.curNodeEventEnd(True)
+    sm.forcedInput(0)
+    sm.completeQuest(2573)
+
+    sm.spawnNpc(SKIPPER, 2209, -107)
+    sm.showNpcSpecialActionByTemplateId(SKIPPER, "summon", 0)
+
+    sm.spawnNpc(REITING, 2046, -62)
+    sm.showNpcSpecialActionByTemplateId(REITING, "summon", 0)
+    sm.forcedInput(2)

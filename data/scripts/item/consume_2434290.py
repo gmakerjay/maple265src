@@ -1,0 +1,5 @@
+# Mu Gong's Guaranteed Medal of Honor (2434290)
+sm.chat("You have received 10,000 Honor EXP.")
+chr.addHonorExp(10000)
+sm.consumeItem(2434290)
+sm.playExclSoundWithDownBGM("FarmSE.img/levelUp", 100)

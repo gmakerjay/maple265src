@@ -1,0 +1,27 @@
+NINEHEART = 3003651
+
+sm.setSpeakerID(NINEHEART)
+sm.setBoxChat()
+sm.sendNext("#face0# Tôi chắc rằng bạn biết Sông Arcane được tạo ra khi các thế giới va chạm. Và bây giờ nó kéo tất cả chúng ta lại gần nhau hơn bao giờ hết.")
+sm.sendNext("#face0# Những con quái vật kỳ lạ này, những sợi xích... Tất cả chúng đều là sự nhiễu loạn bắt nguồn từ sự sụp đổ nghiêm trọng của không gian.")
+sm.sendNext("#face4# Thật vậy. Liên minh đã làm những gì có thể, nhưng chúng ta chưa bao giờ phải đối mặt với bất cứ điều gì có quy mô như thế này.")
+sm.sendNext("#face5# Nếu chúng ta không thể ngăn chặn Black Mage ở đây thì chắc chắn sẽ là kết thúc.")
+sm.setPlayerBoxChat()
+sm.sendNext("Để thực sự giải quyết vấn đề này... chúng ta phải đánh bại Black Mage.")
+sm.setSpeakerID(NINEHEART)
+sm.setBoxChat()
+sm.sendNext("#face0# Đó là lựa chọn duy nhất của chúng ta. Trước khi một #rsố phận mới#k được viết nên...")
+sm.setPlayerBoxChat()
+sm.sendNext("#rSố phận mới#k?")
+sm.setSpeakerID(NINEHEART)
+sm.setBoxChat()
+if sm.sendAskAccept("#face0# Được rồi... bây giờ, xin mời đi theo tôi. Chúng ta sẽ có mặt ở tiền đồn, tôi sẽ giải thích trên đường đi.\r\n\r\n#b#e(*Nếu bạn chấp nhận, bạn sẽ đến Ereve Roads.)#n#k"):
+    sm.setPlayerBoxChat()
+    sm.sendNext("#b#eĐã tự động bỏ qua phần cắt cảnh.#n#k")
+    sm.startQuest(parentID)
+    sm.completeQuest(parentID)
+    sm.warp(993060020)
+else:
+    sm.setSpeakerID(NINEHEART)
+    sm.setBoxChat()
+    sm.sendNext("#face0# Được thôi, bất cứ khi nào bạn sẵn sàng.")

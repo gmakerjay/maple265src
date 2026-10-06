@@ -1,0 +1,16 @@
+# Nett's Pyramid: Pyramid Dunes (926010000) Exit
+
+map = sm.getReturnField()
+portal = 0
+
+if map in (0, 910000000):
+    sm.chat("(Information) Could not find your previous map ID, transferring to Henesys.")
+    map = 100000000
+    portal = 0
+
+if "910001000" in sm.getQRValue(9999):
+    sm.createQuestWithQRValue(9999, "")
+    map = 910001000
+    portal = 2
+
+sm.warpNoReturn(map, portal)

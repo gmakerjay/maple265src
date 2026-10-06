@@ -1,0 +1,22 @@
+# Phantom 4th job adv
+sm.lockInGameUI(True,False)
+if chr.getJob() == 2411:
+    sm.forcedInput(2)
+    sm.sendDelay(1000)
+    sm.forcedInput(0)
+    sm.giveItem(1142378)
+    sm.completeQuest(25120)
+    sm.startQuest(25121)
+    sm.completeQuest(25121)
+    sm.jobAdvance(2412)
+    sm.showEffect("Effect/BasicEff.img/JobChangedPhantom", 0, 0, 0, -2, -2, False, 0)
+    sm.addMaxHP(300)
+    sm.addMaxMP(150)
+    sm.giveSkill(20031210)
+    sm.removeEscapeButton()
+    sm.setPlayerBoxChat()
+    sm.sendNext("You always wore that silly little smile to make your advisors think everything was all right. You always were too concerned about everybody else.... And now you give me the skill book I was looking for. What a dear")
+    sm.lockInGameUI(False,False)
+else:
+    sm.chat("You are not 3rd job Phantom.")
+    sm.lockInGameUI(False,False)

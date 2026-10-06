@@ -1,0 +1,20 @@
+# [Tera Blink] Stronger With Each Level!
+SPIEGELMANN = 9063175
+
+sm.makeDescOnUI(993236800, 4, "", "")
+sm.closeUI(1454)
+sm.closeUI(1562)
+sm.openUI(1561)
+sm.setSpeakerID(SPIEGELMANN)
+sm.setBoxChat()
+sm.sendNext("#face0# Đã sử dụng #bTự động gán khi lên cấp#k rồi phải không? Tuyệt vời! Chuyển sang chủ đề tiếp theo.")
+sm.removeBlowWeather()
+sm.blowWeather(5120243, "Bạn đã hoàn thành lần thăng tiến công việc thứ 2. Hãy nói chuyện với Spiegelmann để hoàn thành nhiệm vụ!", 4)
+sm.levelUntil(60)
+sm.createQuestWithQRValue(parentID, "step=done;ap=1;exp=1")
+sm.setSpeakerID(SPIEGELMANN)
+sm.setBoxChat()
+sm.sendNext("#face0# Bạn đã tiêu hết #bAP#k của mình rồi!\r\nTuyệt vời! Cảm thấy mạnh mẽ hơn chưa?")
+sm.sendNext("#face0# Tôi khuyên bạn nên thử tùy chọn Tự động phân công khi lên cấp.")
+sm.removeBlowWeather()
+sm.completeQuest(parentID)

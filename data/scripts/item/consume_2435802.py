@@ -1,0 +1,10 @@
+# Dragon Fireworks Damage Skin
+sm.setSpeakerID(9010000)
+sm.flipDialogue()
+response = sm.sendAskYesNo("Would you like to replace the #v"+str(sm.getActivatedDamageSkin())+"# #b#t"+str(sm.getActivatedDamageSkin())+"##k\r\nthat is currently active with the new #v2435802# #b#t2435802##k?")
+if response:
+    if sm.hasDamageSkin(2435802):
+        sm.sendSayOkay("You already have this damage skin. Please try another.")
+    else:
+        sm.addDamageSkin(2435802)
+        sm.chat("The Dragon Fireworks Damage Skin has been added to your account's damage skin collection.")

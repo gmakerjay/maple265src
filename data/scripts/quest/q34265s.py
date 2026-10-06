@@ -1,0 +1,31 @@
+# Start [Morass] The Prince and the Princess 4
+
+JEAN = 3003406
+
+sm.setPlayerBoxChat()
+sm.sendNext("Yeah, sure. So what's your plan?")
+sm.setNpcBoxChat(JEAN)
+sm.sendNext("#face0#Simple. We unchain Tana then quickly\r\nuse the anti-magic stone to get outside.")
+sm.sendNext("#face0#They drop the #bmagical barrier#k over the castle when they perform their experiments.")
+sm.setPlayerBoxChat()
+sm.sendNext("That barrier really exists?")
+sm.setNpcBoxChat(JEAN)
+sm.sendNext("#face0#Yeah. If it wasn'n't for that, I could have gotten her out a long time ago.")
+sm.setPlayerBoxChat()
+sm.sendNext("And then what?")
+sm.setNpcBoxChat(JEAN)
+sm.sendNext("#face0#Well, the guards will be hot on our tail, so I've already got a getaway vehicle ready.")
+sm.setPlayerBoxChat()
+sm.sendNext("You do?")
+sm.setNpcBoxChat(JEAN)
+sm.sendNext("#face11#Of course. I've been planning\r\nthis for a really long time.")
+sm.setPlayerBoxChat()
+sm.sendNext("Okay, well, how do we make this happen?")
+sm.setNpcBoxChat(JEAN)
+sm.sendNext("#face9#The only thing we still need is the #bkey to unchain her#k!\r\nI know there's an extra one hidden here in the Restricted Area.")
+sm.sendNext("#face0#I'll unlock the door to the next area\r\nwhile you distract the monsters.")
+sm.setNpcBoxChat(JEAN)
+if sm.sendAskYesNo("#face0#I can get it unlocked in the time it takes you to defeat about 200 of them."):
+	sm.startQuest(34265)
+	sm.setNpcBoxChat(JEAN)
+	sm.sendNext("#face0#Head to the #bRestricted Area 4#k.")

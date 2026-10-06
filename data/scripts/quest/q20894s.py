@@ -1,0 +1,33 @@
+# 20893 - [Job Adv] (Lv.100)   The Empress' Chief Knight
+sm.lockInGameUI(True,False)
+sm.removeEscapeButton()
+sm.setSpeakerID(1101000)
+sm.setBoxChat()
+sm.sendNext("#h0#...  what is this?")
+sm.setPlayerBoxChat()
+sm.sendNext("This, milady, is the report from Neinheart about the activities of the Cygnus Knights.")
+sm.setSpeakerID(1101000)
+sm.setBoxChat()
+sm.sendNext("Haha, is that wat Neinheart said? It is a recommendation about you. It's all about the process of you getting stronger and the activities done by you...")
+sm.setPlayerBoxChat()
+sm.sendNext("What did Neinheart write about me?")
+sm.setSpeakerID(1101000)
+sm.setBoxChat()
+if sm.sendAskYesNo("I would like to appoint a title to you for your activities and effort. will you accept this?"):
+    sm.sendSay("#h0#, with your braveness and courage, from now on you are a new captain of the knights. Please use your power to protect the Maple World.")
+    if sm.canHold(1142069):
+        sm.lockInGameUI(False,False)
+        chrJobID = sm.getChr().getJob()
+        sm.jobAdvance(chrJobID+1)
+        sm.giveItem(1142069)
+        sm.showEffect("Effect/BasicEff.img/JobChanged", 0, 0, 0, -2, -2, False, 0)
+        sm.completeQuest(parentID)
+        #sm.dispose()
+    else:
+        sm.sendSay("Please make space in your Equip inventory.")
+        sm.lockInGameUI(False,False)
+        #sm.dispose()
+else:
+    sm.sendSay("Please speak to me again when you change your mind.")
+    sm.lockInGameUI(False,False)
+    #sm.dispose()

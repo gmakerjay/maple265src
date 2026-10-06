@@ -1,0 +1,1 @@
+sm.completeQuest(62276)

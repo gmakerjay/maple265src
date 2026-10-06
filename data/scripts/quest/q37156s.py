@@ -1,0 +1,10 @@
+# id 37156 ([Elodin] Nature's Roadblocks 1), field 101081000
+sm.setSpeakerType(3)
+sm.setParam(2)
+sm.sendNext("Tôi thậm chí còn không biết mình đang đi đâu, và đám mâm xôi này chẳng giúp ích gì. Mà mấy con cú trông ngốc nghếch này làm gì ở đây vậy?")
+sm.sendSay("Ối! Đứa nào mổ tôi thế? Tôi sẽ đá mày mạnh đến nỗi bay sang khu vực tiếp theo!")
+res = sm.sendAskYesNo("Đủ rồi! Tôi phải dọn sạch chỗ này!")
+sm.setParam(3)
+sm.sendNext("Tôi sẽ dọn đường, rồi chuồn lẹ khỏi đây!")
+sm.startQuest(parentID)
+sm.progressMessageFont(3, 20, 20, 0, "EXP và mesos sẽ giảm đáng kể nếu săn quái vật vượt quá cấp độ của bạn.")

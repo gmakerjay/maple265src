@@ -1,0 +1,1 @@
+sm.startQuest(parentID)

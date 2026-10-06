@@ -1,0 +1,27 @@
+# [Tera Blink] World Inside the Hat
+SPIEGELMANN = 9063175
+
+sm.setSpeakerID(SPIEGELMANN)
+sm.setBoxChat()
+sm.sendNext("#face0# Chào mừng bạn đến với thế giới mà tôi đã chuẩn bị!")
+sm.setPlayerBoxChat()
+sm.sendNext("Đây là nơi nào vậy?")
+sm.setSpeakerID(SPIEGELMANN)
+sm.setBoxChat()
+sm.sendNext("#face0# Không biết bạn đang ở đâu? Chúng ta cùng tham gia cuộc thi nhé!")
+sm.setPlayerBoxChat()
+sm.sendNext("Bên trong một chiếc mũ?")
+sm.setSpeakerID(SPIEGELMANN)
+sm.setBoxChat()
+sm.sendNext("#face0# Đúng vậy! Nó được gọi là Thế giới bên trong chiếc mũ! Hehehe...")
+sm.sendNext("#face0# Đây là một thế giới đầy ắp sự trợ giúp dành cho những chiến binh mới gia nhập Maple World!")
+sm.sendNext("#face0# Những tính năng mới mà tôi đã chuẩn bị... các bạn biết đấy, chúng ta có thể gọi chúng là nhiệm vụ!\r\nNếu hoàn thành tốt các nhiệm vụ, bạn cũng sẽ trở thành một chiến binh xứng đáng!")
+if sm.sendAskYesNo("#face0# Bạn có muốn thử các nhiệm vụ mà tôi đã chuẩn bị không?"):
+    sm.sendNext("#face0# Quyết định tốt! Vậy thì chúng ta bắt đầu thôi.\r\nTrước tiên, theo thủ tục, tôi phải kiểm tra xem bạn đã chọn nghề nghiệp chưa.")
+    sm.sendNext("#face0# Nếu bạn chưa hoàn thành bước thăng tiến nghề nghiệp đầu tiên, hãy tiến hành và hoàn thành bước đầu tiên đó nhé#k.")
+    sm.createQuestWithQRValue(parentID, "exp=1")
+    sm.sendNext("#face0#Được rồi! Bắt đầu thôi. Cố gắng theo kịp nhé!")
+    sm.removeBlowWeather()
+    sm.blowWeather(5120243, "Bạn đã hoàn thành lần thăng tiến nghề nghiệp đầu tiên. Hãy nói chuyện với Spiegelmann để tiếp tục nhiệm vụ tiếp theo!", 4)
+    sm.openUI(1561)
+    sm.completeQuest(parentID)

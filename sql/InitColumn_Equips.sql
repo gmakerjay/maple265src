@@ -1,0 +1,3 @@
+ALTER TABLE equips
+ADD COLUMN `imaxhpr` SMALLINT(6) NOT NULL AFTER `imaxhp`,
+ADD COLUMN `imaxmpr` SMALLINT(6) NOT NULL AFTER `imaxmp`;

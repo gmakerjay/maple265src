@@ -1,0 +1,16 @@
+{
+  "entries": [
+    {
+      "date": "14/02/2026",
+      "uiPath": "UI/UIWindowEvent.img/sundayMaple",
+      "uiName": "SundayMaple",
+      "title": "Kiểm tra các ưu đãi ngày Chủ nhật nắng đẹp của bạn!",
+      "desc": "#sunday# #fnArial##fs18##fc0xFFFFD800#+50%#fc0xFFFFFFFF#EXP nhận được ở Monster Park!\r\n#sunday# #fnArial##fs18##fc0xFFFFD800#+50%#fc0xFFFFFFFF# Nâng cấp Trang bị tẹt ga!\r\n#sunday# #fnArial##fs18##fc0xFFFFD800#50%#fc0xFFFFFFFF# Tỉ lệ thành công khi nâng cấp Star Force!",
+      "dateText": "#fnArial##fs15##fc0xFFB7EC00#14/02/2026",
+      "val1": 50,
+      "val2": 229,
+      "mpIncEXP": 50,
+      "spellTraceOff": 1
+    }
+  ]
+}

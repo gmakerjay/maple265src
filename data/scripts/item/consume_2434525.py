@@ -1,0 +1,9 @@
+# Star-Spangled Banner Hat Mount 30-Day Coupon  |  (2434525)
+if sm.getSkillByItem() == 0:# Check whether item has an vehicleID stored,  0 if false.
+    sm.chat("An Error occurred whilst trying to find the mount.")
+elif sm.hasSkill(sm.getSkillByItem()):
+    sm.chat("You already have the 'Star-Spangled Hat' mount.")
+else:
+    sm.consumeItem(2434525)
+    sm.giveSkill(sm.getSkillByItem())
+    sm.chat("Successfully added the 'Star-Spangled Hat' mount.")

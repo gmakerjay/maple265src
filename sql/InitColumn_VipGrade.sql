@@ -1,0 +1,2 @@
+ALTER TABLE users
+ADD COLUMN `vipexpireddate` DATETIME(3) NULL DEFAULT NULL AFTER `vipgrade`;

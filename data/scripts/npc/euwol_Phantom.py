@@ -1,0 +1,23 @@
+# Phantom 3rd job adv
+sm.lockInGameUI(True,False)
+if chr.getJob() == 2410:
+    sm.giveItem(1142377)
+    #sm.startQuestNoCheck(25104)
+    sm.completeQuest(25110)
+    #sm.startQuest(25104)
+    sm.startQuest(25111)
+    sm.jobAdvance(2411)
+    sm.showEffect("Effect/BasicEff.img/JobChangedPhantom", 0, 0, 0, -2, -2, False, 0)
+    #sm.giveSkill(20031209)
+    #sm.giveSkill(20031260)
+    #sm.giveSkill(24100003)
+    sm.completeQuest(25111)
+    sm.addMaxHP(300)
+    sm.addMaxMP(150)
+    sm.removeEscapeButton()
+    sm.setPlayerBoxChat()
+    sm.sendNext("I have really got to get myself organized. Half of this stuff should have gone in a refrigerator.... Oh. wait! There it is. It's time for a Job Advancement!")
+    sm.lockInGameUI(False,False)
+else:
+    sm.chat("You are not 2nd job Phantom.")
+    sm.lockInGameUI(False,False)

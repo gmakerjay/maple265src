@@ -1,0 +1,30 @@
+# Start [Morass] The Flow
+
+FLYING_FISH = 3003409
+
+sm.setPlayerBoxChat()
+sm.sendNext("Flying Fish! You're back!")
+sm.setNpcBoxChat(FLYING_FISH)
+sm.sendNext("#face0#Bloop!")
+sm.setPlayerBoxChat()
+sm.sendNext("We did it! The forest is rebalanced, and the Arcane River's flow is back to normal!")
+if sm.sendAskYesNo("Time to Ride the Flying Fish to the next area!\r\n#b(You will move automatically when you accept.)#k"):    
+    sm.lockUI()
+    sm.hideUser(True)
+    sm.blind(1, 255, 0, 0)
+    sm.sendDelay(1000)
+    sm.removeEscapeButton()
+    sm.setPlayerBoxChat()
+    sm.sendNext("Huh?")
+    sm.sendNext("#b(Is the flying fish... sinking?!)#k")
+    sm.sendNext("Uh oh! Ahhhhh!")
+    sm.sendDelay(1000)
+    sm.OnOffLayer_On(1000, "0", 0, 0, 0, "Map/Effect3.img/morass/noSpine/fish", 4, 1, -1, 0)
+    sm.spineScreen(False, False, True, 0, "Map/Effect3.img/morass/spine/bubble/skeleton", "animation", None)
+    sm.sendDelay(3000)
+    sm.OnOffLayer_Off(1000, "0", 0)
+    sm.unlockUI()
+    sm.hideUser(False)
+    sm.startQuest(34249)
+    sm.blind(0, 0, 0, 1000)
+    sm.warpInstanceIn(chr, 450006000, False)

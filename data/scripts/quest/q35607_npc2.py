@@ -1,0 +1,18 @@
+RESISTANCE_SOLDIER = 3003660
+
+sm.setSpeakerID(RESISTANCE_SOLDIER)
+sm.setBoxChat()
+sm.sendNext("#face0# Phù... Tôi hy vọng mọi người đều ổn.")
+sm.sendNext("#face0# ...!? #h0#! Tôi nghe nói anh đang ở đây! Tôi nghe nói bạn đang làm tốt ở Arcane River. Bạn là niềm tự hào của quân Kháng chiến!")
+sm.setPlayerBoxChat()
+sm.sendNext("Tôi nghe thấy tiếng thở dài của bạn. Có điều gì làm bạn phiền lòng không?")
+sm.setSpeakerID(RESISTANCE_SOLDIER)
+sm.setBoxChat()
+sm.sendNext("#face0# Ồ... Tôi lo cho Maple World quá. Không khí căng thẳng ngay trước khi chúng tôi rời đi.")
+sm.sendNext("#face0# Điều này không có gì ngạc nhiên. Những sợi xích sắt xuất hiện trên bầu trời và Liên minh đang chuẩn bị chiến tranh...")
+sm.sendNext("#face0# Liên minh đang cố gắng hết sức để trấn an mọi người. Hầu hết dân làng đều lo lắng, nhưng họ vẫn làm theo chỉ dẫn của chúng tôi.")
+sm.sendNext("#face0# Nhưng một số khu vực lại có sức đề kháng kém. Ví dụ như Ariant.")
+sm.sendNext("#face0# Liên minh không có nhiều ảnh hưởng ở đó, và mọi người nói nhà vua bất tài... Phù, tôi hy vọng không có chuyện gì xấu xảy ra...")
+sm.sendNext("#face0# Chúng ta cần phải đánh bại Black Mage càng sớm càng tốt để mang lại hòa bình cho thế giới Maple. Đó là lý do tại sao tôi sẽ chiến đấu hết mình.")
+sm.sendNext("#face1# Gửi tới các đồng chí, bạn bè và gia đình của tôi tại Maple World.")
+sm.completeQuest(35607)

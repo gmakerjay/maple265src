@@ -1,0 +1,1 @@
+sm.sendSayOkay("You know, you can get one of these awersome accessories by fighting the aliens in the spaceship.\r\n#b#i1113038# #z1113038#\r\n#i1122256# #z1122256#\r\n#i1032191# #z1032191#\r\n#i1132230# #z1132230##k\r\nThere is rumor that this helmet can only by taken from\r\n#e#r*Mysterious Visitor*#k#n. Intriguing, is it not?\r\n#b#i1003893# #z1003893##k")

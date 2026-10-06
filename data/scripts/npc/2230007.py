@@ -1,0 +1,1 @@
+sm.sendSayOkay("Y-yes, I am thine princess... eth.")

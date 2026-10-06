@@ -1,0 +1,22 @@
+OLLIE = 3003652
+
+sm.setSpeakerID(OLLIE)
+sm.setBoxChat()
+if sm.sendAskAccept("#face0#I guess this is the place? Did you see anything... memory-ish?"):
+    sm.setPlayerBoxChat()
+    sm.sendNext("I've been to some weird places, but this one is taking the weird cookie...Anyway, can we use the staff?")
+    sm.setSpeakerID(OLLIE)
+    sm.setBoxChat()
+    sm.sendNext("#face0#Yup. The instructions say it's voice-activated, so you just yell and point it at an empty space.")
+    sm.setSpeakerID(OLLIE)
+    sm.setBoxChat()
+    sm.sendNext("#face0#Hyaa! Waaah!")
+    sm.setSpeakerID(OLLIE)
+    sm.setBoxChat()
+    sm.sendNext("#face1#Um... It's not working.")
+    sm.setPlayerBoxChat()
+    sm.sendNext("...")
+    sm.completeQuest(34567)
+    sm.setSpeakerID(OLLIE)
+    sm.setBoxChat()
+    sm.sendNext("#face1# Lemme just check the instructions again... Maybe the pages stuck together...")

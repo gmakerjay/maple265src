@@ -1,0 +1,1 @@
+sm.completeQuestNoRewards(15830)

@@ -1,0 +1,1 @@
+sm.spawnMob(8881000, 1000, 86, False)

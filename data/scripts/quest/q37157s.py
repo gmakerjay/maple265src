@@ -1,0 +1,10 @@
+# id 37157 ([Elodin] Nature's Roadblocks 2), field 101081000
+sm.setSpeakerType(3)
+sm.setParam(2)
+sm.sendNext("Tôi đã ở đây bao lâu rồi?")
+sm.sendSay("Tôi cảm thấy như mình đã đi lòng vòng cả thế kỷ rồi.")
+sm.sendSay("Và những thứ như thế này cứ liên tục xuất hiện, ừm, cỏ dại!")
+res = sm.sendAskYesNo("Nếu tôi bị kẹt ở đây mãi mãi thì sao?")
+sm.setParam(3)
+sm.sendNext("Tôi hy vọng mình đang đi đúng hướng...")
+sm.startQuest(parentID)

@@ -1,0 +1,2 @@
+if sm.sendAskYesNo("#b#i2639946:# #t2639946:##k\r\n\r\nKhi sử dụng vật phẩm, bạn có thể nhận được chủ đề #e#bTwilight Altar#k#n có thể áp dụng cho màn hình Chọn nhân vật.\r\nSử dụng vật phẩm?\r\n#r* Chủ đề nhận được có thể được áp dụng trên tất cả các máy chủ Maple ID của bạn#n.#k"):
+    sm.setCharacterSelectionBG()

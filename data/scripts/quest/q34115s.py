@@ -1,0 +1,10 @@
+sm.setSpeakerID(3003127)
+sm.sendNext("Imprenta, you're awake! It's a good thing we landed on this soft sand...")
+sm.sendSay("Ugh, my ankle... I-it's nothing. Don't worry about me. Just worry about escaping this cave.")
+sm.setPlayerAsSpeaker()
+sm.sendSay("#b(Kao's actions weigh on your mind, but there are more important matters at hand.)#k")
+sm.setSpeakerID(3003127)
+sm.sendSay("This place is the last stop along the Vanishing Journey...The Cave of Repose. Traveling through this cave will lead you to what lies beyond. We're almost there.")
+if sm.sendAskYesNo("It's practically a maze in here but... I know a shortcut to the cave's exit. Now, follow me."):
+    sm.startQuest(34115)
+    sm.completeQuest(34115)

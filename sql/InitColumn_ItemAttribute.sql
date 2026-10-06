@@ -1,0 +1,2 @@
+ALTER TABLE items
+ADD COLUMN `attribute` SMALLINT DEFAULT 0;

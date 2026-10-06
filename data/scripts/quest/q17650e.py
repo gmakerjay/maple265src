@@ -1,0 +1,16 @@
+# id 17650 ([Cộng Hòa Commerci] Báo Cáo Đáng Lo Ngại), field 865000002
+sm.setSpeakerID(9390203) # Gilberto Daniella
+sm.setParam(2)
+sm.sendNext("Thưa Thủ tướng, chúng tôi đã đuổi theo bọn cướp biển.")
+sm.setParam(0)
+sm.sendSay("Chào mừng trở lại. Ta rất mừng khi thấy các ngươi bình an vô sự. Điều này có nghĩa là nhiệm vụ của các ngươi đã thành công?")
+sm.setParam(2)
+sm.sendSay("Vâng... đại loại thế. Hầu hết là vậy. Leon và tôi đã có thể hạ gục bọn cướp biển, với một chút giúp đỡ.")
+sm.setParam(0)
+sm.sendSay("Tốt, tốt. Các tuyến đường biển thông thoáng rất quan trọng đối với thành phố này.")
+sm.setParam(2)
+sm.sendSay("Ngài cảm thấy ổn chứ, Thưa Thủ tướng? Việc của Đế Quốc Thiên Đường có đang làm phiền ngài không?")
+sm.setParam(0)
+sm.sendSay("Ngươi đã nghe tin? Tin đồn lan đi nhanh chóng ở Commerci. Phải, chuyến thăm của Đế Quốc Thiên Đường làm ta lo lắng.")
+sm.completeQuest(parentID)
+sm.createQuestWithQRValue(18418, "B=33280")

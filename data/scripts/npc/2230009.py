@@ -1,0 +1,1 @@
+sm.sendSayOkay("A kingdom shrouded in darkness... A castle in the sky...\r\nThis will make a killer song!")

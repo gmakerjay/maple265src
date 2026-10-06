@@ -1,0 +1,20 @@
+if sm.hasQuestCompleted(34252) and not sm.hasQuestCompleted(34253):
+    FLYING_FISH = 3003409
+    sm.lockUI() 
+    sm.setPlayerBoxChat()
+    sm.sendNext("Does Tana really want to help the Black Mage destroy the world?")
+    sm.setNpcBoxChat(FLYING_FISH)
+    sm.sendNext("#face0#It is unlikely she knows what she's doing. The Black Mage is taking advantage of her weakened metal state.")
+    sm.setPlayerBoxChat()
+    sm.sendNext("So she could be convinced to stop...")
+    sm.setNpcBoxChat(FLYING_FISH)
+    sm.sendNext("#face0#Perhaps, but you must be careful.\r\nIf something goes wrong, you could end up stuck in that place forever.")
+    sm.setPlayerBoxChat()
+    sm.sendNext("But it could be our only chance to rescue Tana!")
+    sm.setNpcBoxChat(FLYING_FISH)
+    sm.sendNext("#face0#Yes, but remember, the morass is incredibly...")
+    sm.unlockUI()
+    sm.createQuestWithQRValue(34271, "20=h0;21=h0;22=h0;23=h1")
+    sm.warpNoReturn(450006110, 1)
+else:
+    sm.warp(450006130)

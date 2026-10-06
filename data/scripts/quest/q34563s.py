@@ -1,0 +1,20 @@
+OLLIE = 3003652
+
+sm.lockUI()
+sm.blind(1, 200, 0, 0)
+sm.zoomCamera(0, 1000, 111, 111)
+sm.blind(0, 0, 0, 1000)
+sm.removeEscapeButton()
+sm.setNpcBoxChat(OLLIE)
+sm.sendNext("#face0#Well, Let's make sure everyone is still alive. I'll fire off a flare to let them know where we are, and they'll hopefully fire one in response.")
+sm.sendNext("#face1#...Or I would, if I hadn't dropped the flare when we fell. Aw, geez... where did it end up?")
+sm.setNpcBoxChat(OLLIE)
+sm.sendNext("#face1#You know what? I bet you anything that sketchy turtle-thing just wandered off with it. You saw that look it gave us.")
+sm.setNpcBoxChat(OLLIE)
+if sm.sendAskAccept("#face0#Could you hunt the #bAhtuins#k and bring back the #bflare#k? I'll keep an eye out for a flare from the ship."):
+    sm.setNpcBoxChat(OLLIE)
+    sm.sendNext("#face0#All right, I'm counting on you. Let's hope that flare's to the #bright#k!")
+    sm.startQuest(34563)
+    sm.createQuestWithQRValue(34560, "41=h0")
+sm.resetCamera()
+sm.unlockUI()

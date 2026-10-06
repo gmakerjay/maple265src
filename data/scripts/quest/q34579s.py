@@ -1,0 +1,32 @@
+OLLIE = 3003652
+SHUBERT = 3003502
+LIGHT_EXECUTOR = 3003504
+
+sm.setSpeakerID(OLLIE)
+sm.setBoxChat()
+sm.sendNext("#face3#Yeah, down here. Shubert, can you hear me?")
+sm.setSpeakerID(SHUBERT)
+sm.setBoxChat()
+sm.sendNext("#face3# Loud and clear, Ollie. I'll get the gear to you no problem. All we need is a pulley but someone has to go down there and get Tana.")
+sm.setSpeakerID(LIGHT_EXECUTOR)
+sm.setBoxChat()
+sm.sendNext("We will stop the spider. But we have no power in the ocean.")
+sm.setPlayerBoxChat()
+sm.sendNext("I'll...")
+sm.setSpeakerID(OLLIE)
+sm.setBoxChat()
+sm.sendNext("#face3#Have you used this equipment before?")
+sm.setPlayerBoxChat()
+sm.sendNext("Ah, no.")
+sm.setSpeakerID(OLLIE)
+sm.setBoxChat()
+if sm.sendNext("#face0#Then I should go. You work the pulley."):
+    sm.setSpeakerID(SHUBERT)
+    sm.setBoxChat()
+    sm.sendNext("#face0##h0#, don't you worry about a thing. Ollie's a sharp lady, she knows what she's doing.")
+    sm.setSpeakerID(SHUBERT)
+    sm.setBoxChat()
+    sm.sendNext("#face0#You'll hear what's going on through our comms, so just pull her up if she gets in trouble.")
+    sm.startQuest(34579)
+    sm.completeQuest(34579)
+    sm.createQuestWithQRValue(34560, "41=h0;42=h0;44=h1;51=h2")
