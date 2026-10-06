@@ -151,6 +151,58 @@ Total Tables Verified   -> 110 / 110 tables (100% Complete)
 
 ---
 
+### 12. ตรวจสอบและแก้ไขบั๊กอาชีพใหม่ (New Jobs Bug Fixing & Implementation Audit)
+- **Lynn (`Lynn.java`):**
+  - แก้ไขบั๊กค่าสเตตัสเริ่มต้นใน `setCharCreationStats`: สลับจากเดิมที่ตั้งผิดเป็น DEX 45, INT 4 ให้ถูกต้องเป็น **INT 45, DEX 4** (อาชีพสายเวท)
+  - เพิ่มเมธอด `addItemToNewCharacter`: แจกอาวุธเริ่มต้น **Memorial Staff (1252002)** และโล่รอง **Beast Bell (1352811)** เข้าช่องสวมใส่อัตโนมัติพร้อมบันทึก SQL
+- **Mo Xuan (`MoXuan.java`):**
+  - แก้ไขบั๊กค่าสเตตัสเริ่มต้นใน `setCharCreationStats`: สลับจากเดิมที่ตั้งผิดเป็น DEX 45, STR 4 ให้ถูกต้องเป็น **STR 45, DEX 4** (อาชีพสายหมัดกำลังภายใน STR)
+  - เพิ่มเมธอด `addItemToNewCharacter`: แจกสนับมือเริ่มต้น **Martial Fist (1403000)** และโล่รอง **Martial Fist Secondary (1354030)**
+  - นำคำสั่ง Debug Chat `chr.chatScriptMessage("powerType : " + ...)` ออกจาก `handleSpecialEffect` เพื่อป้องกันการส่งสแปมข้อความแชททุกครั้งที่ใช้สกิลเสวียนซาน
+- **Kain (`Kain.java`):**
+  - เพิ่มเมธอด `addItemToNewCharacter`: แจกอาวุธเริ่มต้น **Whispershot (1214000)** และโล่รอง **Weapon Belt (1354020)**
+  - เพิ่มเมธอด `handleSkill`: รองรับสกิลบัฟหลัก **Breath Shooter Booster (63101010)**, **Nova Warrior (63121009)**, ล้างสถานะผิดปกติ **Nova Hero's Will (63121010)**, บัฟไฮเปอร์ **Incarnation (63121044)**, บาเรียอมตะ **Dragon Scale (63121008)** และระบบเปิด-ปิดบัฟ **Remain Incense (63111009)**
+  - เพิ่มเมธอด `handleAttack`: รองรับการประมวลผลการโจมตีพื้นฐาน
+- **Lara (`Lara.java`):**
+  - เพิ่มเมธอด `setCharCreationStats`: กำหนดค่าสเตตัสเริ่มต้นของสายเวท **INT 45, LUK 4, STR 4, DEX 4**, เลเวล 10, HP 1000, MP 800, แต้ม SP 5
+  - เพิ่มเมธอด `addItemToNewCharacter`: แจกอาวุธเริ่มต้น **Wand (1372000)** และโล่รอง **Ornamental Knot (1354010)**
+  - เพิ่มระบบเปลี่ยนอาชีพ `handleLevelUp`: เปลี่ยนอาชีพเป็นคลาส 2, 3, 4 อัตโนมัติที่เลเวล 30, 60, 100 พร้อมมอบแต้ม SP และ AP
+  - เพิ่มเมธอด `handleSkill`: รองรับ **Wand Booster (162101013)**, **Anima Warrior (162121023)**, **Anima Hero's Will (162121024)** และสกิลเปิด-ปิด **Peerless Mountain (162001005)**
+- **Server Core (`Server.java`):**
+  - แก้ไข NullPointerException จากตัวแปร `bannedMacs` ที่ไม่มีการกำหนดค่าเริ่มต้นใน `Server.java` ทำให้เมื่อเรียก `LoginHandler.handleSelectWorld()` ไม่เกิดอาการ Crash
+
+---
+
+### 13. ตรวจสอบความครบถ้วนของระบบบอสทั้งหมด (Boss System Completeness Audit)
+จากการตรวจสอบโค้ดในแพ็กเกจ `net.swordie.ms.world.boss.*`, `BossConstants.java`, `BossPartyType.java` และสคริปต์ใน `data/scripts/boss/`, `data/scripts/field/`:
+
+| กลุ่มบอส | รายชื่อบอส | สถานะระบบในเซิร์ฟเวอร์ | รายละเอียดกลไก |
+|---|---|:---:|---|
+| **บอสคลาสสิก / ช่วงต้นเกม** | Zakum, Horntail, Pink Bean, Ursus | 🟢 สมบูรณ์ 100% | มีคลาสเฉพาะแยกทุกตัว, คำนวณ HP รวม (SpecialHP), มีแขน/หัว/หินครบทุกชิ้นส่วน |
+| **บอสช่วงกลางเกม (Hero/Grand)** | Von Leon, Cygnus, Arkarium, Magnus, Hilla | 🟢 สมบูรณ์ 100% | ห้องขัง Von Leon, นก Shinsoo & 5 อัศวิน Cygnus, จอแตก Arkarium, อุกกาบาตตก Magnus |
+| **รูทอบิส (Root Abyss)** | Pierre, Von Bon, Crimson Queen, Vellum | 🟢 สมบูรณ์ 100% | หมวกสลับสี Pierre, มิติเวลา Von Bon, หน้ากาก 4 อารมณ์ Queen, หินย้อย/มุดดิน Vellum |
+| **บอสระดับสูง (Arcane River)** | Lotus (Swoo), Damien | 🟢 สมบูรณ์ 100% | Lotus 3 เฟส (เลเซอร์แกนกลาง, ก้อนพลังงาน, หุ่นตก), Damien 2 เฟส (ดาบบิน, แท่นบูชายัญ Stigma) |
+| **บอสระดับสูง (Arcane River)** | Lucid, Will, Verus Hilla | 🟢 สมบูรณ์ 100% | Lucid มังกรพ่นไฟ/กระจกแตก, Will มิติแสง-มืด/ใยแมงมุม/มูนไลท์, Verus Hilla เทียนแดง-เขียว/วิญญาณ |
+| **บอสเนื้อเรื่องหลัก** | Black Mage (검은 마법사) | 🟢 สมบูรณ์ 4 เฟส | มีสคริปต์ `firstenter_bossBlackMage.py` วาร์ปต่อเนื่อง P1 (ยักษ์คู่), P2, P3, P4 สมบูรณ์ |
+| **บอสดันเจี้ยนพิเศษ** | Gollux, Ranmaru, Princess No | 🟢 สมบูรณ์ 100% | ชิ้นส่วนหัว/ไหล่/ท้อง Gollux, ดันเจี้ยน 4 ห้องก่อนพบ Princess No |
+| **Tenebris Bosses** | Gloom (더스크), Darknell (듄켈) | 🟡 มีข้อมูลในระบบ / ขาดสคริปต์สนาม | มี Mob ID, แมพวาร์ป, และ Intense Power Crystal แล้ว แต่ยังไม่มีตัวจัดการเฟสแยก |
+| **Grandis & Newest Bosses** | Chosen Seren, Kalos, Kaling, Limbo, Baldrix, First Adversary | 🔴 มี Enum / Crystal / ยังไม่มีตัวจัดการดันเจี้ยน | มีการลงทะเบียนในระบบ `BossPartyType` และราคาผลึกคริสตัลแล้ว แต่ยังไม่มี AI / Boss Event Controller รองรับ |
+
+---
+
+### 14. การทดสอบคอมไพล์และเปิดรันเซิร์ฟเวอร์จริง (Build & Runtime Verification)
+- **คอมไพล์ซอร์สโค้ด:** ผ่านสำเร็จ 100% ปราศจาก Error (`BUILD SUCCESS` ใช้เวลา 22.5 วินาที สำหรับ 851 ไฟล์)
+- **ประกอบ JAR:** ประกอบ Fat JAR รวม Dependencies ทั้งหมดสำเร็จ (`maplestory.jar` ขนาด ~138 MB)
+- **ทดสอบเปิดรันเซิร์ฟเวอร์ (Live Test Run):**
+  - พอร์ตเปิดให้บริการครบทุกพอร์ต:
+    - Login: `8484` (TCP) - Listening
+    - API: `8483` (TCP) - Listening
+    - Game Channels 1 ถึง 10: `8585` - `8594` (TCP) - Listening
+  - โหลดฐานข้อมูล MariaDB และ WZ Data (22.0 วินาที) สำเร็จ 100%
+  - ตรวจสอบ `logs/.../ExceptionCaught/All.txt` ไม่พบ Exception หรือ Error ตกค้าง
+
+---
+
 ## 📂 โครงสร้างไฟล์สำคัญในโฟลเดอร์โปรเจกต์
 
 ```text
@@ -178,4 +230,5 @@ v214 src/
 - ฐานข้อมูล `vietmaple` อยู่ในสถานะ Clean Database มีโครงสร้างตารางครบทั้ง 110 ตาราง
 - เซิร์ฟเวอร์กำลังทำงานอยู่ใน Background พร้อมรับการเชื่อมต่อจาก Client ทันที
 - ไฟล์ ZIP สำหรับรันบนเครื่องอื่น (`MapleStory_Server_Runner_Ready.zip`) มีสคริปต์และไฟล์ครบถ้วนพร้อมใช้งาน
+
 

@@ -26,6 +26,11 @@ import net.swordie.ms.scripts.ScriptManagerImpl;
 import net.swordie.ms.util.Util;
 import net.swordie.ms.world.field.Field;
 
+import net.swordie.ms.client.character.items.Item;
+import net.swordie.ms.client.character.items.BodyPart;
+import net.swordie.ms.loaders.ItemData;
+import static net.swordie.ms.enums.InvType.EQUIPPED;
+
 import java.util.EnumMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -191,7 +196,6 @@ public class MoXuan extends Job {
 
     private void handleSpecialEffect(int skillID) {
         boolean stack = false;
-        chr.chatScriptMessage("powerType : " + this.powerType + " | godPower : " + this.godPower);
         switch (skillID) {
             case XUANSHAN_ARTS_TIAN:
             case XUANSHAN_STRIKE_TIAN:
@@ -376,8 +380,8 @@ public class MoXuan extends Job {
         cs.setPosMap(FieldConstants.HOME_MAP);
         cs.setJob(JobConstants.JobEnum.MOXUAN_1.getJobId());
         cs.setLevel(10);
-        cs.setStr(4);
-        cs.setDex(45);
+        cs.setStr(45);
+        cs.setDex(4);
         cs.setInt(4);
         cs.setLuk(4);
         cs.setHp(1000);
@@ -385,6 +389,38 @@ public class MoXuan extends Job {
         cs.setMp(500);
         cs.setMaxMp(500);
         cs.getExtendSP().addSpToJobLevel(1, 5);
+    }
+
+    @Override
+    public void addItemToNewCharacter(Char chr) {
+        super.addItemToNewCharacter(chr);
+        // Secondary Weapon: Martial Fist (1354030)
+        Item secondary = ItemData.getItemDeepCopy(1354030);
+        if (secondary != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
+            secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            secondary.setCharID(chr.getId());
+            secondary.setInvType(EQUIPPED);
+            secondary.setBagIndex(BodyPart.Shield.getVal());
+            secondary.saveToSQL();
+            chr.getAvatarData().getAvatarLook().getHairEquips().add(secondary.getItemId());
+            chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+        }
+
+        // Primary Weapon: Basic Martial Fist (1403000)
+        if (chr.getEquippedItemByBodyPart(BodyPart.Weapon) == null) {
+            Item weapon = ItemData.getItemDeepCopy(1403000);
+            if (weapon != null) {
+                chr.addItemToInventoryToNewCharacter(EQUIPPED, weapon, true);
+                weapon.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+                weapon.setCharID(chr.getId());
+                weapon.setInvType(EQUIPPED);
+                weapon.setBagIndex(BodyPart.Weapon.getVal());
+                weapon.saveToSQL();
+                chr.getAvatarData().getAvatarLook().setWeaponId(weapon.getItemId());
+                chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+            }
+        }
     }
 
     @Override

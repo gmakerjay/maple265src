@@ -2,6 +2,6 @@
 
 Ardentmill = 910001000
 
-if sm.sendAskYesNo("Bạn có muốn dịch chuyển đến #e#bArdentmill#k#n không?\r\n#b"):
+if sm.sendAskYesNo("Would you like to teleport to #e#bArdentmill#k#n?\r\n#b"):
     sm.setReturnField()
     sm.warp(Ardentmill)

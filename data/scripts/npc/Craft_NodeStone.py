@@ -9,7 +9,7 @@ NODE_STONE_HAVE = chr.getAvatarData().getCharacterStat().getNodeShards()
 NODE_STONE_ID = 2435719
 NODE_CAN_CRAFT = NODE_STONE_HAVE // NODE_STONE_REQ
 
-dialogue = "Bạn có muốn dùng Mảnh Node để chế tạo Nodestone không?\r\n#bSố Mảnh Node cần để chế tạo Nodestone: " + str(NODE_STONE_REQ) + "\r\nMảnh Node hiện có: " + str(NODE_STONE_HAVE) + "\r\nTổng số Nodestone bạn có thể chế tạo: "
+dialogue = "Would you like to use Node Shards to craft Nodestones?\r\n#bNode Shards required per Nodestone: " + str(NODE_STONE_REQ) + "\r\nCurrent Node Shards: " + str(NODE_STONE_HAVE) + "\r\nTotal Nodestones you can craft: "
 dialogue += str(NODE_CAN_CRAFT)
 
 sm.setSpeakerID(ARCHELLE_ID)
@@ -18,10 +18,10 @@ result = sm.sendAskNumber(dialogue, 0, 1, NODE_CAN_CRAFT)
 cost = result * NODE_STONE_REQ
 
 if NODE_STONE_HAVE < cost:
-    sm.sendSayOkay("Bạn cần 35 Mảnh Node để tạo Nodestone. Hãy thử phân rã các core không cần thiết để thu thập thêm Mảnh Node")
+    sm.sendSayOkay("You need at least 35 Node Shards to craft a Nodestone. Try disassembling unused nodes to obtain more shards.")
 else:
     if not sm.canHold(NODE_STONE_ID, result):
-        sm.sendSayOkay("Vui lòng chừa thêm chỗ trống trong túi Use")
+        sm.sendSayOkay("Please make sure you have enough free space in your Use inventory.")
     else:
         MatrixHandler.gainNodeShards(chr, -cost)
         sm.giveItem(NODE_STONE_ID, result)

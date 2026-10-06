@@ -39,16 +39,17 @@ public class PlayerCommands {
                 return;
             }
             chr.chatMessage("___________________________________");
-            chr.chatMessage("Những lệnh của máy chủ " + ServerConstants.SERVER_NAME + ":");
-            chr.chatMessage("@dispose: Gỡ lỗi cho bạn.");
-            chr.chatMessage("@event: Tham gia sự kiện đang diễn ra.");
-            chr.chatMessage("@check: hiển thị thông tin của bạn hoặc người chơi khác bằng @checkchar <name>.");
-            chr.chatMessage("@sell: bán vật phẩm của bạn.");
-            chr.chatMessage("@checkboss: kiểm tra thời gian hồi chiêu còn lại của trùm.");
-            chr.chatMessage("@checkmob: kiểm tra thông tin quái vật hoặc trùm gần bạn.");
-            chr.chatMessage("@home: Dịch chuyển bạn đến Henesys nếu bạn có nút di chuyển nhanh.");
-            chr.chatMessage("@ssb: xem lại các mục ssb trong hộp.");
-            chr.chatMessage("@end: lưu và quay lại cửa sổ đăng nhập.");
+            chr.chatMessage("Available commands on " + ServerConstants.SERVER_NAME + ":");
+            chr.chatMessage("@dispose: Unstuck your character and reset UI/scripts.");
+            chr.chatMessage("@event: Join the currently active event.");
+            chr.chatMessage("@check: View your character stats, or use @checkchar <name>.");
+            chr.chatMessage("@sell: Open quick inventory seller.");
+            chr.chatMessage("@checkboss: Check remaining cooldowns for boss encounters.");
+            chr.chatMessage("@checkmob: Check nearby monsters and their drop tables.");
+            chr.chatMessage("@home: Teleport to Henesys.");
+            chr.chatMessage("@afk: Open offline Idle Hunting session.");
+            chr.chatMessage("@ssb: View contents of Surprise Style Box.");
+            chr.chatMessage("@end: Save and return to the login screen.");
             chr.chatMessage("___________________________________");
             chr.getScriptManager().dispose();
             if (chr.getHP() <= 0) {
@@ -174,7 +175,7 @@ public class PlayerCommands {
             final Field toField = chr.getField();
             //chr.warp(toField, toField.getPortalByName("sp"), false, false);
             chr.dispose();
-            chr.chatMessage("[Thông báo] Nhân vật của bạn đã được xử lý thành công!");
+            chr.chatMessage("[Notice] Your character has been successfully unstuck!");
         }
     }
 
@@ -493,7 +494,7 @@ public class PlayerCommands {
             if (inGameEventManager.getOpenEvent() != null && !inGameEventManager.getOpenEvent().isActive()) {
                 inGameEventManager.joinPublicEvent(chr);
             } else {
-                chr.chatMessage("Không thể tham gia sự kiện.");
+                chr.chatMessage("Unable to join the event at this time.");
             }
         }
     }

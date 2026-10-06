@@ -12,8 +12,8 @@ if amount > 0:
         sm.addUnionCoin(amount)
         sm.updateAvailableUnionCoin(0)
         sm.giveItem(4310229, amount)
-        sm.sendNext("Có vẻ như bạn đã thu thập được #b#i4310229:# #t4310229##k x #b"+str(amount)+"#k. Thật ấn tượng!")
+        sm.sendNext("It looks like you've collected #b#i4310229:# #t4310229##k x #b" + str(amount) + "#k. Impressive work!")
     else:
-        sm.sendNext("Hãy kiểm tra xem túi ETC của bạn có đủ ô chứa không?")
+        sm.sendNext("Please check if you have enough free slots in your ETC inventory.")
 else:
-    sm.sendNext("Bạn không có #bLegion Coin#k nào để thu thập. Hãy thực hiện nhiệm vụ #b[Legion] Weekly Dragon Extermination#k rồi quay lại nhé.")
+    sm.sendNext("You don't have any #bLegion Coins#k to collect right now. Complete the #b[Legion] Weekly Dragon Extermination#k quest and come back.")

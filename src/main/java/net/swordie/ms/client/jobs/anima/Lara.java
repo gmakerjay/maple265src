@@ -1,9 +1,26 @@
 package net.swordie.ms.client.jobs.anima;
 
+import net.swordie.ms.client.Client;
 import net.swordie.ms.client.character.Char;
+import net.swordie.ms.client.character.CharacterStat;
+import net.swordie.ms.client.character.items.Item;
+import net.swordie.ms.client.character.skills.Option;
 import net.swordie.ms.client.character.skills.SecondAtom;
+import net.swordie.ms.client.character.skills.SkillStat;
+import net.swordie.ms.client.character.skills.info.AttackInfo;
+import net.swordie.ms.client.character.skills.info.SkillInfo;
+import net.swordie.ms.client.character.skills.info.SkillUseInfo;
+import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
+import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
 import net.swordie.ms.client.jobs.Job;
+import net.swordie.ms.connection.InPacket;
+import net.swordie.ms.constants.FieldConstants;
 import net.swordie.ms.constants.JobConstants;
+import net.swordie.ms.client.character.items.BodyPart;
+import net.swordie.ms.enums.Stat;
+import net.swordie.ms.loaders.ItemData;
+
+import static net.swordie.ms.enums.InvType.EQUIPPED;
 
 public class Lara extends Job {
     public static final int WIND_SWING_FLY_SKILLID = 80003059;
@@ -139,5 +156,116 @@ public class Lara extends Job {
 
     public void secondAtomCommandRequest(SecondAtom sa) {
 
+    }
+
+    @Override
+    public void setCharCreationStats(Char chr) {
+        super.setCharCreationStats(chr);
+        CharacterStat cs = chr.getAvatarData().getCharacterStat();
+        cs.setPosMap(FieldConstants.HENESYS_ID);
+        cs.setJob(JobConstants.JobEnum.LARA_1.getJobId());
+        cs.setLevel(10);
+        cs.setStr(4);
+        cs.setDex(4);
+        cs.setInt(45);
+        cs.setLuk(4);
+        cs.setHp(1000);
+        cs.setMaxHp(1000);
+        cs.setMp(800);
+        cs.setMaxMp(800);
+        cs.getExtendSP().addSpToJobLevel(1, 5);
+    }
+
+    @Override
+    public void addItemToNewCharacter(Char chr) {
+        super.addItemToNewCharacter(chr);
+        // Secondary Weapon: Ornamental Knot (1354010)
+        Item secondary = ItemData.getItemDeepCopy(1354010);
+        if (secondary != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
+            secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            secondary.setCharID(chr.getId());
+            secondary.setInvType(EQUIPPED);
+            secondary.setBagIndex(BodyPart.Shield.getVal());
+            secondary.saveToSQL();
+            chr.getAvatarData().getAvatarLook().getHairEquips().add(secondary.getItemId());
+            chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+        }
+
+        // Primary Weapon: Basic Wand (1372000)
+        if (chr.getEquippedItemByBodyPart(BodyPart.Weapon) == null) {
+            Item weapon = ItemData.getItemDeepCopy(1372000);
+            if (weapon != null) {
+                chr.addItemToInventoryToNewCharacter(EQUIPPED, weapon, true);
+                weapon.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+                weapon.setCharID(chr.getId());
+                weapon.setInvType(EQUIPPED);
+                weapon.setBagIndex(BodyPart.Weapon.getVal());
+                weapon.saveToSQL();
+                chr.getAvatarData().getAvatarLook().setWeaponId(weapon.getItemId());
+                chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+            }
+        }
+    }
+
+    @Override
+    public void handleLevelUp(short level) {
+        super.handleLevelUp(level);
+        if (level == 30) {
+            chr.setJob(JobConstants.JobEnum.LARA_2.getJobId());
+            chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_2.getJobId(), 4);
+            chr.addStatAndSendPacket(Stat.ap, 4);
+        } else if (level == 60) {
+            chr.setJob(JobConstants.JobEnum.LARA_3.getJobId());
+            chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_3.getJobId(), 4);
+            chr.addStatAndSendPacket(Stat.ap, 5);
+        } else if (level == 100) {
+            chr.setJob(JobConstants.JobEnum.LARA_4.getJobId());
+            chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_4.getJobId(), 3);
+            chr.addStatAndSendPacket(Stat.ap, 5);
+        }
+    }
+
+    @Override
+    public void handleSkill(Client c, InPacket inPacket, SkillUseInfo skillUseInfo) {
+        Char chr = c.getChr();
+        SkillInfo si = skillUseInfo.skillInfo;
+        int slv = skillUseInfo.slv;
+        int skillID = skillUseInfo.skillID;
+        super.handleSkill(c, inPacket, skillUseInfo);
+        TemporaryStatManager tsm = chr.getTemporaryStatManager();
+        Option o1 = new Option();
+
+        switch (skillID) {
+            case WAND_BOOSTER:
+                o1.nOption = si != null ? si.getValue(SkillStat.x, slv) : -2;
+                o1.rOption = skillID;
+                o1.tOption = si != null ? si.getValue(SkillStat.time, slv) : 200;
+                tsm.sendStat(CharacterTemporaryStat.Booster, o1);
+                break;
+            case ANIMA_WARRIOR:
+                o1.nReason = skillID;
+                o1.nValue = si != null ? si.getValue(SkillStat.x, slv) : 15;
+                o1.tTerm = si != null ? si.getValue(SkillStat.time, slv) : 900;
+                tsm.sendStat(CharacterTemporaryStat.BasicStatUp, o1);
+                break;
+            case ANIMA_HERO_WILL:
+                tsm.removeAllDebuffs();
+                break;
+            case PEERLESS_MOUNTAIN:
+                if (tsm.hasStatBySkillId(PEERLESS_MOUNTAIN)) {
+                    tsm.removeStatsBySkill(PEERLESS_MOUNTAIN);
+                } else {
+                    o1.nOption = 1;
+                    o1.rOption = PEERLESS_MOUNTAIN;
+                    tsm.sendStat(CharacterTemporaryStat.IndieEmpty, o1);
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void handleAttack(Client c, AttackInfo attackInfo, SkillInfo si, long now) {
+        super.handleAttack(c, attackInfo, si, now);
     }
 }

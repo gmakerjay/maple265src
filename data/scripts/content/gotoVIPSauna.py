@@ -35,26 +35,25 @@ seconds = totalCnt % 60
 
 sm.setSpeakerID(9063353)
 sm.flipDialogue()
-sel = sm.sendNext("Xin chào Hãy làm ấm cơ thể của bạn tại Luxe Sauna\r\n\r\n"
-                      "#eThời gian sử dụng có thể nạp trong tuần này: #b" + str(maxIncCountWeek) + "/48#k#n\r\n\r\n"
-                      "#eThời gian sử dụng Luxe Sauna: #b" + str(hours) + " giờ " + str(minutes) + " phút " + str(seconds) + " giây #n#k\r\n\r\n"
-                      "#L1##bTôi muốn nạp #e<Luxe Sauna Time>#n.#k#l\r\n\r\n"
-                      "#L2##bHãy cho tôi biết về #e<Luxe Sauna>#n.#k#l\r\n"
-                      "#L3##bTôi muốn vào #e<Luxe Sauna>#n.#k#l\r\n"
-                      "#L4##bHãy cho tôi biết về #eThời gian diễn ra sự kiện#n.#k#l")
+sel = sm.sendNext("Hello! Warm up and relax your body at Luxe Sauna.\r\n\r\n"
+                      "#eRechargeable time available this week: #b" + str(maxIncCountWeek) + "/48 hours#k#n\r\n\r\n"
+                      "#eCurrent Luxe Sauna time: #b" + str(hours) + "h " + str(minutes) + "m " + str(seconds) + "s #n#k\r\n\r\n"
+                      "#L1##bI want to recharge #e<Luxe Sauna Time>#n.#k#l\r\n\r\n"
+                      "#L2##bTell me about #e<Luxe Sauna>#n.#k#l\r\n\r\n"
+                      "#L3##bI want to enter #e<Luxe Sauna>#n.#k#l\r\n\r\n"
+                      "#L4##bTell me about the #eEvent Duration#n.#k#l")
 if sel == 1:
-    num = sm.sendAskNumber("Vui lòng nhập #bthời gian sử dụng Luxe Sauna#k mà bạn muốn nạp.\r\n"
-                    "#b#eCó thể nạp tối đa 48 giờ#n.#k\r\n\r\n"
-                    "#eMaple Points cần để nạp 1 giờ:#n #e#r3,000#k#n\r\n"
-                    "#eMaple Points hiện có: #n#e#b"+str(maplepoints)+"#k#n\r\n\r\n"
-                    "#r* Bạn có thể nạp tối đa 48 giờ thời gian sử dụng Luxe Sauna\r\n"
-                    "mỗi tuần bằng Maple Points.\r\n"
-                    "#r* Thời gian sử dụng Luxe Sauna đã nạp được dùng chung cho tất cả nhân vật trong tài khoản.#k", 1, 1, 48)
+    num = sm.sendAskNumber("Please enter the amount of #bLuxe Sauna time (in hours)#k you want to recharge.\r\n"
+                    "#b#eMaximum rechargeable: 48 hours/week#n.#k\r\n\r\n"
+                    "#eMaple Points required per 1 hour:#n #e#r3,000#k#n\r\n"
+                    "#eYour current Maple Points: #n#e#b"+str(maplepoints)+"#k#n\r\n\r\n"
+                    "#r* You can recharge up to 48 hours of Luxe Sauna time each week using Maple Points.\r\n"
+                    "#r* Recharged Luxe Sauna time is shared across all characters in your account.#k", 1, 1, 48)
     reqAmount = num * 3000
     if reqAmount > maplepoints:
-        sm.sendNext("Bạn không đủ Maple Points để nạp thời gian Luxe Sauna.")
+        sm.sendNext("You do not have enough Maple Points to recharge Luxe Sauna time.")
     elif maxIncCountWeek >= 48 or (maxIncCountWeek + num) > 48:
-        sm.sendNext("Bạn không thể nạp thêm thời gian Luxe Sauna")
+        sm.sendNext("You cannot recharge any more Luxe Sauna time this week.")
     else:
         chr.getUser().deductMaplePoints(reqAmount)
         newTotalIncCount = totalIncCount + num * 3600
@@ -62,33 +61,30 @@ if sel == 1:
         sm.setQRValueByKey(questID, "totalIncCount", str(newTotalIncCount))
         sm.setQRValueByKey(questID, "maxIncCountWeek", str(newMaxIncCountWeek))
         sm.setQRValueByKey(questID, "lastWeek", str(currentWeekNum))
-        sm.sendNext("Bạn đã nạp thêm " + str(num) + " giờ cho Luxe Sauna")
+        sm.sendNext("Successfully recharged " + str(num) + " hour(s) for Luxe Sauna!")
 elif sel == 2:
-    sm.sendNext("Xin chào, chào mừng bạn đến với Luxe Sauna.\r\n"
-                    "Khi ở trong Phòng Luxe Sauna, bạn sẽ nhận được #bEXP dựa trên cấp độ của mình mỗi 5 giây#k.\r\n\r\n"
-                    "#r* EXP chỉ có thể nhận được bởi nhân vật\r\n"
-                    "từ Lv. 101–300,\r\n"
-                    "hoặc nhân vật Zero đã hoàn thành Nhiệm vụ Cốt truyện Chương 2.")
-    sm.sendNext("Nếu bạn muốn sử dụng Luxe Sauna, bạn có thể dùng #r3,000 Maple Points#k "
-                    "để sử dụng Luxe Sauna trong 1 giờ.\r\n\r\n"
-                    "#r* Thời gian sử dụng Luxe Sauna được dùng chung cho tất cả nhân vật trong tài khoản.\r\n"
-                    "* Bạn có thể nạp tối đa 48 giờ thời gian sử dụng Luxe Sauna mỗi tuần bằng Maple Points.")
-    sm.sendNext("Ngoài ra, bạn có thể sử dụng #i2638457:# #b#t2638457:##k,\r\n"
-                    "để nạp thêm 30 phút thời gian sử dụng.\r\n\r\n"
-                    "Tuy nhiên, hãy lưu ý rằng bạn sẽ không thể vào khi sự kiện kết thúc,\r\n"
-                    "kể cả khi vẫn còn thời gian sử dụng.\r\n\r\n"
-                    "#r#e[Thời gian sự kiện]#n\r\n"
-                    " - Đến hết 23:59 (UTC+7) Thứ Năm, ngày 31/12/2026#k")
+    sm.sendNext("Welcome to the Luxe Sauna.\r\n"
+                    "While inside the Luxe Sauna Room, you will receive #bEXP based on your level every 5 seconds#k.\r\n\r\n"
+                    "#r* EXP is available for characters Lv. 101–300,\r\n"
+                    "or Zero characters who have completed Story Quest Chapter 2.")
+    sm.sendNext("You can spend #r3,000 Maple Points#k "
+                    "to recharge 1 hour of Luxe Sauna time.\r\n\r\n"
+                    "#r* Recharged time is shared account-wide.\r\n"
+                    "* You can recharge up to 48 hours per week with Maple Points.")
+    sm.sendNext("Additionally, you can use #i2638457:# #b#t2638457:##k\r\n"
+                    "to add 30 minutes of sauna time.\r\n\r\n"
+                    "#r#e[Event Duration]#n\r\n"
+                    " - Event is active until 23:59 (UTC+7) Thursday, 31/12/2026#k")
 elif sel == 3:
-    if sm.sendAskYesNo("Bạn có muốn chuyển đến Luxe Sauna ngay bây giờ không?"):
+    if sm.sendAskYesNo("Would you like to move to Luxe Sauna right now?"):
         totalIncCount = int(sm.getQRValueByKey(questID, "totalIncCount")) # sec
-        if totalIncCount < 0:
-            sm.sendNext("Vui lòng nạp thêm thời gian nhé.")
+        if totalIncCount <= 0:
+            sm.sendNext("You don't have enough sauna time. Please recharge first.")
         elif chr.getFieldID() == 993263300 or chr.getInstance() is not None:
-            sm.sendNext("Bạn không thể vào Luxe Sauna ở tình hình hiện tại.")
+            sm.sendNext("You cannot enter Luxe Sauna under current conditions.")
         else:
             sm.setQRValueByKey(518, "visit", "1")
             sm.warp(993263300)
 elif sel == 4:
-    sm.sendNext("#r#e[Thời gian sự kiện]#n\r\n"
-                    " - Đến hết 23:59 (UTC+7) Thứ Năm, ngày 31/12/2026#k")
+    sm.sendNext("#r#e[Event Duration]#n\r\n"
+                    " - Event is active until 23:59 (UTC+7) Thursday, 31/12/2026#k")

@@ -1,2 +1,2 @@
-if sm.sendAskYesNo("Bạn có muốn thoát khỏi đây không?"):
+if sm.sendAskYesNo("Would you like to leave this place?"):
     sm.warp(100000000)

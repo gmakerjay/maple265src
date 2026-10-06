@@ -15,25 +15,20 @@ BOSS_PREQUEST = [40905, 30007, 3170, 31198, 31179, 7313 ,31851, 31833, 31686, 31
 # Function definitions...
 
 sm.setSpeakerID(NPC)
-selection = sm.sendNext("#fs13#Xin chào, #h0#. Tôi là Maple Administrator. Bạn muốn tôi giúp gì nào?\r\n" +
+selection = sm.sendNext("#fs13#Hello, #h0#. I am the Maple Administrator. How may I assist you today?\r\n" +
                         "#b" +
-                        #"#L1#Adjust Equipment.#l\r\n" +
-                        #"#L2#Adjust Background.#l\r\n" +
-                        #"#L3#Open Event Name Tag.#l\r\n" +
-                        #"#L14#Chuyển nghề nhanh.#l\r\n" +
-                        "#L20#Nhận quà thử nghiệm.#l\r\n" +
-                        "#L21#Mở khoá Job V.#l\r\n" +
-                        "#L22#Mở khoá Job VI.#l\r\n" +
-                        "#L16#Tối đa các kỹ năng của bạn (Chỉ từ nghề I - IV).#l\r\n" +
-                        #"#L0#Remove Cash Item(s).#l\r\n" +
-                        #"#L4#Remove Eqp for Kaiser and Mihile.#l\r\n" +
-                        "#L5#Hoàn thành tất cả nhiệm vụ yêu cầu của Boss.#l\r\n" +
-                        #"#L6#Adjust Tradeable Items.#l\r\n" +
-                        #"#L9#Purchase Items with #eDonation Points.#n#l\r\n" +
-                        #"#L10#Change Hair Color with #eDonation Points.#n#l\r\n" +
-                        #"#L11#Change Outfit with #eDonation Points.#n#l\r\n" +
-                        #"#L12#Check Your #e#rMVP#k#n #bStatus.#l\r\n" +
-                        #"#L13#Upgrade Mechanical Heart. (Required: #i1672020#)#l\r\n\r\n" +
+                        "#L20#Claim Starter / Testing Gift Package.#l\r\n" +
+                        "#L21#Unlock 5th Job (Job V).#l\r\n" +
+                        "#L22#Unlock 6th Job (Job VI).#l\r\n" +
+                        "#L16#Max all skills (1st - 4th Job).#l\r\n" +
+                        "#L14#Fast Job Advancement.#l\r\n" +
+                        "#L5#Complete all Boss Prequests.#l\r\n" +
+                        "#L9#Purchase items with #eDonation Points.#n#l\r\n" +
+                        "#L10#Change Hair Color with #eDonation Points.#n#l\r\n" +
+                        "#L11#Change Outfit with #eDonation Points.#n#l\r\n" +
+                        "#L12#Check Your #e#rMVP#k#n #bStatus.#l\r\n" +
+                        "#L13#Upgrade Mechanical Heart (Required: #i1672020#).#l\r\n" +
+                        "#L0#Remove Cash Item(s).#l\r\n\r\n" +
                         "#k")
 if selection == 0:
     sm.removeCashItems()
@@ -44,13 +39,15 @@ elif selection == 2:
 elif selection == 20:
     chr.addMaplePoint(3000000)
     sm.giveMesos(10000000000)
-    chr.addItemToInventory(5002396,1,"day",30)
-    sm.sendSayOkay("Bạn đã nhận 3M nx, 10B và Pet Vac (30 ngày)")
+    chr.addItemToInventory(5002396, 1, "day", 30)
+    sm.sendSayOkay("You have received 3M Maple Points (NX), 10B Mesos, and a Vac Pet (30 Days)!")
 elif selection == 21:
     for qid in range(1460, 1466):
         sm.completeQuest(qid)
+    sm.sendSayOkay("5th Job prequests have been unlocked!")
 elif selection == 22:
     chr.completeQuest(1488)
+    sm.sendSayOkay("6th Job prequests have been unlocked!")
 elif selection == 3:
     sm.openUI(UIType.UI_EVENT_NAME_TAG)
 elif selection == 4:
@@ -70,6 +67,7 @@ elif selection == 5:
             sm.completeQuestNoRewards(quest)
     if sm.hasQuest(34331) or sm.hasQuestCompleted(34330):
         sm.completeQuest(34331)
+    sm.sendSayOkay("All Boss prequests have been successfully completed!")
 elif selection == 6:
     open_make_item_tradable()
 elif selection == 7:
@@ -88,8 +86,9 @@ elif selection == 12:
 elif selection == 13:
     sm.upgradeMechanicalHeart()
 elif selection == 14:
-    if chr.getLevel >= 200 and not sm.hasQuestCompleted(1465):
+    if chr.getLevel() >= 200 and not sm.hasQuestCompleted(1465):
         chr.completeQuest(1465)
     chr.getJobHandler().handleJobAdvance()
 elif selection == 16:
     chr.maxSkills()
+    sm.sendSayOkay("All skills (1st - 4th Job) have been maxed!")

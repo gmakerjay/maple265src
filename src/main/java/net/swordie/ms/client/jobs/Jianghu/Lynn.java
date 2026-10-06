@@ -26,6 +26,11 @@ import net.swordie.ms.loaders.SkillData;
 import net.swordie.ms.scripts.ScriptManagerImpl;
 import net.swordie.ms.util.Util;
 
+import net.swordie.ms.client.character.items.Item;
+import net.swordie.ms.client.character.items.BodyPart;
+import net.swordie.ms.loaders.ItemData;
+import static net.swordie.ms.enums.InvType.EQUIPPED;
+
 import java.util.EnumMap;
 
 import static net.swordie.ms.client.character.skills.SkillStat.*;
@@ -223,8 +228,8 @@ public class Lynn extends Job {
         cs.setJob(JobConstants.JobEnum.LYNN_1.getJobId());
         cs.setLevel(10);
         cs.setStr(4);
-        cs.setDex(45);
-        cs.setInt(4);
+        cs.setDex(4);
+        cs.setInt(45);
         cs.setLuk(4);
         cs.setHp(1000);
         cs.setMaxHp(1000);
@@ -233,6 +238,38 @@ public class Lynn extends Job {
             cs.setMaxMp(500);
         }
         cs.getExtendSP().addSpToJobLevel(1, 5);
+    }
+
+    @Override
+    public void addItemToNewCharacter(Char chr) {
+        super.addItemToNewCharacter(chr);
+        // Secondary Weapon: Beast Bell (1352811)
+        Item secondary = ItemData.getItemDeepCopy(1352811);
+        if (secondary != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
+            secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            secondary.setCharID(chr.getId());
+            secondary.setInvType(EQUIPPED);
+            secondary.setBagIndex(BodyPart.Shield.getVal());
+            secondary.saveToSQL();
+            chr.getAvatarData().getAvatarLook().getHairEquips().add(secondary.getItemId());
+            chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+        }
+
+        // Primary Weapon: Memorial Staff (1252002)
+        if (chr.getEquippedItemByBodyPart(BodyPart.Weapon) == null) {
+            Item weapon = ItemData.getItemDeepCopy(1252002);
+            if (weapon != null) {
+                chr.addItemToInventoryToNewCharacter(EQUIPPED, weapon, true);
+                weapon.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+                weapon.setCharID(chr.getId());
+                weapon.setInvType(EQUIPPED);
+                weapon.setBagIndex(BodyPart.Weapon.getVal());
+                weapon.saveToSQL();
+                chr.getAvatarData().getAvatarLook().setWeaponId(weapon.getItemId());
+                chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+            }
+        }
     }
 
     @Override

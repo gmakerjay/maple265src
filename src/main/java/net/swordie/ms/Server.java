@@ -54,7 +54,7 @@ public class Server {
     public static LocalDateTime startTime;
     private static final Server server = new Server();
     private static World world;
-    private List<byte[]> bannedMacs;
+    private List<byte[]> bannedMacs = new ArrayList<>();
     protected List<CharacterStat> rankings = new ArrayList<>();
     protected FileTime lastUpdateRankings;
     private ConcurrentHashMap<String, Tuple<Integer, FileTime>> authTokens = new ConcurrentHashMap<>();
@@ -87,6 +87,9 @@ public class Server {
     }
 
     public List<byte[]> getBannedMacs() {
+        if (bannedMacs == null) {
+            bannedMacs = new ArrayList<>();
+        }
         return bannedMacs;
     }
 

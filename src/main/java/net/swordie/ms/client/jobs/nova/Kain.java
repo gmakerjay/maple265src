@@ -1,11 +1,21 @@
 package net.swordie.ms.client.jobs.nova;
 
+import net.swordie.ms.client.Client;
 import net.swordie.ms.client.character.Char;
 import net.swordie.ms.client.character.CharacterStat;
 import net.swordie.ms.client.character.items.Item;
+import net.swordie.ms.client.character.skills.Option;
 import net.swordie.ms.client.character.skills.Skill;
+import net.swordie.ms.client.character.skills.SkillStat;
+import net.swordie.ms.client.character.skills.info.AttackInfo;
+import net.swordie.ms.client.character.skills.info.SkillInfo;
+import net.swordie.ms.client.character.skills.info.SkillUseInfo;
+import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
+import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
 import net.swordie.ms.client.jobs.Job;
+import net.swordie.ms.connection.InPacket;
 import net.swordie.ms.constants.JobConstants;
+import net.swordie.ms.client.character.items.BodyPart;
 import net.swordie.ms.enums.Stat;
 import net.swordie.ms.loaders.ItemData;
 import net.swordie.ms.loaders.SkillData;
@@ -13,6 +23,8 @@ import net.swordie.ms.util.Rect;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static net.swordie.ms.enums.InvType.EQUIPPED;
 
 public class Kain extends Job {
 
@@ -214,5 +226,97 @@ public class Kain extends Job {
             chr.addSpToSpecificJob((short) JobConstants.JobEnum.KAIN_4.getJobId(), 3);
             chr.addStatAndSendPacket(Stat.ap, 5);
         }
+    }
+
+    @Override
+    public void addItemToNewCharacter(Char chr) {
+        super.addItemToNewCharacter(chr);
+        // Secondary Weapon: Basic Weapon Belt (1354020)
+        Item secondary = ItemData.getItemDeepCopy(1354020);
+        if (secondary != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
+            secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            secondary.setCharID(chr.getId());
+            secondary.setInvType(EQUIPPED);
+            secondary.setBagIndex(BodyPart.Shield.getVal());
+            secondary.saveToSQL();
+            chr.getAvatarData().getAvatarLook().getHairEquips().add(secondary.getItemId());
+            chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+        }
+
+        // Primary Weapon: Basic Whispershot (1214000)
+        if (chr.getEquippedItemByBodyPart(BodyPart.Weapon) == null) {
+            Item weapon = ItemData.getItemDeepCopy(1214000);
+            if (weapon != null) {
+                chr.addItemToInventoryToNewCharacter(EQUIPPED, weapon, true);
+                weapon.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+                weapon.setCharID(chr.getId());
+                weapon.setInvType(EQUIPPED);
+                weapon.setBagIndex(BodyPart.Weapon.getVal());
+                weapon.saveToSQL();
+                chr.getAvatarData().getAvatarLook().setWeaponId(weapon.getItemId());
+                chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+            }
+        }
+    }
+
+    @Override
+    public void handleSkill(Client c, InPacket inPacket, SkillUseInfo skillUseInfo) {
+        Char chr = c.getChr();
+        SkillInfo si = skillUseInfo.skillInfo;
+        int slv = skillUseInfo.slv;
+        int skillID = skillUseInfo.skillID;
+        super.handleSkill(c, inPacket, skillUseInfo);
+        TemporaryStatManager tsm = chr.getTemporaryStatManager();
+        Option o1 = new Option();
+        Option o2 = new Option();
+
+        switch (skillID) {
+            case BREATH_SHOOTER_BOOSTER:
+                o1.nOption = si != null ? si.getValue(SkillStat.x, slv) : -2;
+                o1.rOption = skillID;
+                o1.tOption = si != null ? si.getValue(SkillStat.time, slv) : 200;
+                tsm.sendStat(CharacterTemporaryStat.Booster, o1);
+                break;
+            case NOVA_WARRIOR:
+                o1.nReason = skillID;
+                o1.nValue = si != null ? si.getValue(SkillStat.x, slv) : 15;
+                o1.tTerm = si != null ? si.getValue(SkillStat.time, slv) : 900;
+                tsm.sendStat(CharacterTemporaryStat.BasicStatUp, o1);
+                break;
+            case NOVA_HERO_WILL:
+                tsm.removeAllDebuffs();
+                break;
+            case INCARNATION:
+                o1.nReason = skillID;
+                o1.nValue = si != null ? si.getValue(SkillStat.indieDamR, slv) : 15;
+                o1.tTerm = si != null ? si.getValue(SkillStat.time, slv) : 40;
+                tsm.sendStat(CharacterTemporaryStat.IndieDamR, o1);
+                o2.nReason = skillID;
+                o2.nValue = 100;
+                o2.tTerm = o1.tTerm;
+                tsm.sendStat(CharacterTemporaryStat.IndieStance, o2);
+                break;
+            case DRAGON_SCALE:
+                o1.nReason = skillID;
+                o1.nValue = 1;
+                o1.tTerm = si != null ? si.getValue(SkillStat.time, slv) : 3;
+                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                break;
+            case REMAIN_INCENSE:
+                if (tsm.hasStatBySkillId(REMAIN_INCENSE)) {
+                    tsm.removeStatsBySkill(REMAIN_INCENSE);
+                } else {
+                    o1.nOption = 1;
+                    o1.rOption = REMAIN_INCENSE;
+                    tsm.sendStat(CharacterTemporaryStat.IndieEmpty, o1);
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void handleAttack(Client c, AttackInfo attackInfo, SkillInfo si, long now) {
+        super.handleAttack(c, attackInfo, si, now);
     }
 }
