@@ -68,7 +68,7 @@ BOSS_CATEGORIES = [
         ("Gollux Head", 863010600, "gollux", 0, "Lv. 180+ | Corrupted Titan Head"),
     ]),
     ("Endgame & Tenebris Bosses", [
-        ("Black Mage", 450013100, "black_mage", 0, "Lv. 255+ | 4-Phase Story Dungeon (465T HP)"),
+        ("Black Mage (4 Phases)", 450013100, "black_mage", 0, "Lv. 255+ | 4-Phase Story Dungeon (465T HP)"),
         ("Normal Gloom", 450009301, "mob_hp", (8644650, 26000000000000L, 0, 85), "Lv. 245+ | Giant Monster of Limina (26T HP)"),
         ("Chaos Gloom", 450009301, "mob_hp", (8644655, 115000000000000L, 0, 85), "Lv. 255+ | Giant Monster of Limina (115T HP)"),
         ("Normal Darknell", 450012200, "mob_hp", (8645009, 26000000000000L, 0, 85), "Lv. 255+ | Guard Captain Darknell (26T HP)"),
@@ -77,15 +77,19 @@ BOSS_CATEGORIES = [
         ("Hard Verus Hilla", 450011990, "mob_hp", (8880410, 176000000000000L, 0, 85), "Lv. 255+ | True Hilla (176T HP)"),
     ]),
     ("Grandis & Special Bosses", [
-        ("Akechi Mitsuhide", 874004000, "akechi", 0, "Lv. 210+ | 2 Phases: Katana & Demon Aura (800B HP)"),
-        ("Normal Guardian Angel Slime", 160080000, "mob_hp", (8644650, 5000000000000L, -20, 560), "Lv. 210+ | Ramuramu Altar (5T HP)"),
-        ("Chaos Guardian Angel Slime", 160080100, "mob_hp", (8644655, 115000000000000L, -20, 560), "Lv. 220+ | Ramuramu Altar (115T HP)"),
-        ("Normal Chosen Seren", 410030000, "mob_hp", (8645066, 126000000000000L, 0, 275), "Lv. 260+ | Cernium Palace Main Hall (126T HP)"),
-        ("Hard Chosen Seren", 410030100, "mob_hp", (8645000, 250000000000000L, 0, 275), "Lv. 265+ | Cernium Palace Main Hall (250T HP)"),
-        ("Easy Kalos the Guardian", 410030300, "mob_hp", (8645009, 100000000000000L, 0, 175), "Lv. 265+ | Karote Castle Wall (100T HP)"),
-        ("Normal Kalos the Guardian", 410030400, "mob_hp", (8645009, 200000000000000L, 0, 175), "Lv. 265+ | Karote Castle Wall (200T HP)"),
+        ("Akechi Mitsuhide (2 Phases)", 874004000, "akechi", 0, "Lv. 210+ | 2 Phases: Katana & Demon Aura (800B HP)"),
+        ("Normal Guardian Angel Slime", 160080000, "mob_hp", (8880700, 5000000000000L, 0, 208), "Lv. 210+ | Ramuramu Altar (5T HP)"),
+        ("Chaos Guardian Angel Slime", 160080000, "mob_hp", (8880711, 115000000000000L, 0, 208), "Lv. 220+ | Ramuramu Altar (115T HP)"),
+        ("Normal Chosen Seren", 410030000, "mob_hp", (8880600, 126000000000000L, 0, 125), "Lv. 260+ | Cernium Palace Main Hall (126T HP)"),
+        ("Hard Chosen Seren", 410030000, "mob_hp", (8880602, 250000000000000L, 0, 125), "Lv. 265+ | Cernium Palace Main Hall (250T HP)"),
+        ("Extreme Chosen Seren", 410030000, "mob_hp", (8880604, 600000000000000L, 0, 125), "Lv. 275+ | Cernium Palace Main Hall (600T HP)"),
+        ("Easy Kalos the Guardian", 410030400, "mob_hp", (8881010, 100000000000000L, 0, 252), "Lv. 265+ | Karote Castle Wall (100T HP)"),
+        ("Normal Kalos the Guardian", 410030400, "mob_hp", (8880800, 200000000000000L, 0, 252), "Lv. 265+ | Karote Castle Wall (200T HP)"),
+        ("Chaos Kalos the Guardian", 410030400, "mob_hp", (8881030, 300000000000000L, 0, 252), "Lv. 275+ | Karote Castle Wall (300T HP)"),
+        ("Extreme Kalos the Guardian", 410030400, "mob_hp", (8881050, 650000000000000L, 0, 252), "Lv. 280+ | Karote Castle Wall (650T HP)"),
         ("Normal Kaling", 410030800, "kaling", 0, "Lv. 275+ | Shangri-La Four Seasons Pavilion (180T HP)"),
-        ("Normal Limbo", 410031100, "mob_hp", (8645080, 200000000000000L, 0, 200), "Lv. 285+ | Carcion Temple of Tears (200T HP)"),
+        ("Normal Limbo", 410031100, "mob_hp", (8881304, 200000000000000L, 0, -39), "Lv. 285+ | Carcion Temple of Tears (200T HP)"),
+        ("Hard Limbo", 410031100, "mob_hp", (8881354, 450000000000000L, 0, -39), "Lv. 285+ | Carcion Temple of Tears (450T HP)"),
     ])
 ]
 
@@ -215,6 +219,10 @@ def enter_boss_arena(sm, chr, boss_name, map_id, spawn_type, spawn_val):
     elif spawn_type == "gollux":
         Gollux.init(chr, 0)
     elif spawn_type == "kaling":
-        field.spawnMob(8645039, 0, 200, False, 180000000000000L) # Kaling
-        field.spawnMob(8645040, -300, 200, False, 50000000000000L) # Taowu
-        field.spawnMob(8645041, 300, 200, False, 50000000000000L) # Qiongqi
+        field.spawnMob(8880837, 0, -13, False, 180000000000000L) # Kaling (Shangri-La Four Seasons Pavilion)
+    elif spawn_type == "black_mage":
+        field.spawnMob(8880500, -600, 85, False, 32500000000000L) # Aeonian Rise
+        field.spawnMob(8880501, 600, 85, False, 32500000000000L)  # Tanadian Ruin
+    elif spawn_type == "akechi":
+        field.spawnMob(9601622, 0, 264, False, 400000000000L)     # Akechi Mitsuhide (Phase 1)
+

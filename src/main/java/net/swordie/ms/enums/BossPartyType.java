@@ -144,7 +144,7 @@ public enum BossPartyType {
     }
 
     public int getLevelMin() {
-        return levelMin;
+        return 1; // Offline mode: Accessible by any level
     }
 
     public BossPartyDifficultyType getDifficulty() {
@@ -152,7 +152,7 @@ public enum BossPartyType {
     }
 
     public int getPreQuest() {
-        return preQuest;
+        return 0; // Offline mode: 0 prequests for all bosses
     }
 
     public BossPartyEnterCountType getEnterCount() {

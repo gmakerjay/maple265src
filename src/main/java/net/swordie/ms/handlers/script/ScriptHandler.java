@@ -301,43 +301,25 @@ public class ScriptHandler {
         var returnField = chr.getFieldID();
 
         if (party == null) {
-            chr.chatPopup("Hãy tạo nhóm trước khi tiếp tục.");
-            return;
+            party = Party.createNewParty((byte) 1, chr.getName() + "'s Party", chr.getClient().getWorld());
+            party.addPartyMember(chr);
         }
-        if (chr.getOrCreateFieldByCurrentInstanceType(fieldID) == null) {
-            chr.chatPopup("Đã xảy ra lỗi không xác định.");
-            return;
+        if (fieldID == 0) {
+            fieldID = BossConstants.getBossFightingFieldId(boss);
         }
-        if (chr.getParty().getOnlineChars().size() < chr.getParty().getMembers().size()) {
-            chr.chatPopup("Tất cả thành viên phải đang trực tuyến.");
-            return;
+        if (fieldID == 0) {
+            fieldID = chr.getFieldID();
         }
         for (Char pmChr : chr.getParty().getOnlineChars()) {
             if (pmChr == null) {
-                chr.chatPopup("Đã xảy ra lỗi không xác định.");
-                return;
-            }
-            if (pmChr.getLevel() < boss.getLevelMin()
-                    || (boss.getPreQuest() != 0 && !pmChr.hasQuestCompleted(boss.getPreQuest()))) {
-                chr.chatPopup("Tất cả thành viên phải hoàn thành xong nhiệm vụ yêu cầu của Boss.");
-                return;
+                continue;
             }
             pmChr.createQuestWithQRValue(102401, "mapR=" + returnField + ";order="+boss.getOrderId()+";diff="+boss.getDifficulty().getVal());
         }
-        if (!sm.checkPartyBossAttempt(boss, party)) {
-            chr.chatPopup("Một trong những thành viên trong nhóm đã đạt tối đa lượt Boss này.");
-            return;
-        }
         if (viaBossUI) {
-            if (!party.isLeader(chr)) {
-                chr.chatPopup("Xin hãy để người lãnh đạo nhóm của bạn thực hiện.");
-                return;
-            }
-            if (sm.isPartyEligible(chr, (short) boss.getLevelMin(), GameConstants.MAX_LEVEL, party, boss)) {
-                sm.warpInstanceIn(chr, fieldID, true);
-                sm.setInstanceTime(BossConstants.BOSS_WAITING_TIME, returnField);
-                sm.invokeForParty(2000, "initForBossing", boss.getBossName());
-            }
+            sm.warpInstanceIn(chr, fieldID, true);
+            sm.setInstanceTime(BossConstants.BOSS_WAITING_TIME, returnField);
+            sm.invokeForParty(2000, "initForBossing", boss.getBossName());
         } else {
             for (Char pmChr : chr.getParty().getOnlineChars()) {
                 if (pmChr != null) {

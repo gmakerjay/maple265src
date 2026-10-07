@@ -272,6 +272,96 @@ public class BossHelper {
                 field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
             }
         }
+        // Black Mage
+        if (mobID == 8880500 || mobID == 8880501) { // Phase 1 (Aeonian Rise & Tanadian Ruin)
+            boolean otherAlive = false;
+            for (Mob m : field.getMobs()) {
+                if (m.getObjectId() != mob.getObjectId() && (m.getTemplateId() == 8880500 || m.getTemplateId() == 8880501)) {
+                    otherAlive = true;
+                    break;
+                }
+            }
+            if (!otherAlive) {
+                field.removeMobs();
+                field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
+                int nextMap = 450013300;
+                if (party != null) {
+                    chr.getTimer().addEvent(() -> {
+                        sm.warpParty(nextMap, party);
+                        Field nextField = chr.getOrCreateFieldByCurrentInstanceType(nextMap);
+                        if (nextField != null && !nextField.hasMobById(8880502)) {
+                            nextField.spawnMob(8880502, 0, 88, false, 135000000000000L);
+                        }
+                    }, 2000);
+                } else {
+                    chr.getTimer().addEvent(() -> {
+                        chr.warp(nextMap);
+                        Field nextField = chr.getOrCreateFieldByCurrentInstanceType(nextMap);
+                        if (nextField != null && !nextField.hasMobById(8880502)) {
+                            nextField.spawnMob(8880502, 0, 88, false, 135000000000000L);
+                        }
+                    }, 2000);
+                }
+            }
+        } else if (mobID == 8880502) { // Black Mage Phase 2
+            field.removeMobs();
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
+            int nextMap = 450013500;
+            if (party != null) {
+                chr.getTimer().addEvent(() -> {
+                    sm.warpParty(nextMap, party);
+                    Field nextField = chr.getOrCreateFieldByCurrentInstanceType(nextMap);
+                    if (nextField != null && !nextField.hasMobById(8880503)) {
+                        nextField.spawnMob(8880503, 375, 88, false, 200000000000000L);
+                    }
+                }, 2000);
+            } else {
+                chr.getTimer().addEvent(() -> {
+                    chr.warp(nextMap);
+                    Field nextField = chr.getOrCreateFieldByCurrentInstanceType(nextMap);
+                    if (nextField != null && !nextField.hasMobById(8880503)) {
+                        nextField.spawnMob(8880503, 375, 88, false, 200000000000000L);
+                    }
+                }, 2000);
+            }
+        } else if (mobID == 8880503) { // Black Mage Phase 3
+            field.removeMobs();
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
+            int nextMap = 450013700;
+            if (party != null) {
+                chr.getTimer().addEvent(() -> {
+                    sm.warpParty(nextMap, party);
+                    Field nextField = chr.getOrCreateFieldByCurrentInstanceType(nextMap);
+                    if (nextField != null && !nextField.hasMobById(8880504)) {
+                        nextField.spawnMob(8880504, 375, 88, false, 100000000000000L);
+                    }
+                }, 2000);
+            } else {
+                chr.getTimer().addEvent(() -> {
+                    chr.warp(nextMap);
+                    Field nextField = chr.getOrCreateFieldByCurrentInstanceType(nextMap);
+                    if (nextField != null && !nextField.hasMobById(8880504)) {
+                        nextField.spawnMob(8880504, 375, 88, false, 100000000000000L);
+                    }
+                }, 2000);
+            }
+        } else if (mobID == 8880504) { // Black Mage Phase 4
+            field.removeMobs();
+            sm.showFieldEffect("Map/Effect.img/killing/clear");
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
+        }
+        // Akechi Mitsuhide
+        if (mobID == 9601622) { // Phase 1
+            field.removeMobs();
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
+            chr.getTimer().addEvent(() -> {
+                field.spawnMob(9601623, 0, 264, false, 400000000000L);
+            }, 1500);
+        } else if (mobID == 9601623) { // Phase 2
+            field.removeMobs();
+            sm.showFieldEffect("Map/Effect.img/killing/clear");
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
+        }
         // Root Abyss
         if (mobID == BossHelper.PIERRE_1 || mobID == BossHelper.PIERRE_2 || mobID == BossHelper.PIERRE_3) {
             BossHelper.initRootAbyss(chr, PIERRE_CHEST, 0, 497, 551);

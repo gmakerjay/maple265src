@@ -2580,15 +2580,7 @@ public class ScriptManagerImpl implements ScriptManager {
     }
 
     private static boolean isPartyEligible(short lowLevel, short highLevel, Char owner, Party party, BossPartyType bpt) {
-        for (Char chr : party.getPartyMembersInSameFieldWithChr(owner)) {
-            if (chr.getLevel() < lowLevel || chr.getLevel() > highLevel) {
-                return false;
-            }
-            if (bpt.getPreQuest() != 0 && !chr.getScriptManager().hasQuestCompleted(bpt.getPreQuest())) {
-                return false;
-            }
-        }
-        return true;
+        return true; // Offline mode: unrestricted
     }
 
     public List<Char> getPartyMembersInSameField(Char chr) {
@@ -4866,19 +4858,7 @@ public class ScriptManagerImpl implements ScriptManager {
     // Party Boss methods ---------------------------------------------------------------------------------------------------
 
     public boolean checkPartyBossAttempt(BossPartyType bpt, Party party) {
-        if (ServerConfig.DEBUG_MODE) {
-            return true;
-        }
-        if (party != null) {
-            if (party.getOnlineChars().size() != party.getMembers().size()) {
-                return false;
-            }
-            for (Char chr : party.getOnlineChars()) {
-                return !chr.hasBossPartyAttempt(bpt);
-            }
-            return true;
-        }
-        return false;
+        return true; // Offline mode: unlimited boss attempts
     }
 
     public void addPartyBoss(Party party, BossPartyType bpt) {
@@ -4894,18 +4874,7 @@ public class ScriptManagerImpl implements ScriptManager {
     }
 
     public boolean isPartyEligible(Char chr, short lowLevel, short highLevel, Party party, BossPartyType bpt) {
-        if (party.getPartyMembersInSameFieldWithChr(chr).size() != party.getOnlineChars().size()) {
-            return false;
-        }
-        for (Char pmChr : party.getPartyMembersInSameFieldWithChr(chr)) {
-            if (pmChr.getLevel() < lowLevel || pmChr.getLevel() > highLevel) {
-                return false;
-            }
-            if (bpt.getPreQuest() != 0 && !pmChr.getScriptManager().hasQuestCompleted(bpt.getPreQuest())) {
-                return false;
-            }
-        }
-        return true;
+        return true; // Offline mode: unrestricted
     }
 
     public GolluxDifficultyType getGolluxDifficulty() {
@@ -5882,7 +5851,13 @@ public class ScriptManagerImpl implements ScriptManager {
             return;
         }
         int fieldID = BossConstants.getBossFightingFieldId(boss);
-        int time = BossConstants.getBossWaitingFieldId(boss);
+        if (fieldID == 0) {
+            fieldID = chr.getFieldID();
+        }
+        int time = BossConstants.getBossFightingTime(boss);
+        if (time <= 0) {
+            time = 30 * 60;
+        }
         warpInstanceIn(chr, fieldID, true);
         setInstanceTime(time, Integer.parseInt(mapR));
     }
