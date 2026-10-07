@@ -1226,19 +1226,19 @@ public class ScriptManagerImpl implements ScriptManager {
                     }
                 }
             }
-            int sel = sendNext("#fs13#Có r¬t nhi¹u m°u tóc «º b¢n chÎn h»y chÎn các danh mîc dïÜi «ây (50 m°u tóc/danh mîc).\r\n" +
+            int sel = sendNext("#fs13#There are many hairstyles to choose from. Please select a category below (50 styles per category).\r\n" +
                     "#b" +
-                    "#L0# Danh mîc m°u tóc sÑ 1. #l\r\n" +
-                    "#L1# Danh mîc m°u tóc sÑ 2. #l\r\n" +
-                    "#L2# Danh mîc m°u tóc sÑ 3. #l\r\n" +
-                    "#L3# Danh mîc m°u tóc sÑ 4. #l\r\n" +
-                    "#L4# Danh mîc m°u tóc sÑ 5. #l\r\n" +
-                    "#L5# Danh mîc m°u tóc sÑ 6. #l\r\n" +
-                    "#L6# Danh mîc m°u tóc sÑ 7. #l\r\n" +
-                    "#L7# Danh mîc m°u tóc sÑ 8. #l\r\n" +
-                    "#L8# Danh mîc m°u tóc sÑ 9. #l\r\n" +
-                    "#L9# Danh mîc m°u tóc sÑ 10. #l\r\n" +
-                    "#L10# Danh mîc m°u tóc sÑ 11. #l\r\n" +
+                    "#L0# Hairstyle Category 1 #l\r\n" +
+                    "#L1# Hairstyle Category 2 #l\r\n" +
+                    "#L2# Hairstyle Category 3 #l\r\n" +
+                    "#L3# Hairstyle Category 4 #l\r\n" +
+                    "#L4# Hairstyle Category 5 #l\r\n" +
+                    "#L5# Hairstyle Category 6 #l\r\n" +
+                    "#L6# Hairstyle Category 7 #l\r\n" +
+                    "#L7# Hairstyle Category 8 #l\r\n" +
+                    "#L8# Hairstyle Category 9 #l\r\n" +
+                    "#L9# Hairstyle Category 10 #l\r\n" +
+                    "#L10# Hairstyle Category 11 #l\r\n" +
                     "#k"
             );
             List<Integer> options = new ArrayList<>();
@@ -1267,17 +1267,17 @@ public class ScriptManagerImpl implements ScriptManager {
             }
             if (!options.isEmpty()) {
                 int[] result = options.stream().mapToInt(Integer::intValue).toArray();
-                int answer = sendAskAvatar("Yêu c®u «º thay mØt m°u tóc nªu b¢n chÎn s³ là #e10,000 xu vàng/l®n#n nên h»y chÎn m°u tóc mà b¢n thích nh¬t nhé!", false, false, result);
+                int answer = sendAskAvatar("Changing your hairstyle costs #e10,000 Donation Points per change#n. Please select your favorite style!", false, false, result);
                 if (answer < result.length) {
                     if (chr.getUser().getDonationPoints() >= 10000) {
                         chr.getUser().deductDonationPoints(10000);
                         changeCharacterLook(result[answer]);
                     } else {
-                        sendSayOkay("B¢n không có «ç 10,000 xu vàng «º «Öi m°u tóc này!");
+                        sendSayOkay("You do not have enough Donation Points (10,000 DP required) to change your hairstyle!");
                     }
                 }
             } else {
-                chr.chatMessage("Đã xảy ra lỗi không xác định.");
+                chr.chatMessage("An unknown error has occurred.");
             }
         } else {
             List<String> names = new ArrayList<>();
@@ -1299,12 +1299,12 @@ public class ScriptManagerImpl implements ScriptManager {
                     }
                 }
             }
-            int sel = sendNext("#fs13#Có r¬t nhi¹u m°u m¶t «º b¢n chÎn h»y chÎn các danh mîc dïÜi «ây (50 m°u m¶t/danh mîc).\r\n" +
+            int sel = sendNext("#fs13#There are many face styles to choose from. Please select a category below (50 styles per category).\r\n" +
                     "#b" +
-                    "#L0# Danh mîc m°u m¶t sÑ 1. #l\r\n" +
-                    "#L1# Danh mîc m°u m¶t sÑ 2. #l\r\n" +
-                    "#L2# Danh mîc m°u m¶t sÑ 3. #l\r\n" +
-                    "#L3# Danh mîc m°u m¶t sÑ 4. #l\r\n" +
+                    "#L0# Face Style Category 1 #l\r\n" +
+                    "#L1# Face Style Category 2 #l\r\n" +
+                    "#L2# Face Style Category 3 #l\r\n" +
+                    "#L3# Face Style Category 4 #l\r\n" +
                     "#k"
             );
             List<Integer> options = new ArrayList<>();
@@ -1319,13 +1319,13 @@ public class ScriptManagerImpl implements ScriptManager {
             }
             if (!options.isEmpty()) {
                 int[] result = options.stream().mapToInt(Integer::intValue).toArray();
-                int answer = sendAskAvatar("Yêu c®u «º thay mØt m°u m¶t nªu b¢n chÎn s³ là #e10,000 xu vàng/l®n#n nên h»y chÎn m°u m¶t mà b¢n thích nh¬t nhé!", false, false, result);
+                int answer = sendAskAvatar("Changing your face style costs #e10,000 Donation Points per change#n. Please select your favorite style!", false, false, result);
                 if (answer < result.length) {
                     if (chr.getUser().getDonationPoints() >= 10000) {
                         chr.getUser().deductDonationPoints(10000);
                         changeCharacterLook(result[answer]);
                     } else {
-                        sendSayOkay("B¢n không có «ç 10,000 xu vàng «º «Öi m°u m¶t này!");
+                        sendSayOkay("You do not have enough Donation Points (10,000 DP required) to change your face style!");
                     }
                 }
             } else {
@@ -5209,32 +5209,32 @@ public class ScriptManagerImpl implements ScriptManager {
             case Gold -> icon = "#fUI/UIWindow4.img/dailyGift/mvpMedal/6#";
             case Diamond -> icon = "#fUI/UIWindow4.img/dailyGift/mvpMedal/7#";
         }
-        int selection = sendNext("H¢ng MVP cça b¢n hi½n t¢i là " + icon + " #e" + vipGrade + "#n.\r\nB¢n «ang có #e" + Util.getNumberFormat(currentVipPoints) + "#n «iºm MVP.\r\n" +
+        int selection = sendNext("Your current MVP tier is " + icon + " #e" + vipGrade + "#n.\r\nYou currently have #e" + Util.getNumberFormat(currentVipPoints) + "#n MVP points.\r\n" +
                 "#b" +
-                "#L0#Tôi muÑn nâng c¬p h¢ng MVP cça m¾nh?#l\r\n" +
-                "#L1#Tôi muÑn mua «iºm MVP b¥ng xu vàng!#l\r\n" +
-                "#L2#MVP là g¾? Nhøng ích læi nào cça MVP?#l\r\n" +
+                "#L0#I want to upgrade / renew my MVP tier.#l\r\n" +
+                "#L1#I want to purchase MVP points with Donation Points!#l\r\n" +
+                "#L2#What is MVP? What are the MVP benefits?#l\r\n" +
                 "#k");
         switch (selection) {
             case 0:
                 if (canRenew) {
                     if (vipGrade.getVal() == VIPGrade.Diamond.getVal()) {
                         if (currentVipPoints >= 750000) {
-                            if (sendAskYesNo("B¢n có muÑn nh±n quà cça h¢ng MVP #e#rKim CïÛng#k#n cça b¢n b¥ng vi½c s÷ dîng #e#r750,0000#k#n «iºm MVP (-75%) không?")) {
+                            if (sendAskYesNo("Would you like to claim your #e#rDiamond#k#n MVP reward package using #e#r750,000#k#n MVP points (-75%)?")) {
                                 if (getEmptyInventorySlots(InvType.CONSUME) < 1) {
-                                    sendSayOkay("Vui lÆng h»y có ít nh¬t 1 ô trÑng ä tab USE trong túi «Ó cça b¢n «º nh±n ph®n thïäng!!");
+                                    sendSayOkay("Please make sure you have at least 1 free slot in your USE inventory to claim the reward!");
                                     return;
                                 }
                                 chr.addItemToInventory(2434727, 1, "month", 1);
                                 user.deductVipPoints(750000);
                                 user.setVipExpiredDate(FileTime.fromDate(LocalDateTime.of(now.getYear(), now.getMonthValue(), now.getDayOfMonth(), 0, 0, 0).plusMonths(1)));
                                 user.saveToSQL(false);
-                                sendSayOkay("Chúc möng b¢n «» gia h¢n thành công Thành viên #e#rKim CïÛng#k#n");
+                                sendSayOkay("Congratulations! You have successfully renewed your #e#rDiamond#k#n MVP membership!");
                             } else {
-                                sendSayOkay("Vui lÆng h»y có ít nh¬t 1 ô trÑng ä tab USE trong túi «Ó cça b¢n «º nh±n ph®n thïäng!");
+                                sendSayOkay("Please make sure you have at least 1 free slot in your USE inventory to claim the reward!");
                             }
                         } else {
-                            sendSayOkay("B¢n không có «ç «iºm MVP «º nâng c¬p MVP cça b¢n.\r\nYêu c®u sÑ «iºm MVP là: #r"
+                            sendSayOkay("You do not have enough MVP points to renew your MVP membership.\r\nRequired MVP Points: #r"
                                     + Util.getNumberFormat(currentVipPoints)
                                     + "#k/#b"
                                     + Util.getNumberFormat(750000)
@@ -5250,10 +5250,10 @@ public class ScriptManagerImpl implements ScriptManager {
                             case Diamond -> reqVipPoints = 1000000;
                         }
                         if (currentVipPoints >= reqVipPoints) {
-                            if (sendAskYesNo("B¢n có muÑn nâng c¬p c¬p «Ø MVP cça b¢n lên #e#r" + nexVipGrade + "#k#n b¥ng vi½c s÷ dîng #e#r"
-                                    + Util.getNumberFormat(reqVipPoints) + "#k#n «iºm MVP không?")) {
+                            if (sendAskYesNo("Would you like to upgrade your MVP tier to #e#r" + nexVipGrade + "#k#n using #e#r"
+                                    + Util.getNumberFormat(reqVipPoints) + "#k#n MVP points?")) {
                                 if (getEmptyInventorySlots(InvType.CONSUME) < 1) {
-                                    sendSayOkay("Vui lÆng h»y có ít nh¬t 1 ô trÑng ä tab USE trong túi «Ó cça b¢n «º nh±n ph®n thïäng!");
+                                    sendSayOkay("Please make sure you have at least 1 free slot in your USE inventory to claim the reward!");
                                     return;
                                 }
                                 chr.addItemToInventory(2434723 + nexVipGrade.getVal(), 1, "month", 1);
@@ -5261,12 +5261,12 @@ public class ScriptManagerImpl implements ScriptManager {
                                 user.deductVipPoints(reqVipPoints);
                                 user.setVipExpiredDate(FileTime.fromDate(LocalDateTime.of(now.getYear(), now.getMonthValue(), now.getDayOfMonth(), 0, 0, 0).plusMonths(1)));
                                 user.saveToSQL(false);
-                                sendSayOkay("Chúc möng b¢n «» gia h¢n thành công c¬p «Ø #e#r" + nexVipGrade + "#k#n");
+                                sendSayOkay("Congratulations! You have successfully upgraded to #e#r" + nexVipGrade + "#k#n MVP tier!");
                             } else {
-                                sendSayOkay("Vui lÆng h»y có ít nh¬t 1 ô trÑng ä tab USE trong túi «Ó cça b¢n «º nh±n ph®n thïäng!");
+                                sendSayOkay("Please make sure you have at least 1 free slot in your USE inventory to claim the reward!");
                             }
                         } else {
-                            sendSayOkay("B¢n không có «ç «iºm MVP «º nâng c¬p MVP cça b¢n.\r\nYêu c®u sÑ «iºm MVP «º nâng c¬p là: #r"
+                            sendSayOkay("You do not have enough MVP points to upgrade your MVP tier.\r\nRequired MVP Points to upgrade: #r"
                                     + Util.getNumberFormat(currentVipPoints)
                                     + "#k/#b"
                                     + Util.getNumberFormat(reqVipPoints)
@@ -5274,56 +5274,56 @@ public class ScriptManagerImpl implements ScriptManager {
                             );
                         }
                     } else {
-                        sendSayOkay("Đã xảy ra lỗi không xác định.");
+                        sendSayOkay("An unknown error has occurred.");
                     }
                 } else {
                     LocalDateTime max = expiredDate.plusDays(5);
-                    sendSayOkay("B¢n chïa «ªn thßi «iºm gia h¢n MVP tiªp theo.\r\nThßi gian b¢n có thº gia h¢n là trong vÆng #e#r5 ngày#k#n kº tö ngày hªt h¢n MVP cça b¢n. #eCî thº tÑi «a vào lúc 23 giß 59 phút 59 giây, ngày " + max.getDayOfMonth() + " tháng " + max.getMonthValue() + " n£m " + max.getYear() + ".#n");
+                    sendSayOkay("It is not time to renew your MVP tier yet.\r\nYou can renew within #e#r5 days#k#n from your MVP expiration date. #eDeadline: 23:59:59 on " + max.getDayOfMonth() + "/" + max.getMonthValue() + "/" + max.getYear() + ".#n");
                 }
                 break;
             case 1:
-                int amount = sendAskNumber("B¢n muÑn mua bao nhiêu #e«iºm MVP#n? (TÑi «a: #r" + Util.getNumberFormat(xuvang) + "#k «iºm)", 1, 1, xuvang);
+                int amount = sendAskNumber("How many #eMVP points#n would you like to purchase? (Max: #r" + Util.getNumberFormat(xuvang) + "#k points)", 1, 1, xuvang);
                 if (amount > 0 && amount <= xuvang) {
-                    if (sendAskYesNo("B¢n có muÑn mua #e" + amount + "#n «iºm MVP không?")) {
+                    if (sendAskYesNo("Would you like to purchase #e" + amount + "#n MVP points?")) {
                         user.deductDonationPoints(amount);
                         user.addVipPoints(amount);
                         user.updateUserVipPointToSQL();
                         if (EventConstants.DONATION_POINT_EVENT) {
                             if (amount >= 1000000) {
                                 chr.getScriptManager().addEventPoint(100);
-                                chr.sendRewardToChar(ItemConstants.VIOLET_CUBE, 20, 0, "Ph®n quà cça Sû ki½n tiêu xu vàng mua 1,000,000 «iºm MVP.", 30);
+                                chr.sendRewardToChar(ItemConstants.VIOLET_CUBE, 20, 0, "Reward for purchasing 1,000,000 MVP points event.", 30);
                             }
                             if (amount >= 500000) {
                                 chr.getScriptManager().addEventPoint(50);
-                                chr.sendRewardToChar(ItemConstants.VIOLET_CUBE, 10, 0, "Ph®n quà cça Sû ki½n tiêu xu vàng mua 500,000 «iºm MVP.", 30);
+                                chr.sendRewardToChar(ItemConstants.VIOLET_CUBE, 10, 0, "Reward for purchasing 500,000 MVP points event.", 30);
                             }
                             if (amount >= 100000) {
-                                chr.sendRewardToChar(ItemConstants.VIOLET_CUBE, 2, 0, "Ph®n quà cça Sû ki½n tiêu xu vàng mua 100,000 «iºm MVP.", 30);
+                                chr.sendRewardToChar(ItemConstants.VIOLET_CUBE, 2, 0, "Reward for purchasing 100,000 MVP points event.", 30);
                             }
                             chr.sendPacketRewards();
                         }
-                        sendSayOkay("B¢n «» mua thành công #e" + amount + "#n «iºm MVP!\r\nB¢n hi½n «ang có #e#r" + user.getVipPoints() + "#k#n «iºm MVP!");
+                        sendSayOkay("You have successfully purchased #e" + amount + "#n MVP points!\r\nYou currently have #e#r" + user.getVipPoints() + "#k#n MVP points!");
                     }
                 }
                 break;
             case 2:
-                sendNext("#eGiÜi thi½u dÅch vî Maple Value Points (MVP)#n\r\n" +
-                        "#e1. #fUI/UIWindow4.img/dailyGift/mvpMedal/1# ÐÓng ; #n " +
-                        "#e2. #fUI/UIWindow4.img/dailyGift/mvpMedal/5# B¢c#n \r\n" +
-                        "#e3. #fUI/UIWindow4.img/dailyGift/mvpMedal/6# Vàng#n ; " +
-                        "#e4. #fUI/UIWindow4.img/dailyGift/mvpMedal/7# Kim cïÛng#n\r\n" +
-                        "- M×i h¢ng s³ có hi½u lûc trong 30 ngày, trong 3 ngày cuÑi cùng b¢n «ïæc phép gia h¢n «º t£ng h¢ng cça m¾nh.\r\n" +
-                        "- Nªu b¢n không gia h¢n vào ngày cuÑi cùng, b¢n s³ m¬t c¬p «Ø và s³ trä l¢i c¬p «Ø «Óng trong l®n mua hàng tiªp theo cça b¢n.\r\n" +
-                        "- Tùy vÜi m×i thñ h¢ng b¢n s³ nh±n «ïæc 1 ph®n quà tïÛng ñng.\r\n" +
-                        "- Ngoài ra b¢n s³ «ïæc hïäng các ïu «»i cça MVP.");
-                sendPrev("#eCác læi ích «¶c bi½t cça DÅch vî MVP#n\r\n" +
-                        "#e- Nhøng ph®n quà giá trÅ n¥m trong túi quà MVP#n.\r\n" +
-                        "#e- Thêm lïæt «i t¬t c¡ các Boss:#n Ch¿ áp dîng cho h¢ng Vàng trä lên. Trong «ó, vàng thêm 1 lïæt, kim cïÛng thêm 2 lïæt.\r\n" +
-                        "#e- Nâng c¬p trang bÅ Star Force:#n\r\n" +
-                        "+ TÏ l½ thành công nâng c¬p t£ng lên «ªn 2.5% - 5% - 7.5% - 10% tïÛng ñng vÜi töng h¢ng ÐÓng - B¢c - Vàng - Kim CïÛng.\r\n" +
-                        "+ Chi phí meso nâng c¬p gi¡m 5% - 10% - 15% - 20% tïÛng ñng vÜi töng h¢ng ÐÓng - B¢c - Vàng - Kim CïÛng.\r\n" +
-                        "#e- T¿ l½ rÜt meso cÛ b¡n cça nhân v±t t£ng thêm 25 - 50 - 75 - 100 tïÛng ñng vÜi töng h¢ng ÐÓng - B¢c - Vàng - Kim CïÛng.\r\n" +
-                        "- Nhà «¬u giá: T£ng sÑ slot lên 2 - 4 - 6 - 8 tïÛng ñng vÜi töng h¢ng ÐÓng - B¢c - Vàng - Kim CïÛng.#n");
+                sendNext("#eMaple Value Points (MVP) Service Introduction#n\r\n" +
+                        "#e1. #fUI/UIWindow4.img/dailyGift/mvpMedal/1# Bronze ; #n " +
+                        "#e2. #fUI/UIWindow4.img/dailyGift/mvpMedal/5# Silver#n \r\n" +
+                        "#e3. #fUI/UIWindow4.img/dailyGift/mvpMedal/6# Gold#n ; " +
+                        "#e4. #fUI/UIWindow4.img/dailyGift/mvpMedal/7# Diamond#n\r\n" +
+                        "- Each tier is valid for 30 days. You may renew and upgrade during the last 3 days of your tier period.\r\n" +
+                        "- If you do not renew on time, your tier will reset to Bronze on your next tier cycle.\r\n" +
+                        "- Each tier grants unique tier-specific rewards and exclusive perks.\r\n" +
+                        "- Enjoy various MVP discounts, bonuses, and quality-of-life benefits!");
+                sendPrev("#eSpecial Benefits of the MVP Service#n\r\n" +
+                        "#e- Valuable gift packages in the MVP Reward Box#n.\r\n" +
+                        "#e- Bonus Boss Entry Counts:#n Applicable to Gold tier and above (Gold: +1 extra entry, Diamond: +2 extra entries).\r\n" +
+                        "#e- Star Force Enhancement Perks:#n\r\n" +
+                        "+ Star Force success rate increases by 2.5% / 5% / 7.5% / 10% for Bronze / Silver / Gold / Diamond tiers respectively.\r\n" +
+                        "+ Meso cost for Star Force enhancement reduced by 5% / 10% / 15% / 20% for Bronze / Silver / Gold / Diamond tiers.\r\n" +
+                        "#e- Base Meso Drop Rate Bonus:#n Increases character base meso drop rate by 25 / 50 / 75 / 100 for Bronze / Silver / Gold / Diamond tiers.\r\n" +
+                        "- Auction House: Listing slots increased by 2 / 4 / 6 / 8 slots for Bronze / Silver / Gold / Diamond tiers.#n");
                 break;
         }
     }
@@ -5344,31 +5344,31 @@ public class ScriptManagerImpl implements ScriptManager {
         }
         if (!currentHearts.isEmpty()) {
             currentHearts.sort(Comparator.comparingInt(Item::getItemId));
-            StringBuilder choose = new StringBuilder("#r#eLïu ü:#n Mechanical Heart cça b¢n cuÑi cùng s³ m¬t t¬t c¡ các ch¿ sÑ cuØn, ti¹m n£ng,... khi «ïæc nâng c¬p.#k\r\n#eVui lÆng chÎn Mechanical Heart cça b¢n «º nâng c¬p:#n\r\n");
+            StringBuilder choose = new StringBuilder("#r#eNote:#n Your Mechanical Heart will lose all scroll stats, potential, and enhancements upon upgrading.#k\r\n#ePlease select the Mechanical Heart you wish to upgrade:#n\r\n");
             for (int i = 0; i < currentHearts.size(); i++) {
                 int itemID = currentHearts.get(i).getItemId();
                 int nextItemID = itemID == 1672020 ? 1672027 : itemID == 1672027 ? 1672040 : 1672069;
-                choose.append("#L").append(i).append("# #i").append(itemID).append("# #b#z").append(itemID).append("##k #e lên #n ").append("#i").append(nextItemID).append("# #b#z").append(nextItemID).append("##k").append(".#l\r\n");
+                choose.append("#L").append(i).append("# #i").append(itemID).append("# #b#z").append(itemID).append("##k #e to #n ").append("#i").append(nextItemID).append("# #b#z").append(nextItemID).append("##k").append(".#l\r\n");
             }
             int selectedItem = sendNext(choose.toString());
             int selectedItemID = currentHearts.get(selectedItem).getItemId();
             int nextItemID = selectedItemID == 1672020 ? 1672027 : selectedItemID == 1672027 ? 1672040 : 1672069;
             int cost = (selectedItemID == 1672040 ? 500000 : 300000);
             if (dp >= cost) {
-                if (sendAskYesNo("B¢n có ch¤c ch¤n muÑn nâng c¬p #b#z" + selectedItemID + "##k lên #b#z" + nextItemID + "##k b¥ng " + (selectedItemID == 1672040 ? "500,000" : "300,000") + " xu vàng?")) {
+                if (sendAskYesNo("Are you sure you want to upgrade #b#z" + selectedItemID + "##k to #b#z" + nextItemID + "##k for " + (selectedItemID == 1672040 ? "500,000" : "300,000") + " Donation Points?")) {
                     if (canHold(nextItemID)) {
                         user.deductDonationPoints(cost);
                         chr.consumeItem(currentHearts.get(selectedItem));
                         giveItem(nextItemID);
                     } else {
-                        sendSayOkay("H»y kiºm tra xem túi cça b¢n có «ç ô trÑng trong tab EQUIP không?.");
+                        sendSayOkay("Please make sure you have enough free slots in your EQUIP inventory.");
                     }
                 }
             } else {
-                sendSayOkay("B¢n không có «ç xu vàng «º nâng c¬p Mechanical Heart.");
+                sendSayOkay("You do not have enough Donation Points to upgrade your Mechanical Heart.");
             }
         } else {
-            sendSayOkay("B¢n không có «ç Mechanical Heart «º nâng c¬p.");
+            sendSayOkay("You do not have an eligible Mechanical Heart to upgrade.");
         }
     }
 

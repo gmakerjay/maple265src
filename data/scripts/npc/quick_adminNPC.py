@@ -24,8 +24,8 @@ selection = sm.sendNext("#fs13#Hello, #h0#. I am the Maple Administrator. How ma
                         "#L14#Fast Job Advancement.#l\r\n" +
                         "#L5#Complete all Boss Prequests.#l\r\n" +
                         "#L9#Purchase items with #eDonation Points.#n#l\r\n" +
-                        "#L10#Change Hair Color with #eDonation Points.#n#l\r\n" +
-                        "#L11#Change Outfit with #eDonation Points.#n#l\r\n" +
+                        "#L10#Change Hairstyle with #eDonation Points.#n#l\r\n" +
+                        "#L11#Change Face Style with #eDonation Points.#n#l\r\n" +
                         "#L12#Check Your #e#rMVP#k#n #bStatus.#l\r\n" +
                         "#L13#Upgrade Mechanical Heart (Required: #i1672020#).#l\r\n" +
                         "#L0#Remove Cash Item(s).#l\r\n\r\n" +

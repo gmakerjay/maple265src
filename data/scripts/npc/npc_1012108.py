@@ -1,1 +1,1 @@
-sm.sendNext("Xin chào... Tôi là Camila...")
+sm.sendNext("Hello... I am Camila...")

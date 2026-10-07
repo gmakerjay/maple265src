@@ -1,7 +1,7 @@
 from net.swordie.ms.connection.packet import Stage
 from net.swordie.ms.connection.packet import WvsContext
 
-if sm.getFieldID() == 910000000 and sm.sendAskYesNo("Bạn có muốn chuyển đến nhà đấu giá không?"):
+if sm.getFieldID() == 910000000 and sm.sendAskYesNo("Would you like to move to the Auction House?"):
     c = chr.getClient()
     c.migrateIn(True)
     c.write(Stage.setAuctionField(chr))
