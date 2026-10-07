@@ -1362,6 +1362,9 @@ public class SkillData {
     }
 
     public static MobSkillInfo getMobSkillInfoByIdAndLevel(int id, int level) {
+        if (id <= 0 || id > 32767 || level <= 0 || level > 32767) {
+            return null;
+        }
         return getMobSkillInfoByIdAndLevel((short) id, (short) level);
     }
 

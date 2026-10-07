@@ -964,7 +964,7 @@ public class Field {
     public void spawnAffectedArea(AffectedArea aa) {
         addLife(aa);
         SkillInfo si = SkillData.getSkillInfoById(aa.getSkillID());
-        MobSkillInfo msi = SkillData.getMobSkillInfoByIdAndLevel(aa.getSkillID(), aa.getSlv());
+        MobSkillInfo msi = aa.getMobOrigin() > 0 ? SkillData.getMobSkillInfoByIdAndLevel(aa.getSkillID(), aa.getSlv()) : null;
         if (si != null || (aa.getMobOrigin() > 0 && msi != null)) {
             int duration = 0;
             if (aa.getMobOrigin() > 0 && msi != null) {

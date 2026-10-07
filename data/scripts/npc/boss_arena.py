@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 # Offline Boss Arena (Universal Boss Dispatcher)
-# Supports Solo & Party, Unlimited Attempts, 0 Prequests, Real Boss Spawns
+# Supports Solo & Party, Unlimited Attempts, 0 Prequests, Real Boss Spawns & Real HP
 from net.swordie.ms.world.boss import Zakum
+from net.swordie.ms.world.boss import Horntail
 from net.swordie.ms.world.boss import RootAbyss
 from net.swordie.ms.world.boss import Magnus
 from net.swordie.ms.world.boss import Lotus
@@ -20,9 +21,9 @@ BOSS_CATEGORIES = [
         ("Easy Zakum", 280030200, "zakum", 1, "Lv. 50+ | 8 Arms, 2.2M HP"),
         ("Normal Zakum", 280030100, "zakum", 2, "Lv. 90+ | 8 Arms, 7M HP"),
         ("Chaos Zakum", 280030000, "zakum", 3, "Lv. 90+ | Chaos 8 Arms, 84B HP"),
-        ("Easy Horntail", 240060200, "horntail", 8810214, "Lv. 130+ | 3-Headed Dragon (Easy)"),
-        ("Normal Horntail", 240060200, "horntail", 8810018, "Lv. 130+ | 3-Headed Dragon (Normal)"),
-        ("Chaos Horntail", 240060201, "horntail", 8810122, "Lv. 135+ | 3-Headed Dragon (Chaos)"),
+        ("Easy Horntail", 240060002, "horntail", 0, "Lv. 130+ | 3-Headed Dragon (Easy)"),
+        ("Normal Horntail", 240060200, "horntail", 1, "Lv. 130+ | 3-Headed Dragon (Normal)"),
+        ("Chaos Horntail", 240060201, "horntail", 2, "Lv. 135+ | 3-Headed Dragon (Chaos)"),
         ("Normal Hilla", 262030300, "hilla", 8870000, "Lv. 120+ | Necromancer Hilla (500M HP)"),
         ("Hard Hilla", 262031300, "hilla", 8870100, "Lv. 170+ | Dark Hilla (16.8B HP)"),
         ("Easy Von Leon", 211070104, "von_leon", 0, "Lv. 125+ | Lion King (Easy)"),
@@ -38,20 +39,20 @@ BOSS_CATEGORIES = [
     ("Root Abyss (4 Guardians)", [
         ("Normal Pierre", 105200100, "pierre", 0, "Lv. 125+ | Clown with Hat split (315M HP)"),
         ("Chaos Pierre", 105200500, "pierre", 1, "Lv. 180+ | Chaos Hat Trick & Clones (80B HP)"),
-        ("Normal Von Bon", 105200200, "mob", 8910100, "Lv. 125+ | Clockwork Rooster (315M HP)"),
-        ("Chaos Von Bon", 105200600, "mob", 8910000, "Lv. 180+ | Dimensional Rift & Quake (100B HP)"),
-        ("Normal Crimson Queen", 105200300, "mob", 8920100, "Lv. 125+ | 4 Facial Expressions (315M HP)"),
-        ("Chaos Crimson Queen", 105200700, "mob", 8920000, "Lv. 180+ | Seduction & Mirror (140B HP)"),
-        ("Normal Vellum", 105200400, "mob", 8930100, "Lv. 125+ | Abyssal Earth Dragon (550M HP)"),
-        ("Chaos Vellum", 105200800, "mob", 8930000, "Lv. 180+ | Falling Stalactites & Dive (200B HP)"),
+        ("Normal Von Bon", 105200200, "root_abyss", "banbanNormal", "Lv. 125+ | Clockwork Rooster (315M HP)"),
+        ("Chaos Von Bon", 105200600, "root_abyss", "banbanChaos", "Lv. 180+ | Dimensional Rift & Quake (100B HP)"),
+        ("Normal Crimson Queen", 105200300, "root_abyss", "queenNormal", "Lv. 125+ | 4 Facial Expressions (315M HP)"),
+        ("Chaos Crimson Queen", 105200700, "root_abyss", "queenChaos", "Lv. 180+ | Seduction & Mirror (140B HP)"),
+        ("Normal Vellum", 105200400, "root_abyss", "bellumNormal", "Lv. 125+ | Abyssal Earth Dragon (550M HP)"),
+        ("Chaos Vellum", 105200800, "root_abyss", "bellumChaos", "Lv. 180+ | Falling Stalactites & Dive (200B HP)"),
     ]),
     ("Arcane River & Mid-Tier Bosses", [
         ("Easy Magnus", 401060300, "magnus", 0, "Lv. 115+ | Blue Zone & Meteors (400M HP)"),
         ("Normal Magnus", 401060200, "magnus", 1, "Lv. 155+ | Blue Zone & Meteors (6B HP)"),
         ("Hard Magnus", 401060100, "magnus", 2, "Lv. 175+ | Tyrant of Heliseum (120B HP)"),
-        ("Easy Papulatus", 220080001, "mob", 8500002, "Lv. 115+ | Clockwork Guardian (400M HP)"),
-        ("Normal Papulatus", 220080001, "mob", 8500012, "Lv. 155+ | Clockwork Guardian (12B HP)"),
-        ("Chaos Papulatus", 220080001, "mob", 8500022, "Lv. 190+ | Clock Laser & Curse (500B HP)"),
+        ("Easy Papulatus", 220080001, "papulatus", 0, "Lv. 115+ | Clockwork Guardian (400M HP)"),
+        ("Normal Papulatus", 220080001, "papulatus", 1, "Lv. 155+ | Clockwork Guardian (16.6B HP)"),
+        ("Chaos Papulatus", 220080001, "papulatus", 2, "Lv. 190+ | Clock Laser & Curse (500B HP)"),
         ("Normal Lotus (Suu)", 350060400, "lotus", 0, "Lv. 190+ | 3 Phases, Laser, Debris (1.5T HP)"),
         ("Hard Lotus (Suu)", 350060700, "lotus", 1, "Lv. 210+ | 3 Phases, Laser, Debris (33T HP)"),
         ("Normal Damien (Demian)", 350160200, "damien", 0, "Lv. 190+ | 2 Phases, Flying Sword (1.2T HP)"),
@@ -63,40 +64,49 @@ BOSS_CATEGORIES = [
         ("Hard Will", 450008150, "will", 1, "Lv. 235+ | 3 Phases, Moonlight Gauge (126T HP)"),
         ("Normal Ranmaru", 807300110, "ranmaru", 0, "Lv. 120+ | Mori Ranmaru (5B HP)"),
         ("Hard Ranmaru", 807300210, "ranmaru", 1, "Lv. 180+ | Mori Ranmaru (50B HP)"),
-        ("Princess No", 811000008, "mob", 9450022, "Lv. 180+ | Oda Princess (200B HP)"),
+        ("Princess No", 811000008, "mob_hp", (9450022, 200000000000L, 0, 85), "Lv. 180+ | Oda Princess (200B HP)"),
         ("Gollux Head", 863010600, "gollux", 0, "Lv. 180+ | Corrupted Titan Head"),
     ]),
     ("Endgame & Tenebris Bosses", [
         ("Black Mage", 450013100, "black_mage", 0, "Lv. 255+ | 4-Phase Story Dungeon (465T HP)"),
-        ("Normal Gloom", 450009301, "mob", 8644650, "Lv. 245+ | Giant Monster of Limina (26T HP)"),
-        ("Chaos Gloom", 450009301, "mob", 8644655, "Lv. 255+ | Giant Monster of Limina (115T HP)"),
-        ("Normal Darknell", 450012200, "mob", 8645009, "Lv. 255+ | Guard Captain Darknell (26T HP)"),
-        ("Hard Darknell", 450012200, "mob", 8645066, "Lv. 265+ | Guard Captain Darknell (130T HP)"),
-        ("Normal Verus Hilla", 450011990, "mob", 8880405, "Lv. 250+ | True Hilla (88T HP)"),
-        ("Hard Verus Hilla", 450011990, "mob", 8880410, "Lv. 255+ | True Hilla (176T HP)"),
+        ("Normal Gloom", 450009301, "mob_hp", (8644650, 26000000000000L, 0, 85), "Lv. 245+ | Giant Monster of Limina (26T HP)"),
+        ("Chaos Gloom", 450009301, "mob_hp", (8644655, 115000000000000L, 0, 85), "Lv. 255+ | Giant Monster of Limina (115T HP)"),
+        ("Normal Darknell", 450012200, "mob_hp", (8645009, 26000000000000L, 0, 85), "Lv. 255+ | Guard Captain Darknell (26T HP)"),
+        ("Hard Darknell", 450012200, "mob_hp", (8645066, 130000000000000L, 0, 85), "Lv. 265+ | Guard Captain Darknell (130T HP)"),
+        ("Normal Verus Hilla", 450011990, "mob_hp", (8880405, 88000000000000L, 0, 85), "Lv. 250+ | True Hilla (88T HP)"),
+        ("Hard Verus Hilla", 450011990, "mob_hp", (8880410, 176000000000000L, 0, 85), "Lv. 255+ | True Hilla (176T HP)"),
     ]),
     ("Grandis & Special Bosses", [
         ("Akechi Mitsuhide", 874004000, "akechi", 0, "Lv. 210+ | 2 Phases: Katana & Demon Aura (800B HP)"),
-        ("Normal Guardian Angel Slime", 160080000, "mob", 8880700, "Lv. 210+ | Ramuramu Altar (5T HP)"),
-        ("Chaos Guardian Angel Slime", 160080100, "mob", 8880711, "Lv. 220+ | Ramuramu Altar (115T HP)"),
-        ("Normal Chosen Seren", 410000670, "mob", 8880600, "Lv. 260+ | Cernium Sun Guardian (130T HP)"),
-        ("Hard Chosen Seren", 410000670, "mob", 8880630, "Lv. 265+ | Cernium Sun Guardian (250T HP)"),
-        ("Kalos the Guardian", 410005000, "mob", 8880802, "Lv. 265+ | Odium Fortress Sentinel (300T HP)"),
-        ("Kaling", 410007100, "mob", 8880845, "Lv. 275+ | Shangri-La Master (500T HP)"),
+        ("Normal Guardian Angel Slime", 160080000, "mob_hp", (8644650, 5000000000000L, -20, 560), "Lv. 210+ | Ramuramu Altar (5T HP)"),
+        ("Chaos Guardian Angel Slime", 160080100, "mob_hp", (8644655, 115000000000000L, -20, 560), "Lv. 220+ | Ramuramu Altar (115T HP)"),
+        ("Normal Chosen Seren", 410030000, "mob_hp", (8645066, 126000000000000L, 0, 275), "Lv. 260+ | Cernium Palace Main Hall (126T HP)"),
+        ("Hard Chosen Seren", 410030100, "mob_hp", (8645000, 250000000000000L, 0, 275), "Lv. 265+ | Cernium Palace Main Hall (250T HP)"),
+        ("Easy Kalos the Guardian", 410030300, "mob_hp", (8645009, 100000000000000L, 0, 175), "Lv. 265+ | Karote Castle Wall (100T HP)"),
+        ("Normal Kalos the Guardian", 410030400, "mob_hp", (8645009, 200000000000000L, 0, 175), "Lv. 265+ | Karote Castle Wall (200T HP)"),
+        ("Normal Kaling", 410030800, "kaling", 0, "Lv. 275+ | Shangri-La Four Seasons Pavilion (180T HP)"),
+        ("Normal Limbo", 410031100, "mob_hp", (8645080, 200000000000000L, 0, 200), "Lv. 285+ | Carcion Temple of Tears (200T HP)"),
     ])
 ]
 
 def open_boss_arena(sm, chr):
     sm.setSpeakerID(9010000)
     menu_text = "#fs13##e#r[Offline Boss Arena]#k#n\r\n"
-    menu_text += "Welcome, #h0#! Challenge any boss #rSolo or with Party#k.\r\n"
-    menu_text += "#bNo Prequests | Unlimited Attempts | 15 Death Count#k\r\n\r\n"
+    menu_text += "ยินดีต้อนรับ #h0#! ท้าทายบอสได้ทุกตัว #rลงเดี่ยวหรือปาร์ตี้ก็ได้#k\r\n"
+    menu_text += "#bไม่จำกัดรอบ | ไม่มีเควสเงื่อนไข | 15 Death Count#k\r\n\r\n"
     
     for i, (cat_name, bosses) in enumerate(BOSS_CATEGORIES):
         menu_text += "#L" + str(i) + "##e#b" + cat_name + "#k#n (" + str(len(bosses)) + " bosses)#l\r\n"
     menu_text += "#L99##dShow All Bosses (A-Z)#k#l\r\n"
+    menu_text += "#L999##r🚪 ออกจากห้องบอส (กลับเมือง Henesys)#k#l\r\n"
     
     cat_sel = sm.sendNext(menu_text)
+    if cat_sel == 999:
+        if chr.getInstance() is not None:
+            sm.warpInstanceOut(chr, 100000000)
+        else:
+            sm.warp(100000000, 0)
+        return
     
     selected_bosses = []
     if cat_sel == 99:
@@ -111,17 +121,17 @@ def open_boss_arena(sm, chr):
     if not selected_bosses:
         return
         
-    boss_menu = "#fs13#Select the boss you want to battle:\r\n\r\n"
+    boss_menu = "#fs13#เลือกบอสที่คุณต้องการต่อสู้:\r\n\r\n"
     for idx, (b_name, map_id, spawn_type, spawn_val, desc) in enumerate(selected_bosses):
         boss_menu += "#L" + str(idx) + "##e#r" + b_name + "#k#n - #fs11#" + desc + "#fs13##l\r\n"
         
     boss_sel = sm.sendNext(boss_menu)
     if 0 <= boss_sel < len(selected_bosses):
         b_name, map_id, spawn_type, spawn_val, desc = selected_bosses[boss_sel]
-        confirm_text = "#fs13#Enter arena for #e#r" + b_name + "#k#n?\r\n\r\n"
-        confirm_text += "#b- Time Limit:#k 30 Minutes\r\n"
-        confirm_text += "#b- Death Count:#k 15 Resurrections\r\n"
-        confirm_text += "#b- Mode:#k " + ("Party Instance" if chr.getParty() is not None else "Solo Instance") + "\r\n"
+        confirm_text = "#fs13#ต้องการเข้าสู่ห้องบอส #e#r" + b_name + "#k#n หรือไม่?\r\n\r\n"
+        confirm_text += "#b- ระยะเวลา:#k 30 นาที\r\n"
+        confirm_text += "#b- จำนวนการตาย (Death Count):#k 15 ครั้ง\r\n"
+        confirm_text += "#b- โหมด:#k " + ("ปาร์ตี้ (Party Instance)" if chr.getParty() is not None else "ลงเดี่ยว (Solo Instance)") + "\r\n"
         
         if sm.sendAskYesNo(confirm_text):
             enter_boss_arena(sm, chr, b_name, map_id, spawn_type, spawn_val)
@@ -143,27 +153,38 @@ def enter_boss_arena(sm, chr, boss_name, map_id, spawn_type, spawn_val):
             chr.addItemToInventory(4001431, 1) # Chaos marble
         if not chr.hasItem(4001432):
             chr.addItemToInventory(4001432, 1)
+    elif "Papulatus" in boss_name:
+        if not chr.hasItem(4031172):
+            chr.addItemToInventory(4031172, 5) # Piece of Cracked Dimension
             
     # Warp into Instance (Solo or Party)
     sm.warpInstanceIn(chr, map_id, True)
     sm.setInstanceTime(30 * 60, 100000000) # 30 mins, returns to Henesys
     sm.setDeathCount(15)
+    field = chr.getField()
     
     # Spawn handling based on boss type
     if spawn_type == "zakum":
         # spawn_val is mode: 1 (Easy), 2 (Normal), 3 (Chaos)
-        field = chr.getField()
         Zakum.spawn(spawn_val, field)
-    elif spawn_type == "mob":
-        # Direct mob spawn
-        field = chr.getField()
-        field.spawnMob(spawn_val, 0, 85, False)
     elif spawn_type == "horntail":
-        field = chr.getField()
-        field.spawnMob(spawn_val, 868, 230, False)
+        # spawn_val: 0 (Easy), 1 (Normal), 2 (Chaos)
+        Horntail.spawn(spawn_val, field)
+    elif spawn_type == "mob":
+        field.spawnMob(spawn_val, 0, 85, False)
+    elif spawn_type == "mob_hp":
+        # (mobId, hp, x, y)
+        mid, hp, x, y = spawn_val
+        field.spawnMob(mid, x, y, False, hp)
+    elif spawn_type == "papulatus":
+        # Papulatus 8500002 / 8500012 / 8500022
+        hp = 400000000L if spawn_val == 0 else (16600000000L if spawn_val == 1 else 500000000000L)
+        mid = 8500002 if spawn_val == 0 else (8500012 if spawn_val == 1 else 8500022)
+        field.spawnMob(mid, 0, 85, False, hp)
     elif spawn_type == "hilla":
-        field = chr.getField()
         field.spawnMob(spawn_val, 0, -181, False)
+    elif spawn_type == "root_abyss":
+        RootAbyss.spawn(chr, spawn_val)
     elif spawn_type == "pierre":
         RootAbyss.spawnPierre(chr, RootAbyss.PierreMode.NORMAL if spawn_val == 0 else RootAbyss.PierreMode.CHAOS)
     elif spawn_type == "magnus":
@@ -193,3 +214,7 @@ def enter_boss_arena(sm, chr, boss_name, map_id, spawn_type, spawn_val):
         Ranmaru.spawn(chr, mode)
     elif spawn_type == "gollux":
         Gollux.init(chr, 0)
+    elif spawn_type == "kaling":
+        field.spawnMob(8645039, 0, 200, False, 180000000000000L) # Kaling
+        field.spawnMob(8645040, -300, 200, False, 50000000000000L) # Taowu
+        field.spawnMob(8645041, 300, 200, False, 50000000000000L) # Qiongqi

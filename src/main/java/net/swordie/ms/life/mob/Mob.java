@@ -1542,7 +1542,11 @@ public class Mob extends Life {
                 }
             }
 
-            if (getHpTagColor() != 0) {
+            if (isBoss() && !isHPgaugeHide()) {
+                if (getHpTagColor() == 0) {
+                    setHpTagColor(1);
+                    setHpTagBgcolor(5);
+                }
                 field.broadcast(FieldPacket.fieldEffect(FieldEffect.mobHPTagFieldEffect(this)));
             }
         }
@@ -1612,10 +1616,18 @@ public class Mob extends Life {
         if (oldHp > 0 && newHp <= 0) {
             // Boss sponges
             removeWithAnimation();
-            if (isBoss() && getHpTagColor() != 0) {
+            if (isBoss() && !isHPgaugeHide()) {
+                if (getHpTagColor() == 0) {
+                    setHpTagColor(1);
+                    setHpTagBgcolor(5);
+                }
                 getField().broadcast(FieldPacket.fieldEffect(FieldEffect.mobHPTagFieldEffect(this)));
             }
-        } else if (isBoss() && getHpTagColor() != 0) {
+        } else if (isBoss() && !isHPgaugeHide()) {
+            if (getHpTagColor() == 0) {
+                setHpTagColor(1);
+                setHpTagBgcolor(5);
+            }
             getField().broadcast(FieldPacket.fieldEffect(FieldEffect.mobHPTagFieldEffect(this)));
         } else {
             getField().broadcast(MobPool.hpIndicator(getObjectId(), (byte) (percDamage * 100)));
@@ -2341,6 +2353,18 @@ public class Mob extends Life {
             onlyChar.write(MobPool.enterField(this, linkteam));
             onlyChar.write(controllerID == onlyChar.getId() ? MobPool.changeController(this, linkteam) : MobPool.changeController(objectID));
             onlyChar.write(MobPool.nextTargetFromSvr(this, controllerID));
+        }
+        if (isBoss() && !isHPgaugeHide() && getHp() > 0) {
+            if (getHpTagColor() == 0) {
+                setHpTagColor(1);
+                setHpTagBgcolor(5);
+            }
+            net.swordie.ms.connection.OutPacket hpTag = net.swordie.ms.connection.packet.FieldPacket.fieldEffect(net.swordie.ms.world.field.fieldeffect.FieldEffect.mobHPTagFieldEffect(this));
+            if (onlyChar != null) {
+                onlyChar.write(hpTag);
+            } else if (field != null) {
+                field.broadcast(hpTag);
+            }
         }
     }
 
