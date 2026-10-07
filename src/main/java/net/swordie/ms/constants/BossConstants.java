@@ -34,6 +34,7 @@ public class BossConstants {
             case ZAKUM_EASY -> ZAKUM_EASY_ALTAR;
             case ZAKUM_NORMAL -> ZAKUM_NORMAL_ALTAR;
             case ZAKUM_CHAOS -> ZAKUM_CHAOS_ALTAR;
+            case AKECHI_MITSUHIDE -> AKECHI_BATTLE_MAP;
             default -> 0;
         };
     }
@@ -68,6 +69,7 @@ public class BossConstants {
             case RANMARU_NORMAL, RANMARU_HARD -> RANMARU_ENTRACE_MAP;
             case PRINCESS_NO -> PRINCESS_NO_ENTRACE_MAP;
             case WILL_NORMAL, WILL_HARD -> WILL_ENTRACE_MAP;
+            case AKECHI_MITSUHIDE -> AKECHI_ENTRANCE_MAP;
             default -> 0;
         };
     }
@@ -293,6 +295,10 @@ public class BossConstants {
     public static final int DARKNELL_ENTRANCE_MAP = 450012200;
     // BLACK MAGE ------------------------------------------------------------------------------------------------------
     public static final int BLACK_MAGE_ENTRANCE_MAP = 450012500;
+    // AKECHI MITSUHIDE ------------------------------------------------------------------------------------------------
+    public static final int AKECHI_ENTRANCE_MAP = 874000100;
+    public static final int AKECHI_BATTLE_MAP = 874004000;
+    public static final int AKECHI_TIME = 30 * 60;
 
     public static Rect getMobSkillRect(Mob mob, int skillLevel) {
         Rect rect = new Rect();

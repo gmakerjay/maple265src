@@ -58,7 +58,7 @@ public class RootAbyss {
             return;
         }
 
-        if (!chr.getParty().isLeader(chr)) {
+        if (chr.getParty() != null && !chr.getParty().isLeader(chr)) {
             chr.chatMessage("Only leader of your party can summon this boss.");
             return;
         }

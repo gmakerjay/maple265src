@@ -54,9 +54,10 @@ public class Will {
         }
         boolean isNormal = moonLightTime == 1000L;
         boolean isHard = moonLightTime == 2000L;
+        java.util.Collection<Char> targets = (party != null) ? party.getOnlineChars() : java.util.List.of(chr);
         if (stage == 1) {
             field.removeMobs();
-            for (Char pmChr : party.getOnlineChars()) {
+            for (Char pmChr : targets) {
                 if (pmChr.getField().getId() != 450008150 && pmChr.getField().getId() != 450008750) {
                     continue;
                 }
@@ -93,7 +94,7 @@ public class Will {
                 field.spawnMob(8880326, 252, -2020, false); // dummy2ID
             }
         } else if (stage == 2) {
-            for (Char pmChr : party.getOnlineChars()) {
+            for (Char pmChr : targets) {
                 if (pmChr.getField().getId() != 450008250 && pmChr.getField().getId() != 450008850) {
                     continue;
                 }
@@ -112,7 +113,7 @@ public class Will {
                 field.spawnMob(8880327, 252, 215, false); // dummy2ID
             }
         } else if (stage == 3) {
-            for (Char pmChr : party.getOnlineChars()) {
+            for (Char pmChr : targets) {
                 if (pmChr.getField().getId() != 450008350 && pmChr.getField().getId() != 450008950) {
                     continue;
                 }

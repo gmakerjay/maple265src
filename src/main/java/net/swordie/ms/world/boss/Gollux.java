@@ -14,13 +14,11 @@ public class Gollux {
             return;
         }
         ScriptManagerImpl sm = chr.getScriptManager();
-        if (chr.getParty() == null) {
-            return;
-        }
+        java.util.Collection<Char> partyList = (chr.getParty() != null) ? chr.getParty().getOnlineChars() : java.util.List.of(chr);
         switch (type) {
             case 0 -> { // GiantBoss_Head
                 Field field = chr.getOrCreateFieldByCurrentInstanceType(863010600);
-                for (Char x : chr.getParty().getOnlineChars()) {
+                for (Char x : partyList) {
                     int fieldID = x.getField().getId();
                     if (fieldID != 863010600 && fieldID != 863010700 && x.getInstance() != null && fieldID >= 863010100 && fieldID <= 863010500) {
                         x.warp(field);

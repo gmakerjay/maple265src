@@ -17,25 +17,22 @@ public class Arkarium {
         Field field = chr.getOrCreateFieldByCurrentInstanceType(chr.getField().getId());
         Party party = chr.getParty();
         sm.setPlayerBoxChat();
-        if (party != null) {
-            if (!party.isLeader(chr)) {
-                sm.sendSayOkay("Xin hãy để người lãnh đạo nhóm của bạn nói chuyện với tôi!");
-            } else {
-                sm.setPlayerBoxChat();
-                if (field.getId() == 272020200 && !field.isBossSpawned()) { // easy
-                    field.setBossSpawned(true);
-                    sm.removeNpc(9130095);
-                    field.spawnMob(8860005, 320, -181, false);
-                } else if (field.getId() == 272020210 && !field.isBossSpawned()) { // normal
-                    field.setBossSpawned(true);
-                    sm.removeNpc(9130095);
-                    field.spawnMob(8860000, 320, -181, false);
-                } else {
-                    sm.exitBoss();
-                }
-            }
+        boolean isLeader = (party == null || party.isLeader(chr));
+        if (!isLeader) {
+            sm.sendSayOkay("Xin hãy để người lãnh đạo nhómของ bạn nói chuyện với tôi!");
+            return;
+        }
+        sm.setPlayerBoxChat();
+        if (field.getId() == 272020200 && !field.isBossSpawned()) { // easy
+            field.setBossSpawned(true);
+            sm.removeNpc(9130095);
+            field.spawnMob(8860005, 320, -181, false);
+        } else if (field.getId() == 272020210 && !field.isBossSpawned()) { // normal
+            field.setBossSpawned(true);
+            sm.removeNpc(9130095);
+            field.spawnMob(8860000, 320, -181, false);
         } else {
-            sm.warpInstanceOut(chr, BossConstants.ARKARIUM_ENTRACE_MAP);
+            sm.exitBoss();
         }
     }
 }

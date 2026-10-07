@@ -3977,6 +3977,10 @@ public class ScriptManagerImpl implements ScriptManager {
     }
 
     public void invokeForParty(String methodName, Object... args) {
+        if (chr.getParty() == null) {
+            invoke(this, methodName, args);
+            return;
+        }
         for (PartyMember pm : chr.getParty().getMembers()) {
             if (pm.getChr() == null) {
                 continue;
@@ -3987,6 +3991,10 @@ public class ScriptManagerImpl implements ScriptManager {
     }
 
     public void invokeForParty(long delay, String methodName, Object... args) {
+        if (chr.getParty() == null) {
+            invokeAfterDelay(delay, methodName, args);
+            return;
+        }
         for (PartyMember pm : chr.getParty().getMembers()) {
             if (pm.getChr() == null) {
                 continue;
@@ -4776,7 +4784,7 @@ public class ScriptManagerImpl implements ScriptManager {
     }
 
     public void sendUnityPortalDialog() {
-        chr.write(UIContextPacket.unityPortalResult());
+        startScript(chr, 9010022, "unityPortal", ScriptType.Npc);
     }
 
     public void setBGMVolume(int bgmVolume, int fadingDuration) {
@@ -5869,11 +5877,7 @@ public class ScriptManagerImpl implements ScriptManager {
             return;
         }
         var party = chr.getParty();
-        if (party == null) {
-            chr.chatPopup("Hãy tạo nhóm trước khi tiếp tục.");
-            return;
-        }
-        if (!party.isLeader(chr)) {
+        if (party != null && !party.isLeader(chr)) {
             chr.chatPopup("Xin hãy để người lãnh đạo nhóm của bạn thực hiện.");
             return;
         }

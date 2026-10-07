@@ -1,5 +1,5 @@
 sm.setSpeakerID(2140001)
-sm.sendNext("Xin chúc mừng bạn đã kích hoạt thành công #bĐÁ HUYỀN BÍ#k và nhận được #b500,000,000#k EXP miễn phí!")
+sm.sendNext("Congratulations! You have successfully activated the #bArcane Stone#k and received #b500,000,000#k EXP!")
 sm.completeQuest(parentID)
 chr.addExp(500000000, False)
 sm.closeUI(1128)

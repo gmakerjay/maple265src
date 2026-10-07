@@ -39,34 +39,31 @@ public class PinkBean {
         Field field = chr.getOrCreateFieldByCurrentInstanceType(chr.getField().getId());
         Party party = chr.getParty();
         sm.setPlayerBoxChat();
-        if (party != null) {
-            if (!party.isLeader(chr)) {
-                sm.sendSayOkay("Xin hãy để người lãnh đạo nhóm của bạn nói chuyện với tôi!");
-            } else {
-                if (field.getId() == PINK_BEAN_MAP && !field.isBossSpawned()) {
-                    field.setBossSpawned(true);
-                    sm.removeNpc(2141000);
-                    field.removeMobs();
-                    for (int i : INITIAL_MOBS) {
-                        field.spawnMob(i, 5, -42, false);
-                    }
-                } else if (field.getId() == CHAOS_PINK_BEAN_MAP && !field.isBossSpawned()) {
-                    field.setBossSpawned(true);
-                    sm.removeNpc(2141000);
-                    field.removeMobs();
-                    for (int i : INITIAL_MOBS) {
-                        field.spawnMob(i + 100, 5, -42, false);
-                    }
-                    field.spawnMob(8820110, 5, -42, false, 2000000000L);
-                    field.spawnMob(8820111, 5, -42, false, 2000000000L);
-                    field.spawnMob(8820112, 5, -42, false, 2000000000L);
-                    field.spawnMob(8820113, 5, -42, false, 2000000000L);
-                } else {
-                    exit(chr, sm);
-                }
+        boolean isLeader = (party == null || party.isLeader(chr));
+        if (!isLeader) {
+            sm.sendSayOkay("Xin hãy để người lãnh đạo nhóm của bạn nói chuyện với tôi!");
+            return;
+        }
+        if (field.getId() == PINK_BEAN_MAP && !field.isBossSpawned()) {
+            field.setBossSpawned(true);
+            sm.removeNpc(2141000);
+            field.removeMobs();
+            for (int i : INITIAL_MOBS) {
+                field.spawnMob(i, 5, -42, false);
             }
+        } else if (field.getId() == CHAOS_PINK_BEAN_MAP && !field.isBossSpawned()) {
+            field.setBossSpawned(true);
+            sm.removeNpc(2141000);
+            field.removeMobs();
+            for (int i : INITIAL_MOBS) {
+                field.spawnMob(i + 100, 5, -42, false);
+            }
+            field.spawnMob(8820110, 5, -42, false, 2000000000L);
+            field.spawnMob(8820111, 5, -42, false, 2000000000L);
+            field.spawnMob(8820112, 5, -42, false, 2000000000L);
+            field.spawnMob(8820113, 5, -42, false, 2000000000L);
         } else {
-            sm.warpInstanceOut(chr, BossConstants.PINK_BEAN_ENTRACE_MAP);
+            exit(chr, sm);
         }
     }
 }

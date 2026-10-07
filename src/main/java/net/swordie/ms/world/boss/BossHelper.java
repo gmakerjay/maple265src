@@ -121,13 +121,21 @@ public class BossHelper {
         // Will
         if (mobID == 8880300 || mobID == 8880301 || mobID == 8880303 || mobID == 8880304) { // Hard
             field.removeMobs();
-            for (Char x : party.getPartyMembersInSameFieldWithChr(chr)) {
-                x.warp(field.getId() + 50);
+            if (party != null) {
+                for (Char x : party.getPartyMembersInSameFieldWithChr(chr)) {
+                    x.warp(field.getId() + 50);
+                }
+            } else {
+                chr.warp(field.getId() + 50);
             }
         } else if (mobID == 8880340 || mobID == 8880341 || mobID == 8880343 || mobID == 8880344) { // Normal
             field.removeMobs();
-            for (Char x : party.getPartyMembersInSameFieldWithChr(chr)) {
-                x.warp(field.getId() + 50);
+            if (party != null) {
+                for (Char x : party.getPartyMembersInSameFieldWithChr(chr)) {
+                    x.warp(field.getId() + 50);
+                }
+            } else {
+                chr.warp(field.getId() + 50);
             }
         } else if (mobID == 8880302 || mobID == 8880342) {
             field.removeMobs();
@@ -588,30 +596,29 @@ public class BossHelper {
         if (JobConstants.isHayato(chr.getJob()) && chr.getJobHandler() instanceof Hayato hayato) {
             hayato.incrementSwordEnergy();
         }
-        if (chr.getParty() != null) {
-            if (chr.getInstance() != null) {
-                int bossGuildContribution = GameConstants.getBossGuildContribution(mobID);
-                long bossRewardPrice = GameConstants.getBossRewardPrice(GameConstants.getBossRewardID(mobID));
-                if (bossRewardPrice != 1) {
-                    Server.get().broadcastForWorld(UserLocal.chatMsg(ChatType.Expedition, "[Thông báo] Nhân vật " + chr.getName() + " đã thành công tiêu diệt " + StringData.getMobStringById(mobID) + "!"));
+        if (chr.getInstance() != null) {
+            int bossGuildContribution = GameConstants.getBossGuildContribution(mobID);
+            long bossRewardPrice = GameConstants.getBossRewardPrice(GameConstants.getBossRewardID(mobID));
+            if (bossRewardPrice != 1) {
+                Server.get().broadcastForWorld(UserLocal.chatMsg(ChatType.Expedition, "[Thông báo] Nhân vật " + chr.getName() + " đã thành công tiêu diệt " + StringData.getMobStringById(mobID) + "!"));
+            }
+            java.util.Collection<Char> winners = (chr.getParty() != null) ? chr.getParty().getOnlineChars() : java.util.List.of(chr);
+            for (Char pmChr : winners) {
+                if (pmChr.getGuild() != null && bossGuildContribution != -1) {
+                    pmChr.getGuild().addContributionToChar(pmChr, bossGuildContribution);
                 }
-                for (Char pmChr : chr.getParty().getOnlineChars()) {
-                    if (pmChr.getGuild() != null && bossGuildContribution != -1) {
-                        pmChr.getGuild().addContributionToChar(pmChr, bossGuildContribution);
-                    }
-                    // Intense Power Crystal
-                    if (bossRewardPrice != 1) {
-                        pmChr.setLastBossTemplateID(GameConstants.getBossRewardID(mobID));
-                        Item item = ItemData.getItemDeepCopy(4001886);
-                        item.setBossRewardID(GameConstants.getBossRewardID(mobID));
-                        Drop drop = new Drop(item.getItemId(), item);
-                        field.drop(drop, pmChr.getPosition(), pmChr.getPosition(), true, 0, pmChr);
-                    }
+                // Intense Power Crystal
+                if (bossRewardPrice != 1) {
+                    pmChr.setLastBossTemplateID(GameConstants.getBossRewardID(mobID));
+                    Item item = ItemData.getItemDeepCopy(4001886);
+                    item.setBossRewardID(GameConstants.getBossRewardID(mobID));
+                    Drop drop = new Drop(item.getItemId(), item);
+                    field.drop(drop, pmChr.getPosition(), pmChr.getPosition(), true, 0, pmChr);
                 }
             }
         }
         // Boss Reward for Guild Members
-        if (chr.getParty() != null && chr.getParty().getOnlineChars().size() == 1) {
+        if (chr.getParty() == null || (chr.getParty() != null && chr.getParty().getOnlineChars().size() == 1)) {
             // Solo party
             int type = BossHelper.getGuildRewardGradeByMobID(mobID);
             if (type != -1) {

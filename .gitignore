@@ -49,5 +49,7 @@ apache-maven-*/
 # Temp and OS
 *.tmp
 *.bak
+*.pyc
+__pycache__/
 Thumbs.db
 .DS_Store

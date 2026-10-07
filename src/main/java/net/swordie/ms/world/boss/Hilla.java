@@ -16,23 +16,32 @@ public class Hilla {
         ScriptManagerImpl sm = chr.getScriptManager();
         Field field = chr.getOrCreateFieldByCurrentInstanceType(chr.getField().getId());
         Party party = chr.getParty();
-        if (party != null) {
-            if (party.isLeader(chr)) {
-                if (field.getMobs().isEmpty()) {
-                    switch (field.getId()) {
-                        case 262030100 -> sm.warpParty(chr, 262030200, party);
-                        case 262030200 -> sm.warpParty(chr, 262030300, party);
-                        case 262031100 -> sm.warpParty(chr, 262031200, party);
-                        case 262031200 -> sm.warpParty(chr, 262031300, party);
+        boolean isLeader = (party == null || party.isLeader(chr));
+        if (isLeader) {
+            if (field.getMobs().isEmpty()) {
+                switch (field.getId()) {
+                    case 262030100 -> {
+                        if (party != null) sm.warpParty(chr, 262030200, party);
+                        else chr.warp(262030200);
                     }
-                } else {
-                    sm.chat("Please eliminate all monsters before moving to the next stage.");
+                    case 262030200 -> {
+                        if (party != null) sm.warpParty(chr, 262030300, party);
+                        else chr.warp(262030300);
+                    }
+                    case 262031100 -> {
+                        if (party != null) sm.warpParty(chr, 262031200, party);
+                        else chr.warp(262031200);
+                    }
+                    case 262031200 -> {
+                        if (party != null) sm.warpParty(chr, 262031300, party);
+                        else chr.warp(262031300);
+                    }
                 }
             } else {
-                sm.chat("Only Leader of your party can do this.");
+                sm.chat("Please eliminate all monsters before moving to the next stage.");
             }
         } else {
-            sm.warpInstanceOut(chr, BossConstants.HILLA_ENTRANCE_MAP, 1);
+            sm.chat("Only Leader of your party can do this.");
         }
     }
 }
