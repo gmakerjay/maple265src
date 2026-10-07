@@ -92,7 +92,15 @@ selection = sm.sendNext("#fs13#Hello, #h0#. I am the Maple Administrator. How ma
                         "#L0#Remove Cash Item(s).#l\r\n\r\n" +
                         "#k")
 if selection == 30:
-    import boss_arena
+    import sys
+    for p in ["data/scripts/npc", "data/scripts"]:
+        if p not in sys.path:
+            sys.path.append(p)
+    if 'boss_arena' in sys.modules:
+        reload(sys.modules['boss_arena'])
+        import boss_arena
+    else:
+        import boss_arena
     boss_arena.open_boss_arena(sm, chr)
 elif selection == 25:
     open_dimensional_mirror()

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Offline Boss Arena (Universal Boss Dispatcher)
 # Supports Solo & Party, Unlimited Attempts, 0 Prequests, Real Boss Spawns
 from net.swordie.ms.world.boss import Zakum
@@ -66,7 +67,7 @@ BOSS_CATEGORIES = [
         ("Gollux Head", 863010600, "gollux", 0, "Lv. 180+ | Corrupted Titan Head"),
     ]),
     ("Endgame & Tenebris Bosses", [
-        ("Black Mage (검은 마법사)", 450013100, "black_mage", 0, "Lv. 255+ | 4-Phase Story Dungeon (465T HP)"),
+        ("Black Mage", 450013100, "black_mage", 0, "Lv. 255+ | 4-Phase Story Dungeon (465T HP)"),
         ("Normal Gloom", 450009301, "mob", 8644650, "Lv. 245+ | Giant Monster of Limina (26T HP)"),
         ("Chaos Gloom", 450009301, "mob", 8644655, "Lv. 255+ | Giant Monster of Limina (115T HP)"),
         ("Normal Darknell", 450012200, "mob", 8645009, "Lv. 255+ | Guard Captain Darknell (26T HP)"),

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Fort Asura - Ritual Altar (Akechi Mitsuhide Boss Battle)
 # Map ID: 874004000
 

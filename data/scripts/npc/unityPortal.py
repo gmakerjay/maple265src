@@ -44,7 +44,15 @@ menu_text += "#L99##dShow All Destinations (A-Z)#k#l\r\n"
 cat_sel = sm.sendNext(menu_text)
 
 if cat_sel == 50:
-    import boss_arena
+    import sys
+    for p in ["data/scripts/npc", "data/scripts"]:
+        if p not in sys.path:
+            sys.path.append(p)
+    if 'boss_arena' in sys.modules:
+        reload(sys.modules['boss_arena'])
+        import boss_arena
+    else:
+        import boss_arena
     boss_arena.open_boss_arena(sm, chr)
     selected_list = []
 elif cat_sel == 99:
