@@ -19,7 +19,7 @@ public enum DimensionMirrorType {
     //Maplerunner(11, 993001000, "Maple Runner", "See how quickly you can run and jump through 40 fun stages in the all-new Maple Runner!", 30, 34555, 18837, new int[] { 1142957, 1142958, 1142959 , 4310195 }, false),
     RootAbyss(11, 910700200, "Root Abyss", "Battle the seal guardians to weaken them. \nThe future of Maple World is in your hands.", 125, 30000, 30028, new int[]{1003715, 1003716, 1003717, 1003718}, false),
     Ursus(12, 970072200, "Ursus", "Think you can take on Ursus the Destroyer?", 100, 0, 33553, new int[]{3015279, 2434509, 2434389, 3700334, 1142879}, true),
-    GhostPark(13, 100000000, "Ghost Park", "", 1, 0, 0, new int[]{}, false), // new
+    GhostPark(13, 956100000, "Ghost Park", "", 1, 0, 0, new int[]{}, false), // 956100000 = Ghost Park Entrance
     //Alishan(15, 749080900, 1, "Alishan", "Do you want to move to Alishan?", 33, 55234, 55255, new int[] { 1202160, 2434004 }, false),
     //TwistedAquaRoad(19, 860000000, "Twisted Aqua Road", "Do you want to move to Twisted Aqua Road?", 200, 17100, 17132, new int[] {}, false),
     //Momijigaoka(20, 807000000, 4, "Momijigaoka", "Do you want to move to Momijigaoka?", 10, 0, 7844, new int[] {}, false),
@@ -28,13 +28,13 @@ public enum DimensionMirrorType {
     EventHall(503, 820000000, 2, "Event Hall", "Do you want to move to Event Hall?", 1, 0, 5399, new int[]{}, false),
     AlienVisitor(504, 861000000, "Alien Visitor", "Do you want to move to Alien Visitor?", 200, 0, 17201, new int[]{1113038, 1122256, 1032191, 1132230, 1003893}, false),
     CommerciRepublic(505, 865000001, "Theme Dungeon:\r\n Commerci Republic", "Do you want to move to Commerci Republic?", 140, 17600, 17699, new int[]{1142981, 1302299, 1382232, 1452227, 1332249, 1492200}, false),
-    HyperspaceCube(506, 100000000, "Hyperspace Cube", "", 1, 0, 0, new int[]{}, false), // new
-    Afterlands(508, "Afterlands", "Do you want to move to Afterlands?", 75, 63020, 63255, new int[]{1202237, 1202238, 1202239, 1202240}, false),
-    MushroomShrine(509, 800000000, "Mushroom Shrine", "", 1, 0, 0, new int[]{}, false), // new
-    AbrupBaseCamp(510, 100000000, "Abrup Base Camp", "", 1, 0, 0, new int[]{}, false), // new
-    NewLeafCity(511, 600000000, "New Leaf City", "", 1, 0, 0, new int[]{}, false), // new
-    Gollux(512, 863010000, "Gollux", "", 1, 0, 0, new int[]{}, false), // new
-    MapleTour(513, 100000000, "Maple Tour", "", 1, 0, 0, new int[]{}, false), // new
+    HyperspaceCube(506, 867110000, "Hyperspace Cube", "", 1, 0, 0, new int[]{}, false), // 867110000 = Hyperspace Cube Entrance
+    Afterlands(508, 867113100, "Afterlands", "Do you want to move to Afterlands?", 75, 63020, 63255, new int[]{1202237, 1202238, 1202239, 1202240}, false), // 867113100 = The Afterlands
+    MushroomShrine(509, 800000000, "Mushroom Shrine", "", 1, 0, 0, new int[]{}, false),
+    AbrupBaseCamp(510, 867136130, "Abrup Base Camp", "", 1, 0, 0, new int[]{}, false), // 867136130 = Kaptafel (Abrup Basin)
+    NewLeafCity(511, 600000000, "New Leaf City", "", 1, 0, 0, new int[]{}, false),
+    Gollux(512, 863010000, "Gollux", "", 1, 0, 0, new int[]{}, false),
+    MapleTour(513, 993017200, "Maple Tour", "", 1, 0, 0, new int[]{}, false), // 993017200 = Maple Tour
     ;
 
     private final String name;
@@ -93,6 +93,14 @@ public enum DimensionMirrorType {
 
     public static DimensionMirrorType getByID(int id) {
         return Util.findWithPred(Arrays.asList(values()), csat -> csat.getId() == id);
+    }
+
+    public static DimensionMirrorType getByIndexOrID(int id) {
+        DimensionMirrorType[] values = values();
+        if (id >= 0 && id < values.length) {
+            return values[id];
+        }
+        return getByID(id);
     }
 
     public String getName() {

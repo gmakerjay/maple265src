@@ -1290,11 +1290,16 @@ public class UserHandler {
     public static void dimensionMirrorRequest(Char chr, InPacket inPacket) {
         inPacket.decodeInt(); // crc
         int id = inPacket.decodeInt();
-        int toFieldID = DimensionMirrorType.getByID(id).getMapId();
-        int portalID = DimensionMirrorType.getByID(id).getPortal();
-        if (toFieldID != 0 && chr.getField().getId() != toFieldID && chr.getInstance() == null) {
-            chr.getScriptManager().setReturnField(chr.getFieldID());
-            chr.warp(toFieldID, portalID);
+        DimensionMirrorType dmt = DimensionMirrorType.getByIndexOrID(id);
+        if (dmt != null) {
+            int toFieldID = dmt.getMapId();
+            int portalID = dmt.getPortal();
+            if (toFieldID != 0 && chr.getField().getId() != toFieldID && chr.getInstance() == null) {
+                chr.getScriptManager().setReturnField(chr.getFieldID());
+                chr.warp(toFieldID, portalID);
+            } else {
+                chr.chatMessage("You can't move to this map.");
+            }
         } else {
             chr.chatMessage("You can't move to this map.");
         }
