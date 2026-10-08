@@ -75,12 +75,13 @@ def open_dimensional_mirror():
 
 sm.setSpeakerID(NPC)
 menu_text = "#fs13#Hello, #h0#! I am the Maple Administrator. How may I assist you today?\r\n\r\n"
+menu_text += "#e#d=== Travel & Warping Services (Warp Center) ===#k#n\r\n"
+menu_text += "#b#L26##e#b[Universal Warp Service]#k#n Fast Travel to Major Towns, Grandis, Arcane River & Popular Training Fields.#l\r\n"
+menu_text += "#L30##e#r[Boss Arena & Boss Warp]#k#n Fast Warp to all Bosses up to Kaling Extreme (Scaled Meso Fee).#l\r\n"
+menu_text += "#L25##e#g[Dimensional Mirror]#k#n Fast Travel to Party Quests, Theme Dungeons & Event Areas.#l\r\n\r\n"
 menu_text += "#e#d=== Featured Services ===#k#n\r\n"
 menu_text += "#b#L50##e#d[Cash & Point Shop]#k#n Cubes, Flames, Pets, Beauty & Fashion (Male / Female / Unisex).#l\r\n"
 menu_text += "#L40##e#g[Potion & Buff Depot]#k#n Bulk Potions (x1000) & Combat Buffs.#l\r\n"
-menu_text += "#L30##e#r[Boss Arena & Warp]#k#n Challenge all bosses up to Kaling Extreme (Solo/Party, Scaled Meso Fee).#l\r\n"
-menu_text += "#L26##e#b[Town & Field Warp]#k#n Fast Travel to Major Towns, Arcane River, Grandis & Training Grounds.#l\r\n"
-menu_text += "#L25##e#b[Dimensional Mirror]#k#n Fast Travel (Bosses, Dungeons, Cities).#l\r\n"
 menu_text += "#L20##e#r[Starter Package]#k#n 100k DP, 1M Cash Points, Vac Pet #r(1x per account)#k.#l\r\n\r\n"
 menu_text += "#e#d=== Character & System Tools ===#k#n\r\n"
 menu_text += "#b#L14#Fast Job Advancement.#l\r\n"
@@ -91,6 +92,7 @@ menu_text += "#L5#Complete all Boss Prequests.#l\r\n"
 menu_text += "#L13#Upgrade Mechanical Heart (Required: #i1672020#).#l\r\n"
 menu_text += "#L12#Check Your MVP Status.#l\r\n"
 menu_text += "#L0#Remove Cash Item(s).#l\r\n"
+menu_text += "#L99##r[Toggle One-Hit Kill Mode]#k (Current: #e" + ("#rON#k" if chr.isOneHitKill() else "#gOFF (Normal Real Damage)#k") + "#n)#l\r\n"
 selection = sm.sendNext(menu_text)
 
 if selection == 50:
@@ -226,3 +228,9 @@ elif selection == 14:
 elif selection == 16:
     chr.maxSkills()
     sm.sendSayOkay("All skills (1st - 4th Job) have been maxed!")
+elif selection == 99:
+    chr.setOneHitKill(not chr.isOneHitKill())
+    status_str = "#rENABLED (ON)#k" if chr.isOneHitKill() else "#bDISABLED (OFF - Real Damage Mode)#k"
+    sm.sendSayOkay("#fs13##e[One-Hit Kill Mode]#n\r\n\r\n"
+                   "One-Hit Kill mode is now: " + status_str + "\r\n\r\n"
+                   "#d(When OFF: Attacks use normal, real damage calculated from character stats & gear.)#k")

@@ -10300,6 +10300,16 @@ public class Char {
         return getUser().getAccountType().getVal() == AccountType.Admin.getVal() || getUser().getAccountType().getVal() == AccountType.GameMaster.getVal();
     }
 
+    private boolean oneHitKill = false;
+
+    public boolean isOneHitKill() {
+        return oneHitKill;
+    }
+
+    public void setOneHitKill(boolean oneHitKill) {
+        this.oneHitKill = oneHitKill;
+    }
+
     public long getLastReviveTime() {
         return lastReviveTime;
     }

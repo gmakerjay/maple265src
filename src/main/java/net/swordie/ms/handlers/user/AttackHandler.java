@@ -222,7 +222,7 @@ public class AttackHandler {
 
                     try {
 
-                        if (chr.isGM()) {
+                        if (chr.isGM() && chr.isOneHitKill()) {
                             totalDamage = Long.MAX_VALUE;
                         }
 

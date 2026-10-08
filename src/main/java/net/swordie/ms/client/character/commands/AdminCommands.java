@@ -982,6 +982,15 @@ public class AdminCommands {
         }
     }
 
+    @Command(names = {"onehit", "ohko"}, requiredType = GameMaster)
+    public static class OneHitKill extends AdminCommand {
+
+        public static void execute(Char chr, String[] args) {
+            chr.setOneHitKill(!chr.isOneHitKill());
+            chr.chatMessage(SpeakerChannel, "[Admin] One-Hit Kill mode is now " + (chr.isOneHitKill() ? "ENABLED (ON)" : "DISABLED (OFF)") + ".");
+        }
+    }
+
     @Command(names = {"cleardrops", "cleardrop"}, requiredType = GameMaster)
     public static class ClearDrops extends AdminCommand {
 

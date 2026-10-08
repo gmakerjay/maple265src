@@ -47,6 +47,9 @@ public class PlayerCommands {
             chr.chatMessage("@checkboss: Check remaining cooldowns for boss encounters.");
             chr.chatMessage("@checkmob: Check nearby monsters and their drop tables.");
             chr.chatMessage("@home: Teleport to Henesys.");
+            chr.chatMessage("@warp: Open Universal Warp Center (Major Towns & Fields).");
+            chr.chatMessage("@boss: Open Boss Arena & Boss Warp (Up to Kaling Extreme).");
+            chr.chatMessage("@admin: Open Maple Administrator Services.");
             chr.chatMessage("@afk: Open offline Idle Hunting session.");
             chr.chatMessage("@ssb: View contents of Surprise Style Box.");
             chr.chatMessage("@end: Save and return to the login screen.");
@@ -112,6 +115,30 @@ public class PlayerCommands {
             if (chr.getInstance() == null) {
                 chr.warp(FieldConstants.HENESYS_ID, 0);
             }
+        }
+    }
+
+    @Command(names = {"warp", "town"}, requiredType = Player)
+    public static class WarpCmd extends PlayerCommand {
+
+        public static void execute(Char chr, String[] args) {
+            chr.getScriptManager().startScript(chr, 9010000, "warp_service", ScriptType.Npc);
+        }
+    }
+
+    @Command(names = {"boss", "bossarena"}, requiredType = Player)
+    public static class BossArenaCmd extends PlayerCommand {
+
+        public static void execute(Char chr, String[] args) {
+            chr.getScriptManager().startScript(chr, 9010000, "boss_arena", ScriptType.Npc);
+        }
+    }
+
+    @Command(names = {"admin", "ea"}, requiredType = Player)
+    public static class AdminCmd extends PlayerCommand {
+
+        public static void execute(Char chr, String[] args) {
+            chr.getScriptManager().startScript(chr, 9010000, "quick_adminNPC", ScriptType.Npc);
         }
     }
 
