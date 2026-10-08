@@ -2,6 +2,7 @@
 setlocal enabledelayedexpansion
 title MapleStory VN Server Control Panel
 color 0B
+cd /d "%~dp0"
 
 :menu
 cls

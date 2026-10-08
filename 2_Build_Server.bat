@@ -2,6 +2,7 @@
 setlocal enabledelayedexpansion
 title Build MapleStory Server (Portable Maven and JDK 21)
 color 0A
+cd /d "%~dp0"
 
 echo.
 echo ==============================================================================

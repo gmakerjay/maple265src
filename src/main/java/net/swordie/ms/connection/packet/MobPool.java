@@ -119,7 +119,7 @@ public class MobPool {
         return outPacket;
     }
 
-    public static OutPacket damaged(int mobID, long damage, int templateID, byte type, int hp, long maxHp) {
+    public static OutPacket damaged(int mobID, long damage, int templateID, byte type, long hp, long maxHp) {
         OutPacket outPacket = new OutPacket(OutHeader.MOB_DAMAGED);
 
         outPacket.encodeInt(mobID);

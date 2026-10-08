@@ -1429,9 +1429,8 @@ public class Mob extends Life {
         }
         this.hp = newHp;
         double percDamage = ((double) newHp / maxHP);
-        newHp = newHp > Integer.MAX_VALUE ? Integer.MAX_VALUE : newHp;
         if (!hasProperty("triggeredEvent") && templateID / 10000 == 939 && getField().getId() != 863010600) {
-            if (oldHp > 0 && newHp <= maxHP * 0.5) {
+            if (oldHp > 0 && this.hp <= maxHP * 0.5) {
                 int chance = templateID == 9390610 || templateID == 9390611 ? 100 : BossConstants.GOLLUX_DROP_STONE_CHANCE;
                 if (new Random().nextInt(101) <= chance) {
                     setProperty("triggeredEvent", true);
@@ -1446,6 +1445,14 @@ public class Mob extends Life {
             if (templateID >= 9833201 && templateID <= 9833205 && (field.getId() == 921172000 || field.getId() == 921172100)) {
                 setHp(0);
                 return true;
+            }
+            if (isBoss()) {
+                setHp(0);
+                if (getHpTagColor() == 0) {
+                    setHpTagColor(1);
+                    setHpTagBgcolor(5);
+                }
+                field.broadcast(FieldPacket.fieldEffect(FieldEffect.mobHPTagFieldEffect(this)));
             }
             remove(true);
             chr.getJobHandler().handleMobKilled(this, skillID);
@@ -1542,7 +1549,7 @@ public class Mob extends Life {
                 }
             }
 
-            if (isBoss() && !isHPgaugeHide()) {
+            if (isBoss()) {
                 if (getHpTagColor() == 0) {
                     setHpTagColor(1);
                     setHpTagBgcolor(5);
@@ -1616,14 +1623,14 @@ public class Mob extends Life {
         if (oldHp > 0 && newHp <= 0) {
             // Boss sponges
             removeWithAnimation();
-            if (isBoss() && !isHPgaugeHide()) {
+            if (isBoss()) {
                 if (getHpTagColor() == 0) {
                     setHpTagColor(1);
                     setHpTagBgcolor(5);
                 }
                 getField().broadcast(FieldPacket.fieldEffect(FieldEffect.mobHPTagFieldEffect(this)));
             }
-        } else if (isBoss() && !isHPgaugeHide()) {
+        } else if (isBoss()) {
             if (getHpTagColor() == 0) {
                 setHpTagColor(1);
                 setHpTagBgcolor(5);
@@ -2354,7 +2361,7 @@ public class Mob extends Life {
             onlyChar.write(controllerID == onlyChar.getId() ? MobPool.changeController(this, linkteam) : MobPool.changeController(objectID));
             onlyChar.write(MobPool.nextTargetFromSvr(this, controllerID));
         }
-        if (isBoss() && !isHPgaugeHide() && getHp() > 0) {
+        if (isBoss() && getHp() > 0) {
             if (getHpTagColor() == 0) {
                 setHpTagColor(1);
                 setHpTagBgcolor(5);
@@ -2958,9 +2965,9 @@ public class Mob extends Life {
         long diff = newHp - oldHp;
         if (getField() != null & diff != 0) {
             if (isOwnedBySameField()) {
-                getOwner().write(MobPool.damaged(getObjectId(), diff, getTemplateId(), (byte) 0, Util.maxInt(getHp()), Util.maxInt(getMaxHp())));
+                getOwner().write(MobPool.damaged(getObjectId(), diff, getTemplateId(), (byte) 0, getHp(), getMaxHp()));
             } else {
-                getField().broadcast(MobPool.damaged(getObjectId(), diff, getTemplateId(), (byte) 0, Util.maxInt(getHp()), Util.maxInt(getMaxHp())));
+                getField().broadcast(MobPool.damaged(getObjectId(), diff, getTemplateId(), (byte) 0, getHp(), getMaxHp()));
             }
         }
         if (oldHp > 0 && newHp <= 0) {

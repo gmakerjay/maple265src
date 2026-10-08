@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.swordie.ms.client.character.skills.Option;
 import net.swordie.ms.ServerConstants;
+import net.swordie.ms.constants.BossHpRegistry;
 import net.swordie.ms.constants.GameConstants;
 import net.swordie.ms.life.drop.DropInfo;
 import net.swordie.ms.life.mob.ForcedMobStat;
@@ -431,8 +432,19 @@ public class MobData {
             mob.setCurrentAction(-1);
             mob.setEliteGrade(-1);
             mob.setMoveAction((byte) 5); // normal monster?
-            mob.setHp(fms.getMaxHP());
-            mob.setMaxHp(fms.getMaxHP());
+            Long officialBossHp = BossHpRegistry.getOfficialMaxHp(templateID);
+            if (officialBossHp != null && officialBossHp > 0) {
+                fms.setMaxHP(officialBossHp);
+                mob.setHp(officialBossHp);
+                mob.setMaxHp(officialBossHp);
+                mob.setBoss(true);
+                mob.setHPgaugeHide(false);
+                if (mob.getHpTagColor() == 0) mob.setHpTagColor(1);
+                if (mob.getHpTagBgcolor() == 0) mob.setHpTagBgcolor(5);
+            } else {
+                mob.setHp(fms.getMaxHP());
+                mob.setMaxHp(fms.getMaxHP());
+            }
             mob.setMp(fms.getMaxMP());
             mob.setMaxMp(fms.getMaxMP());
             mob.setDrops(DropData.getDropInfoByID(templateID).stream().filter(dropInfo -> !dropInfo.getReactorDrop()).collect(Collectors.toSet()));

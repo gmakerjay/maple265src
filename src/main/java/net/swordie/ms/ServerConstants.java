@@ -62,6 +62,7 @@ public class ServerConstants {
                 EVENT_MSG = props.getProperty("server.eventMsg", EVENT_MSG);
                 LOCAL_HOST_SERVER = "127.0.0.1".equals(ip) || "localhost".equalsIgnoreCase(ip);
                 System.out.printf("[ServerConstants] Config loaded: IP=%s, LoginPort=%d, Localhost=%b%n", ip, LOGIN_PORT, LOCAL_HOST_SERVER);
+                ServerConfig.loadConfig(props);
             } catch (Exception e) {
                 System.err.println("[ServerConstants] Error loading server.properties: " + e.getMessage());
             }

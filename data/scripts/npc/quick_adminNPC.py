@@ -74,24 +74,37 @@ def open_dimensional_mirror():
                 sm.sendSayOkay("You are already at #b" + dest_name + "#k.")
 
 sm.setSpeakerID(NPC)
-selection = sm.sendNext("#fs13#Hello, #h0#. I am the Maple Administrator. How may I assist you today?\r\n" +
-                        "#b" +
-                        "#L30##e#r[Offline Boss Arena]#k#n Instant Boss Battles (Solo / No Limits).#l\r\n" +
-                        "#L25##e#r[Dimensional Mirror]#k#n Fast Travel (Bosses, Dungeons, Cities).#l\r\n" +
-                        "#L20#Claim Starter / Testing Gift Package.#l\r\n" +
-                        "#L21#Unlock 5th Job (Job V).#l\r\n" +
-                        "#L22#Unlock 6th Job (Job VI).#l\r\n" +
-                        "#L16#Max all skills (1st - 4th Job).#l\r\n" +
-                        "#L14#Fast Job Advancement.#l\r\n" +
-                        "#L5#Complete all Boss Prequests.#l\r\n" +
-                        "#L9#Purchase items with #eDonation Points.#n#l\r\n" +
-                        "#L10#Change Hairstyle with #eDonation Points.#n#l\r\n" +
-                        "#L11#Change Face Style with #eDonation Points.#n#l\r\n" +
-                        "#L12#Check Your #e#rMVP#k#n #bStatus.#l\r\n" +
-                        "#L13#Upgrade Mechanical Heart (Required: #i1672020#).#l\r\n" +
-                        "#L0#Remove Cash Item(s).#l\r\n\r\n" +
-                        "#k")
-if selection == 30:
+menu_text = "#fs13#Hello, #h0#! I am the Maple Administrator. How may I assist you today?\r\n\r\n"
+menu_text += "#e#d=== Featured Services ===#k#n\r\n"
+menu_text += "#b#L50##e#d[Cash & Point Shop]#k#n Cubes, Flames, Pets, Beauty & Fashion (Male / Female / Unisex).#l\r\n"
+menu_text += "#L40##e#g[Potion & Buff Depot]#k#n Bulk Potions (x1000) & Combat Buffs.#l\r\n"
+menu_text += "#L30##e#r[Boss Arena & Warp]#k#n Challenge all bosses up to Kaling Extreme (Solo/Party, Scaled Meso Fee).#l\r\n"
+menu_text += "#L26##e#b[Town & Field Warp]#k#n Fast Travel to Major Towns, Arcane River, Grandis & Training Grounds.#l\r\n"
+menu_text += "#L25##e#b[Dimensional Mirror]#k#n Fast Travel (Bosses, Dungeons, Cities).#l\r\n"
+menu_text += "#L20##e#r[Starter Package]#k#n 100k DP, 1M Cash Points, Vac Pet #r(1x per account)#k.#l\r\n\r\n"
+menu_text += "#e#d=== Character & System Tools ===#k#n\r\n"
+menu_text += "#b#L14#Fast Job Advancement.#l\r\n"
+menu_text += "#L21#Unlock 5th Job (Job V).#l\r\n"
+menu_text += "#L22#Unlock 6th Job (Job VI).#l\r\n"
+menu_text += "#L16#Max all skills (1st - 4th Job).#l\r\n"
+menu_text += "#L5#Complete all Boss Prequests.#l\r\n"
+menu_text += "#L13#Upgrade Mechanical Heart (Required: #i1672020#).#l\r\n"
+menu_text += "#L12#Check Your MVP Status.#l\r\n"
+menu_text += "#L0#Remove Cash Item(s).#l\r\n"
+selection = sm.sendNext(menu_text)
+
+if selection == 50:
+    import sys
+    for p in ["data/scripts/npc", "data/scripts"]:
+        if p not in sys.path:
+            sys.path.append(p)
+    if 'point_shop' in sys.modules:
+        reload(sys.modules['point_shop'])
+        import point_shop
+    else:
+        import point_shop
+    point_shop.open_point_shop(sm, chr)
+elif selection == 30:
     import sys
     for p in ["data/scripts/npc", "data/scripts"]:
         if p not in sys.path:
@@ -102,6 +115,28 @@ if selection == 30:
     else:
         import boss_arena
     boss_arena.open_boss_arena(sm, chr)
+elif selection == 26:
+    import sys
+    for p in ["data/scripts/npc", "data/scripts"]:
+        if p not in sys.path:
+            sys.path.append(p)
+    if 'warp_service' in sys.modules:
+        reload(sys.modules['warp_service'])
+        import warp_service
+    else:
+        import warp_service
+    warp_service.open_warp_service(sm, chr)
+elif selection == 40:
+    import sys
+    for p in ["data/scripts/npc", "data/scripts"]:
+        if p not in sys.path:
+            sys.path.append(p)
+    if 'potion_shop' in sys.modules:
+        reload(sys.modules['potion_shop'])
+        import potion_shop
+    else:
+        import potion_shop
+    potion_shop.open_potion_shop(sm, chr)
 elif selection == 25:
     open_dimensional_mirror()
 elif selection == 0:
@@ -111,10 +146,35 @@ elif selection == 1:
 elif selection == 2:
     open_background_setting()
 elif selection == 20:
-    chr.addMaplePoint(3000000)
-    sm.giveMesos(10000000000)
-    chr.addItemToInventory(5002396, 1, "day", 30)
-    sm.sendSayOkay("You have received 3M Maple Points (NX), 10B Mesos, and a Vac Pet (30 Days)!")
+    STARTER_QUEST = 99990
+    user = chr.getUser()
+    already_claimed = False
+
+    if chr.getQRValueByKey(STARTER_QUEST, "claimed") == "1" or sm.hasQuestCompleted(STARTER_QUEST):
+        already_claimed = True
+    if user != None and user.getMsg2() == 1:
+        already_claimed = True
+
+    if already_claimed:
+        sm.sendSayOkay("#fs13##e#r[Starter Package Already Claimed]#k#n\r\n\r\n"
+                       "You have already claimed your Starter Package on this account!\r\n\r\n"
+                       "#d(Notice: The 100,000 DP, 1,000,000 Cash Points, and Vac Pet can only be claimed once per account.)#k")
+    else:
+        if user != None:
+            user.addDonationPoint(100000)
+            user.setMsg2(1)
+            user.updateUserToSQL()
+        chr.addMaplePoint(1000000)
+        chr.addItemToInventory(5002396, 1, "day", 30)
+        chr.setQRValueByKey(STARTER_QUEST, "claimed", "1")
+        sm.completeQuest(STARTER_QUEST)
+
+        sm.sendSayOkay("#fs13##e#b[Starter Package Claimed Successfully!]#k#n\r\n\r\n"
+                       "You have received:\r\n"
+                       "- #b100,000 Donation Points (DP)#k\r\n"
+                       "- #b1,000,000 Cash Points (NX / Maple Points)#k\r\n"
+                       "- #b1x Vac Pet (30 Days)#k #i5002396#\r\n\r\n"
+                       "#r* Note: This package has been registered to your account and cannot be claimed again.#k")
 elif selection == 21:
     for qid in range(1460, 1466):
         sm.completeQuest(qid)

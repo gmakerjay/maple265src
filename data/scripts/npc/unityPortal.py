@@ -37,6 +37,7 @@ CATEGORIES = [
 
 menu_text = "#fs13#Where would you like to travel via the #bDimensional Mirror#k?\r\n\r\n"
 menu_text += "#L50##e#r[Offline Boss Arena]#k#n Instant Boss Battles (Solo / No Limits)#l\r\n"
+menu_text += "#L51##e#b[Town & Field Warp]#k#n Fast Travel to Major Towns, Arcane River & Fields#l\r\n"
 for i, (cat_name, items) in enumerate(CATEGORIES):
     menu_text += "#L" + str(i) + "##b" + cat_name + "#k (" + str(len(items)) + " locations)#l\r\n"
 menu_text += "#L99##dShow All Destinations (A-Z)#k#l\r\n"
@@ -54,6 +55,18 @@ if cat_sel == 50:
     else:
         import boss_arena
     boss_arena.open_boss_arena(sm, chr)
+    selected_list = []
+elif cat_sel == 51:
+    import sys
+    for p in ["data/scripts/npc", "data/scripts"]:
+        if p not in sys.path:
+            sys.path.append(p)
+    if 'warp_service' in sys.modules:
+        reload(sys.modules['warp_service'])
+        import warp_service
+    else:
+        import warp_service
+    warp_service.open_warp_service(sm, chr)
     selected_list = []
 elif cat_sel == 99:
     # Combine all

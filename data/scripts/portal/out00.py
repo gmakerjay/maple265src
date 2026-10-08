@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Exit from Root Abyss Boss Arena
 target_map = 105200000
 if sm.getChr().getInstance() != null:

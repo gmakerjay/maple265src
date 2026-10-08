@@ -1,8 +1,4 @@
 @echo off
-cd /d %~dp0
-set XMS=4G
-set XMX=4G
+cd /d "%~dp0"
+call "%~dp01_Start_Server.bat"
 
-java --enable-preview -server -Xms%XMS% -Xmx%XMX% -jar maplestory.jar
-
-pause

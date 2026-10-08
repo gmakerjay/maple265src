@@ -29,7 +29,7 @@ public class RootAbyss {
             }
             case CHAOS -> { // pierre_Summon1
                 field.getTimer().addEvent(() -> {
-                    field.spawnMob(BossHelper.CHAOS_PIERRE_1, 497, 551, false, 10000000000L);
+                    field.spawnMob(BossHelper.CHAOS_PIERRE_1, 497, 551, false, 80_000_000_000L);
                     field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect.img/rootabyss/firework")));
                     field.broadcast(WvsContext.weatherEffectNotice(WeatherEffNoticeType.BossPierre, "From the bottom of my heart, welcome to the tea party!"));
                 }, 2000);
@@ -78,7 +78,7 @@ public class RootAbyss {
             case "banbanChaos" -> {
                 final int REACTOR = 1058017;
                 if (!field.isBossSpawned()) {
-                    field.spawnMob(BossHelper.CHAOS_VON_BON, -135, 455, false, 10000000000L);
+                    field.spawnMob(BossHelper.CHAOS_VON_BON, -135, 455, false, 100_000_000_000L);
                     field.setBossSpawned(true);
                 }
                 BossHelper.initRootAbyss(chr, 0, REACTOR, 0, 0);
@@ -95,7 +95,7 @@ public class RootAbyss {
             case "bellumChaos" -> {
                 final int REACTOR = 1058021;
                 if (!field.isBossSpawned()) {
-                    field.spawnMob(BossHelper.CHAOS_VELLUM, -200, 440, false, 10000000000L);
+                    field.spawnMob(BossHelper.CHAOS_VELLUM, -200, 440, false, 200_000_000_000L);
                     field.broadcast(WvsContext.weatherEffectNotice(WeatherEffNoticeType.BossVellum, "You ignore my warnings?! I will show you no mercy!"));
                     field.setBossSpawned(true);
                 }
@@ -112,7 +112,7 @@ public class RootAbyss {
             case "queenChaos" -> {
                 final int REACTOR = 1058019;
                 if (!field.isBossSpawned()) {
-                    field.spawnMob(BossHelper.CHAOS_QUEEN_1, 37, 135, false, 10000000000L);
+                    field.spawnMob(BossHelper.CHAOS_QUEEN_1, 37, 135, false, 140_000_000_000L);
                     field.setBossSpawned(true);
                 }
                 BossHelper.initRootAbyss(chr, 0, REACTOR, 0, 0);

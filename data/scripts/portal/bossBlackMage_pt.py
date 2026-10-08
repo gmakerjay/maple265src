@@ -21,5 +21,5 @@ if response != 99 and 0 <= response < len(destinations):
     sm.setInstanceTime(30 * 60, 100000000)
     field = chr.getField()
     if not field.hasMobById(8880500) and not field.hasMobById(8880501):
-        field.spawnMob(8880500, -600, 85, False, 32500000000000L)
-        field.spawnMob(8880501, 600, 85, False, 32500000000000L)
+        field.spawnMob(8880500, -600, 85, False, 32500000000000)
+        field.spawnMob(8880501, 600, 85, False, 32500000000000)

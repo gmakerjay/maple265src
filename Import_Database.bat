@@ -2,6 +2,7 @@
 setlocal enabledelayedexpansion
 title Import Database - MapleStory VN (vietmaple)
 color 0E
+cd /d "%~dp0"
 
 echo.
 echo ==============================================================================
@@ -12,10 +13,17 @@ echo.
 REM 1. Detect mysql.exe
 set "MYSQL_CMD="
 
-REM Check PATH first
-where mysql.exe >nul 2>&1
-if %ERRORLEVEL% EQU 0 (
-    set "MYSQL_CMD=mysql"
+REM Check Portable MariaDB first
+if exist "%~dp0mariadb\bin\mysql.exe" (
+    set "MYSQL_CMD=%~dp0mariadb\bin\mysql.exe"
+)
+
+REM Check PATH
+if not defined MYSQL_CMD (
+    where mysql.exe >nul 2>&1
+    if %ERRORLEVEL% EQU 0 (
+        set "MYSQL_CMD=mysql"
+    )
 )
 
 REM Check Standard MySQL Server (8.0, 8.4, 5.7, etc.)
@@ -122,6 +130,18 @@ set "PASS_ARG="
 if not "!DB_PASS!"=="" (
     if /i not "!DB_PASS!"=="none" (
         set "PASS_ARG=-p!DB_PASS!"
+    )
+)
+
+REM Ensure Portable MariaDB is running if connecting to localhost
+if "!DB_HOST!"=="127.0.0.1" (
+    powershell -NoProfile -Command "$client = New-Object System.Net.Sockets.TcpClient; try { $client.Connect('127.0.0.1', [int]'!DB_PORT!'); $client.Close(); exit 0 } catch { exit 1 }" >nul 2>&1
+    if !ERRORLEVEL! NEQ 0 (
+        if exist "%~dp0mariadb\bin\mysqld.exe" (
+            echo [*] Starting Portable MariaDB Engine on port !DB_PORT!...
+            start "MariaDB Portable" /min /D "%~dp0mariadb" "%~dp0mariadb\bin\mysqld.exe" --defaults-file="%~dp0mariadb\my.ini" --basedir="%~dp0mariadb" --datadir="%~dp0mariadb\data" --console
+            powershell -NoProfile -Command "$port=[int]'!DB_PORT!'; for ($i=0; $i -lt 30; $i++) { try { $c=New-Object System.Net.Sockets.TcpClient; $c.Connect('127.0.0.1', $port); $c.Close(); exit 0 } catch { Start-Sleep -Milliseconds 500 } }; exit 1"
+        )
     )
 )
 

@@ -2158,6 +2158,9 @@ public class Field {
 
     public Mob spawnMob(int id, int x, int y, boolean respawnable, long hp, long exp) {
         Mob mob = MobData.getMobDeepCopyById(id);
+        if (mob == null) {
+            return null;
+        }
         Position pos = new Position(x, y);
         mob.setPosition(pos.deepCopy());
         mob.setPrevPos(pos.deepCopy());
@@ -2167,6 +2170,25 @@ public class Field {
         if (hp > 0) {
             mob.setHp(hp);
             mob.setMaxHp(hp);
+            mob.setBoss(true);
+            mob.setHPgaugeHide(false);
+        } else {
+            Long officialHp = BossHpRegistry.getOfficialMaxHp(id);
+            if (officialHp != null && officialHp > 0) {
+                mob.setHp(officialHp);
+                mob.setMaxHp(officialHp);
+                mob.setBoss(true);
+                mob.setHPgaugeHide(false);
+            }
+        }
+        if (mob.isBoss()) {
+            mob.setHPgaugeHide(false);
+            if (mob.getHpTagColor() == 0) {
+                mob.setHpTagColor(1);
+            }
+            if (mob.getHpTagBgcolor() == 0) {
+                mob.setHpTagBgcolor(5);
+            }
         }
         if (exp > 0) {
             mob.setExp(exp);

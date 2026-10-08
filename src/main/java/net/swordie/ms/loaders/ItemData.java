@@ -2203,7 +2203,9 @@ public class ItemData {
                     String mainName = attributes.get("name");
                     if (mainName != null) {
                         int itemId = Integer.parseInt(attributes.get("name").replace(".img", ""));
-                        for (Node n : XMLApi.getAllChildren(Objects.requireNonNull(XMLApi.getFirstChildByNameBF(mainNode, "default")))) {
+                        Node defaultNode = XMLApi.getFirstChildByNameBF(mainNode, "default");
+                        if (defaultNode == null) continue;
+                        for (Node n : XMLApi.getAllChildren(defaultNode)) {
                             for (Node n2 : XMLApi.getAllChildren(n)) {
                                 String name = XMLApi.getNamedAttribute(n2, "name");
                                 if (!name.equalsIgnoreCase("_outlink")) {

@@ -1464,7 +1464,7 @@ CREATE TABLE `guildgrades` (
   `guildid` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `guildid` (`guildid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1498,7 +1498,7 @@ CREATE TABLE `guildmembers` (
   `level` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `guildid` (`guildid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1527,7 +1527,7 @@ CREATE TABLE `guildrequestors` (
   `level` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `guildid` (`guildid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

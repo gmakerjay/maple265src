@@ -38,11 +38,11 @@ public class Lucid {
                     if (field.getId() == 450004150) {
                         long hp;
                         if (chr.getLucidMode() == 0) {
-                            hp = 60000000000L;
+                            hp = 6_000_000_000_000L; // 6T
                         } else if (chr.getLucidMode() == 1) {
-                            hp = 120000000000L;
+                            hp = 12_000_000_000_000L; // 12T
                         } else if (chr.getLucidMode() == 2) {
-                            hp = 50800000000000L;
+                            hp = 50_800_000_000_000L; // 50.8T
                         } else {
                             return;
                         }
@@ -71,11 +71,11 @@ public class Lucid {
                 if (field.getId() == 450004250 && !field.hasMobById(8880150)) {
                     long hp;
                     if (chr.getLucidMode() == 0) {
-                        hp = 60000000000L;
+                        hp = 6_000_000_000_000L; // 6T
                     } else if (chr.getLucidMode() == 1) {
-                        hp = 120000000000L;
+                        hp = 12_000_000_000_000L; // 12T
                     } else if (chr.getLucidMode() == 2) {
-                        hp = 50800000000000L;
+                        hp = 50_800_000_000_000L; // 50.8T
                     } else {
                         return;
                     }

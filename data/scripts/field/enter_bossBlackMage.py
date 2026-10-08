@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Limina: Temple of Darkness (Black Mage 4-Phase Boss Encounter)
 # Maps: 450013100 (Phase 1), 450013300 (Phase 2), 450013500 (Phase 3), 450013700 (Phase 4)
 

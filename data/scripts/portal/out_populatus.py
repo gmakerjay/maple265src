@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Exit from Papulatus Boss Arena
 target_map = 220080000
 if sm.getChr().getInstance() != null:

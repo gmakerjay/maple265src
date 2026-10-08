@@ -42,9 +42,10 @@ Exclude/
 logs/
 *.log
 
-# Portable JDK and Maven binaries
+# Portable JDK, Maven and MariaDB binaries/runtime
 jdk21/
 apache-maven-*/
+mariadb/
 
 # Temp and OS
 *.tmp
