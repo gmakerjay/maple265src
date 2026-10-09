@@ -34,3 +34,15 @@
   - `server.properties` หรือไฟล์สคริปต์ Batch
   - ไฟล์ `.sql` Patch (ถ้ามีการปรับแต่งตารางฐานข้อมูล)
 - ผู้ใช้นำไฟล์แพตช์ไปก๊อปปี้วางทับใน `Server263/` ได้ทันทีในไม่กี่วินาที โดยไม่ต้องเสียเวลาบีบอัดไฟล์ WZ ใหม่อีกเลย
+
+## 5. มาตรฐานการพัฒนาสกิลคลาส 6 (HEXA Matrix Implementation Standards)
+1. **ข้อมูล WZ และ .DAT ใน Server263**:
+   - ข้อมูล Skill v265 มีครบ 100% ใน `Server263/data/wz265/Skill.wz/` และ `Server263/data/dat265/skills/`
+   - ค่าความเสียหาย %, คูลดาวน์, และมานาถูกดึงตรงจาก WZ ผ่าน `SkillData.java`
+2. **รูปแบบ Origin Skill (6th Job)**:
+   - ใน `handleSkill()`: มอบสถานะอมตะ `CharacterTemporaryStat.IndieNotDamaged` (7 วินาที) และส่งแพ็กเก็ตคัทซีนปาร์ตี้ `UserLocal.showHexaSkillEff(chr)`
+   - ใน `handleAttack()`: ติดสถานะ `MobStat.Freeze` (10 วินาที Absolute Bind) และ `MobStat.OriginDebuff` (20 วินาที) ให้มอนสเตอร์ทุกตัวที่ถูกโจมตีด้วย `EnumMap<MobStat, Option>`
+3. **รูปแบบ HEXA Mastery Skills**:
+   - บรรจุสกิลคลาส 6 เข้าไปใน Array / ฟังก์ชันตรวจสอบประเภทสกิลของอาชีพนั้นๆ (เช่น `possessionSkills`, `executionSkills`, `isHumanitySkill()`, `isEarthSkill()` ฯลฯ) เพื่อให้ระบบชาร์จเกจและคอมโบทำงานได้อย่างไร้รอยต่อ
+4. **กระบวนการทดสอบและจัดส่ง**:
+   - ทำทีละอาชีพ -> รัน `mvn clean package -DskipTests` -> ตรวจสอบ `BUILD SUCCESS` -> อัปเดต `maplestory.jar` -> รัน `tools/create_patch.py` -> อัปเดต `PROGRESS.md` -> Git Commit & Push
