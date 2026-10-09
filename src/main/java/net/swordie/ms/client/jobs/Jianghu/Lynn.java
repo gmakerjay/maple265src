@@ -275,8 +275,28 @@ public class Lynn extends Job {
     @Override
     public void handleInitAfterMigrate(Char chr) {
         super.handleInitAfterMigrate(chr);
-        if (chr.getLevel() < 30) {
-            ScriptManagerImpl sm = chr.getScriptManager();
+        ScriptManagerImpl sm = chr.getScriptManager();
+        short curJob = chr.getJob();
+        if (chr.getLevel() >= 100 && curJob < JobConstants.JobEnum.LYNN_4.getJobId()) {
+            for (int qid = 66908; qid <= 66934; qid++) {
+                sm.completeQuestNoRewards(qid);
+            }
+            sm.completeQuestNoRewards(66941);
+            sm.completeQuestNoRewards(66954);
+            sm.setJob(JobConstants.JobEnum.LYNN_4.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.LYNN_1.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.LYNN_2.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.LYNN_3.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.LYNN_4.getJobId(), 5);
+            sm.giveAndEquip(1352813);
+            chr.maxSkills();
+            chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Lynn] Job Auto-Repair: Advanced to 4th Job (17212) and maxed all skills!");
+        } else if (chr.getLevel() >= 60 && curJob < JobConstants.JobEnum.LYNN_3.getJobId()) {
+            sm.setJob(JobConstants.JobEnum.LYNN_3.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.LYNN_2.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.LYNN_3.getJobId(), 3);
+            sm.giveAndEquip(1352812);
+        } else if (chr.getLevel() < 30) {
             for (int qid = 66908; qid <= 66920; qid++) {
                 sm.completeQuestNoRewards(qid);
             }
@@ -288,21 +308,31 @@ public class Lynn extends Job {
             sm.giveAndEquip(1352811);
             sm.warp(FieldConstants.HOME_MAP);
         }
+
+        if (chr.getJob() == JobConstants.JobEnum.LYNN_4.getJobId() && !chr.hasSkill(172121000)) {
+            chr.maxSkills();
+        }
     }
 
     @Override
     public void handleLevelUp(short level) {
         super.handleLevelUp(level);
         var sm = chr.getScriptManager();
-        if (level == 30) {
-            for (int qid = 66908; qid <= 66920; qid++) {
+        short curJob = chr.getJob();
+        if (level >= 100 && curJob < JobConstants.JobEnum.LYNN_4.getJobId()) {
+            for (int qid = 66908; qid <= 66934; qid++) {
                 sm.completeQuestNoRewards(qid);
             }
-            sm.setJob(JobConstants.JobEnum.LYNN_2.getJobId());
+            sm.completeQuestNoRewards(66941);
+            sm.completeQuestNoRewards(66954);
+            sm.setJob(JobConstants.JobEnum.LYNN_4.getJobId());
             sm.addSPJobAdv(JobConstants.JobEnum.LYNN_1.getJobId(), 5);
-            sm.addSPJobAdv(JobConstants.JobEnum.LYNN_2.getJobId(), 3);
-            sm.giveAndEquip(1352811);
-        } else if (level == 60) {
+            sm.addSPJobAdv(JobConstants.JobEnum.LYNN_2.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.LYNN_3.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.LYNN_4.getJobId(), 5);
+            sm.giveAndEquip(1352813);
+            chr.maxSkills();
+        } else if (level >= 60 && curJob < JobConstants.JobEnum.LYNN_3.getJobId()) {
             for (int qid = 66921; qid <= 66925; qid++) {
                 sm.completeQuestNoRewards(qid);
             }
@@ -312,16 +342,89 @@ public class Lynn extends Job {
             sm.addSPJobAdv(JobConstants.JobEnum.LYNN_2.getJobId(), 5);
             sm.addSPJobAdv(JobConstants.JobEnum.LYNN_3.getJobId(), 3);
             sm.giveAndEquip(1352812);
-        } else if (level == 100) {
-            for (int qid = 66926; qid <= 66934; qid++) {
+        } else if (level >= 30 && curJob < JobConstants.JobEnum.LYNN_2.getJobId()) {
+            for (int qid = 66908; qid <= 66920; qid++) {
                 sm.completeQuestNoRewards(qid);
+            }
+            sm.setJob(JobConstants.JobEnum.LYNN_2.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.LYNN_1.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.LYNN_2.getJobId(), 3);
+            sm.giveAndEquip(1352811);
+        }
+        if (level >= 200) {
+            sm.completeQuestNoRewards(66935);
+        }
+    }
+
+    @Override
+    public void handleJobAdvance() {
+        ScriptManagerImpl sm = chr.getScriptManager();
+        short curJob = chr.getJob();
+        if (curJob == JobConstants.JobEnum.LYNN_1.getJobId() || curJob == JobConstants.JobEnum.LYNN.getJobId()) {
+            if (chr.getLevel() < 30) {
+                sm.sendSayOkay("#eThis job requires you to be at least level #r30#k prior to advancement.");
+                return;
+            }
+            if (chr.getLevel() >= 100) {
+                sm.setJob(JobConstants.JobEnum.LYNN_4.getJobId());
+                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_1.getJobId(), 5);
+                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_2.getJobId(), 5);
+                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_3.getJobId(), 5);
+                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_4.getJobId(), 5);
+                sm.giveAndEquip(1352813);
+                chr.maxSkills();
+                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Lynn] Successfully advanced to 4th Job (17212)!");
+            } else if (chr.getLevel() >= 60) {
+                sm.setJob(JobConstants.JobEnum.LYNN_3.getJobId());
+                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_1.getJobId(), 5);
+                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_2.getJobId(), 5);
+                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_3.getJobId(), 3);
+                sm.giveAndEquip(1352812);
+                chr.maxSkills();
+                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Lynn] Successfully advanced to 3rd Job (17211)!");
+            } else {
+                sm.setJob(JobConstants.JobEnum.LYNN_2.getJobId());
+                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_1.getJobId(), 5);
+                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_2.getJobId(), 3);
+                sm.giveAndEquip(1352811);
+                chr.maxSkills();
+                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Lynn] Successfully advanced to 2nd Job (17210)!");
+            }
+        } else if (curJob == JobConstants.JobEnum.LYNN_2.getJobId()) {
+            if (chr.getLevel() < 60) {
+                sm.sendSayOkay("#eThis job requires you to be at least level #r60#k prior to advancement.");
+                return;
+            }
+            if (chr.getLevel() >= 100) {
+                sm.setJob(JobConstants.JobEnum.LYNN_4.getJobId());
+                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_2.getJobId(), 5);
+                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_3.getJobId(), 5);
+                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_4.getJobId(), 5);
+                sm.giveAndEquip(1352813);
+                chr.maxSkills();
+                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Lynn] Successfully advanced to 4th Job (17212)!");
+            } else {
+                sm.setJob(JobConstants.JobEnum.LYNN_3.getJobId());
+                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_2.getJobId(), 5);
+                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_3.getJobId(), 3);
+                sm.giveAndEquip(1352812);
+                chr.maxSkills();
+                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Lynn] Successfully advanced to 3rd Job (17211)!");
+            }
+        } else if (curJob == JobConstants.JobEnum.LYNN_3.getJobId()) {
+            if (chr.getLevel() < 100) {
+                sm.sendSayOkay("#eThis job requires you to be at least level #r100#k prior to advancement.");
+                return;
             }
             sm.setJob(JobConstants.JobEnum.LYNN_4.getJobId());
             sm.addSPJobAdv(JobConstants.JobEnum.LYNN_3.getJobId(), 5);
-            sm.addSPJobAdv(JobConstants.JobEnum.LYNN_4.getJobId(), 3);
+            sm.addSPJobAdv(JobConstants.JobEnum.LYNN_4.getJobId(), 5);
             sm.giveAndEquip(1352813);
-        } else if (level == 200) {
-            sm.completeQuestNoRewards(66935);
+            chr.maxSkills();
+            chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Lynn] Successfully advanced to 4th Job (17212)!");
+        } else if (curJob == JobConstants.JobEnum.LYNN_4.getJobId()) {
+            chr.maxSkills();
+            sm.sendSayOkay("#eYou are already at 4th Job (Lynn). All skills have been refreshed and maxed!");
         }
     }
 

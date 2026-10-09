@@ -14,6 +14,7 @@ import net.swordie.ms.client.character.skills.info.SkillUseInfo;
 import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
 import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
 import net.swordie.ms.client.jobs.Job;
+import net.swordie.ms.scripts.ScriptManagerImpl;
 import net.swordie.ms.connection.InPacket;
 import net.swordie.ms.connection.packet.UserLocal;
 import net.swordie.ms.constants.FieldConstants;
@@ -242,18 +243,116 @@ public class Lara extends Job {
     @Override
     public void handleLevelUp(short level) {
         super.handleLevelUp(level);
-        if (level == 30) {
+        short curJob = chr.getJob();
+        if (level >= 100 && curJob < JobConstants.JobEnum.LARA_4.getJobId()) {
+            chr.setJob(JobConstants.JobEnum.LARA_4.getJobId());
+            chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_1.getJobId(), 5);
+            chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_2.getJobId(), 5);
+            chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_3.getJobId(), 5);
+            chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_4.getJobId(), 5);
+            chr.addStatAndSendPacket(Stat.ap, 5);
+            chr.maxSkills();
+        } else if (level >= 60 && curJob < JobConstants.JobEnum.LARA_3.getJobId()) {
+            chr.setJob(JobConstants.JobEnum.LARA_3.getJobId());
+            chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_2.getJobId(), 5);
+            chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_3.getJobId(), 4);
+            chr.addStatAndSendPacket(Stat.ap, 5);
+            chr.maxSkills();
+        } else if (level >= 30 && curJob < JobConstants.JobEnum.LARA_2.getJobId()) {
             chr.setJob(JobConstants.JobEnum.LARA_2.getJobId());
             chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_2.getJobId(), 4);
             chr.addStatAndSendPacket(Stat.ap, 4);
-        } else if (level == 60) {
-            chr.setJob(JobConstants.JobEnum.LARA_3.getJobId());
-            chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_3.getJobId(), 4);
-            chr.addStatAndSendPacket(Stat.ap, 5);
-        } else if (level == 100) {
+            chr.maxSkills();
+        }
+    }
+
+    @Override
+    public void handleJobAdvance() {
+        ScriptManagerImpl sm = chr.getScriptManager();
+        short curJob = chr.getJob();
+        if (curJob == JobConstants.JobEnum.LARA_1.getJobId() || curJob == JobConstants.JobEnum.LARA.getJobId()) {
+            if (chr.getLevel() < 30) {
+                sm.sendSayOkay("#eThis job requires you to be at least level #r30#k prior to advancement.");
+                return;
+            }
+            if (chr.getLevel() >= 100) {
+                chr.setJob(JobConstants.JobEnum.LARA_4.getJobId());
+                chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_1.getJobId(), 5);
+                chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_2.getJobId(), 5);
+                chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_3.getJobId(), 5);
+                chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_4.getJobId(), 5);
+                chr.maxSkills();
+                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Lara] Advanced to 4th Job (16212)!");
+            } else if (chr.getLevel() >= 60) {
+                chr.setJob(JobConstants.JobEnum.LARA_3.getJobId());
+                chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_1.getJobId(), 5);
+                chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_2.getJobId(), 5);
+                chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_3.getJobId(), 5);
+                chr.maxSkills();
+                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Lara] Advanced to 3rd Job (16211)!");
+            } else {
+                chr.setJob(JobConstants.JobEnum.LARA_2.getJobId());
+                chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_1.getJobId(), 5);
+                chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_2.getJobId(), 5);
+                chr.maxSkills();
+                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Lara] Advanced to 2nd Job (16210)!");
+            }
+        } else if (curJob == JobConstants.JobEnum.LARA_2.getJobId()) {
+            if (chr.getLevel() < 60) {
+                sm.sendSayOkay("#eThis job requires you to be at least level #r60#k prior to advancement.");
+                return;
+            }
+            if (chr.getLevel() >= 100) {
+                chr.setJob(JobConstants.JobEnum.LARA_4.getJobId());
+                chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_2.getJobId(), 5);
+                chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_3.getJobId(), 5);
+                chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_4.getJobId(), 5);
+                chr.maxSkills();
+                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Lara] Advanced to 4th Job (16212)!");
+            } else {
+                chr.setJob(JobConstants.JobEnum.LARA_3.getJobId());
+                chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_2.getJobId(), 5);
+                chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_3.getJobId(), 5);
+                chr.maxSkills();
+                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Lara] Advanced to 3rd Job (16211)!");
+            }
+        } else if (curJob == JobConstants.JobEnum.LARA_3.getJobId()) {
+            if (chr.getLevel() < 100) {
+                sm.sendSayOkay("#eThis job requires you to be at least level #r100#k prior to advancement.");
+                return;
+            }
             chr.setJob(JobConstants.JobEnum.LARA_4.getJobId());
-            chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_4.getJobId(), 3);
-            chr.addStatAndSendPacket(Stat.ap, 5);
+            chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_3.getJobId(), 5);
+            chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_4.getJobId(), 5);
+            chr.maxSkills();
+            chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Lara] Advanced to 4th Job (16212)!");
+        } else if (curJob == JobConstants.JobEnum.LARA_4.getJobId()) {
+            chr.maxSkills();
+            sm.sendSayOkay("#eYou are already at 4th Job (Lara). All skills have been refreshed and maxed!");
+        }
+    }
+
+    @Override
+    public void handleInitAfterMigrate(Char chr) {
+        super.handleInitAfterMigrate(chr);
+        short curJob = chr.getJob();
+        if (chr.getLevel() >= 100 && curJob < JobConstants.JobEnum.LARA_4.getJobId()) {
+            chr.setJob(JobConstants.JobEnum.LARA_4.getJobId());
+            chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_1.getJobId(), 5);
+            chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_2.getJobId(), 5);
+            chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_3.getJobId(), 5);
+            chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_4.getJobId(), 5);
+            chr.maxSkills();
+            chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Lara] Job Auto-Repair: Advanced to 4th Job (16212) and maxed all skills!");
+        } else if (chr.getLevel() >= 60 && curJob < JobConstants.JobEnum.LARA_3.getJobId()) {
+            chr.setJob(JobConstants.JobEnum.LARA_3.getJobId());
+            chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_2.getJobId(), 5);
+            chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_3.getJobId(), 5);
+            chr.maxSkills();
+        }
+
+        if (chr.getJob() == JobConstants.JobEnum.LARA_4.getJobId() && !chr.hasSkill(162121000)) {
+            chr.maxSkills();
         }
     }
 

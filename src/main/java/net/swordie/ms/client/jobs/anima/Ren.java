@@ -138,6 +138,94 @@ public class Ren extends Job {
         return JobConstants.isRen(id);
     }
 
+    @Override
+    public void handleJobAdvance() {
+        ScriptManagerImpl sm = chr.getScriptManager();
+        short curJob = chr.getJob();
+        if (curJob == JobConstants.JobEnum.REN_1.getJobId() || curJob == JobConstants.JobEnum.REN.getJobId()) {
+            if (chr.getLevel() < 30) {
+                sm.sendSayOkay("#eThis job requires you to be at least level #r30#k prior to advancement.");
+                return;
+            }
+            if (chr.getLevel() >= 100) {
+                for (int qid = 36821; qid <= 36839; qid++) {
+                    sm.completeQuestNoRewards(qid);
+                }
+                sm.completeQuestNoRewards(36840);
+                sm.completeQuestNoRewards(36844);
+                sm.setJob(JobConstants.JobEnum.REN_4.getJobId());
+                sm.addSPJobAdv(JobConstants.JobEnum.REN_1.getJobId(), 5);
+                sm.addSPJobAdv(JobConstants.JobEnum.REN_2.getJobId(), 5);
+                sm.addSPJobAdv(JobConstants.JobEnum.REN_3.getJobId(), 5);
+                sm.addSPJobAdv(JobConstants.JobEnum.REN_4.getJobId(), 5);
+                sm.giveAndEquip(1354043);
+                chr.maxSkills();
+                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Ren] Successfully advanced to 4th Job (16112)!");
+            } else if (chr.getLevel() >= 60) {
+                for (int qid = 36821; qid <= 36839; qid++) {
+                    sm.completeQuestNoRewards(qid);
+                }
+                sm.completeQuestNoRewards(36840);
+                sm.setJob(JobConstants.JobEnum.REN_3.getJobId());
+                sm.addSPJobAdv(JobConstants.JobEnum.REN_1.getJobId(), 5);
+                sm.addSPJobAdv(JobConstants.JobEnum.REN_2.getJobId(), 5);
+                sm.addSPJobAdv(JobConstants.JobEnum.REN_3.getJobId(), 3);
+                sm.giveAndEquip(1354042);
+                chr.maxSkills();
+                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Ren] Successfully advanced to 3rd Job (16111)!");
+            } else {
+                for (int qid = 36821; qid <= 36839; qid++) {
+                    sm.completeQuestNoRewards(qid);
+                }
+                sm.setJob(JobConstants.JobEnum.REN_2.getJobId());
+                sm.addSPJobAdv(JobConstants.JobEnum.REN_1.getJobId(), 5);
+                sm.addSPJobAdv(JobConstants.JobEnum.REN_2.getJobId(), 3);
+                sm.giveAndEquip(1354041);
+                chr.maxSkills();
+                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Ren] Successfully advanced to 2nd Job (16110)!");
+            }
+        } else if (curJob == JobConstants.JobEnum.REN_2.getJobId()) {
+            if (chr.getLevel() < 60) {
+                sm.sendSayOkay("#eThis job requires you to be at least level #r60#k prior to advancement.");
+                return;
+            }
+            if (chr.getLevel() >= 100) {
+                sm.completeQuestNoRewards(36840);
+                sm.completeQuestNoRewards(36844);
+                sm.setJob(JobConstants.JobEnum.REN_4.getJobId());
+                sm.addSPJobAdv(JobConstants.JobEnum.REN_2.getJobId(), 5);
+                sm.addSPJobAdv(JobConstants.JobEnum.REN_3.getJobId(), 5);
+                sm.addSPJobAdv(JobConstants.JobEnum.REN_4.getJobId(), 5);
+                sm.giveAndEquip(1354043);
+                chr.maxSkills();
+                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Ren] Successfully advanced to 4th Job (16112)!");
+            } else {
+                sm.completeQuestNoRewards(36840);
+                sm.setJob(JobConstants.JobEnum.REN_3.getJobId());
+                sm.addSPJobAdv(JobConstants.JobEnum.REN_2.getJobId(), 5);
+                sm.addSPJobAdv(JobConstants.JobEnum.REN_3.getJobId(), 3);
+                sm.giveAndEquip(1354042);
+                chr.maxSkills();
+                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Ren] Successfully advanced to 3rd Job (16111)!");
+            }
+        } else if (curJob == JobConstants.JobEnum.REN_3.getJobId()) {
+            if (chr.getLevel() < 100) {
+                sm.sendSayOkay("#eThis job requires you to be at least level #r100#k prior to advancement.");
+                return;
+            }
+            sm.completeQuestNoRewards(36844);
+            sm.setJob(JobConstants.JobEnum.REN_4.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.REN_3.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.REN_4.getJobId(), 5);
+            sm.giveAndEquip(1354043);
+            chr.maxSkills();
+            chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Ren] Successfully advanced to 4th Job (16112)!");
+        } else if (curJob == JobConstants.JobEnum.REN_4.getJobId()) {
+            chr.maxSkills();
+            sm.sendSayOkay("#eYou are already at 4th Job (Ren). All skills have been refreshed and maxed!");
+        }
+    }
+
     // Attack related methods ------------------------------------------------------------------------------------------
     @Override
     public void handleDebuffOnMob(Client c, Mob mob, SkillInfo si, int skillID, int slv, long damage) {
@@ -554,26 +642,38 @@ public class Ren extends Job {
     public void handleLevelUp(short level) {
         super.handleLevelUp(level);
         var sm = chr.getScriptManager();
-        if (level == 30) {
-            sm.setJob(JobConstants.JobEnum.REN_2.getJobId());
+        short curJob = chr.getJob();
+        if (level >= 100 && curJob < JobConstants.JobEnum.REN_4.getJobId()) {
             for (int qid = 36821; qid <= 36839; qid++) {
                 sm.completeQuestNoRewards(qid);
             }
-            sm.addSPJobAdv(JobConstants.JobEnum.REN_1.getJobId(), 5);
-            sm.addSPJobAdv(JobConstants.JobEnum.REN_2.getJobId(), 3);
-            sm.giveAndEquip(1354041);
-        } else if (level == 60) {
-            sm.setJob(JobConstants.JobEnum.REN_3.getJobId());
             sm.completeQuestNoRewards(36840);
+            sm.completeQuestNoRewards(36844);
+            sm.setJob(JobConstants.JobEnum.REN_4.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.REN_1.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.REN_2.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.REN_3.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.REN_4.getJobId(), 5);
+            sm.giveAndEquip(1354043);
+            chr.maxSkills();
+        } else if (level >= 60 && curJob < JobConstants.JobEnum.REN_3.getJobId()) {
+            for (int qid = 36821; qid <= 36839; qid++) {
+                sm.completeQuestNoRewards(qid);
+            }
+            sm.completeQuestNoRewards(36840);
+            sm.setJob(JobConstants.JobEnum.REN_3.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.REN_1.getJobId(), 5);
             sm.addSPJobAdv(JobConstants.JobEnum.REN_2.getJobId(), 5);
             sm.addSPJobAdv(JobConstants.JobEnum.REN_3.getJobId(), 3);
             sm.giveAndEquip(1354042);
-        } else if (level == 100) {
-            sm.setJob(JobConstants.JobEnum.REN_4.getJobId());
-            sm.completeQuestNoRewards(36844);
-            sm.addSPJobAdv(JobConstants.JobEnum.REN_3.getJobId(), 5);
-            sm.addSPJobAdv(JobConstants.JobEnum.REN_4.getJobId(), 3);
-            sm.giveAndEquip(1354043);
+        } else if (level >= 30 && curJob < JobConstants.JobEnum.REN_2.getJobId()) {
+            for (int qid = 36821; qid <= 36839; qid++) {
+                sm.completeQuestNoRewards(qid);
+            }
+            sm.setJob(JobConstants.JobEnum.REN_2.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.REN_1.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.REN_2.getJobId(), 3);
+            sm.giveAndEquip(1354041);
         }
     }
 
@@ -599,8 +699,29 @@ public class Ren extends Job {
 
     @Override
     public void handleInitAfterMigrate(Char chr) {
-        if (chr.getLevel() < 30) {
-            ScriptManagerImpl sm = chr.getScriptManager();
+        super.handleInitAfterMigrate(chr);
+        ScriptManagerImpl sm = chr.getScriptManager();
+        short curJob = chr.getJob();
+        if (chr.getLevel() >= 100 && curJob < JobConstants.JobEnum.REN_4.getJobId()) {
+            for (int qid = 36821; qid <= 36839; qid++) {
+                sm.completeQuestNoRewards(qid);
+            }
+            sm.completeQuestNoRewards(36840);
+            sm.completeQuestNoRewards(36844);
+            sm.setJob(JobConstants.JobEnum.REN_4.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.REN_1.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.REN_2.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.REN_3.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.REN_4.getJobId(), 5);
+            sm.giveAndEquip(1354043);
+            chr.maxSkills();
+            chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Ren] Job Auto-Repair: Advanced to 4th Job (16112) and maxed all skills!");
+        } else if (chr.getLevel() >= 60 && curJob < JobConstants.JobEnum.REN_3.getJobId()) {
+            sm.setJob(JobConstants.JobEnum.REN_3.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.REN_2.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.REN_3.getJobId(), 3);
+            sm.giveAndEquip(1354042);
+        } else if (chr.getLevel() < 30) {
             sm.levelUntil(30);
             sm.setJob(JobConstants.JobEnum.REN_2.getJobId());
             for (int qid = 36821; qid <= 36839; qid++) {
@@ -612,7 +733,11 @@ public class Ren extends Job {
             sm.giveAndEquip(1354041);
             sm.warp(FieldConstants.HOME_MAP);
         }
-        super.handleInitAfterMigrate(chr);
+
+        if (chr.getJob() == JobConstants.JobEnum.REN_4.getJobId() && !chr.hasSkill(161121000)) {
+            chr.maxSkills();
+        }
+
         incrementRiotousHeart();
     }
 

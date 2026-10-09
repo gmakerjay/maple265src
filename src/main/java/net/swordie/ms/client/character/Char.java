@@ -3043,11 +3043,7 @@ public class Char {
         }
 
         if (getLevel() >= 200) {
-            if (getMatrixSlot().size() < MatrixConstants.MAX_NODE_SLOTS) {
-                for (int i = getMatrixSlot().size(); i < MatrixConstants.MAX_NODE_SLOTS; i++) {
-                    getMatrixSlot().add(new MatrixSlot(getId(), i));
-                }
-            }
+            initMatrixSlots();
             for (int i = 0; i < MatrixConstants.MAX_NODE_SLOTS; i++) {
                 MatrixCore mc = getMatrixCoreByPosition(i);
                 if (mc != null && mc.getState().getVal() != MatrixStateType.DISASSEMBLED.getVal()) {
@@ -3056,7 +3052,7 @@ public class Char {
                     }
                 }
             }
-            //write(WvsContext.updateVMatrix(this, true, MatrixUpdateType.Update.getVal(), 0));
+            write(WvsContext.updateVMatrix(this, true, MatrixUpdateType.Update.getVal(), 0));
             var itemID = hasQuest(1473) ? Integer.parseInt(getQRValueByKey(1473, "itemID")) : 0;
             if (itemID >= 2435734 && itemID <= 2435736) {
                 var questID = 1470 + itemID - 2435734;
@@ -3855,6 +3851,9 @@ public class Char {
             case ap -> cs.setAp(amount);
             case level -> {
                 cs.setLevel(amount);
+                if (amount >= 200) {
+                    initMatrixSlots();
+                }
                 notifyChanges();
             }
             case skin -> cs.setSkin(amount);
@@ -9663,8 +9662,35 @@ public class Char {
         return max;
     }
 
-    public MatrixSlot getMatrixSlotByPosition(int pos) {
-        return getMatrixSlot().stream().filter(ms -> ms.getPosition() == pos).findFirst().orElse(null);
+    public synchronized void initMatrixSlots() {
+        if (matrixSlot == null) {
+            matrixSlot = new HashSet<>();
+        }
+        for (int i = 0; i < MatrixConstants.MAX_NODE_SLOTS; i++) {
+            final int pos = i;
+            MatrixSlot slot = matrixSlot.stream().filter(ms -> ms.getPosition() == pos).findFirst().orElse(null);
+            if (slot == null) {
+                slot = new MatrixSlot(getId(), pos);
+                slot.saveToSQL();
+                matrixSlot.add(slot);
+            }
+        }
+    }
+
+    public synchronized MatrixSlot getMatrixSlotByPosition(int pos) {
+        if (pos < 0 || pos >= MatrixConstants.MAX_NODE_SLOTS) {
+            return null;
+        }
+        if (matrixSlot == null) {
+            matrixSlot = new HashSet<>();
+        }
+        MatrixSlot slot = matrixSlot.stream().filter(ms -> ms.getPosition() == pos).findFirst().orElse(null);
+        if (slot == null) {
+            slot = new MatrixSlot(getId(), pos);
+            slot.saveToSQL();
+            matrixSlot.add(slot);
+        }
+        return slot;
     }
 
     public void setMatrixSlot(Set<MatrixSlot> matrixSlot) {

@@ -43,15 +43,16 @@ public class MatrixHandler {
                 int otherNodeId_toPos = inPacket.decodeInt(); // toPosition of the nodeID that will be force moved
                 int pos = inPacket.decodeInt();
                 boolean byDrag = inPacket.decodeByte() != 0;
-                if (nodeId >= sortedMatrixCores.size() || pos >= chr.getMaxMatrixSlots()) {
+                if (nodeId < 0 || nodeId >= sortedMatrixCores.size()) {
                     chr.dispose();
                     return;
                 }
                 if (!byDrag && pos < 0) {
                     pos = chr.getFirstOpenMatrixSlot(); // Check  Locked Slots
                 }
-                if (pos == -1337) {
+                if (pos < 0 || pos >= chr.getMaxMatrixSlots()) {
                     chr.chatMessage("You have no empty node slots.");
+                    chr.dispose();
                     return;
                 }
                 core = sortedMatrixCores.get(nodeId);
@@ -61,6 +62,9 @@ public class MatrixHandler {
                     return;
                 }
                 for (MatrixCore existCore : chr.getMatrixCore().stream().filter(MatrixCore::isActive).toList()) {
+                    if (existCore.getId() == core.getId()) {
+                        continue;
+                    }
                     if (!VCore.isBoostNode(existCore.getCoreID())) {
                         if (existCore.getSkillID1() != 0) {
                             if (existCore.getSkillID1() == core.getSkillID1()
@@ -88,7 +92,7 @@ public class MatrixHandler {
                         }
                     }
                 }
-                if (otherNodeId >= 0) {
+                if (otherNodeId >= 0 && otherNodeId < sortedMatrixCores.size()) {
                     final MatrixCore prev = sortedMatrixCores.get(otherNodeId);
                     if (prev.getSlot() == -1 || prev.getState() == MatrixStateType.INACTIVE) {
                         chr.chatPopup("[Lỗi không xác định]\r\nKhông thể gắn node này.");
@@ -98,17 +102,30 @@ public class MatrixHandler {
                             prev.setSlot(otherNodeId_toPos);
                             setNodeSkill(chr, prev, MatrixUpdateType.Deactivate);
                         } else {
+                            setNodeSkill(chr, prev, MatrixUpdateType.Deactivate);
                             prev.setSlot(otherNodeId_toPos);
+                            setNodeSkill(chr, prev, MatrixUpdateType.Activate);
+                        }
+                        prev.saveToSQL();
+                        if (core.isActive()) {
+                            setNodeSkill(chr, core, MatrixUpdateType.Deactivate);
                         }
                         core.setState(MatrixStateType.ACTIVE);
                         core.setSlot(pos);
+                        core.saveToSQL();
                         setNodeSkill(chr, core, MatrixUpdateType.Activate);
                     }
                 } else if (core.getSlot() >= 0 || core.getState() == MatrixStateType.ACTIVE) {
-                    chr.chatPopup("[Lỗi không xác định]\r\nKhông thể gắn node này.");
+                    if (core.getSlot() != pos) {
+                        setNodeSkill(chr, core, MatrixUpdateType.Deactivate);
+                        core.setSlot(pos);
+                        core.saveToSQL();
+                        setNodeSkill(chr, core, MatrixUpdateType.Activate);
+                    }
                 } else {
                     core.setState(MatrixStateType.ACTIVE);
                     core.setSlot(pos);
+                    core.saveToSQL();
                     setNodeSkill(chr, core, MatrixUpdateType.Activate);
                 }
                 chr.write(WvsContext.updateVMatrix(chr, true, type.getVal(), nodeId));
@@ -135,6 +152,7 @@ public class MatrixHandler {
                 } else {
                     core.setState(MatrixStateType.INACTIVE);
                     core.setSlot(-1);
+                    core.saveToSQL();
                     setNodeSkill(chr, core, MatrixUpdateType.Deactivate);
                 }
                 chr.write(WvsContext.updateVMatrix(chr, true, type.getVal(), nodeId));
@@ -160,11 +178,13 @@ public class MatrixHandler {
                                 }
                                 setNodeSkill(chr, otherCore, MatrixUpdateType.Deactivate);
                                 otherCore.setSlot(fromPos);
+                                otherCore.saveToSQL();
                                 setNodeSkill(chr, otherCore, MatrixUpdateType.Activate);
                             }
                         }
                         setNodeSkill(chr, mc, MatrixUpdateType.Deactivate);
                         mc.setSlot(toPos);
+                        mc.saveToSQL();
                         setNodeSkill(chr, mc, MatrixUpdateType.Activate);
                     }
                     chr.write(WvsContext.updateVMatrix(chr, true, type.getVal(), switcherId));
@@ -398,6 +418,7 @@ public class MatrixHandler {
                     }
                     final int nextLevel = slot.getLevel() + 1;
                     slot.setLevel(nextLevel);
+                    slot.saveToSQL();
                     if (core != null) {
                         relocCoreSkill(chr, core);
                     }
@@ -459,6 +480,7 @@ public class MatrixHandler {
                 }
                 chr.deductMoney((long) dPrice);
                 slot.setUnLock(true);
+                slot.saveToSQL();
                 chr.write(WvsContext.updateVMatrix(chr, false, 0, 0));
                 break;
             }
@@ -471,6 +493,7 @@ public class MatrixHandler {
                     MatrixSlot ms = chr.getMatrixSlotByPosition(pos);
                     if (ms != null && ms.getLevel() >= 0) {
                         ms.setLevel(0);
+                        ms.saveToSQL();
                         core = chr.getMatrixCoreByPosition(pos);
                         if (core != null) {
                             relocCoreSkill(chr, core);

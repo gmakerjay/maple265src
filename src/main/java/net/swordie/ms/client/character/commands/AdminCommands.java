@@ -2547,6 +2547,41 @@ public class AdminCommands {
     }
 
     public static void setupEndgame(Char chr, Integer targetJob) {
+        if (targetJob == null || targetJob <= 0) {
+            short curJob = chr.getJob();
+            if (JobConstants.isSiaAstelle(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.SIA_4.getJobId();
+            } else if (JobConstants.isRen(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.REN_4.getJobId();
+            } else if (JobConstants.isLynn(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.LYNN_4.getJobId();
+            } else if (JobConstants.isMoXuan(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.MOXUAN_4.getJobId();
+            } else if (JobConstants.isKhali(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.KHALI_4.getJobId();
+            } else if (JobConstants.isLara(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.LARA_4.getJobId();
+            } else if (JobConstants.isAdele(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.ADELE_4.getJobId();
+            } else if (JobConstants.isArk(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.ARK_4.getJobId();
+            } else if (JobConstants.isIllium(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.ILLIUM_4.getJobId();
+            } else if (JobConstants.isHoYoung(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.HOYOUNG_4.getJobId();
+            } else if (JobConstants.isKain(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.KAIN_4.getJobId();
+            } else if (JobConstants.isHayato(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.HAYATO4.getJobId();
+            } else if (JobConstants.isKanna(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.KANNA4.getJobId();
+            } else if (JobConstants.isXenon(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.XENON4.getJobId();
+            } else if (curJob % 100 < 12 && (curJob % 100 == 0 || curJob % 100 == 10 || curJob % 100 == 11)) {
+                targetJob = (curJob / 100) * 100 + 12;
+            }
+        }
+
         try {
             if (targetJob != null && targetJob > 0) {
                 short jobShort = targetJob.shortValue();
@@ -2597,6 +2632,14 @@ public class AdminCommands {
             chr.write(outPacket);
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] Quest warning: " + e.getMessage());
+        }
+
+        // 4.5. Initialize Matrix Slots & V Matrix
+        try {
+            chr.initMatrixSlots();
+            chr.write(WvsContext.updateVMatrix(chr, true, MatrixUpdateType.Update.getVal(), 0));
+        } catch (Exception e) {
+            chr.chatMessage(SpeakerChannel, "[Endgame] Matrix warning: " + e.getMessage());
         }
 
         // 5. Max 1st - 4th Job Skills
@@ -2810,6 +2853,14 @@ public class AdminCommands {
                     targetJob = 4112;
                 } else if (arg.contains("kanna")) {
                     targetJob = 4212;
+                } else if (arg.contains("sia")) {
+                    targetJob = 18212;
+                } else if (arg.contains("ren")) {
+                    targetJob = 16112;
+                } else if (arg.contains("lynn")) {
+                    targetJob = 17212;
+                } else if (arg.contains("moxuan")) {
+                    targetJob = 17512;
                 } else if (arg.contains("xenon")) {
                     targetJob = 3612;
                 }

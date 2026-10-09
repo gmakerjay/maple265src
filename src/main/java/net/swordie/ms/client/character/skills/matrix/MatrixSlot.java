@@ -55,9 +55,12 @@ public class MatrixSlot {
                     String.format("%d, ", getExperience()) +
                     String.format("%d, ", getPosition()) +
                     String.format("%d ", isUnLock() ? 1 : 0) +
-                    ");";
+                    ") ON DUPLICATE KEY UPDATE " +
+                    String.format("`level` = %d, `experience` = %d, `unlocked` = %d;", getLevel(), getExperience(), isUnLock() ? 1 : 0);
             int id = (int) DatabaseManager.executeStatementReturnID(query);
-            setId(id);
+            if (id > 0) {
+                setId(id);
+            }
         } else {
             String query = "UPDATE matrixslot SET " +
                     String.format("charid = %d, ", getCharId()) +
@@ -68,6 +71,19 @@ public class MatrixSlot {
                     String.format("WHERE id = %d;", getId());
             DatabaseManager.executeStatement(query);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MatrixSlot that = (MatrixSlot) o;
+        return charid == that.charid && position == that.position;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(charid, position);
     }
 
     public void deleteMatrixSlotFromSQL() {

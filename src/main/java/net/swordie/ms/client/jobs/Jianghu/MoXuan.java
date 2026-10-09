@@ -427,21 +427,26 @@ public class MoXuan extends Job {
     public void handleLevelUp(short level) {
         super.handleLevelUp(level);
         var sm = chr.getScriptManager();
-        if (level == 30) {
+        short curJob = chr.getJob();
+        if (level >= 100 && curJob < JobConstants.JobEnum.MOXUAN_4.getJobId()) {
+            sm.setJob(JobConstants.JobEnum.MOXUAN_4.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_1.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_2.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_3.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_4.getJobId(), 5);
+            sm.giveAndEquip(1352863);
+            chr.maxSkills();
+        } else if (level >= 60 && curJob < JobConstants.JobEnum.MOXUAN_3.getJobId()) {
+            sm.setJob(JobConstants.JobEnum.MOXUAN_3.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_1.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_2.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_3.getJobId(), 3);
+            sm.giveAndEquip(1352862);
+        } else if (level >= 30 && curJob < JobConstants.JobEnum.MOXUAN_2.getJobId()) {
             sm.setJob(JobConstants.JobEnum.MOXUAN_2.getJobId());
             sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_1.getJobId(), 5);
             sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_2.getJobId(), 3);
             sm.giveAndEquip(1352861);
-        } else if (level == 60) {
-            sm.setJob(JobConstants.JobEnum.MOXUAN_3.getJobId());
-            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_2.getJobId(), 5);
-            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_3.getJobId(), 3);
-            sm.giveAndEquip(1352862);
-        } else if (level == 100) {
-            sm.setJob(JobConstants.JobEnum.MOXUAN_4.getJobId());
-            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_3.getJobId(), 5);
-            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_4.getJobId(), 3);
-            sm.giveAndEquip(1352863);
         }
     }
 
@@ -518,6 +523,29 @@ public class MoXuan extends Job {
             this.powerTimer = sf;
             GlobalTimerManager.addCharTimer(chr.getId(), sf);
         }
+        short curJob = chr.getJob();
+        if (chr.getLevel() >= 100 && curJob < JobConstants.JobEnum.MOXUAN_4.getJobId()) {
+            ScriptManagerImpl sm = chr.getScriptManager();
+            sm.setJob(JobConstants.JobEnum.MOXUAN_4.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_1.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_2.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_3.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_4.getJobId(), 5);
+            sm.giveAndEquip(1352863);
+            chr.maxSkills();
+            chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[MoXuan] Job Auto-Repair: Advanced to 4th Job (17512) and maxed all skills!");
+        } else if (chr.getLevel() >= 60 && curJob < JobConstants.JobEnum.MOXUAN_3.getJobId()) {
+            ScriptManagerImpl sm = chr.getScriptManager();
+            sm.setJob(JobConstants.JobEnum.MOXUAN_3.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_2.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_3.getJobId(), 3);
+            sm.giveAndEquip(1352862);
+        }
+
+        if (chr.getJob() == JobConstants.JobEnum.MOXUAN_4.getJobId() && !chr.hasSkill(175121000)) {
+            chr.maxSkills();
+        }
+
         super.handleInitAfterMigrate(chr);
     }
 }
