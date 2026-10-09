@@ -24,6 +24,8 @@ import net.swordie.ms.enums.ForceAtomEnum;
 import net.swordie.ms.life.AffectedArea;
 import net.swordie.ms.life.Wreckage;
 import net.swordie.ms.life.mob.Mob;
+import net.swordie.ms.life.mob.MobStat;
+import net.swordie.ms.life.mob.MobTemporaryStat;
 import net.swordie.ms.loaders.ItemData;
 import net.swordie.ms.loaders.SkillData;
 import net.swordie.ms.scripts.ScriptManagerImpl;
@@ -99,6 +101,36 @@ public class Ark extends Job {
 
     // HEXA Boosts
     public static final int HEXA_INFINITY_SPELL = 500061013;
+
+    // 6th Job (HEXA Matrix)
+    public static final int WHISPER_OF_DEEPEST_ABYSS = 155141502; // Origin Skill Cast
+    public static final int WHISPER_OF_DEEPEST_ABYSS_ATTACK = 155141503; // Origin Skill Attack
+    public static final int PRIMORDIAL_ABYSS = 155141500;
+    public static final int PRIMORDIAL_ABYSS_ATTACK = 155141501;
+
+    // HEXA Mastery Skills
+    public static final int HEXA_BASIC_CHARGE_DRIVE = 155141000;
+    public static final int HEXA_AWAKENED_ABYSS = 155141001;
+    public static final int HEXA_BASIC_CHARGE_DRIVE_ATOM = 155141002;
+    public static final int HEXA_BASIC_CHARGE_DRIVE_BUFF = 155141003;
+    public static final int HEXA_SCARLET_CHARGE_DRIVE_ATTACK_1 = 155141004;
+    public static final int HEXA_SCARLET_CHARGE_DRIVE_ATTACK_2 = 155141005;
+    public static final int HEXA_SCARLET_CHARGE_DRIVE_ATOM = 155141009;
+    public static final int HEXA_SCARLET_CHARGE_DRIVE_BUFF = 155141010;
+    public static final int HEXA_GUST_CHARGE_DRIVE_ATTACK = 155141011;
+    public static final int HEXA_GUST_CHARGE_DRIVE_ATOM = 155141013;
+    public static final int HEXA_GUST_CHARGE_DRIVE_BUFF = 155141015;
+    public static final int HEXA_ABYSSAL_CHARGE_DRIVE_ATTACK = 155141016;
+    public static final int HEXA_ABYSSAL_CHARGE_DRIVE_ATOM = 155141018;
+    public static final int HEXA_ABYSSAL_CHARGE_DRIVE_BUFF = 155141020;
+    public static final int HEXA_GRIEVOUS_WOUND = 155141021;
+    public static final int HEXA_INSATIABLE_HUNGER = 155141024;
+    public static final int HEXA_UNBRIDLED_CHAOS = 155141027;
+    public static final int HEXA_ENDLESS_AGONY = 155141029;
+    public static final int HEXA_BLISSFUL_RESTRAINT = 155141031;
+    public static final int HEXA_VENGEFUL_HATE = 155141034;
+    public static final int HEXA_OMINOUS_NIGHTMARE = 155141035;
+    public static final int HEXA_OMINOUS_DREAM = 155141036;
 
     private long lastSpectraEnergy = 0L;
     List<CharacterTemporaryStat> spellCasts = Arrays.asList(SpellBullet_Abyss, SpellBullet_Gust, SpellBullet_Scarlet, SpellBullet_Plain);
@@ -397,6 +429,11 @@ public class Ark extends Job {
             case GUST_CHARGE_DRIVE_ATTACK:
             case GUST_CHARGE_DRIVE_ATTACK_COMBO:
             case ABYSSAL_CHARGE_DRIVE_ATTACK:
+            case HEXA_BASIC_CHARGE_DRIVE:
+            case HEXA_SCARLET_CHARGE_DRIVE_ATTACK_1:
+            case HEXA_SCARLET_CHARGE_DRIVE_ATTACK_2:
+            case HEXA_GUST_CHARGE_DRIVE_ATTACK:
+            case HEXA_ABYSSAL_CHARGE_DRIVE_ATTACK:
                 if (hasHitMobs) {
                     addSpellCharge(attackInfo.skillId);
                     if (tsm.hasStat(LPInfinitySpell)) {
@@ -407,15 +444,18 @@ public class Ark extends Job {
                 }
                 break;
             case 155101200: // Grievous Wound
+            case HEXA_GRIEVOUS_WOUND:
                 chr.setSkillCooldown(155101200, slv);
                 break;
             case 155101204: // Tenacious Instinct
                 chr.setSkillCooldown(155101104, slv);
                 break;
             case 155111212: // Insatiable Hunger
+            case HEXA_INSATIABLE_HUNGER:
                 chr.setSkillCooldown(155111202, slv);
                 break;
             case 155121202: // Unbridled Chaos
+            case HEXA_UNBRIDLED_CHAOS:
                 chr.setSkillCooldown(155121202, slv);
                 break;
             case 155101104: // Unstoppable Impulse
@@ -424,6 +464,8 @@ public class Ark extends Job {
             case OMINOUS_NIGHTMARE:
             case VIVID_NIGHTMARE:
             case ENDLESS_NIGHTMARE:
+            case HEXA_OMINOUS_NIGHTMARE:
+            case HEXA_OMINOUS_DREAM:
                 chr.addSkillCooldown(OMINOUS_NIGHTMARE, 2000);
             case NIGHTMARES_ESCAPE:
             case DREAMS_ESCAPE:
@@ -462,11 +504,13 @@ public class Ark extends Job {
                 }
                 break;
             case ENDLESS_AGONY:
+            case HEXA_ENDLESS_AGONY:
                 if (!tsm.hasStat(SpecterMode)) {
                     changeSpecterState();
                 }
                 break;
             case BLISSFUL_RESTRAINT_ATTACK:
+            case HEXA_BLISSFUL_RESTRAINT:
                 if (!tsm.hasStat(SpecterMode)) {
                     changeSpecterState();
                 }
@@ -477,7 +521,47 @@ public class Ark extends Job {
                 Rect rect = aa.getPosition().getRectAround(rca.getRects().get(0));
                 aa.setRect(rect);
                 field.spawnAffectedArea(aa);
-                chr.addSkillCooldown(BLISSFUL_RESTRAINT_ATTACK, 1000 * 180);
+                chr.addSkillCooldown(skillID, 1000 * 180);
+                break;
+            case WHISPER_OF_DEEPEST_ABYSS:
+            case WHISPER_OF_DEEPEST_ABYSS_ATTACK:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob == null) continue;
+                    MobTemporaryStat mts = mob.getTemporaryStat();
+                    EnumMap<MobStat, Option> map = new EnumMap<>(MobStat.class);
+                    Option opt1 = new Option();
+                    Option opt2 = new Option();
+                    opt1.nOption = 1;
+                    opt1.rOption = skillID;
+                    opt1.tOption = 10; // 10s Absolute Freeze / Bind
+                    opt1.cOption = chr.getId();
+                    map.put(MobStat.Freeze, opt1);
+
+                    opt2.nOption = 10;
+                    opt2.rOption = skillID;
+                    opt2.tOption = 20; // 20s Origin Debuff
+                    opt2.xOption = 22;
+                    map.put(MobStat.OriginDebuff, opt2);
+                    mts.addStatOptions(mob, map);
+                }
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
+                break;
+            case PRIMORDIAL_ABYSS:
+            case PRIMORDIAL_ABYSS_ATTACK:
+                if (!tsm.hasStat(LPHoldSpecterGauge)) {
+                    o1.nOption = 1;
+                    o1.rOption = skillID;
+                    o1.tOption = 30;
+                    tsm.sendStat(CharacterTemporaryStat.LPHoldSpecterGauge, o1);
+                    if (!tsm.hasStat(SpecterMode)) {
+                        changeSpecterState();
+                    }
+                }
                 break;
         }
     }
@@ -487,30 +571,53 @@ public class Ark extends Job {
         Option o1 = new Option();
         if (!tsm.hasStat(SpecterMode) && getCurrentChargeCount() < 5) {
             SpellChargeType spellChargeType = SpellChargeType.getByVal(skillId / 10000);
-            switch (spellChargeType) {
-                case Basic:
-                    o1.xOption = tsm.hasStat(SpellBullet_Plain) ? tsm.getOption(SpellBullet_Plain).xOption > 10 ? 10 : tsm.getOption(SpellBullet_Plain).xOption + 2 : 2;
-                    tsm.sendStat(SpellBullet_Plain, o1);
-                    break;
-                case Scarlet:
-                    o1.xOption = 1;
-                    tsm.sendStat(SpellBullet_Scarlet, o1);
-                    break;
-                case Gust:
-                    o1.xOption = 1;
-                    tsm.sendStat(SpellBullet_Gust, o1);
-                    break;
-                case Abyssal:
-                    o1.xOption = 1;
-                    tsm.sendStat(SpellBullet_Abyss, o1);
-                    break;
+            if (spellChargeType == null) {
+                switch (skillId) {
+                    case HEXA_BASIC_CHARGE_DRIVE:
+                    case HEXA_BASIC_CHARGE_DRIVE_ATOM:
+                        spellChargeType = SpellChargeType.Basic;
+                        break;
+                    case HEXA_SCARLET_CHARGE_DRIVE_ATTACK_1:
+                    case HEXA_SCARLET_CHARGE_DRIVE_ATTACK_2:
+                    case HEXA_SCARLET_CHARGE_DRIVE_ATOM:
+                        spellChargeType = SpellChargeType.Scarlet;
+                        break;
+                    case HEXA_GUST_CHARGE_DRIVE_ATTACK:
+                    case HEXA_GUST_CHARGE_DRIVE_ATOM:
+                        spellChargeType = SpellChargeType.Gust;
+                        break;
+                    case HEXA_ABYSSAL_CHARGE_DRIVE_ATTACK:
+                    case HEXA_ABYSSAL_CHARGE_DRIVE_ATOM:
+                        spellChargeType = SpellChargeType.Abyssal;
+                        break;
+                }
+            }
+            if (spellChargeType != null) {
+                switch (spellChargeType) {
+                    case Basic:
+                        o1.xOption = tsm.hasStat(SpellBullet_Plain) ? tsm.getOption(SpellBullet_Plain).xOption > 10 ? 10 : tsm.getOption(SpellBullet_Plain).xOption + 2 : 2;
+                        tsm.sendStat(SpellBullet_Plain, o1);
+                        break;
+                    case Scarlet:
+                        o1.xOption = 1;
+                        tsm.sendStat(SpellBullet_Scarlet, o1);
+                        break;
+                    case Gust:
+                        o1.xOption = 1;
+                        tsm.sendStat(SpellBullet_Gust, o1);
+                        break;
+                    case Abyssal:
+                        o1.xOption = 1;
+                        tsm.sendStat(SpellBullet_Abyss, o1);
+                        break;
+                }
             }
         }
     }
 
     private void spawnWreckage(AttackInfo attackInfo) {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
-        if (!chr.hasSkill(VENGEFUL_HATE) || !tsm.hasStat(SpecterMode) || !tsm.hasStat(ComingDeath)) {
+        if ((!chr.hasSkill(VENGEFUL_HATE) && !chr.hasSkill(HEXA_VENGEFUL_HATE)) || !tsm.hasStat(SpecterMode) || !tsm.hasStat(ComingDeath)) {
             return;
         }
         Field field = chr.getField();
@@ -591,8 +698,35 @@ public class Ark extends Job {
                 tsm.removeAllDebuffs();
                 break;
             case VENGEFUL_HATE:
+            case HEXA_VENGEFUL_HATE:
                 List<Wreckage> wreckageList = chr.getField().getWreckageByChrId(chr.getId());
                 createVengefulHateForceAtom(wreckageList);
+                break;
+            case WHISPER_OF_DEEPEST_ABYSS:
+                // Origin Skill 6th Job: 7 seconds invincibility (iframe) during cast animation
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 7;
+                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
+                break;
+            case PRIMORDIAL_ABYSS:
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 8;
+                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                Option o2 = new Option();
+                o2.nOption = 1;
+                o2.rOption = skillID;
+                o2.tOption = 30;
+                tsm.sendStat(CharacterTemporaryStat.LPHoldSpecterGauge, o2);
+                if (!tsm.hasStat(SpecterMode)) {
+                    changeSpecterState();
+                }
                 break;
             case MASTER_CORRUPTION:
                 if (chr.hasSkill(MASTER_CORRUPTION) && tsm.hasStat(SpecterGauge) && tsm.getOption(SpecterGauge).xOption > 0) {
