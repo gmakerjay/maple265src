@@ -25,6 +25,7 @@ import net.swordie.ms.client.jobs.adventurer.pirate.Corsair;
 import net.swordie.ms.client.jobs.adventurer.warrior.Hero;
 import net.swordie.ms.client.jobs.adventurer.warrior.Paladin;
 import net.swordie.ms.client.jobs.anima.HoYoung;
+import net.swordie.ms.client.jobs.anima.Lara;
 import net.swordie.ms.client.jobs.anima.Ren;
 import net.swordie.ms.client.jobs.cygnus.BlazeWizard;
 import net.swordie.ms.client.jobs.cygnus.DawnWarrior;
@@ -1093,6 +1094,13 @@ public class AttackHandler {
             case Cannoneer.HEXA_ROLLING_RAINBOW:
                 if (chr.hasSkill(skillID)) {
                     ((Cannoneer) chr.getJobHandler()).increaseRollingRainbow();
+                }
+                break;
+            case Lara.MOUNTAIN_SEEDS:
+            case Lara.DRAGON_VEIN_TRACES:
+            case Lara.UNCONSTRAINED_DRAGON_VEIN:
+                if (chr.hasSkill(skillID)) {
+                    chr.write(WvsContext.updateSkillStackRequestResult(skillID, (byte) 1));
                 }
                 break;
             // Không cố định skill ID:

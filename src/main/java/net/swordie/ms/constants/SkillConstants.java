@@ -3584,11 +3584,25 @@ public class SkillConstants {
             case 400041084:
             case 400041087:
             case 400041089:
-            // Lara 5th Job
+            // Lara 5th Job & Multi-hit
             case 400021122:
             case 400021123:
             case 400021129:
             case 400021130:
+            case 400021131:
+            case Lara.ERUPTION_HEAVING_RIVER_ACTIVE_2:
+            case Lara.ERUPTION_WHIRLWIND_ACTIVE_2:
+            case Lara.ERUPTION_SUNRISE_WELL_ACTIVE_1:
+            case Lara.ERUPTION_SUNRISE_WELL_ACTIVE_3:
+            case Lara.ERUPTION_HEAVING_RIVER_UPGRADE_4_ACTIVE_2:
+            case Lara.ERUPTION_HEAVING_RIVER_UPGRADE_4_ACTIVE_3:
+            case Lara.ERUPTION_WHIRLWIND_UPGRADE_4_ACTIVE_2:
+            case Lara.ERUPTION_SUNRISE_WELL_UPGRADE_4_ACTIVE_1:
+            case Lara.ERUPTION_SUNRISE_WELL_UPGRADE_4_ACTIVE_3:
+            case Lara.ABSORPTION_RIVER_PUDDLE_DOUSE_ACTIVE_2:
+            case Lara.ABSORPTION_FIERCE_WIND_ACTIVE_2:
+            case Lara.ABSORPTION_SUNLIT_GRAIN_ACTIVE_2:
+            case Lara.MANIFESTATION_WHERE_THE_RIVER_COURSES_ACTIVE_1:
             case 400021029: // Poison Nova
             case 95001000:  // Arrow Blaster
             case 42120003:

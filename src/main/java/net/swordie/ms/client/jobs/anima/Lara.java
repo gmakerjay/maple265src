@@ -19,8 +19,11 @@ import net.swordie.ms.connection.packet.UserLocal;
 import net.swordie.ms.constants.FieldConstants;
 import net.swordie.ms.constants.JobConstants;
 import net.swordie.ms.client.character.items.BodyPart;
+import net.swordie.ms.enums.AssistType;
 import net.swordie.ms.enums.ChatType;
+import net.swordie.ms.enums.MoveAbility;
 import net.swordie.ms.enums.Stat;
+import net.swordie.ms.life.Summon;
 import net.swordie.ms.life.mob.Mob;
 import net.swordie.ms.life.mob.MobStat;
 import net.swordie.ms.life.mob.MobTemporaryStat;
@@ -311,6 +314,14 @@ public class Lara extends Job {
             case DRAGON_VEIN_READING:
             case DRAGON_VEIN_CONVERSION:
                 chr.dispose();
+                break;
+            case MOUNTAIN_SEEDS:
+                if (chr.getField() != null) {
+                    Summon summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
+                    summon.setMoveAbility(MoveAbility.Stop);
+                    summon.setAssistType(AssistType.Attack);
+                    chr.getField().spawnSummon(summon);
+                }
                 break;
             case LANDS_CONNECTION:
                 o1.nReason = skillID;

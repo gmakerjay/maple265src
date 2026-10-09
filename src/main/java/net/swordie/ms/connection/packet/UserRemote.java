@@ -160,7 +160,7 @@ public class UserRemote {
                     outPacket.encodeShort(mai.byteIdk4);
                     outPacket.encodeInt(0); // v214
                     outPacket.encodeInt(0); // v214
-                    if (ai.skillId == 162111005 || ai.skillId == 400021122) {
+                    if (ai.skillId == 162111005 || ai.skillId == 162141020 || ai.skillId == 400021122) {
                         outPacket.encodeInt(0); // v214
                     }
                     if (ai.skillId == 80001835 || ai.skillId == 42111002 || ai.skillId == 80011050) {

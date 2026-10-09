@@ -474,3 +474,28 @@ MapleStory_Server_Runner/
   - เพิ่มสกิล Lara (`400021122`, `400021123`, `400021129`, `400021130`)
 - [x] **คอมไพล์ JAR และรีสตาร์ตเซิร์ฟเวอร์เรียบร้อย 100%** พร้อมเข้าทดสอบทันที
 
+---
+
+### 9.6 การตรวจสอบและแก้ไขอาชีพ Lara (Anima Mage)
+
+#### 🔍 1. รายการประเด็นที่พบจากการ Audit เชิงลึก
+1. **Mountain Seeds Summon ขาดลอจิกการเสก**: ใน [Lara.java](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/anima/Lara.java) เมื่อกดใช้สกิล `MOUNTAIN_SEEDS (162101012)` โค้ดตกไปที่ `default: chr.dispose();` ไม่มีการสร้างและเสกตัวมอนสเตอร์ซัมมอนของเมล็ดพันธุ์ดินออกมาช่วยโจมตี
+2. **การรีฟิล Stack สกิลของ Lara ไม่ตอบสนอง**: ไคลเอนต์ MapleStory v265 ส่งแพ็กเก็ต `LARA_STACK_OVER_TIME_SKILL_INCREASE_REQUEST` / `STACK_OVER_TIME_SKILL_INCREASE_REQUEST` เพื่อขอสะสม Seed และ Traces แต่ใน [AttackHandler.java](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/user/AttackHandler.java) ไม่มี case รองรับสกิลของ Lara ทำให้ไคลเอนต์ไม่ได้รับแพ็กเก็ตตอบกลับ `STACK_SKILL_REQUEST_RESULT`
+3. **สกิลระลอกสองและคลื่นดาเมจของ Dragon Vein ขาดจาก `isNoCoolDownAttack`**: สกิลการระเบิดมังกร (Eruption), การดูดซับ (Absorption) และคลื่นของสันเขา (Winding Mountain Ridge 2 `400021131`) มีการส่งแพ็กเก็ตการโจมตีหลายระลอก หากไม่ได้ยกเว้นจะถูกคูลดาวน์สกัดกั้น
+4. **Hexa Wakeup Call ในแพ็กเก็ตส่งไปยังผู้เล่นอื่น (UserRemote)**: ไคลเอนต์ v265 มีเงื่อนไขเฉพาะสำหรับ `162111005` (Wakeup Call) ที่ต้อง encode int(0) เพิ่มเติม แต่ยังขาดการรองรับ `HEXA_WAKEUP_CALL (162141020)` ซึ่งอาจทำให้ผู้เล่นคนอื่นในแผนที่เดียวกันหลุดหรือ Desync
+
+#### 🛠️ 2. การดำเนินการแก้ไข (Applied Fixes)
+- [x] **เพิ่มระบบอัญเชิญ Mountain Seeds ใน `Lara.handleSkill`**:
+  - สร้าง `Summon` อัตโนมัติด้วย `Summon.getSummonByAndSetStat`, กำหนด `MoveAbility.Stop` และ `AssistType.Attack` เพื่อให้เมล็ดพันธุ์งอกและโจมตีมอนสเตอร์รอบตัว
+- [x] **เพิ่มการประมวลผล Stack ของ Lara ใน `AttackHandler.handleStackOverTimeSkillIncreaseRequest`**:
+  - เพิ่มการตรวจสอบสกิล `MOUNTAIN_SEEDS`, `DRAGON_VEIN_TRACES`, `UNCONSTRAINED_DRAGON_VEIN` พร้อมส่ง `WvsContext.updateSkillStackRequestResult` ยืนยันสแต็กกลับไปยังไคลเอนต์
+- [x] **เพิ่มสกิลย่อยทั้งหมดของ Lara ลงใน `SkillConstants.isNoCoolDownAttack`**:
+  - `400021131` (Winding Mountain Ridge 2)
+  - Eruption Sub-Attacks: `162101004`, `162101007`, `162101009`, `162101011`, `162121013`, `162121014`, `162121016`, `162121017`, `162121019`
+  - Absorption Sub-Attacks: `162121004`, `162121007`, `162121010`
+  - Manifestation Sub-Attacks: `162111002`
+- [x] **แก้ไขแพ็กเก็ต `UserRemote.java` สำหรับ Hexa Wakeup Call**:
+  - เพิ่ม `ai.skillId == 162141020` เข้ากับเงื่อนไข `encodeInt(0)` ป้องกันไคลเอนต์ของเพื่อนร่วมแมพ Desync
+- [x] **ทดสอบการคอมไพล์ผ่านสมบูรณ์ 100%**: Maven BUILD SUCCESS (50.2s) และดีพลอย JAR ไปยัง `Server263/maplestory.jar` เรียบร้อย
+
+
