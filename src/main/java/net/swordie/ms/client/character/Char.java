@@ -4904,13 +4904,16 @@ public class Char {
             write(ExtraTMSSystem.initField(false, this, extraTMSSystem.magicNumber));
         }, 2500, TimeUnit.MILLISECONDS);
 
-        write(WvsContext.sendExtraSystemStack(0, -1639974713, (byte) 246));
-        write(WvsContext.sendExtraSystemStack(1, -1639974713, (byte) 247));
-        write(WvsContext.sendExtraSystemStack(2, -1639974713, (byte) 248));
-        write(WvsContext.sendExtraSystemInit());
+        if (JobConstants.isMoXuan(getJob())) {
+            write(WvsContext.sendExtraSystemStack(0, -1639974713, (byte) 246));
+            write(WvsContext.sendExtraSystemStack(1, -1639974713, (byte) 247));
+            write(WvsContext.sendExtraSystemStack(2, -1639974713, (byte) 248));
+            write(WvsContext.sendExtraSystemInit());
+        }
         //write(WvsContext.infernoSphereRequest());
 
-        AchievementHandler.handleFieldEnter(this, toField.getId()); // ?? err38
+        // Disabled: Causes Error 38 buffer underflow crash in v265 client on new character field entry
+        // AchievementHandler.handleFieldEnter(this, toField.getId());
     }
 
     public void handleFieldChangeSummons(TemporaryStatManager tsm, Field toField) {
@@ -7781,7 +7784,10 @@ public class Char {
                     return true;
                 default:
                     var si = SkillData.getSkillInfoById(skillID);
-                    if (SkillConstants.isNoCoolDownAttack(skillID) || (si != null && (si.isAscentSkill() || si.isOriginSkill()))) {
+                    if (SkillConstants.isNoCoolDownAttack(skillID)
+                            || (si != null && (si.isAscentSkill() || si.isOriginSkill()))
+                            || Job.isOriginSkill(skillID)
+                            || (skillID >= 100000000 && (skillID % 100000 / 10000 == 4))) {
                         return true;
                     }
                     break;

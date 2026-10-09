@@ -305,6 +305,12 @@ public class Lara extends Job {
                 break;
             case BIG_STRETCH:
                 chr.chatMessage(ChatType.Notice, "[Big Stretch] Giant Land Spirits manifested!");
+                chr.dispose();
+                break;
+            case UNCONSTRAINED_DRAGON_VEIN:
+            case DRAGON_VEIN_READING:
+            case DRAGON_VEIN_CONVERSION:
+                chr.dispose();
                 break;
             case LANDS_CONNECTION:
                 o1.nReason = skillID;
@@ -320,6 +326,10 @@ public class Lara extends Job {
                 o1.tTerm = 7;
                 tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
                 chr.chatMessage(ChatType.Notice, "[Origin] Cornucopia activated! Nature's bounty purifies all.");
+                chr.dispose();
+                break;
+            default:
+                chr.dispose();
                 break;
         }
     }
@@ -345,27 +355,18 @@ public class Lara extends Job {
             }
         }
 
-        // Origin Skill: Cornucopia (10s Freeze / Bind, 20s OriginDebuff, Party Effect)
+        // Origin Skill: Cornucopia (10s Freeze / Bind, Party Effect)
         if (skillID == CORNUCOPIA || skillID == CORNUCOPIA_SUB) {
             for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
                 Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
                 if (mob != null && mob.getHp() > 0) {
                     MobTemporaryStat mts = mob.getTemporaryStat();
-                    EnumMap<MobStat, Option> map = new EnumMap<>(MobStat.class);
                     Option opt1 = new Option();
-                    Option opt2 = new Option();
                     opt1.nOption = 1;
                     opt1.rOption = skillID;
                     opt1.tOption = 10; // 10s Absolute Freeze / Bind
                     opt1.cOption = chr.getId();
-                    map.put(MobStat.Freeze, opt1);
-
-                    opt2.nOption = 10;
-                    opt2.rOption = skillID;
-                    opt2.tOption = 20; // 20s Origin Debuff
-                    opt2.xOption = 22;
-                    map.put(MobStat.OriginDebuff, opt2);
-                    mts.addStatOptions(mob, map);
+                    mts.addStatOptions(mob, MobStat.Freeze, opt1);
                 }
             }
             if (chr.getParty() != null) {

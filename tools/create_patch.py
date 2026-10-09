@@ -6,6 +6,11 @@ from datetime import datetime
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 SERVER263_DIR = os.path.join(ROOT_DIR, "Server263")
+if not os.path.exists(SERVER263_DIR):
+    alt_dir = os.path.abspath(os.path.join(ROOT_DIR, "..", "Server263"))
+    if os.path.exists(alt_dir):
+        SERVER263_DIR = alt_dir
+
 OUTPUT_DIR = os.path.join(ROOT_DIR, "Patches")
 
 if not os.path.exists(SERVER263_DIR):

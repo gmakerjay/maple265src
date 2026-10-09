@@ -275,6 +275,14 @@ public abstract class Job {
     public static final int LOTUS_FLOWER = 400001061;
 
     public static final int ORIGIN_SKILL = 80003365;
+
+    public static boolean isOriginSkill(int skillID) {
+        if (skillID == ORIGIN_SKILL) {
+            return true;
+        }
+        int sub = skillID % 100000;
+        return sub >= 41500 && sub <= 41599;
+    }
     public static final int SOL_JANUS_ACTIVATION = 500001000;
     public static final int SOL_JANUS_DUSK = 500001001;
     public static final int SOL_JANUS_DAWN = 500001002;
@@ -436,20 +444,12 @@ public abstract class Job {
                             }
                             MobTemporaryStat mts = mob.getTemporaryStat();
                             if (!mts.hasCurrentMobStatBySkillId(skillID)) {
-                                EnumMap<MobStat, Option> map = new EnumMap<>(MobStat.class);
                                 Option o1 = new Option();
-                                Option o2 = new Option();
                                 o1.nOption = 1;
                                 o1.rOption = skillID;
                                 o1.tOption = 20;
                                 o1.cOption = chr.getId();
-                                map.put(MobStat.Freeze, o1);
-                                o2.nOption = 10;
-                                o2.rOption = skillID;
-                                o2.tOption = 20;
-                                o2.xOption = 22;
-                                map.put(MobStat.OriginDebuff, o2);
-                                mts.addStatOptions(mob, map);
+                                mts.addStatOptions(mob, MobStat.Freeze, o1);
                             }
                         }
                         if (chr.getParty() != null) {

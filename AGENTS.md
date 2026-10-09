@@ -1,8 +1,9 @@
 # MapleStory Server Runner - Project Memory & Rules
 
-## 1. Official Distribution Package
-- โฟลเดอร์ **`Server263`** (`c:\Users\admin\Documents\MapleStory_Server_Runner\Server263`) คือ **"ซอสที่ทำการแพ็คแล้วพร้อมแจกจ่าย"** ของโปรเจกต์นี้ (Ready-to-distribute Zero-Install Portable Package)
-- ห้ามใส่ Source Code, Build Tools (Maven), หรือไฟล์ขยะลงใน `Server263`
+## 1. Official Distribution Package & Compilation Target
+- โฟลเดอร์ **`Server263`** (`c:\Users\admin\Documents\MapleV265Src\MapleStory_Server_Runner_Ready\Server263`) คือ **"ซอสที่ทำการแพ็คแล้วพร้อมแจกจ่าย"** และเป็น **"โฟลเดอร์เป้าหมายหลักที่จะต้องคอมไพลน์และส่งมอบไฟล์ (Deploy) ไปเสมอทุกครั้ง"**
+- ทุกครั้งที่คอมไพล์โค้ด Java สำเร็จ (`mvn clean package -DskipTests` หรือรัน `2_Build_Server.bat`) ไฟล์ `maplestory.jar` จะต้องถูกคัดลอกลงใน `Server263\maplestory.jar` เสมอ
+- ห้ามใส่ Source Code, Build Tools (Maven), หรือไฟล์ชั่วคราวลงใน `Server263`
 - ต้องรันได้ทันที **100% ในทุกเครื่องและทุกไดรฟ์** (C:, D:, E:, USB Drive ฯลฯ) โดยไม่ต้องติดตั้ง Java, MariaDB, หรือ MySQL ในระบบเครื่อง
 
 ## 2. กฎความ Portable ข้ามเครื่องและข้ามไดรฟ์ (Strict Portability Rules)

@@ -369,8 +369,7 @@ public class ScriptManagerImpl implements ScriptManager {
                 chr.dispose();
                 break;
             case Field:
-                chat("Bản đồ chưa được làm, vui lòng báo cho đội ngũ Developer. ID: " + parentID);
-                chr.dispose();
+                // Field scripts are optional map triggers; silently ignore if not implemented
                 break;
             case Npc:
                 String[] dialogues = new String[]{"Coi chừng! Mấy con Slime dạo này mạnh hơn bình thường đó.",

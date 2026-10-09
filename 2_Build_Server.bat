@@ -90,16 +90,22 @@ if %ERRORLEVEL% NEQ 0 (
 )
 
 echo.
-echo [*] Copying server jar to root: maplestory.jar ...
+echo [*] Deploying compiled server jar...
 if exist "%~dp0bin\maplestory-219.5-jar-with-dependencies.jar" (
     copy /y "%~dp0bin\maplestory-219.5-jar-with-dependencies.jar" "%~dp0maplestory.jar" >nul
-    echo [v] Success: maplestory.jar is ready to launch!
+    echo [v] Updated: %~dp0maplestory.jar
+
+    if exist "%~dp0..\Server263" (
+        copy /y "%~dp0bin\maplestory-219.5-jar-with-dependencies.jar" "%~dp0..\Server263\maplestory.jar" >nul
+        echo [v] Deployed to Server263: %~dp0..\Server263\maplestory.jar
+    )
 )
 
 echo.
 echo ==============================================================================
 echo   [v] BUILD SUCCESSFUL!
 echo ==============================================================================
-echo You can now start the server with: 1_Start_Server.bat
+echo Target output ready in Server263:
+echo   - %~dp0..\Server263\maplestory.jar
 echo.
 pause

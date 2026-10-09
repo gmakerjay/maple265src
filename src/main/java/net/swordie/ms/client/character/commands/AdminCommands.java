@@ -2606,9 +2606,6 @@ public class AdminCommands {
             chr.chatMessage(SpeakerChannel, "[Endgame] MaxSkills warning: " + e.getMessage());
         }
 
-        // 6. Add 5th Job V-Matrix & 6th Job HEXA Skills
-        List<Integer> vSkills = new ArrayList<>();
-        List<Integer> hexaSkills = new ArrayList<>();
         int weaponId = 0;
         int secondaryId = 0;
         int emblemId = 0;
@@ -2621,80 +2618,36 @@ public class AdminCommands {
         int[] pirateArmors  = {1004812, 1053067, 1073162, 1082699, 1102944, 1152200};
 
         if (JobConstants.isKhali(job)) {
-            vSkills.addAll(List.of(400041082, 400041084, 400041087, 400041089));
-            hexaSkills.addAll(List.of(
-                    154141504,
-                    154141000, 154141001, 154141002, 154141008, 154141009,
-                    154141010, 154141011, 154141012, 154141014
-            ));
             weaponId = 1404018; // Arcane Umbra Chakram
             secondaryId = 1354033; // Infinite Hex Seeker
             emblemId = 1191113; // Gold Guardian Emblem
             armors = thiefArmors;
         } else if (JobConstants.isLara(job)) {
-            vSkills.addAll(List.of(400021122, 400021123, 400021129, 400021130));
-            hexaSkills.addAll(List.of(
-                    162141502,
-                    162141001, 162141005, 162141008, 162141010,
-                    162141012, 162141015, 162141018, 162141020
-            ));
             weaponId = 1372228; // Arcane Umbra Wand
             secondaryId = 1354023; // Radiant Four-Jade Ornament
             emblemId = 1190561; // Gold Earthseer Emblem
             armors = mageArmors;
         } else if (JobConstants.isIllium(job)) {
-            vSkills.addAll(List.of(400021061, 400021063, 400021068, 400021099));
-            hexaSkills.addAll(List.of(
-                    152141508, 152141500,
-                    152141000, 152141004, 152141007, 152141008, 152141009,
-                    152141010, 152141011, 152141012, 152141014, 152141015
-            ));
             weaponId = 1282017; // Arcane Umbra Lucent Gauntlet
             secondaryId = 1353503; // Glory Lucent Wings
             emblemId = 1190532; // Gold Crystal Emblem
             armors = mageArmors;
         } else if (JobConstants.isArk(job)) {
-            vSkills.addAll(List.of(400051334, 400051036, 400051047, 400051070, 400051080));
-            hexaSkills.addAll(List.of(
-                    155141502, 155141500,
-                    155141000, 155141004, 155141011, 155141016, 155141021,
-                    155141024, 155141027, 155141029, 155141031, 155141034, 155141035
-            ));
             weaponId = 1482221; // Arcane Umbra Knuckle
             secondaryId = 1353603; // Ultimate Path
             emblemId = 1190540; // Gold Abyssal Emblem
             armors = pirateArmors;
         } else if (JobConstants.isHoYoung(job)) {
-            vSkills.addAll(List.of(400041048, 400041050, 400041052, 400041063));
-            hexaSkills.addAll(List.of(
-                    164141503, 164141500,
-                    164141000, 164141005, 164141011, 164141030, 164141031,
-                    164141035, 164141054, 164141056, 164141057, 164141059
-            ));
             weaponId = 1292018; // Arcane Umbra Super Ritual Fan
             secondaryId = 1353803; // Moonstone Fan Tassel
             emblemId = 1190550; // Gold Three Paths Emblem
             armors = thiefArmors;
         } else if (JobConstants.isKain(job)) {
-            vSkills.addAll(List.of(400031061, 400031062, 400031065, 400031066));
-            hexaSkills.addAll(List.of(
-                    63141506, 63141500,
-                    63141000, 63141004, 63141007, 63141009, 63141010,
-                    63141011, 63141013, 63141015, 63141018, 63141022,
-                    63141024, 63141025, 63141026
-            ));
             weaponId = 1214018; // Arcane Umbra Whispershot
             secondaryId = 1354013; // D100 Custom Weapon Belt
             emblemId = 1190554; // Gold Hitman Emblem
             armors = archerArmors;
         } else if (JobConstants.isAdele(job)) {
-            vSkills.addAll(List.of(400011105, 400011108, 400011109, 400011136));
-            hexaSkills.addAll(List.of(
-                    151141500,
-                    151141000, 151141002, 151141003, 151141004, 151141005,
-                    151141006, 151141010, 151141011, 151141014, 151141015,
-                    151141016, 151141017
-            ));
             weaponId = 1213018; // Arcane Umbra Bladecaster
             secondaryId = 1354003; // Noble Bladebinder
             emblemId = 1190552; // Gold Knight's Emblem
@@ -2738,31 +2691,17 @@ public class AdminCommands {
             }
         }
 
-        // Add Skills safely
-        List<Skill> addedSkills = new ArrayList<>();
-        List<Integer> allSpecialSkills = new ArrayList<>();
-        allSpecialSkills.addAll(vSkills);
-        allSpecialSkills.addAll(hexaSkills);
-
-        for (int skillId : allSpecialSkills) {
-            try {
-                Skill sk = SkillData.getSkillDeepCopyById(skillId);
-                if (sk != null) {
-                    int maxLv = sk.getMaxLevel() > 0 ? sk.getMaxLevel() : 30;
-                    sk.setCurrentLevel(maxLv);
-                    sk.setMasterLevel(maxLv);
-                    chr.addSkill(sk);
-                    addedSkills.add(sk);
-                }
-            } catch (Exception ignored) {}
-        }
-        if (!addedSkills.isEmpty()) {
-            chr.write(WvsContext.changeSkillRecordResult(addedSkills, true, false, false));
+        // Clean up any improperly injected 6th Job skills from character skill tree
+        List<Skill> skillsToRemove = chr.getSkills().stream()
+                .filter(s -> s.getSkillId() >= 100000000 && (s.getSkillId() % 100000 / 10000 == 4))
+                .toList();
+        for (Skill s : skillsToRemove) {
+            chr.removeSkill(s.getSkillId());
         }
 
-        // 7. Add Sol Erda Energy & Fragments
-        giveTestItem(chr, 2636421, 20); // Sol Erda Energy x20
-        giveTestItem(chr, 4009548, 1000); // Sol Erda Fragments x1000
+        // 7. Add Sol Erda Energy & Fragments (Massive amounts for thorough HEXA testing)
+        giveTestItem(chr, 2636421, 1000); // Sol Erda Energy x1,000
+        giveTestItem(chr, 4009548, 30000); // Sol Erda Fragments x30,000
 
         // 8. Add Complete Testing Equipment Set (Weapon, Secondary, Emblem, Full Armor Set)
         if (weaponId > 0) {
@@ -2780,11 +2719,12 @@ public class AdminCommands {
             }
         }
 
-        // 9. Add Testing Consumables: Nodestones x100, Power Elixirs x1000
-        giveTestItem(chr, 2435719, 100);
-        giveTestItem(chr, 2000005, 1000);
+        // 9. Add Testing Consumables: Nodestones x3,000, Power Elixirs x5,000, 10B Mesos
+        giveTestItem(chr, 2435719, 3000);
+        giveTestItem(chr, 2000005, 5000);
+        chr.addMoney(10_000_000_000L);
 
-        chr.chatMessage(SpeakerChannel, String.format("[End-Game Booster] Complete! Level 260 | 6th Job Unlocked | 2B Mesos | %d Skills Lv.30 Added | Full Armor, Weapon, Secondary & Emblem Delivered", addedSkills.size()));
+        chr.chatMessage(SpeakerChannel, "[End-Game Booster] Complete! Lv. 260 | Class 1-4 Maxed | Sol Erda x1,000 | Fragments x30,000 | Nodes x3,000 | 10B Mesos | Arcane Umbra Gear Delivered");
     }
 
     private static void giveTestEquip(Char chr, int equipId) {
@@ -2840,6 +2780,19 @@ public class AdminCommands {
                 }
             }
             setupEndgame(chr, targetJob);
+        }
+    }
+
+    @Command(names = {"hexaitems", "solerda", "hexastones"}, requiredType = Admin)
+    public static class HexaItemsCmd extends AdminCommand {
+
+        public static void execute(Char chr, String[] args) {
+            giveTestItem(chr, 2636421, 500); // Sol Erda Energy x500
+            giveTestItem(chr, 4009548, 20000); // Sol Erda Fragments x20,000
+            giveTestItem(chr, 2435719, 2000); // Nodestones x2,000
+            giveTestItem(chr, 2000005, 5000); // Power Elixir x5,000
+            chr.addMoney(10_000_000_000L);
+            chr.chatMessage(SpeakerChannel, "[HEXA Items] Delivered: 500x Sol Erda, 20,000x Fragments, 2,000x Nodestones, 5,000x Power Elixirs, 10B Mesos!");
         }
     }
 }

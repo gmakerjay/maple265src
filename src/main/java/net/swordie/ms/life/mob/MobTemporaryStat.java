@@ -223,7 +223,11 @@ public class MobTemporaryStat {
         final long now = System.currentTimeMillis();
         if (mobStat == Stun || mobStat == Freeze || mobStat == OriginDebuff
                 || mobStat == MagicCrash || mobStat == Smite) {
-            if (option.rOption == Job.ORIGIN_SKILL) {
+            if (mobStat == OriginDebuff) {
+                mob.getLastDebuffTimes().put(OriginDebuff, now);
+                return;
+            }
+            if (option.rOption == Job.ORIGIN_SKILL || Job.isOriginSkill(option.rOption)) {
                 long currentTime = now - mob.getLastDebuffTimes().getOrDefault(OriginDebuff, 0L);
                 if (currentTime >= 100_000) { // 100 sec
                     mob.getLastDebuffTimes().put(OriginDebuff, now);
@@ -325,7 +329,8 @@ public class MobTemporaryStat {
         final long now = System.currentTimeMillis();
         if (map.containsKey(Stun) || map.containsKey(Freeze) || map.containsKey(OriginDebuff)
                 || map.containsKey(MagicCrash) || map.containsKey(Smite)) {
-            if (map.containsKey(OriginDebuff)) {
+            Option freezeOpt = map.get(Freeze);
+            if ((freezeOpt != null && (freezeOpt.rOption == Job.ORIGIN_SKILL || Job.isOriginSkill(freezeOpt.rOption))) || map.containsKey(OriginDebuff)) {
                 long time = now - mob.getLastDebuffTimes().getOrDefault(OriginDebuff, 0L);
                 if (time >= 100_000) { // 100 sec
                     mob.getLastDebuffTimes().put(OriginDebuff, now);
@@ -347,6 +352,8 @@ public class MobTemporaryStat {
         if (!allowed) {
             return;
         }
+        // Safety: OriginDebuff is an internal server-side resistance cooldown, never send in network packet to client
+        map.remove(OriginDebuff);
         TreeMap<MobStat, Option> addList = new TreeMap<>();
         int skillID = 0;
         boolean isUserSkill = false;
@@ -817,9 +824,6 @@ public class MobTemporaryStat {
         }
         if (map.containsKey(Unk135)) {
             outPacket.encodeInt(getOptionByMobStat(map, Unk135).xOption);
-        }
-        if (map.containsKey(OriginDebuff)) {
-            outPacket.encodeShort(getOptionByMobStat(map, OriginDebuff).xOption);
         }
         if (map.containsKey(SoulExplosion)) {
             outPacket.encodeInt(getOptionByMobStat(map, SoulExplosion).nOption);

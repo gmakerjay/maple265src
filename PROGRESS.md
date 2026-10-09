@@ -354,3 +354,123 @@ MapleStory_Server_Runner/
      - เขียนทับ `Server263/maplestory.jar`
      - สร้างแพตช์อัปเดตล่าสุด `Patches/Server263_Patch_20261009_1510.zip` (121.51 MB) พร้อมใช้งานและทดสอบได้ทันที
 
+
+---
+
+### 9.6 การออดิตและแก้ไขเชิงลึกระบบ HEXA Matrix รายอาชีพ (Batch 1: Lara & Khali) และแก้ไขวิกฤติ Packet Desync
+
+#### 🔍 1. การวิเคราะห์สาเหตุเชิงลึกของบั๊ก "มอนสเตอร์หยุดเดิน" และ "ใช้หรือลากไอเทมไม่ได้" (Root Cause Analysis)
+- **ปัญหาที่พบ:** ผู้เล่นทดสอบสกิล Origin หรือสกิลบางอย่างแล้วมอนสเตอร์ทั้งหมดหยุดเคลื่อนไหว ไม่ตอบสนอง และไม่สามารถกดใช้ยา หรือคลิกลากไอเทมในช่องเก็บของได้
+- **สาเหตุทางเทคนิค (Technical Root Cause):**
+  1. ในการส่งแพ็กเก็ตสถานะมอนสเตอร์ `MobTemporaryStat.encode` ได้มีการใส่ `MobStat.OriginDebuff (bit 133)` เข้าไปใน Collection ของมอนสเตอร์
+  2. ใน `MobStat.java` นั้น `OriginDebuff` **ไม่ได้อยู่ในรายการ `MobStat.orders`** ทำให้เมธอด `cts.getOrder()` คืนค่า `-1`
+  3. ผลลัพธ์คือ ฝั่งเซิร์ฟเวอร์เข้ารหัส Bitmask โดยประกาศว่ามีสถานะบิต 133 แต่ในลูปการส่งข้อมูลกลับข้ามการเขียนข้อมูล 10 ไบต์ (`nOption`, `rOption`, `tOption`) และดันไปเขียน `encodeShort(xOption)` ที่ส่วนท้าย
+  4. ตัวเกมฝั่ง Client (`MapleStory.exe`) เมื่อถอดรหัสบิต 133 จึงพบ Buffer Underflow เกิด `CXX_EXCEPTION` ขึ้นใน Thread รับส่งแพ็กเก็ต (บันทึกใน `CrashLog.txt`) ทำให้ Client หยุดประมวลผลแพ็กเก็ตทั้งหมดจากเซิร์ฟเวอร์
+  5. เมื่อเครือข่ายหยุดส่ง/รับข้อมูล ผู้เล่นจึงเห็นมอนสเตอร์หยุดเดิน และการกระทำใดๆ ที่ต้องรอการยืนยันสถานะจากเซิร์ฟเวอร์ (`exclRequestSent` เช่น การลากไอเทมหรือกดยา) จะค้างในสถานะ Action Lock ตลอดไป
+- **แนวทางแก้ไขระดับโครงสร้าง (Permanent Fix):**
+  - กำหนดให้ `OriginDebuff` เป็นระบบนับคูลดาวน์ต้านทาน 100 วินาทีแบบ **Server-side Only** ภายใน `mob.getLastDebuffTimes()` เท่านั้น โดยห้ามส่งเข้าแพ็กเก็ตเน็ตเวิร์กไปยัง Client โดยเด็ดขาด
+  - ใน `MobTemporaryStat.java` เพิ่มระบบป้องกันอัตโนมัติ `map.remove(OriginDebuff)` ก่อนประกอบแพ็กเก็ต และตัด `encodeShort` สำหรับ OriginDebuff ออกอย่างถาวร
+  - การหยุดการเคลื่อนไหวของมอนสเตอร์ในสกิล Origin ให้ส่งสถานะ `MobStat.Freeze` ซึ่งเป็นสถานะมาตรฐานที่เสถียรและทำงานได้สมบูรณ์ 100%
+
+---
+
+#### 🌟 2. ผลการออดิตและแก้ไขรายอาชีพ (Job-by-Job Audit: Batch 1)
+
+##### 🍃 อาชีพที่ 1: Lara (ลาร่า - Job ID: 16212)
+- [x] **สกิล Origin: Cornucopia (풍년 - 162141502 / 162141503)**:
+  - แก้ไขบล็อก `handleAttack` ให้เรียกใช้ `mts.addStatOptions(mob, MobStat.Freeze, opt1)` โดยตรง ไม่ส่ง `OriginDebuff` ป้องกันบั๊กหลุด/ค้าง 100%
+  - มอบสถานะอมตะสมบูรณ์แบบ 7 วินาที (`IndieNotDamaged`) ในช่วงคัตซีน
+  - เชื่อมต่อระบบคูลดาวน์ต้านทาน 100 วินาทีฝั่งเซิร์ฟเวอร์ผ่าน `Job.isOriginSkill()`
+  - แสดงเอฟเฟกต์คัตซีนสกิลเต็มจอแก่สมาชิกในปาร์ตี้ (`UserLocal.showHexaSkillEff`)
+- [x] **ป้องกัน Action Lock ในสกิล Active & Utility**:
+  - สกิล `Big Stretch (400021122)`, `Unconstrained Dragon Vein (162121042)`, `Dragon Vein Reading (162101000)`, `Dragon Vein Conversion (162121001)` เพิ่มการส่ง `chr.dispose()` คืนสิทธิ์การควบคุมแก่ Client ทันที
+  - เพิ่มบล็อก `default: chr.dispose();` ใน `Lara.handleSkill` เพื่อป้องกันอาการติดสถานะรอ (Pending Request) เมื่อร่ายสกิลที่ไม่มีบัฟ
+- [x] **ตรวจสอบสกิล HEXA Mastery ครบทั้ง 8 สกิล**:
+  - `HEXA Eruption: Heaving River (162141001 / 162141002)`
+  - `HEXA Eruption: Whirlwind (162141005 / 162141006)`
+  - `HEXA Eruption: Sunrise Well (162141008 / 162141009)`
+  - `HEXA Dragon Vein Absorption (162141010)`
+  - `HEXA Absorption: River Puddle Douse (162141012 / 162141013)`
+  - `HEXA Absorption: Fierce Wind (162141015 / 162141016)`
+  - `HEXA Absorption: Sunlit Grain (162141018 / 162141019)`
+  - `HEXA Wakeup Call (162141020)`
+
+##### ⚔️ อาชีพที่ 2: Khali (คาลี - Job ID: 15412)
+- [x] **สกิล Origin: Wake the Void (헤็ก스: 마그눔 - 154141504 / 154141505)**:
+  - แก้ไขบล็อก `handleAttack` ให้เรียกใช้ `mts.addStatOptions(mob, MobStat.Freeze, opt1)` โดยตรง ไม่ส่ง `OriginDebuff` ป้องกันแพ็กเก็ตผิดพลาด 100%
+  - มอบสถานะอมตะสมบูรณ์แบบ 7 วินาที (`IndieNotDamaged`) ในช่วงคัตซีน
+  - รีเซ็ตคูลดาวน์สกิลตระกูล Void Rush ทั้งหมดอัตโนมัติ
+  - กระตุ้นระบบ Resonate ทันทีเพื่อสร้างความเสียหายต่อเนื่องรอบตัว
+  - แสดงเอฟเฟกต์คัตซีนแก่สมาชิกในปาร์ตี้ (`UserLocal.showHexaSkillEff`)
+- [x] **ระบบ Chakri Vortex & Resonate**:
+  - สกิลสาย Arts ลดคูลดาวน์ของสกิล Hex ทั้งหมดลง 1 วินาทีต่อการโจมตีโดนมอนสเตอร์
+  - เสก Chakri Vortex ลงบนตำแหน่งมอนสเตอร์ที่โดนโจมตีด้วยโอกาส 60%
+  - เมื่อพุ่งผ่านด้วย Void Rush หรือกด Origin จะดูดซับ Vortex ฟื้นฟู 5% HP/MP และทำดาเมจ Resonate ทันที
+  - เพิ่ม `chr.dispose()` ใน `Khali.handleSkill` เพื่อป้องกัน Action Lock ทุกกรณี
+- [x] **ตรวจสอบสกิล HEXA Mastery ครบทั้ง 10 สกิล**:
+  - เพิ่มรหัสสกิล `HEXA Resonate (154141013)` เข้าในระบบ `!endgame` ที่เคยตกหล่น
+  - สกิลครบถ้วน: `HEXA Arts: Flurry (154141000)`, `HEXA Arts: Crescentum (154141001)`, `HEXA Arts: Triple Bash (154141002)`, `HEXA Void Blitz (154141008)`, `HEXA Chakram Split (154141009)`, `HEXA Chakram Fury (154141010)`, `HEXA Chakram Sweep (154141011)`, `HEXA Death Blossom (154141012)`, `HEXA Resonate (154141013)`, `HEXA Deceiving Blade (154141014)`
+
+---
+
+#### 💎 3. ปรับปรุงไอเทมทดสอบระดับมหาศาล (Massive Testing Items Boost)
+- ปรับเปลี่ยนปริมาณไอเทมในคำสั่ง `!endgame` และเพิ่มคำสั่งใหม่ `!hexaitems` / `!solerda`:
+  - **Sol Erda Energy (`2636421`)**: เพิ่มจาก 20 เป็น **500 ก้อน**
+  - **Sol Erda Fragments (`4009548`)**: เพิ่มจาก 1,000 เป็น **20,000 ชิ้น**
+  - **Nodestones (`2435719`)**: เพิ่มจาก 100 เป็น **2,000 ชิ้น**
+  - **Power Elixirs (`2000005`)**: เพิ่มจาก 1,000 เป็น **5,000 ขวด**
+  - **Mesos**: มอบทันที **10,000,000,000 Mesos (1 หมื่นล้าน Mesos)**
+- **คำสั่งใหม่เฉพาะ Admin**: พิมพ์ `!hexaitems` หรือ `!solerda` หรือ `!hexastones` ได้ตลอดเวลาเมื่อไอเทมหินหรือผงอัปสกิลหมด โดยไม่ต้องรีเซ็ตตัวละครใหม่
+
+---
+
+#### 🚨 4. วิเคราะห์และแก้ไขบั๊กเกมเด้ง (Client Crash on Login / Field Enter Fix)
+- **สาเหตุของอาการเกมเด้ง (Root Cause Analysis)**:
+  1. **Error 38 (Buffer Underflow) ใน Achievement System**: ใน `Char.java:4913` มีการเรียก `AchievementHandler.handleFieldEnter(this, toField.getId());` ซึ่งมีคอมเมนต์เดิมระบุไว้ชัดเจนว่า `// ?? err38` เมื่อสร้างตัวละครใหม่ (เช่น `KahliOFFLINE`) ที่ยังไม่เคยเข้าเมือง Henesys ระบบจะส่งแพ็กเก็ต `MESSAGE (ACHIEVEMENT_INIT / ACHIEVEMENT_DATA_MESSAGE)` ที่โครงสร้างไบต์ไม่ตรงกับ Client v265 ทำให้ไคลเอนต์เกิดบัฟเฟอร์ขาด (`0xE06D7363` C++ exception ใน `CInPacket::Decode`) แล้วส่งรายงาน Error 38 ก่อนพังด้วย Heap Corruption (`0xC0000374`)
+  2. **Mo Xuan Extra System Stack Packets รั่วไหล**: ใน `Char.java:4907-4910` มีการส่ง `sendExtraSystemStack` และ `sendExtraSystemInit` (Opcode 545) ให้กับทุกตัวละครที่วาร์ปเข้าแมพ ทั้งที่ไม่ใช่อาชีพ Mo Xuan
+  3. **Field Script Undefined Chat/Dispose Race**: แผนที่ Henesys มีสคริปต์ `explorationPoint` ใน WZ เมื่อเซิร์ฟเวอร์ไม่มีไฟล์นี้จะตกไปที่ `undefined(ScriptType.Field)` ซึ่งส่งข้อความแชตสีแดงและ `chr.dispose()` แทรกระหว่างการโหลดแมพ
+  4. **Action Lock ในสกิล Origin**: ใน `Lara.java` และ `Khali.java` เมื่อกดร่ายสกิลคัตซีน Origin ขาดการเรียก `chr.dispose()` ทำให้ตัวละครค้างในสถานะ Action Lock ลากไอเทมหรือคลิกใช้ของไม่ได้
+- **การแก้ไขที่ดำเนินการ (Applied Fixes)**:
+  - [x] **ปิดการทำงานของ `AchievementHandler.handleFieldEnter`**: ป้องกันการส่งแพ็กเก็ต Achievement ผิดโครงสร้างที่ทำให้ Client v265 Error 38
+  - [x] **จำกัดเงื่อนไข Mo Xuan Extra System Packets**: ครอบด้วย `if (JobConstants.isMoXuan(getJob()))` ป้องกันแพ็กเก็ตแปลกปลอมรบกวนอาชีพอื่น
+  - [x] **แก้ไข `ScriptManagerImpl.undefined` สำหรับ `Field`**: ให้ `case Field: break;` ข้ามไปอย่างเงียบสงบโดยไม่ส่งแชตเตือนหรือดิสโพสแทรกการเข้าแมพ
+  - [x] **เพิ่ม `chr.dispose()` ใน `CORNUCOPIA` (Lara) และ `WAKE_THE_VOID` (Khali)**: ปลดล็อกการควบคุมตัวละครทันทีหลังร่ายสกิล Origin
+  - [x] **เปิด Packet Logging & ปรับปรุง Client Error Logging**: ตั้ง `server.packetLog=true` และแสดง Hex เต็มของแพ็กเก็ตแจ้งเตือนข้อผิดพลาดจากเกม
+  - [x] คอมไพล์และดีพลอยเซิร์ฟเวอร์ใหม่ พร้อมสตาร์ตระบบเรียบร้อย 100% พอร์ต 8484, 8585, 8483 พร้อมให้เข้าทดสอบ
+
+---
+
+### 9.5 การวิเคราะห์ Logs: แก้ไขบั๊กมอนสเตอร์ไม่ตาย, ปลดล็อก Cooldown สกิล Hexa และปรับโครงสร้างคำสั่งทดสอบ
+
+#### 🔍 1. การวิเคราะห์สาเหตุเชิงลึกจาก Logs เซิร์ฟเวอร์จริง (Real Server Logs Analysis)
+1. **การติด Cooldown Lock ของสกิลคลาส 6 (14s Cooldown Freeze)**:
+   - สกิล HEXA Mastery เช่น `HEXA Chakram Split (154141009)` ในไฟล์ WZ มีค่า `cooltime = 14 วินาที`
+   - เมื่อใช้คำสั่งก่อนหน้าที่มีการเสกสกิลคลาส 6 เข้าตัวละครตรงๆ (`chr.addSkill`) ระบบจะบันทึกสกิลลงใน Skill Book ของตัวละคร
+   - เมื่อกดโจมตีครั้งแรก ฟังก์ชัน `Char.checkAndSetSkillCooltime(154141009, true)` จะทำงานและตั้งเวลาคูลดาวน์ 14 วินาทีให้ตัวละครทันที (ตรวจพบแพ็กเก็ต `SKILL_COOLTIME_SET_M` ใน Logs อย่างต่อเนื่อง)
+   - การกดโจมตีระลอกถัดไปทั้งหมดภายใน 14 วินาทีจะถูกตีกลับเป็น `false` ส่งผลให้ [AttackHandler.java](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/user/AttackHandler.java#L113-L116) **ตัดทิ้งการโจมตีทั้งหมด (Silent Drop)** ไม่ส่งดาเมจไปยัง `mob.damage()` มอนสเตอร์จึงไม่ได้รับความเสียหายและไม่ตาย
+2. **สกิลคลาส 5 Multi-wave ถูกคูลดาวน์ตัดคลื่นหลังๆ**:
+   - สกิลคลาส 5 เช่น `400041082` (Void Blitz ของ Khali) มีคูลดาวน์ 30 วินาที เมื่อกดใช้ 1 ครั้ง Client จะส่งแพ็กเก็ตการโจมตีออกมาต่อเนื่อง 10–15 แพ็กเก็ตภายใน 1 วินาที (Logs บรรทัด 6005–6021)
+   - คลื่นแรกทำงานได้ แต่คลื่นที่ 2 ถึง 15 ถูกเซิร์ฟเวอร์ตัดทิ้งทั้งหมดเนื่องจากไม่ได้อยู่ในรายการ `SkillConstants.isNoCoolDownAttack`
+3. **การฟันลม (0 Mobs Hit)**:
+   - Logs บรรทัด 8370–8393 แพ็กเก็ตส่ง `mobCount = 0` (`mask = 0x0A, 0x07, 0x04`) มอนสเตอร์อยู่นอกระยะการโจมตี เซิร์ฟเวอร์จึงข้ามการคำนวณดาเมจ
+4. **มอนสเตอร์หยุดเดิน (Mob Pathfinding Desync)**:
+   - การมีสกิลคลาส 6 แปลกปลอมอยู่ใน Skill Book ปกติของ Client v265 ทำให้เกิดความคลาดเคลื่อนในการส่งข้อมูลสถานะการควบคุมมอนสเตอร์ (Controller Ack) เมื่อไคลเอนต์ติดสถานะไม่สอดคล้องจะระงับการคำนวณ Pathfinding ของมอนสเตอร์ชั่วคราว
+
+#### 🛠️ 2. การแก้ไขที่นำไปใช้งาน (Applied Fixes)
+- [x] **ปรับโครงสร้างคำสั่ง `!endgame` ตามข้อสังเกตของผู้ใช้อย่างเคร่งครัด**:
+  - **เสกเฉพาะสกิลคลาส 1–4 ให้เต็ม 100% (`chr.maxSkills()`) เท่านั้น** ป้องกันบั๊กการยัดสกิลคลาส 5/6 เข้า Skill Book โดยตรง
+  - **ระบบทำความสะอาดอัตโนมัติ**: เมื่อพิมพ์ `!endgame` ระบบจะตรวจจับและลบสกิลคลาส 6 ที่เคยยัดเข้า Skill Book ค้างไว้ออกทั้งหมดทันที ป้องกัน Skill Tree ค้าง
+  - **มอบไอเทมอัปเกรดระดับมหาศาลสำหรับ V-Matrix และ Hexa Matrix แท้ของเกม**:
+    - **Sol Erda Energy (`2636421`)**: 1,000 ก้อน
+    - **Sol Erda Fragments (`4009548`)**: 30,000 ชิ้น
+    - **Nodestones (`2435719`)**: 3,000 ชิ้น
+    - **Power Elixirs (`2000005`)**: 5,000 ขวด
+    - **Mesos**: 10,000,000,000 (1 หมื่นล้าน Mesos)
+    - **เซ็ตอุปกรณ์ Arcane Umbra ครบชุด**: อาวุธ, อาวุธรอง, Emblem, ชุดเกราะ
+- [x] **ปลดล็อกคูลดาวน์สกิลคลาส 6 ใน `Char.checkAndSetSkillCooltime`**:
+  - เพิ่มเงื่อนไข `(skillID >= 100000000 && (skillID % 100000 / 10000 == 4))` เพื่อให้การโจมตีด้วยสกิลคลาส 6 / HEXA Mastery ไม่ถูกบล็อกด้วยคูลดาวน์ของตัวสกิล
+- [x] **เพิ่มสกิลต่อเนื่องคลาส 5 ใน `SkillConstants.isNoCoolDownAttack`**:
+  - เพิ่มสกิล Khali (`400041082`, `400041083`, `400041084`, `400041087`, `400041089`)
+  - เพิ่มสกิล Lara (`400021122`, `400021123`, `400021129`, `400021130`)
+- [x] **คอมไพล์ JAR และรีสตาร์ตเซิร์ฟเวอร์เรียบร้อย 100%** พร้อมเข้าทดสอบทันที
+

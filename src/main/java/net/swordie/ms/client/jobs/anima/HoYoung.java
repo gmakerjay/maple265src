@@ -576,21 +576,12 @@ public class HoYoung extends Job {
                     Mob targetMob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
                     if (targetMob == null) continue;
                     MobTemporaryStat mts = targetMob.getTemporaryStat();
-                    EnumMap<MobStat, Option> map = new EnumMap<>(MobStat.class);
                     Option opt1 = new Option();
-                    Option opt2 = new Option();
                     opt1.nOption = 1;
                     opt1.rOption = skillID;
                     opt1.tOption = 10; // 10s Absolute Freeze / Bind
                     opt1.cOption = chr.getId();
-                    map.put(MobStat.Freeze, opt1);
-
-                    opt2.nOption = 10;
-                    opt2.rOption = skillID;
-                    opt2.tOption = 20; // 20s Origin Debuff
-                    opt2.xOption = 22;
-                    map.put(MobStat.OriginDebuff, opt2);
-                    mts.addStatOptions(targetMob, map);
+                    mts.addStatOptions(targetMob, MobStat.Freeze, opt1);
                 }
                 if (chr.getParty() != null) {
                     for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {

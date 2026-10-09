@@ -3578,6 +3578,17 @@ public class SkillConstants {
             case Shadower.SONIC_BLOW:
             case 155101104: // Unstoppable Impulse
             case DarkKnight.CALAMITOUS_CYCLONE:
+            // Khali 5th Job
+            case 400041082:
+            case 400041083:
+            case 400041084:
+            case 400041087:
+            case 400041089:
+            // Lara 5th Job
+            case 400021122:
+            case 400021123:
+            case 400021129:
+            case 400021130:
             case 400021029: // Poison Nova
             case 95001000:  // Arrow Blaster
             case 42120003:

@@ -301,20 +301,12 @@ public class Adele extends Job {
                     if (mob == null || mob.getHp() <= 0) continue;
                     MobTemporaryStat mts = mob.getTemporaryStat();
                     if (!mts.hasCurrentMobStatBySkillId(skillID)) {
-                        EnumMap<MobStat, Option> map = new EnumMap<>(MobStat.class);
                         Option opt1 = new Option();
                         opt1.nOption = 1;
                         opt1.rOption = skillID;
                         opt1.tOption = 10; // 10s Absolute Freeze Bind
                         opt1.cOption = chr.getId();
-                        map.put(MobStat.Freeze, opt1);
-                        Option opt2 = new Option();
-                        opt2.nOption = 10;
-                        opt2.rOption = skillID;
-                        opt2.tOption = 20; // 20s Origin Debuff
-                        opt2.xOption = 22;
-                        map.put(MobStat.OriginDebuff, opt2);
-                        mts.addStatOptions(mob, map);
+                        mts.addStatOptions(mob, MobStat.Freeze, opt1);
                     }
                 }
                 break;

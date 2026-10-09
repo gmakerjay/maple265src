@@ -478,9 +478,13 @@ public class LoginHandler {
 
     @Handler(op = InHeader.CLIENT_ERROR)
     public static void handleClientError(Client c, InPacket inPacket) {
-        c.close();
-        if (inPacket.getData().length < 8) {
+        byte[] raw = inPacket.getData();
+        String rawHex = Util.readableByteArray(raw);
+        System.out.println("[CLIENT_ERROR RAW] Length=" + raw.length + " | Hex: " + rawHex);
+        DataPrinter.send(DataPrinter.CLIENT_ERROR, "[CLIENT_ERROR RAW] Length=" + raw.length + " | Hex: " + rawHex, true);
+        if (raw.length < 8) {
             DataPrinter.send(DataPrinter.CLIENT_ERROR, String.format("Error: %s", inPacket), true);
+            c.close();
             return;
         }
         short type = inPacket.decodeShort();
