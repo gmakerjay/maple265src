@@ -2610,56 +2610,132 @@ public class AdminCommands {
         List<Integer> vSkills = new ArrayList<>();
         List<Integer> hexaSkills = new ArrayList<>();
         int weaponId = 0;
+        int secondaryId = 0;
+        int emblemId = 0;
+        int[] armors = null;
+
+        int[] warriorArmors = {1004808, 1053063, 1073158, 1082695, 1102940, 1152196};
+        int[] mageArmors    = {1004809, 1053064, 1073159, 1082696, 1102941, 1152197};
+        int[] archerArmors  = {1004810, 1053065, 1073160, 1082697, 1102942, 1152198};
+        int[] thiefArmors   = {1004811, 1053066, 1073161, 1082698, 1102943, 1152199};
+        int[] pirateArmors  = {1004812, 1053067, 1073162, 1082699, 1102944, 1152200};
 
         if (JobConstants.isKhali(job)) {
-            vSkills.addAll(List.of(400041065, 400041066, 400041067, 400041068));
+            vSkills.addAll(List.of(400041082, 400041084, 400041087, 400041089));
             hexaSkills.addAll(List.of(
                     154141504,
-                    154140000, 154140001, 154140002, 154140003, 154140004,
-                    154140005, 154140006, 154140007, 154140008, 154140009
+                    154141000, 154141001, 154141002, 154141008, 154141009,
+                    154141010, 154141011, 154141012, 154141014
             ));
-            weaponId = 1292024;
+            weaponId = 1404018; // Arcane Umbra Chakram
+            secondaryId = 1354033; // Infinite Hex Seeker
+            emblemId = 1191113; // Gold Guardian Emblem
+            armors = thiefArmors;
         } else if (JobConstants.isLara(job)) {
-            vSkills.addAll(List.of(400021095, 400021096, 400021097, 400021098));
+            vSkills.addAll(List.of(400021122, 400021123, 400021129, 400021130));
             hexaSkills.addAll(List.of(
                     162141502,
-                    162140000, 162140001, 162140002, 162140003, 162140004,
-                    162140005, 162140006, 162140007, 162140008, 162140009, 162140010
+                    162141001, 162141005, 162141008, 162141010,
+                    162141012, 162141015, 162141018, 162141020
             ));
-            weaponId = 1372230;
+            weaponId = 1372228; // Arcane Umbra Wand
+            secondaryId = 1354023; // Radiant Four-Jade Ornament
+            emblemId = 1190561; // Gold Earthseer Emblem
+            armors = mageArmors;
         } else if (JobConstants.isIllium(job)) {
-            vSkills.addAll(List.of(152141500, 400021066, 400021067, 400021074, 400021099));
+            vSkills.addAll(List.of(400021061, 400021063, 400021068, 400021099));
             hexaSkills.addAll(List.of(
-                    152141508,
-                    152140000, 152140001, 152140002, 152140003, 152140004,
-                    152140005, 152140006, 152140007
+                    152141508, 152141500,
+                    152141000, 152141004, 152141007, 152141008, 152141009,
+                    152141010, 152141011, 152141012, 152141014, 152141015
             ));
-            weaponId = 1282024;
+            weaponId = 1282017; // Arcane Umbra Lucent Gauntlet
+            secondaryId = 1353503; // Glory Lucent Wings
+            emblemId = 1190532; // Gold Crystal Emblem
+            armors = mageArmors;
         } else if (JobConstants.isArk(job)) {
-            vSkills.addAll(List.of(155141500, 400051037, 400051038, 400051047, 400051070));
+            vSkills.addAll(List.of(400051334, 400051036, 400051047, 400051070, 400051080));
             hexaSkills.addAll(List.of(
-                    155141502,
-                    155140000, 155140001, 155140002, 155140003, 155140004,
-                    155140005, 155140006, 155140007, 155140008, 155140009
+                    155141502, 155141500,
+                    155141000, 155141004, 155141011, 155141016, 155141021,
+                    155141024, 155141027, 155141029, 155141031, 155141034, 155141035
             ));
-            weaponId = 1482223;
+            weaponId = 1482221; // Arcane Umbra Knuckle
+            secondaryId = 1353603; // Ultimate Path
+            emblemId = 1190540; // Gold Abyssal Emblem
+            armors = pirateArmors;
         } else if (JobConstants.isHoYoung(job)) {
-            vSkills.addAll(List.of(164141500, 400041047, 400041048, 400041052, 400041058));
+            vSkills.addAll(List.of(400041048, 400041050, 400041052, 400041063));
             hexaSkills.addAll(List.of(
-                    164141503,
-                    164140000, 164140001, 164140002, 164140003, 164140004,
-                    164140005, 164140006, 164140007, 164140008, 164140009
+                    164141503, 164141500,
+                    164141000, 164141005, 164141011, 164141030, 164141031,
+                    164141035, 164141054, 164141056, 164141057, 164141059
             ));
-            weaponId = 1272023;
+            weaponId = 1292018; // Arcane Umbra Super Ritual Fan
+            secondaryId = 1353803; // Moonstone Fan Tassel
+            emblemId = 1190550; // Gold Three Paths Emblem
+            armors = thiefArmors;
         } else if (JobConstants.isKain(job)) {
-            vSkills.addAll(List.of(63141500, 400031057, 400031058, 400031059, 400031060));
+            vSkills.addAll(List.of(400031061, 400031062, 400031065, 400031066));
             hexaSkills.addAll(List.of(
-                    63141506,
-                    63140000, 63140001, 63140002, 63140003, 63140004,
-                    63140005, 63140006, 63140007, 63140008, 63140009,
-                    63140010, 63140011, 63140012
+                    63141506, 63141500,
+                    63141000, 63141004, 63141007, 63141009, 63141010,
+                    63141011, 63141013, 63141015, 63141018, 63141022,
+                    63141024, 63141025, 63141026
             ));
-            weaponId = 1214022;
+            weaponId = 1214018; // Arcane Umbra Whispershot
+            secondaryId = 1354013; // D100 Custom Weapon Belt
+            emblemId = 1190554; // Gold Hitman Emblem
+            armors = archerArmors;
+        } else if (JobConstants.isAdele(job)) {
+            vSkills.addAll(List.of(400011105, 400011108, 400011109, 400011136));
+            hexaSkills.addAll(List.of(
+                    151141500,
+                    151141000, 151141002, 151141003, 151141004, 151141005,
+                    151141006, 151141010, 151141011, 151141014, 151141015,
+                    151141016, 151141017
+            ));
+            weaponId = 1213018; // Arcane Umbra Bladecaster
+            secondaryId = 1354003; // Noble Bladebinder
+            emblemId = 1190552; // Gold Knight's Emblem
+            armors = warriorArmors;
+        } else if (JobConstants.isHayato(job)) {
+            weaponId = 1542117; // Arcane Umbra Katana
+            secondaryId = 1352803; // Wakizashi
+            emblemId = 1190551; // Silver Knight's Emblem
+            armors = warriorArmors;
+        } else if (JobConstants.isKanna(job)) {
+            weaponId = 1552119; // Arcane Umbra Fan
+            secondaryId = 1352813; // Haku Fan
+            emblemId = 1190553; // Silver Hitman Emblem
+            armors = mageArmors;
+        } else if (JobConstants.isXenon(job)) {
+            weaponId = 1242121; // Arcane Umbra Energy Chain
+            secondaryId = 1353003; // Controller
+            emblemId = 1190201; // Hybrid Heart
+            armors = pirateArmors;
+        } else {
+            if (JobConstants.isWarriorEquipJob(job)) {
+                weaponId = 1402259;
+                emblemId = 1190555;
+                armors = warriorArmors;
+            } else if (JobConstants.isMageEquipJob(job)) {
+                weaponId = 1372228;
+                emblemId = 1190557;
+                armors = mageArmors;
+            } else if (JobConstants.isArcherEquipJob(job)) {
+                weaponId = 1452257;
+                emblemId = 1190556;
+                armors = archerArmors;
+            } else if (JobConstants.isThiefEquipJob(job)) {
+                weaponId = 1332279;
+                emblemId = 1190558;
+                armors = thiefArmors;
+            } else {
+                weaponId = 1482221;
+                emblemId = 1190559;
+                armors = pirateArmors;
+            }
         }
 
         // Add Skills safely
@@ -2685,30 +2761,51 @@ public class AdminCommands {
         }
 
         // 7. Add Sol Erda Energy & Fragments
-        try {
-            Item solErda = ItemData.getItemDeepCopy(2636421, true);
-            if (solErda != null) {
-                solErda.setQuantity((short) 20);
-                chr.addItemToInventory(solErda);
-            }
-            Item fragments = ItemData.getItemDeepCopy(4009548, true);
-            if (fragments != null) {
-                fragments.setQuantity((short) 1000);
-                chr.addItemToInventory(fragments);
-            }
-        } catch (Exception ignored) {}
+        giveTestItem(chr, 2636421, 20); // Sol Erda Energy x20
+        giveTestItem(chr, 4009548, 1000); // Sol Erda Fragments x1000
 
-        // 8. Add Arcane Umbra Weapon if available
+        // 8. Add Complete Testing Equipment Set (Weapon, Secondary, Emblem, Full Armor Set)
         if (weaponId > 0) {
-            try {
-                Equip equip = ItemData.getEquipDeepCopyFromID(weaponId, true);
-                if (equip != null) {
-                    chr.addItemToInventory(equip);
-                }
-            } catch (Exception ignored) {}
+            giveTestEquip(chr, weaponId);
+        }
+        if (secondaryId > 0) {
+            giveTestEquip(chr, secondaryId);
+        }
+        if (emblemId > 0) {
+            giveTestEquip(chr, emblemId);
+        }
+        if (armors != null) {
+            for (int armorId : armors) {
+                giveTestEquip(chr, armorId);
+            }
         }
 
-        chr.chatMessage(SpeakerChannel, String.format("[End-Game Booster] Complete! Level 260 | 6th Job Unlocked | 2B Mesos | %d Skills Lv.30 Added", addedSkills.size()));
+        // 9. Add Testing Consumables: Nodestones x100, Power Elixirs x1000
+        giveTestItem(chr, 2435719, 100);
+        giveTestItem(chr, 2000005, 1000);
+
+        chr.chatMessage(SpeakerChannel, String.format("[End-Game Booster] Complete! Level 260 | 6th Job Unlocked | 2B Mesos | %d Skills Lv.30 Added | Full Armor, Weapon, Secondary & Emblem Delivered", addedSkills.size()));
+    }
+
+    private static void giveTestEquip(Char chr, int equipId) {
+        if (equipId <= 0) return;
+        try {
+            Equip equip = ItemData.getEquipDeepCopyFromID(equipId, true);
+            if (equip != null) {
+                chr.addItemToInventory(equip);
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private static void giveTestItem(Char chr, int itemId, int quantity) {
+        if (itemId <= 0 || quantity <= 0) return;
+        try {
+            Item item = ItemData.getItemDeepCopy(itemId);
+            if (item != null) {
+                item.setQuantity(quantity);
+                chr.addItemToInventory(item);
+            }
+        } catch (Exception ignored) {}
     }
 
     @Command(names = {"endgame", "boost", "test6", "hexa"}, requiredType = Admin)
@@ -2732,9 +2829,18 @@ public class AdminCommands {
                     targetJob = 16412;
                 } else if (arg.contains("kain")) {
                     targetJob = 6312;
+                } else if (arg.contains("adele")) {
+                    targetJob = 15112;
+                } else if (arg.contains("hayato")) {
+                    targetJob = 4112;
+                } else if (arg.contains("kanna")) {
+                    targetJob = 4212;
+                } else if (arg.contains("xenon")) {
+                    targetJob = 3612;
                 }
             }
             setupEndgame(chr, targetJob);
         }
     }
 }
+

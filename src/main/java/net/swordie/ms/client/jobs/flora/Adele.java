@@ -134,6 +134,10 @@ public class Adele extends Job {
     // HEXA Boosts
     public static final int HEXA_LEGACY_RESTORATION = 500061065; // party buffs
 
+    // 6th Job HEXA Origin Skill
+    public static final int MAESTRO = 151141500;
+    public static final int MAESTRO_ATTACK = 151141501;
+
     private List<SecondAtom> capeAtoms = new ArrayList<>();
     private List<SecondAtom> huntingDecreeList = new ArrayList<>();
     private List<Summon> summonList = new ArrayList<>();
@@ -290,6 +294,30 @@ public class Adele extends Job {
         }
 
         switch (skillID) {
+            case MAESTRO:
+            case MAESTRO_ATTACK:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob == null || mob.getHp() <= 0) continue;
+                    MobTemporaryStat mts = mob.getTemporaryStat();
+                    if (!mts.hasCurrentMobStatBySkillId(skillID)) {
+                        EnumMap<MobStat, Option> map = new EnumMap<>(MobStat.class);
+                        Option opt1 = new Option();
+                        opt1.nOption = 1;
+                        opt1.rOption = skillID;
+                        opt1.tOption = 10; // 10s Absolute Freeze Bind
+                        opt1.cOption = chr.getId();
+                        map.put(MobStat.Freeze, opt1);
+                        Option opt2 = new Option();
+                        opt2.nOption = 10;
+                        opt2.rOption = skillID;
+                        opt2.tOption = 20; // 20s Origin Debuff
+                        opt2.xOption = 22;
+                        map.put(MobStat.OriginDebuff, opt2);
+                        mts.addStatOptions(mob, map);
+                    }
+                }
+                break;
             case HEXA_IMPALE:
                 if (!chr.hasSkillOnCooldown(IMPALE)) {
                     chr.addSkillCooldown(IMPALE, 7000);
@@ -514,6 +542,19 @@ public class Adele extends Job {
                     chr.removeSecondAtom(sa);
                 }
                 spawnHuntingDecrees(si, targetObjId, position);
+                break;
+            case MAESTRO:
+                // Origin cutscene invincibility (7s) + party cutscene effect
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 7000;
+                o1.setInMillis(true);
+                tsm.sendStat(IndieNotDamaged, o1);
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
                 break;
             case INFINITY_BLADE:
                 o1.nValue = 1;

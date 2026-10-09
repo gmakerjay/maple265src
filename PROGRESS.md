@@ -324,3 +324,33 @@ MapleStory_Server_Runner/
 - **เพิ่มระบบ Fault-Tolerance**: ครอบบล็อก `try-catch` อิสระในทุกส่วนของการทำงาน (การเปลี่ยนอาชีพ, ปรับเลเวล, บันทึกเควสต์, แม็กซ์สกิล, มอบสกิลคลาส 6, และแจกไอเทม) เพื่อป้องกันไม่ให้ข้อผิดพลาดจุดใดจุดหนึ่งขัดจังหวะการทำงาน
 - **อัปเดตแพ็กเกจแพตช์**: รัน `tools/create_patch.py` สร้างแพตช์ล่าสุด `Patches/Server263_Patch_20261009_1437.zip` (121.51 MB)
 - **อัปเดตไฟล์เซิร์ฟเวอร์**: คอมไพล์ผ่าน 100% (`BUILD SUCCESS`) และเขียนทับ `Server263/maplestory.jar` เรียบร้อยแล้ว
+
+### 9.5 การออดิตและแก้ไขระบบคลาส 6 (HEXA Matrix) และชุดไอเทมทดสอบครบวงจร
+- **ผลการออดิต (Audit Findings)**:
+  1. **ไอเทมผิดอาชีพ**: ในเวอร์ชันก่อนหน้านี้ รหัสอาวุธ Arcane Umbra ของ Khali (`1292024` -> เป็นไอดีพัด HoYoung ที่ไม่มีจริง), Lara (`1372230` -> ไม่มีจริง), Illium (`1282024` -> ไม่มีจริง), Ark (`1482223` -> เป็นไอเทมเลเวล 140 Shark Tooth Wild Talon), HoYoung (`1272023` -> โซ่ Cadena) และ Kain (`1214022` -> ไม่มีจริง) ทำให้ตัวละครได้รับอาวุธผิดประเภทหรือไม่ได้รับอาวุธ ส่งผลให้ไม่สามารถร่ายสกิลโจมตีเพื่อทดสอบได้
+  2. **ขาดอาวุธรอง (Secondary Weapon) และตราสัญลักษณ์ (Emblem)**: ตัวละครที่บูสต์ไม่มีอาวุธรองและตราสัญลักษณ์ที่จำเป็นต่อการแสดงผลและใช้งานสกิลบางประเภท
+  3. **ขาดชุดเกราะป้องกัน (Armor Set)**: ตัวละครไม่มีชุดเกราะป้องกัน ทำให้การทดสอบในแมพมอนสเตอร์ระดับสูงทำได้ยาก
+  4. **รหัสสกิล HEXA ไม่ถูกต้อง (Dummy/Non-existent IDs)**: มีการใช้ไอดีจำลองช่วง `xxx40000` (เช่น `154140000`, `162140000` ฯลฯ) ซึ่งไม่มีอยู่ในไฟล์ `.dat` ของ WZ ทำให้เมธอด `SkillData.getSkillDeepCopyById()` คืนค่า `null` และไม่ได้รับสกิล HEXA Mastery จริง
+  5. **Adele 6th Job Origin Skill (Maestro - 151141500)**: เพิ่มระบบสถานะอมตะสมบูรณ์แบบ 7 วินาที (`IndieNotDamaged`), แสดงเอฟเฟกต์คัทซีนปาร์ตี้ (`UserLocal.showHexaSkillEff`), และสถานะหยุดการเคลื่อนไหวสมบูรณ์แบบ 10 วินาที (`MobStat.Freeze`) กับลดต้านทานบอส 20 วินาที (`MobStat.OriginDebuff`) ให้ครบตามมาตรฐาน
+- **การแก้ไขและปรับปรุง (Comprehensive Fixes)**:
+  1. **แก้ไขรหัสอาวุธ Arcane Umbra, อาวุธรอง และตราสัญลักษณ์ตรงสาย 100%**:
+     - **Khali**: อาวุธ `1404018` (Arcane Umbra Chakram) + อาวุธรอง `1354033` (Infinite Hex Seeker) + ตราสัญลักษณ์ `1191113` (Gold Guardian Emblem) + ชุดเกราะ Arcane Umbra Thief ครบ 6 ชิ้น
+     - **Lara**: อาวุธ `1372228` (Arcane Umbra Wand) + อาวุธรอง `1354023` (Radiant Four-Jade Ornament) + ตราสัญลักษณ์ `1190561` (Gold Earthseer Emblem) + ชุดเกราะ Arcane Umbra Mage ครบ 6 ชิ้น
+     - **Illium**: อาวุธ `1282017` (Arcane Umbra Lucent Gauntlet) + อาวุธรอง `1353503` (Glory Lucent Wings) + ตราสัญลักษณ์ `1190532` (Gold Crystal Emblem) + ชุดเกราะ Arcane Umbra Mage ครบ 6 ชิ้น
+     - **Ark**: อาวุธ `1482221` (Arcane Umbra Knuckle) + อาวุธรอง `1353603` (Ultimate Path) + ตราสัญลักษณ์ `1190540` (Gold Abyssal Emblem) + ชุดเกราะ Arcane Umbra Pirate ครบ 6 ชิ้น
+     - **HoYoung**: อาวุธ `1292018` (Arcane Umbra Super Ritual Fan) + อาวุธรอง `1353803` (Moonstone Fan Tassel) + ตราสัญลักษณ์ `1190550` (Gold Three Paths Emblem) + ชุดเกราะ Arcane Umbra Thief ครบ 6 ชิ้น
+     - **Kain**: อาวุธ `1214018` (Arcane Umbra Whispershot) + อาวุธรอง `1354013` (D100 Custom Weapon Belt) + ตราสัญลักษณ์ `1190554` (Gold Hitman Emblem) + ชุดเกราะ Arcane Umbra Archer ครบ 6 ชิ้น
+     - **Adele**: อาวุธ `1213018` (Arcane Umbra Bladecaster) + อาวุธรอง `1354003` (Noble Bladebinder) + ตราสัญลักษณ์ `1190552` (Gold Knight's Emblem) + ชุดเกราะ Arcane Umbra Warrior ครบ 6 ชิ้น
+     - **Hayato, Kanna, Xenon และอาชีพอื่นๆ**: รองรับคำสั่งตรงและมีระบบ Fallback ตรวจจับสายอุปกรณ์ (`isWarriorEquipJob`, `isMageEquipJob`, `isArcherEquipJob`, `isThiefEquipJob`, `isPirateEquipJob`) มอบอาวุธและชุดเกราะตรงสาย 100%
+  2. **แก้ไขรหัสสกิล HEXA Matrix และ V-Matrix ให้ตรงตามดาต้า WZ/DAT 100%**:
+     - นำรหัสสกิลจริงทั้งหมดจาก Job Class มาบันทึกใน `setupEndgame` ทำให้ระบบมอบสกิลคลาส 6 HEXA Mastery และ Origin ทุกสกิลที่ระดับ Lv.30 เต็มได้ครบ 100%
+  3. **มอบไอเทมจำเป็นสำหรับการทดสอบเพิ่มเติม**:
+     - หิน Nodestone x100 (`2435719`)
+     - ยา Power Elixir x1000 (`2000005`)
+     - Sol Erda Energy x20 (`2636421`) และ Sol Erda Fragment x1000 (`4009548`)
+     - ส่งแพ็กเก็ต Add Item พร้อมอัปเดต Client Inventory ในทันที
+  4. **คอมไพล์และอัปเดตแพ็กเกจแจกจ่าย**:
+     - คอมไพล์ผ่าน 100% (`BUILD SUCCESS`)
+     - เขียนทับ `Server263/maplestory.jar`
+     - สร้างแพตช์อัปเดตล่าสุด `Patches/Server263_Patch_20261009_1510.zip` (121.51 MB) พร้อมใช้งานและทดสอบได้ทันที
+
