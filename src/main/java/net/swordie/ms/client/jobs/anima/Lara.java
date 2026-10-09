@@ -8,17 +8,25 @@ import net.swordie.ms.client.character.skills.Option;
 import net.swordie.ms.client.character.skills.SecondAtom;
 import net.swordie.ms.client.character.skills.SkillStat;
 import net.swordie.ms.client.character.skills.info.AttackInfo;
+import net.swordie.ms.client.character.skills.info.MobAttackInfo;
 import net.swordie.ms.client.character.skills.info.SkillInfo;
 import net.swordie.ms.client.character.skills.info.SkillUseInfo;
 import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
 import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
 import net.swordie.ms.client.jobs.Job;
 import net.swordie.ms.connection.InPacket;
+import net.swordie.ms.connection.packet.UserLocal;
 import net.swordie.ms.constants.FieldConstants;
 import net.swordie.ms.constants.JobConstants;
 import net.swordie.ms.client.character.items.BodyPart;
+import net.swordie.ms.enums.ChatType;
 import net.swordie.ms.enums.Stat;
+import net.swordie.ms.life.mob.Mob;
+import net.swordie.ms.life.mob.MobStat;
+import net.swordie.ms.life.mob.MobTemporaryStat;
 import net.swordie.ms.loaders.ItemData;
+
+import java.util.EnumMap;
 
 import static net.swordie.ms.enums.InvType.EQUIPPED;
 
@@ -145,6 +153,26 @@ public class Lara extends Job {
     public static final int WINDING_MOUNTAIN_RIDGE_1 = 400021130;
     public static final int WINDING_MOUNTAIN_RIDGE_2 = 400021131;
 
+    // ===== 6th Job HEXA Origin Skill =====
+    public static final int CORNUCOPIA = 162141502;
+    public static final int CORNUCOPIA_SUB = 162141503;
+
+    // ===== 6th Job HEXA Mastery Skills =====
+    public static final int HEXA_ERUPTION_HEAVING_RIVER = 162141001;
+    public static final int HEXA_ERUPTION_HEAVING_RIVER_2 = 162141002;
+    public static final int HEXA_ERUPTION_WHIRLWIND = 162141005;
+    public static final int HEXA_ERUPTION_WHIRLWIND_2 = 162141006;
+    public static final int HEXA_ERUPTION_SUNRISE_WELL = 162141008;
+    public static final int HEXA_ERUPTION_SUNRISE_WELL_2 = 162141009;
+    public static final int HEXA_DRAGON_VEIN_ABSORPTION = 162141010;
+    public static final int HEXA_ABSORPTION_RIVER_PUDDLE_DOUSE = 162141012;
+    public static final int HEXA_ABSORPTION_RIVER_PUDDLE_DOUSE_2 = 162141013;
+    public static final int HEXA_ABSORPTION_FIERCE_WIND = 162141015;
+    public static final int HEXA_ABSORPTION_FIERCE_WIND_2 = 162141016;
+    public static final int HEXA_ABSORPTION_SUNLIT_GRAIN = 162141018;
+    public static final int HEXA_ABSORPTION_SUNLIT_GRAIN_2 = 162141019;
+    public static final int HEXA_WAKEUP_CALL = 162141020;
+
     public Lara(Char chr) {
         super(chr);
     }
@@ -261,11 +289,90 @@ public class Lara extends Job {
                     tsm.sendStat(CharacterTemporaryStat.IndieEmpty, o1);
                 }
                 break;
+            case MOUNTAIN_EMBRACE:
+                // Damage reduction while channel/protecting (-60%)
+                o1.nReason = skillID;
+                o1.nValue = -60;
+                o1.tTerm = si != null ? si.getValue(SkillStat.time, slv) : 8;
+                tsm.sendStat(CharacterTemporaryStat.IndieDamReduceR, o1);
+                break;
+            case ARBOR_AWAY_1:
+            case ARBOR_AWAY_2:
+                o1.nReason = skillID;
+                o1.nValue = si != null ? si.getValue(SkillStat.indieDamR, slv) : 10;
+                o1.tTerm = si != null ? si.getValue(SkillStat.time, slv) : 30;
+                tsm.sendStat(CharacterTemporaryStat.IndieDamR, o1);
+                break;
+            case BIG_STRETCH:
+                chr.chatMessage(ChatType.Notice, "[Big Stretch] Giant Land Spirits manifested!");
+                break;
+            case LANDS_CONNECTION:
+                o1.nReason = skillID;
+                o1.nValue = si != null ? si.getValue(SkillStat.indieDamR, slv) : 15;
+                o1.tTerm = si != null ? si.getValue(SkillStat.time, slv) : 20;
+                tsm.sendStat(CharacterTemporaryStat.IndieDamR, o1);
+                break;
+            case CORNUCOPIA:
+            case CORNUCOPIA_SUB:
+                // Origin cutscene invincibility (7s)
+                o1.nReason = skillID;
+                o1.nValue = 1;
+                o1.tTerm = 7;
+                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                chr.chatMessage(ChatType.Notice, "[Origin] Cornucopia activated! Nature's bounty purifies all.");
+                break;
         }
     }
 
     @Override
     public void handleAttack(Client c, AttackInfo attackInfo, SkillInfo si, long now) {
+        Char chr = c.getChr();
         super.handleAttack(c, attackInfo, si, now);
+        int skillID = attackInfo.skillId;
+
+        // Hyper Skill: Vine Coil (10s Stun / Bind)
+        if (skillID == VINE_COIL) {
+            for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                if (mob != null && mob.getHp() > 0) {
+                    MobTemporaryStat mts = mob.getTemporaryStat();
+                    Option o = new Option();
+                    o.nOption = 1;
+                    o.rOption = skillID;
+                    o.tOption = 10; // 10s Stun
+                    mts.addStatOptions(mob, MobStat.Stun, o);
+                }
+            }
+        }
+
+        // Origin Skill: Cornucopia (10s Freeze / Bind, 20s OriginDebuff, Party Effect)
+        if (skillID == CORNUCOPIA || skillID == CORNUCOPIA_SUB) {
+            for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                if (mob != null && mob.getHp() > 0) {
+                    MobTemporaryStat mts = mob.getTemporaryStat();
+                    EnumMap<MobStat, Option> map = new EnumMap<>(MobStat.class);
+                    Option opt1 = new Option();
+                    Option opt2 = new Option();
+                    opt1.nOption = 1;
+                    opt1.rOption = skillID;
+                    opt1.tOption = 10; // 10s Absolute Freeze / Bind
+                    opt1.cOption = chr.getId();
+                    map.put(MobStat.Freeze, opt1);
+
+                    opt2.nOption = 10;
+                    opt2.rOption = skillID;
+                    opt2.tOption = 20; // 20s Origin Debuff
+                    opt2.xOption = 22;
+                    map.put(MobStat.OriginDebuff, opt2);
+                    mts.addStatOptions(mob, map);
+                }
+            }
+            if (chr.getParty() != null) {
+                for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                    other.write(UserLocal.showHexaSkillEff(chr));
+                }
+            }
+        }
     }
 }
