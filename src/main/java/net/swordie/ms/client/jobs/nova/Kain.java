@@ -19,8 +19,14 @@ import net.swordie.ms.client.character.items.BodyPart;
 import net.swordie.ms.enums.Stat;
 import net.swordie.ms.loaders.ItemData;
 import net.swordie.ms.loaders.SkillData;
+import net.swordie.ms.client.character.skills.info.MobAttackInfo;
+import net.swordie.ms.connection.packet.UserLocal;
+import net.swordie.ms.life.mob.Mob;
+import net.swordie.ms.life.mob.MobStat;
+import net.swordie.ms.life.mob.MobTemporaryStat;
 import net.swordie.ms.util.Rect;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -129,6 +135,52 @@ public class Kain extends Job {
     public static final int FATAL_BLITZ = 400031065; // Execution
     public static final int GRIP_OF_AGONY = 400031066; // Second Atom
 
+    // 6th Job (HEXA Matrix)
+    public static final int CHURNING_MALICE = 63141506; // Origin Skill Cast
+    public static final int CHURNING_MALICE_ATTACK_1 = 63141507;
+    public static final int CHURNING_MALICE_ATTACK_2 = 63141508;
+    public static final int TOTAL_ANNIHILATION = 63141500; // 6th Job Active
+    public static final int TOTAL_ANNIHILATION_ATTACK_1 = 63141501;
+    public static final int TOTAL_ANNIHILATION_ATTACK_2 = 63141502;
+    public static final int TOTAL_ANNIHILATION_ATTACK_3 = 63141503;
+    public static final int TOTAL_ANNIHILATION_ATTACK_4 = 63141504;
+    public static final int TOTAL_ANNIHILATION_ATTACK_5 = 63141505;
+
+    // HEXA Mastery Skills
+    public static final int HEXA_FALLING_DUST = 63141000;
+    public static final int HEXA_FALLING_DUST_POSSESS = 63141100;
+    public static final int HEXA_FALLING_DUST_POSSESS_2 = 63141101;
+    public static final int HEXA_POISON_NEEDLE = 63141004;
+    public static final int HEXA_POISON_NEEDLE_1 = 63141005;
+    public static final int HEXA_POISON_NEEDLE_2 = 63141006;
+    public static final int HEXA_STRIKE_ARROW = 63141007;
+    public static final int HEXA_STRIKE_ARROW_1 = 63141008;
+    public static final int HEXA_STRIKE_ARROW_POSSESS = 63141107;
+    public static final int HEXA_SCATTERING_SHOT = 63141009;
+    public static final int HEXA_SCATTERING_SHOT_POSSESS = 63141109;
+    public static final int HEXA_TEARING_KNIFE = 63141010;
+    public static final int HEXA_CHAIN_SICKLE = 63141011;
+    public static final int HEXA_CHAIN_SICKLE_1 = 63141012;
+    public static final int HEXA_DRAGON_FANG = 63141013;
+    public static final int HEXA_DRAGON_FANG_1 = 63141014;
+    public static final int HEXA_DEATH_BLESSING = 63141015;
+    public static final int HEXA_DEATH_BLESSING_1 = 63141016;
+    public static final int HEXA_DEATH_BLESSING_2 = 63141017;
+    public static final int HEXA_SHAFT_BREAK = 63141018;
+    public static final int HEXA_SHAFT_BREAK_1 = 63141019;
+    public static final int HEXA_SHAFT_BREAK_2 = 63141020;
+    public static final int HEXA_SHAFT_BREAK_POSSESS = 63141118;
+    public static final int HEXA_SHAFT_BREAK_POSSESS_1 = 63141119;
+    public static final int HEXA_SHAFT_BREAK_POSSESS_2 = 63141120;
+    public static final int HEXA_SHAFT_BREAK_POSSESS_3 = 63141121;
+    public static final int HEXA_LASTING_GRUDGE = 63141022;
+    public static final int HEXA_LASTING_GRUDGE_1 = 63141023;
+    public static final int HEXA_PHANTOM_BLADE = 63141024;
+    public static final int HEXA_CHASING_SHOT = 63141025;
+    public static final int HEXA_UNSEEN_SNIPER = 63141026;
+    public static final int HEXA_UNSEEN_SNIPER_1 = 63141027;
+    public static final int HEXA_UNSEEN_SNIPER_POSSESS = 63141126;
+    public static final int HEXA_UNSEEN_SNIPER_POSSESS_1 = 63141127;
 
     public static final int[] possessionSkills = new int[] {
             STRIKE_ARROW_POSSESS,
@@ -136,6 +188,18 @@ public class Kain extends Job {
             SCATTERING_SHOT_POSSESS,
             SHAFT_BREAK_POSSESS,
             FALLING_DUST_POSSESS,
+
+            HEXA_STRIKE_ARROW_POSSESS,
+            HEXA_SCATTERING_SHOT_POSSESS,
+            HEXA_SHAFT_BREAK_POSSESS,
+            HEXA_SHAFT_BREAK_POSSESS_1,
+            HEXA_SHAFT_BREAK_POSSESS_2,
+            HEXA_SHAFT_BREAK_POSSESS_3,
+            HEXA_FALLING_DUST_POSSESS,
+            HEXA_FALLING_DUST_POSSESS_2,
+            HEXA_UNSEEN_SNIPER_POSSESS,
+            HEXA_UNSEEN_SNIPER_POSSESS_1,
+            CHURNING_MALICE,
 
             DRAGON_BURST,
     };
@@ -145,6 +209,16 @@ public class Kain extends Job {
             PHANTOM_BLADE,
             CHAIN_SICKLE,
             POISON_NEEDLE_2,
+
+            HEXA_TEARING_KNIFE,
+            HEXA_PHANTOM_BLADE,
+            HEXA_CHAIN_SICKLE,
+            HEXA_CHAIN_SICKLE_1,
+            HEXA_POISON_NEEDLE,
+            HEXA_POISON_NEEDLE_1,
+            HEXA_POISON_NEEDLE_2,
+            HEXA_UNSEEN_SNIPER,
+            HEXA_UNSEEN_SNIPER_1,
 
             SNEAKY_SNIPING_POSSESS,
             SNEAKY_SNIPING_2_POSSESS,
@@ -158,6 +232,15 @@ public class Kain extends Job {
             STRIKE_ARROW_3,
             SHAFT_BREAK,
             FALLING_DUST,
+
+            HEXA_STRIKE_ARROW,
+            HEXA_STRIKE_ARROW_1,
+            HEXA_SCATTERING_SHOT,
+            HEXA_SHAFT_BREAK,
+            HEXA_SHAFT_BREAK_1,
+            HEXA_SHAFT_BREAK_2,
+            HEXA_FALLING_DUST,
+            HEXA_CHASING_SHOT,
     };
 
     public static final int[] addedSkills = new int[] {
@@ -303,6 +386,35 @@ public class Kain extends Job {
                 o1.tTerm = si != null ? si.getValue(SkillStat.time, slv) : 3;
                 tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
                 break;
+            case THANATOS_DESCENT:
+                o1.nReason = skillID;
+                o1.nValue = si != null ? si.getValue(SkillStat.indieDamR, slv) : 30;
+                o1.tTerm = si != null ? si.getValue(SkillStat.time, slv) : 35;
+                tsm.sendStat(CharacterTemporaryStat.IndieDamR, o1);
+                o2.nReason = skillID;
+                o2.nValue = 100;
+                o2.tTerm = o1.tTerm;
+                tsm.sendStat(CharacterTemporaryStat.IndieStance, o2);
+                break;
+            case CHURNING_MALICE:
+                // Origin Skill 6th Job: 7 seconds invincibility (iframe) during cast animation
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 7;
+                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
+                break;
+            case TOTAL_ANNIHILATION:
+                // 6th Job Active: 6s invincibility (ndTime: 5200)
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 6;
+                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                break;
             case REMAIN_INCENSE:
                 if (tsm.hasStatBySkillId(REMAIN_INCENSE)) {
                     tsm.removeStatsBySkill(REMAIN_INCENSE);
@@ -317,6 +429,46 @@ public class Kain extends Job {
 
     @Override
     public void handleAttack(Client c, AttackInfo attackInfo, SkillInfo si, long now) {
+        Char chr = c.getChr();
         super.handleAttack(c, attackInfo, si, now);
+        int skillID = attackInfo.skillId;
+        switch (skillID) {
+            case CHURNING_MALICE:
+            case CHURNING_MALICE_ATTACK_1:
+            case CHURNING_MALICE_ATTACK_2:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob targetMob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (targetMob == null) continue;
+                    MobTemporaryStat mts = targetMob.getTemporaryStat();
+                    EnumMap<MobStat, Option> map = new EnumMap<>(MobStat.class);
+                    Option opt1 = new Option();
+                    Option opt2 = new Option();
+                    opt1.nOption = 1;
+                    opt1.rOption = skillID;
+                    opt1.tOption = 10; // 10s Absolute Freeze / Bind
+                    opt1.cOption = chr.getId();
+                    map.put(MobStat.Freeze, opt1);
+
+                    opt2.nOption = 10;
+                    opt2.rOption = skillID;
+                    opt2.tOption = 20; // 20s Origin Debuff
+                    opt2.xOption = 22;
+                    map.put(MobStat.OriginDebuff, opt2);
+                    mts.addStatOptions(targetMob, map);
+                }
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
+                break;
+            case TOTAL_ANNIHILATION:
+            case TOTAL_ANNIHILATION_ATTACK_1:
+            case TOTAL_ANNIHILATION_ATTACK_2:
+            case TOTAL_ANNIHILATION_ATTACK_3:
+            case TOTAL_ANNIHILATION_ATTACK_4:
+            case TOTAL_ANNIHILATION_ATTACK_5:
+                break;
+        }
     }
 }
