@@ -2547,40 +2547,64 @@ public class AdminCommands {
     }
 
     public static void setupEndgame(Char chr, Integer targetJob) {
-        if (targetJob != null && targetJob > 0) {
-            chr.setJob(targetJob);
-            Map<Stat, Object> stats = new HashMap<>();
-            stats.put(Stat.job, targetJob);
-            chr.sendStatsPacket(stats);
+        try {
+            if (targetJob != null && targetJob > 0) {
+                short jobShort = targetJob.shortValue();
+                chr.setJob(jobShort);
+                Map<Stat, Object> stats = new HashMap<>();
+                stats.put(Stat.job, jobShort);
+                chr.sendStatsPacket(stats);
+            }
+        } catch (Exception e) {
+            chr.chatMessage(SpeakerChannel, "[Endgame] Job set warning: " + e.getMessage());
         }
+
         short job = chr.getJob();
 
         // 1. Level to 260
-        chr.setStatAndSendPacket(Stat.level, (short) 260);
-        chr.setStatAndSendPacket(Stat.exp, 0);
-        chr.getJobHandler().handleLevelUp((short) 260);
+        try {
+            chr.setStatAndSendPacket(Stat.level, 260);
+            chr.getAvatarData().getCharacterStat().setExp(0);
+            if (chr.getJobHandler() != null) {
+                chr.getJobHandler().handleLevelUp((short) 260);
+            }
+        } catch (Exception e) {
+            chr.chatMessage(SpeakerChannel, "[Endgame] Level warning: " + e.getMessage());
+        }
 
         // 2. Max HP and MP
-        chr.heal(chr.getMaxHP(), true);
-        chr.setStatAndSendPacket(Stat.mp, chr.getMaxMP());
+        try {
+            chr.setStatAndSendPacket(Stat.hp, chr.getMaxHP());
+            chr.setStatAndSendPacket(Stat.mp, chr.getMaxMP());
+        } catch (Exception ignored) {}
 
         // 3. Mesos: 2 Billion
-        chr.addMoney(2000000000L);
+        try {
+            chr.addMoney(2000000000L);
+        } catch (Exception ignored) {}
 
         // 4. Complete 5th Job (1460-1466) & 6th Job (1488)
-        for (int q = 1460; q <= 1466; q++) {
-            chr.completeQuest(q);
+        try {
+            for (int q = 1460; q <= 1466; q++) {
+                chr.completeQuest(q);
+            }
+            chr.completeQuest(1488);
+            OutPacket outPacket = new OutPacket(OutHeader.MESSAGE);
+            outPacket.encodeByte(QUEST_RECORD_MESSAGE.getVal());
+            outPacket.encodeInt(1488);
+            outPacket.encodeByte(2);
+            outPacket.encodeFT(FileTime.currentTime());
+            chr.write(outPacket);
+        } catch (Exception e) {
+            chr.chatMessage(SpeakerChannel, "[Endgame] Quest warning: " + e.getMessage());
         }
-        chr.completeQuest(1488);
-        OutPacket outPacket = new OutPacket(OutHeader.MESSAGE);
-        outPacket.encodeByte(QUEST_RECORD_MESSAGE.getVal());
-        outPacket.encodeInt(1488);
-        outPacket.encodeByte(2);
-        outPacket.encodeFT(FileTime.currentTime());
-        chr.write(outPacket);
 
         // 5. Max 1st - 4th Job Skills
-        chr.maxSkills();
+        try {
+            chr.maxSkills();
+        } catch (Exception e) {
+            chr.chatMessage(SpeakerChannel, "[Endgame] MaxSkills warning: " + e.getMessage());
+        }
 
         // 6. Add 5th Job V-Matrix & 6th Job HEXA Skills
         List<Integer> vSkills = new ArrayList<>();
@@ -2638,34 +2662,53 @@ public class AdminCommands {
             weaponId = 1214022;
         }
 
-        for (int skillId : vSkills) {
-            chr.addSkill(skillId, 30, 30);
+        // Add Skills safely
+        List<Skill> addedSkills = new ArrayList<>();
+        List<Integer> allSpecialSkills = new ArrayList<>();
+        allSpecialSkills.addAll(vSkills);
+        allSpecialSkills.addAll(hexaSkills);
+
+        for (int skillId : allSpecialSkills) {
+            try {
+                Skill sk = SkillData.getSkillDeepCopyById(skillId);
+                if (sk != null) {
+                    int maxLv = sk.getMaxLevel() > 0 ? sk.getMaxLevel() : 30;
+                    sk.setCurrentLevel(maxLv);
+                    sk.setMasterLevel(maxLv);
+                    chr.addSkill(sk);
+                    addedSkills.add(sk);
+                }
+            } catch (Exception ignored) {}
         }
-        for (int skillId : hexaSkills) {
-            chr.addSkill(skillId, 30, 30);
+        if (!addedSkills.isEmpty()) {
+            chr.write(WvsContext.changeSkillRecordResult(addedSkills, true, false, false));
         }
 
         // 7. Add Sol Erda Energy & Fragments
-        Item solErda = ItemData.getItemDeepCopy(2636421, true);
-        if (solErda != null) {
-            solErda.setQuantity((short) 20);
-            chr.addItemToInventory(solErda);
-        }
-        Item fragments = ItemData.getItemDeepCopy(4009548, true);
-        if (fragments != null) {
-            fragments.setQuantity((short) 1000);
-            chr.addItemToInventory(fragments);
-        }
+        try {
+            Item solErda = ItemData.getItemDeepCopy(2636421, true);
+            if (solErda != null) {
+                solErda.setQuantity((short) 20);
+                chr.addItemToInventory(solErda);
+            }
+            Item fragments = ItemData.getItemDeepCopy(4009548, true);
+            if (fragments != null) {
+                fragments.setQuantity((short) 1000);
+                chr.addItemToInventory(fragments);
+            }
+        } catch (Exception ignored) {}
 
         // 8. Add Arcane Umbra Weapon if available
         if (weaponId > 0) {
-            Equip equip = ItemData.getEquipDeepCopyFromID(weaponId, true);
-            if (equip != null) {
-                chr.addItemToInventory(equip);
-            }
+            try {
+                Equip equip = ItemData.getEquipDeepCopyFromID(weaponId, true);
+                if (equip != null) {
+                    chr.addItemToInventory(equip);
+                }
+            } catch (Exception ignored) {}
         }
 
-        chr.chatMessage(SpeakerChannel, String.format("[End-Game Booster] Complete! Level 260 | 6th Job Unlocked | 2B Mesos | %d V-Skills | %d HEXA Skills Lv.30", vSkills.size(), hexaSkills.size()));
+        chr.chatMessage(SpeakerChannel, String.format("[End-Game Booster] Complete! Level 260 | 6th Job Unlocked | 2B Mesos | %d Skills Lv.30 Added", addedSkills.size()));
     }
 
     @Command(names = {"endgame", "boost", "test6", "hexa"}, requiredType = Admin)

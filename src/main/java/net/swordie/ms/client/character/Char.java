@@ -3534,7 +3534,7 @@ public class Char {
     public void addSkill(int skillID, int currentLevel, int masterLevel) {
         Skill skill = SkillData.getSkillDeepCopyById(skillID);
         if (skill == null && !SkillConstants.isMakingSkill(skillID)) {
-            System.out.printf("No such skill %d found.%d", skillID);
+            System.out.printf("No such skill %d found.\n", skillID);
             return;
         }
         skill.setCurrentLevel(currentLevel);
