@@ -15,6 +15,7 @@ public enum WeaponType {
     Desperado(1.3f, 232),            // Demon Avenger
     ChainSword(1.3125f, 242),       // Xenon
     MemoryStaff(1.34f, 252),         // Lynn (Lynn magician)
+    CelestialLight(1.2f, 253),      // Sia Astelle (Shine magician)
     PsyLimiter(1.2f, 262),           // Kinesis
     Chain(1.3f, 272),                // Cadena
     Gauntlet(1.3f, 282),             // Illium

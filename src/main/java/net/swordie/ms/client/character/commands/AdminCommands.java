@@ -2667,6 +2667,41 @@ public class AdminCommands {
             secondaryId = 1353003; // Controller
             emblemId = 1190201; // Hybrid Heart
             armors = pirateArmors;
+        } else if (JobConstants.isRen(job)) {
+            weaponId = 1215018; // Arcane Umbra Plum Sword
+            secondaryId = 1354043; // Radiant Spirit Heart
+            emblemId = 1190565; // Ren Gold Emblem
+            armors = warriorArmors;
+        } else if (JobConstants.isLynn(job)) {
+            weaponId = 1252098; // Arcane Umbra Memorial Staff
+            secondaryId = 1352813; // Beast Bell
+            emblemId = 1190557; // Mitra Magician Emblem
+            armors = mageArmors;
+        } else if (JobConstants.isMoXuan(job)) {
+            weaponId = 1403018; // Arcane Umbra Martial Brace
+            secondaryId = 1352863; // True Martial Fist
+            emblemId = 1190559; // Mitra Pirate Emblem
+            armors = pirateArmors;
+        } else if (JobConstants.isSiaAstelle(job)) {
+            weaponId = 1253018; // Arcane Umbra Celestial Light
+            secondaryId = 1352873; // True Constellation
+            emblemId = 1190557; // Mitra Magician Emblem
+            armors = mageArmors;
+        } else if (JobConstants.isCadena(job)) {
+            weaponId = 1272017; // Arcane Umbra Chain
+            secondaryId = 1353303; // Transmitter
+            emblemId = 1190558; // Mitra Thief Emblem
+            armors = thiefArmors;
+        } else if (JobConstants.isPathFinder(job)) {
+            weaponId = 1592020; // Arcane Umbra Ancient Bow
+            secondaryId = 1352014; // Relic
+            emblemId = 1190556; // Mitra Archer Emblem
+            armors = archerArmors;
+        } else if (JobConstants.isKinesis(job)) {
+            weaponId = 1262039; // Arcane Umbra Psy-limiter
+            secondaryId = 1353203; // Chess Piece
+            emblemId = 1190557; // Mitra Magician Emblem
+            armors = mageArmors;
         } else {
             if (JobConstants.isWarriorEquipJob(job)) {
                 weaponId = 1402259;

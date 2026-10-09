@@ -498,4 +498,74 @@ MapleStory_Server_Runner/
   - เพิ่ม `ai.skillId == 162141020` เข้ากับเงื่อนไข `encodeInt(0)` ป้องกันไคลเอนต์ของเพื่อนร่วมแมพ Desync
 - [x] **ทดสอบการคอมไพล์ผ่านสมบูรณ์ 100%**: Maven BUILD SUCCESS (50.2s) และดีพลอย JAR ไปยัง `Server263/maplestory.jar` เรียบร้อย
 
+---
+
+### 9.7 การออดิตและแก้ไขเชิงระบบครบวงจรสำหรับคลาสที่ยังไม่สมบูรณ์เรื่องสกิล / STAT (Comprehensive Audit & Fixes)
+
+#### 🔍 1. รายการบั๊กและข้อบกพร่องที่ค้นพบจากการ Audit ทั่วทั้งระบบ
+1. **Kain (Nova Archer)**:
+   - ตกหล่นจาก `JobConstants.isArcherEquipJob`: ส่งผลให้ `ScriptManagerImpl.resetAP` คำนวณ Stat หลักผิด, `ItemConstants.getJobMaskFromChar` มองเป็น AnyJob (0), และชุดเกราะ `!endgame` ตกไปเป็น Pirate
+   - ขาดสกิลคลาส 5 และ 6 ใน `SkillConstants.isNoCoolDownAttack`: สกิลรัวหลายฮิตอย่าง `Fatal Blitz (400031065)`, `Dragon Burst (400031061)`, `Thanatos Descent (400031062-64)`, `Grip of Agony (400031066)` และท่า Origin `Total Annihilation / Churning Malice` หยุดทำดาเมจหลังฮิตแรกเนื่องจากติดคูลดาวน์สกัดกั้น
+2. **Ren (Anima Warrior)**:
+   - บั๊ก `jobID + 1` ในการเลื่อนขั้นอาชีพ: โค้ดเดิมกำหนด `sm.setJob((short)(jobID + 1))` ซึ่งทำให้ `REN_1 (16100)` กลายเป็น `16101` (ไอดีอาชีพที่ไม่มีอยู่จริง ส่งผลให้คลาสพัง) โดยคลาส 2 ที่ถูกต้องคือ `16110 (REN_2)`
+   - ขาดการเลื่อนขั้นอาชีพที่เลเวล 30: `handleLevelUp` มีเพียงเลเวล 60 และ 100 เท่านั้น
+   - ขาดอาวุธเริ่มต้น (Starter Weapon): `addItemToNewCharacter` แจกเพียงอาวุธรอง `1354040` ทำให้ตัวละครไม่มีอาวุธดาบหลัก
+   - ขาดสกิลคลาส 5 ใน `SkillConstants.isNoCoolDownAttack`: สกิล `400011147`, `400011148`, `400011150`, `400011151`, `400011153`, `400011157`
+   - ตกหล่นจาก `!endgame`: ไม่มีเคสแจกอาวุธ Arcane Umbra Plum Sword (`1215018`) และ Radiant Spirit Heart (`1354043`)
+3. **Lynn (Jianghu Mage)**:
+   - ขาดการเลื่อนขั้นที่เลเวล 30 ใน `handleLevelUp`: เมื่อเก็บเลเวลตามปกติถึง 30 ตัวละครจะไม่เปลี่ยนเป็น `LYNN_2 (17210)`
+   - ขาดสกิลคลาส 5 ใน `SkillConstants.isNoCoolDownAttack`: `400021134`, `400021137`, `400021138`, `400021139`
+   - ตกหล่นจาก `!endgame`: ขาดเคสแจก Arcane Umbra Memorial Staff (`1252098`) และ Beast Bell (`1352813`)
+4. **MoXuan (Jianghu Pirate)**:
+   - ขาด `handleLevelUp` อัตโนมัติ: ตัวละครต้องพึ่งพาบทสนทนา NPC เท่านั้น เมื่อเลเวลถึง 30, 60, 100 ไม่มีการเปลี่ยนอาชีพและแจกแต้ม SP อัตโนมัติ
+   - ใช้อาวุธรองผิดสายใน `addItemToNewCharacter`: แจก `1354030` ซึ่งเป็นอาวุธรอง Thief (rJob=8) แทนที่จะเป็น `1352860` ของ MoXuan (Pirate rJob=16)
+   - ขาดสกิลคลาส 5 ใน `SkillConstants.isNoCoolDownAttack`: `400051084`, `400051086`, `400051087`, `400051088`, `400051089`
+   - การจัดหมวด Stat หลักผิดพลาด: ใน `GameConstants` ถูกจัดเข้า `BaseStat.dex` ทั้งที่ MoXuan เป็น STR Pirate (สนับมือเริ่มต้นต้องการ STR 45)
+5. **Sia Astelle (Shine Mage)**:
+   - โค้ดเดิมเป็นโครงร่างว่างเปล่า (มีเพียง 25 บรรทัด): ขาด `setCharCreationStats`, `addItemToNewCharacter`, `handleLevelUp`, `handleInitAfterMigrate`
+   - ขาดการนิยาม `WeaponType`: อาวุธ Celestial Light (`1253xxx`) ไม่มีประเภทใน `WeaponType.java` ทำให้ `ItemConstants.getWeaponType` คืนค่า `None` ส่งผลให้การคำนวณดาเมจพื้นฐานกลายเป็น 0
+   - ขาดสกิลคลาส 5 ใน `SkillConstants.isNoCoolDownAttack`: `400021142`, `400021143`, `400021147`, `400021149`, `400021152`
+6. **Adele**:
+   - ขาดสกิล V-Matrix หลายฮิตใน `SkillConstants.isNoCoolDownAttack`: `Ruin (400011105)` และ `Storm (400011136)`
+7. **ระบบกลาง (Core Constants & Damage Calculation)**:
+   - `JobConstants.isWarriorEquipJob`: มี `isArk(id)` อยู่ ทั้งที่ Ark เป็น Pirate ส่งผลให้ระบบมอง Ark เป็น Warrior และแจกชุดเกราะ/Scroll ผิดประเภท
+   - `DamageCalc.getMastery()`: ขาดอาวุธ `Bladecaster`, `RenSword`, `Chakram`, `Whispershot`, `MemoryStaff`, `CelestialLight` ทำให้ Base Mastery กลายเป็น 0
+   - `JobEnum.getUsingWeapons()`: สิ้นสุดที่ Kain ขาดอาชีพใหม่ทั้งหมด (Cadena, Illium, Ark, Pathfinder, Hoyoung, Lara, Khali, Ren, Lynn, MoXuan, Sia)
+
+---
+
+#### 🛠️ 2. การดำเนินการแก้ไขครบทุกจุด (Applied Fixes)
+- [x] **แก้ไข `JobConstants.java`**:
+  - เพิ่ม `isKain(id)` ใน `isArcherEquipJob`
+  - นำ `isArk(id)` ออกจาก `isWarriorEquipJob`
+  - เพิ่มการลงทะเบียนอาวุธของทุกอาชีพใหม่ใน `JobEnum.getUsingWeapons()`
+- [x] **แก้ไข `WeaponType.java` & `DamageCalc.java`**:
+  - เพิ่ม `CelestialLight(1.2f, 253)` สำหรับ Sia Astelle
+  - อัปเดต `DamageCalc.getMastery()` ครอบคลุมอาวุธใหม่ทุกประเภท
+- [x] **แก้ไข `ItemConstants.java`**:
+  - เพิ่ม `MemoryStaff` และ `CelestialLight` ใน `getWeaponTypeVal`
+- [x] **แก้ไข `GameConstants.java` & `ScriptManagerImpl.java`**:
+  - ปรับ MoXuan และ Ren เข้ากลุ่ม `BaseStat.str` ให้ตรงกับสาย STR Warrior/Pirate
+  - เพิ่ม MoXuan และ Ark ในการรีเซ็ตแต้ม AP สาย STR Pirates ใน `ScriptManagerImpl.resetAP`
+  - ปรับปรุง `GameConstants.getItemJobByJob` ให้เรียกตรวจผ่านเมธอด EquipJob กลาง รองรับทุกอาชีพโดยไม่ตกไปที่ `ItemJob.BEGINNER`
+- [x] **แก้ไข `Ren.java`**:
+  - เพิ่มการมอบอาวุธเริ่มต้น `1215000` (Basic Plum Sword)
+  - ปรับระบบ `handleLevelUp` ให้เปลี่ยนอาชีพตรง Job ID (`REN_2 (16110)`, `REN_3 (16111)`, `REN_4 (16112)`) พร้อมแจกแต้ม SP และอาวุธรองตามระดับเลเวล 30, 60, 100
+- [x] **แก้ไข `Lynn.java`**:
+  - เพิ่มการเปลี่ยนอาชีพคลาส 2 อัตโนมัติที่เลเวล 30 พร้อมแจก SP และอาวุธรอง `1352811`
+  - ปรับปรุงเลเวล 60 (`LYNN_3`) และ 100 (`LYNN_4`) ให้แจกอาวุธรองตามระดับ
+- [x] **แก้ไข `MoXuan.java`**:
+  - แก้ไขอาวุธรองเริ่มต้นเป็น `1352860` (Martial Fist สำหรับ Pirate)
+  - เพิ่ม `handleLevelUp` อัตโนมัติที่เลเวล 30, 60, 100 แจก SP และอาวุธรองคลาส 2, 3, 4
+- [x] **สร้างคลาส `SiaAstelle.java` ให้สมบูรณ์แบบ**:
+  - กำหนด Stat ตั้งต้นตอนสร้างตัวละคร (`INT 45`, `HP/MP 1000/500`, `SP +5`)
+  - แจกอาวุธเริ่มต้น Celestial Light `1253000` และ Constellation `1352870`
+  - ระบบเปลี่ยนอาชีพคลาส 2-4 อัตโนมัติที่เลเวล 30, 60, 100
+- [x] **อัปเดต `SkillConstants.isNoCoolDownAttack`**:
+  - เพิ่มสกิลหลายฮิตคลาส 5 & 6 ของ Kain, Ren, Lynn, MoXuan, Sia Astelle และ Adele
+- [x] **อัปเดตคำสั่ง `!endgame` ใน `AdminCommands.java`**:
+  - เพิ่มการแจกอุปกรณ์ Arcane Umbra, อาวุธรองคลาส 4, ตราสัญลักษณ์, และชุดเกราะตรงสาย 100% สำหรับ Ren, Lynn, MoXuan, Sia Astelle, Cadena, Pathfinder, Kinesis
+- [x] **คอมไพล์ผ่านสมบูรณ์ 100% (Maven BUILD SUCCESS)** และรีสตาร์ตเซิร์ฟเวอร์เปิดให้บริการพอร์ต 8484 และ 8585-8594 ครบทุกแชนแนล
+
+
 

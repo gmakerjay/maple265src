@@ -394,8 +394,8 @@ public class MoXuan extends Job {
     @Override
     public void addItemToNewCharacter(Char chr) {
         super.addItemToNewCharacter(chr);
-        // Secondary Weapon: Martial Fist (1354030)
-        Item secondary = ItemData.getItemDeepCopy(1354030);
+        // Secondary Weapon: Martial Fist (1352860)
+        Item secondary = ItemData.getItemDeepCopy(1352860);
         if (secondary != null) {
             chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
             secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
@@ -420,6 +420,28 @@ public class MoXuan extends Job {
                 chr.getAvatarData().getAvatarLook().setWeaponId(weapon.getItemId());
                 chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
             }
+        }
+    }
+
+    @Override
+    public void handleLevelUp(short level) {
+        super.handleLevelUp(level);
+        var sm = chr.getScriptManager();
+        if (level == 30) {
+            sm.setJob(JobConstants.JobEnum.MOXUAN_2.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_1.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_2.getJobId(), 3);
+            sm.giveAndEquip(1352861);
+        } else if (level == 60) {
+            sm.setJob(JobConstants.JobEnum.MOXUAN_3.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_2.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_3.getJobId(), 3);
+            sm.giveAndEquip(1352862);
+        } else if (level == 100) {
+            sm.setJob(JobConstants.JobEnum.MOXUAN_4.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_3.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.MOXUAN_4.getJobId(), 3);
+            sm.giveAndEquip(1352863);
         }
     }
 

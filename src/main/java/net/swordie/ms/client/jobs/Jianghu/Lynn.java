@@ -294,25 +294,33 @@ public class Lynn extends Job {
     public void handleLevelUp(short level) {
         super.handleLevelUp(level);
         var sm = chr.getScriptManager();
-        if (level == 60) {
-            final var jobID = chr.getJob();
-            sm.setJob((short) (jobID + 1));
+        if (level == 30) {
+            for (int qid = 66908; qid <= 66920; qid++) {
+                sm.completeQuestNoRewards(qid);
+            }
+            sm.setJob(JobConstants.JobEnum.LYNN_2.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.LYNN_1.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.LYNN_2.getJobId(), 3);
+            sm.giveAndEquip(1352811);
+        } else if (level == 60) {
             for (int qid = 66921; qid <= 66925; qid++) {
                 sm.completeQuestNoRewards(qid);
             }
             sm.completeQuestNoRewards(66941);
             sm.completeQuestNoRewards(66954);
-            sm.addSPJobAdv(jobID, 5);
-            sm.addSPJobAdv((short) (jobID + 1), 3);
+            sm.setJob(JobConstants.JobEnum.LYNN_3.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.LYNN_2.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.LYNN_3.getJobId(), 3);
+            sm.giveAndEquip(1352812);
         } else if (level == 100) {
-            final var jobID = chr.getJob();
-            sm.setJob((short) (jobID + 1));
             for (int qid = 66926; qid <= 66934; qid++) {
                 sm.completeQuestNoRewards(qid);
             }
-            sm.addSPJobAdv(jobID, 5);
-            sm.addSPJobAdv((short) (jobID + 1), 3);
-        }else if (level == 200) {
+            sm.setJob(JobConstants.JobEnum.LYNN_4.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.LYNN_3.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.LYNN_4.getJobId(), 3);
+            sm.giveAndEquip(1352813);
+        } else if (level == 200) {
             sm.completeQuestNoRewards(66935);
         }
     }

@@ -977,12 +977,11 @@ public class GameConstants {
                 || JobConstants.isDarkKnight(job) || JobConstants.isHero(job) || JobConstants.isPaladin(job)
                 || JobConstants.isBlaster(job) || JobConstants.isHayato(job) || JobConstants.isMihile(job)
                 || JobConstants.isShade(job) || JobConstants.isThunderBreaker(job) || JobConstants.isAdventurerWarrior(job)
-                || JobConstants.isArk(job) || JobConstants.isAdele(job)) {
+                || JobConstants.isArk(job) || JobConstants.isAdele(job) || JobConstants.isRen(job) || JobConstants.isMoXuan(job)) {
             return BaseStat.str;
         } else if (JobConstants.isJett(job) || JobConstants.isCorsair(job) || JobConstants.isWildHunter(job)
                 || JobConstants.isMercedes(job) || JobConstants.isAngelicBuster(job) || JobConstants.isWindArcher(job)
-                || JobConstants.isAdventurerArcher(job) || JobConstants.isPathFinder(job) || JobConstants.isKain(job)
-                || JobConstants.isMoXuan(job)) {
+                || JobConstants.isAdventurerArcher(job) || JobConstants.isPathFinder(job) || JobConstants.isKain(job)) {
             return BaseStat.dex;
         } else if (JobConstants.isBeastTamer(job) || JobConstants.isBlazeWizard(job) || JobConstants.isBishop(job)
                 || JobConstants.isEvan(job) || JobConstants.isIceLightning(job) || JobConstants.isFirePoison(job)
@@ -1002,34 +1001,22 @@ public class GameConstants {
 
     public static ItemJob getItemJobByJob(int jobArg) {
         short job = (short) jobArg;
-        if (JobConstants.isPinkBean(job) || JobConstants.isDawnWarrior(job) || JobConstants.isKaiser(job)
-                || JobConstants.isZero(job) || JobConstants.isDemon(job) || JobConstants.isDemonSlayer(job)
-                || JobConstants.isAran(job) || JobConstants.isDarkKnight(job) || JobConstants.isHero(job)
-                || JobConstants.isPaladin(job) || JobConstants.isBlaster(job) || JobConstants.isHayato(job)
-                || JobConstants.isMihile(job) || JobConstants.isAdventurerWarrior(job)) {
+        if (JobConstants.isWarriorEquipJob(job)) {
             return ItemJob.WARRIOR;
         }
-        if (JobConstants.isWildHunter(job) || JobConstants.isMercedes(job) || JobConstants.isWindArcher(job) ||
-                JobConstants.isAdventurerArcher(job)) {
+        if (JobConstants.isArcherEquipJob(job)) {
             return ItemJob.BOWMAN;
         }
-        if (JobConstants.isBeastTamer(job) || JobConstants.isBlazeWizard(job) || JobConstants.isBishop(job)
-                || JobConstants.isEvan(job) || JobConstants.isIceLightning(job) || JobConstants.isFirePoison(job)
-                || JobConstants.isAdventurerMage(job) || JobConstants.isKanna(job) || JobConstants.isBattleMage(job)
-                || JobConstants.isKinesis(job) || JobConstants.isLuminous(job)) {
+        if (JobConstants.isMageEquipJob(job)) {
             return ItemJob.MAGICIAN;
         }
-        if (JobConstants.isAdventurerThief(job) || JobConstants.isNightLord(job) || JobConstants.isShadower(job)
-                || JobConstants.isPhantom(job) || JobConstants.isNightWalker(job) || JobConstants.isDualBlade(job)) {
+        if (JobConstants.isThiefEquipJob(job)) {
             return ItemJob.THIEF;
         }
-        if (JobConstants.isBuccaneer(job) || JobConstants.isAdventurerPirate(job) || JobConstants.isCannoneer(job)
-                || JobConstants.isShade(job) || JobConstants.isThunderBreaker(job) || JobConstants.isCorsair(job)
-                || JobConstants.isAngelicBuster(job) || JobConstants.isJett(job)) {
+        if (JobConstants.isPirateEquipJob(job)) {
             return ItemJob.PIRATE;
-        } else {
-            return ItemJob.BEGINNER;
         }
+        return ItemJob.BEGINNER;
     }
 
     public static BaseStat getSecStatByMainStat(BaseStat mainStat) {

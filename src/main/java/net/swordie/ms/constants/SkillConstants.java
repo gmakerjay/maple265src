@@ -24,6 +24,8 @@ import net.swordie.ms.client.jobs.adventurer.warrior.Warrior;
 import net.swordie.ms.client.jobs.anima.HoYoung;
 import net.swordie.ms.client.jobs.anima.Lara;
 import net.swordie.ms.client.jobs.anima.Ren;
+import net.swordie.ms.client.jobs.Jianghu.Lynn;
+import net.swordie.ms.client.jobs.shine.SiaAstelle;
 import net.swordie.ms.client.jobs.cygnus.*;
 import net.swordie.ms.client.jobs.flora.Adele;
 import net.swordie.ms.client.jobs.flora.Ark;
@@ -3617,6 +3619,53 @@ public class SkillConstants {
             case Ren.HEXA_RIOTOUS_HEART:
             case Ren.HEARTS_UNITED:
             case Ren.HEXA_HEARTS_UNITED:
+            // Kain 5th & 6th Multi-hit
+            case Kain.DRAGON_BURST:
+            case Kain.THANATOS_DESCENT:
+            case Kain.THANATOS_DESCENT_2:
+            case Kain.THANATOS_DESCENT_3:
+            case Kain.FATAL_BLITZ:
+            case Kain.GRIP_OF_AGONY:
+            case Kain.CHURNING_MALICE:
+            case Kain.CHURNING_MALICE_ATTACK_1:
+            case Kain.CHURNING_MALICE_ATTACK_2:
+            case Kain.TOTAL_ANNIHILATION:
+            case Kain.TOTAL_ANNIHILATION_ATTACK_1:
+            case Kain.TOTAL_ANNIHILATION_ATTACK_2:
+            case Kain.TOTAL_ANNIHILATION_ATTACK_3:
+            case Kain.TOTAL_ANNIHILATION_ATTACK_4:
+            case Kain.TOTAL_ANNIHILATION_ATTACK_5:
+            case Kain.HEXA_POISON_NEEDLE_1:
+            case Kain.HEXA_POISON_NEEDLE_2:
+            case Kain.CHAIN_SICKLE_2:
+            case Kain.HEXA_CHAIN_SICKLE_1:
+            // Ren 5th Job
+            case Ren.THOUSAND_BLOSSOM_FLURRY:
+            case Ren.THOUSAND_BLOSSOM_FLURRY_EX:
+            case Ren.SOUL_IMMEASURABLE:
+            case Ren.SOUL_IMMEASURABLE_ATT:
+            case Ren.DANCING_ANNIHILATION:
+            case Ren.FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART_ATT:
+            // Lynn 5th Job
+            case Lynn.BEAST_RAGE:
+            case Lynn.BEAK_STRIKE:
+            case Lynn.FOCUS_AWAKEN:
+            case Lynn.NATURE_GRACE:
+            // MoXuan 5th Job
+            case 400051084:
+            case 400051086:
+            case 400051087:
+            case 400051088:
+            case 400051089:
+            // Sia Astelle 5th Job
+            case SiaAstelle.SHINE:
+            case SiaAstelle.STELLAR_XI_SIRIUS:
+            case SiaAstelle.STELLAR_XII_SADALSUUD:
+            case SiaAstelle.SAVIOR_CIRCLE:
+            case SiaAstelle.TIME_BLINDER:
+            // Adele 5th Job
+            case Adele.RUIN:
+            case Adele.STORM:
                 return true;
             default:
                 return SkillConstants.isZeroAttackSkill(skillID) || SkillConstants.isKeyDownSkill(skillID);

@@ -935,7 +935,8 @@ public class ScriptManagerImpl implements ScriptManager {
         Stat primaryStat = JobConstants.isWarriorEquipJob(jobID) ? Stat.str : JobConstants.isArcherEquipJob(jobID) ? Stat.dex : JobConstants.isMageEquipJob(jobID) ? Stat.inte : JobConstants.isThiefEquipJob(jobID) ? Stat.luk : Stat.ap;
         if (JobConstants.isXenon(jobID) || JobConstants.isAdventurerPirate(jobID) && !JobConstants.isBuccaneer(jobID) && !JobConstants.isCorsair(jobID) && !JobConstants.isCannoneer(jobID)) {
             primaryStat = Stat.ap; // If we are a xenon or a 1st job adventurer pirate put points back into AP
-        } else if (JobConstants.isBuccaneer(jobID) || JobConstants.isThunderBreaker(jobID) || JobConstants.isShade(jobID) || JobConstants.isCannoneer(jobID)) {
+        } else if (JobConstants.isBuccaneer(jobID) || JobConstants.isThunderBreaker(jobID) || JobConstants.isShade(jobID) || JobConstants.isCannoneer(jobID)
+                || JobConstants.isArk(jobID) || JobConstants.isMoXuan(jobID)) {
             primaryStat = Stat.str; // Handle STR pirates
         } else if (JobConstants.isPirateEquipJob(jobID)) {
             primaryStat = Stat.dex; // if none of the above conditions apply & we're a pirate, only remaining choice is DEX, otherwise we leave primary stat as AP

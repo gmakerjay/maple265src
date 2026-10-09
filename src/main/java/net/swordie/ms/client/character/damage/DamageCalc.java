@@ -278,6 +278,9 @@ public class DamageCalc {
             case Polearm:
             case Knuckle:
             case Katana:
+            case Bladecaster:
+            case RenSword:
+            case Chakram:
             case BigSword:
             case LongSword:
             case ArmCannon:
@@ -292,6 +295,7 @@ public class DamageCalc {
             case DualBowgun:
             case HandCannon:
             case AncientBow:
+            case Whispershot:
                 base = 15;
                 break;
             // magic
@@ -300,6 +304,8 @@ public class DamageCalc {
             case Wand:
             case Staff:
             case Fan:
+            case MemoryStaff:
+            case CelestialLight:
                 base = 25;
                 break;
         }

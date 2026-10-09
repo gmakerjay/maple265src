@@ -521,33 +521,59 @@ public class Ren extends Job {
     @Override
     public void addItemToNewCharacter(Char chr) {
         super.addItemToNewCharacter(chr);
+        // Secondary Weapon: Spirit Heart (1354040)
         Item secondary = ItemData.getItemDeepCopy(1354040);
-        chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
-        secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
-        secondary.setCharID(chr.getId());
-        secondary.setInvType(EQUIPPED);
-        secondary.setBagIndex(BodyPart.Shield.getVal());
-        secondary.saveToSQL();
-        chr.getAvatarData().getAvatarLook().getHairEquips().add(secondary.getItemId());
-        chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+        if (secondary != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
+            secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            secondary.setCharID(chr.getId());
+            secondary.setInvType(EQUIPPED);
+            secondary.setBagIndex(BodyPart.Shield.getVal());
+            secondary.saveToSQL();
+            chr.getAvatarData().getAvatarLook().getHairEquips().add(secondary.getItemId());
+            chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+        }
+
+        // Primary Weapon: Basic Plum Sword (1215000)
+        if (chr.getEquippedItemByBodyPart(BodyPart.Weapon) == null) {
+            Item weapon = ItemData.getItemDeepCopy(1215000);
+            if (weapon != null) {
+                chr.addItemToInventoryToNewCharacter(EQUIPPED, weapon, true);
+                weapon.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+                weapon.setCharID(chr.getId());
+                weapon.setInvType(EQUIPPED);
+                weapon.setBagIndex(BodyPart.Weapon.getVal());
+                weapon.saveToSQL();
+                chr.getAvatarData().getAvatarLook().setWeaponId(weapon.getItemId());
+                chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+            }
+        }
     }
 
     @Override
     public void handleLevelUp(short level) {
         super.handleLevelUp(level);
         var sm = chr.getScriptManager();
-        if (level == 60) {
-            final var jobID = chr.getJob();
-            sm.setJob((short) (jobID + 1));
+        if (level == 30) {
+            sm.setJob(JobConstants.JobEnum.REN_2.getJobId());
+            for (int qid = 36821; qid <= 36839; qid++) {
+                sm.completeQuestNoRewards(qid);
+            }
+            sm.addSPJobAdv(JobConstants.JobEnum.REN_1.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.REN_2.getJobId(), 3);
+            sm.giveAndEquip(1354041);
+        } else if (level == 60) {
+            sm.setJob(JobConstants.JobEnum.REN_3.getJobId());
             sm.completeQuestNoRewards(36840);
-            sm.addSPJobAdv(jobID, 5);
-            sm.addSPJobAdv((short) (jobID + 1), 3);
+            sm.addSPJobAdv(JobConstants.JobEnum.REN_2.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.REN_3.getJobId(), 3);
+            sm.giveAndEquip(1354042);
         } else if (level == 100) {
-            final var jobID = chr.getJob();
-            sm.setJob((short) (jobID + 1));
+            sm.setJob(JobConstants.JobEnum.REN_4.getJobId());
             sm.completeQuestNoRewards(36844);
-            sm.addSPJobAdv(jobID, 5);
-            sm.addSPJobAdv((short) (jobID + 1), 3);
+            sm.addSPJobAdv(JobConstants.JobEnum.REN_3.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.REN_4.getJobId(), 3);
+            sm.giveAndEquip(1354043);
         }
     }
 

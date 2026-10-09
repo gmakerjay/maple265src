@@ -722,6 +722,82 @@ public class JobConstants {
                 case KAIN_4:
                     wts.add(WeaponType.Whispershot);
                     break;
+                case PATHFINDER_1:
+                case PATHFINDER_2:
+                case PATHFINDER_3:
+                case PATHFINDER_4:
+                    wts.add(WeaponType.AncientBow);
+                    break;
+                case CADENA:
+                case CADENA_1:
+                case CADENA_2:
+                case CADENA_3:
+                case CADENA_4:
+                    wts.add(WeaponType.Chain);
+                    break;
+                case ILLIUM:
+                case ILLIUM_1:
+                case ILLIUM_2:
+                case ILLIUM_3:
+                case ILLIUM_4:
+                    wts.add(WeaponType.Gauntlet);
+                    break;
+                case ARK:
+                case ARK_1:
+                case ARK_2:
+                case ARK_3:
+                case ARK_4:
+                    wts.add(WeaponType.Knuckle);
+                    break;
+                case HOYOUNG:
+                case HOYOUNG_1:
+                case HOYOUNG_2:
+                case HOYOUNG_3:
+                case HOYOUNG_4:
+                    wts.add(WeaponType.RitualFan);
+                    break;
+                case LARA:
+                case LARA_1:
+                case LARA_2:
+                case LARA_3:
+                case LARA_4:
+                    wts.add(WeaponType.Wand);
+                    break;
+                case KHALI:
+                case KHALI_1:
+                case KHALI_2:
+                case KHALI_3:
+                case KHALI_4:
+                    wts.add(WeaponType.Chakram);
+                    break;
+                case REN:
+                case REN_1:
+                case REN_2:
+                case REN_3:
+                case REN_4:
+                    wts.add(WeaponType.RenSword);
+                    break;
+                case LYNN:
+                case LYNN_1:
+                case LYNN_2:
+                case LYNN_3:
+                case LYNN_4:
+                    wts.add(WeaponType.MemoryStaff);
+                    break;
+                case MOXUAN:
+                case MOXUAN_1:
+                case MOXUAN_2:
+                case MOXUAN_3:
+                case MOXUAN_4:
+                    wts.add(WeaponType.Fist);
+                    break;
+                case SIA:
+                case SIA_1:
+                case SIA_2:
+                case SIA_3:
+                case SIA_4:
+                    wts.add(WeaponType.CelestialLight);
+                    break;
             }
             return wts;
         }
@@ -1528,7 +1604,7 @@ public class JobConstants {
     public static boolean isWarriorEquipJob(short id) {
         return isAdventurerWarrior(id) || isPinkBean(id) || isDawnWarrior(id) || isMihile(id) ||
                 isAran(id) || isKaiser(id) || isBlaster(id) || isDemon(id) || isHayato(id) ||
-                isZero(id) || isArk(id) || isAdele(id) || isRen(id);
+                isZero(id) || isAdele(id) || isRen(id);
     }
 
     public static boolean isMageEquipJob(short id) {
@@ -1539,7 +1615,7 @@ public class JobConstants {
 
     public static boolean isArcherEquipJob(short id) {
         return isAdventurerArcher(id) || isWindArcher(id) || isMercedes(id)
-                || isWildHunter(id) || isPathFinder(id);
+                || isWildHunter(id) || isPathFinder(id) || isKain(id);
     }
 
     public static boolean isThiefEquipJob(short id) {

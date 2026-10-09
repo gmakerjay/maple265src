@@ -1518,6 +1518,8 @@ public class ItemConstants {
         if (mid3 == WeaponType.Bladecaster.getVal()
                 || mid3 == WeaponType.Whispershot.getVal()
                 || mid3 == WeaponType.RenSword.getVal()
+                || mid3 == WeaponType.MemoryStaff.getVal()
+                || mid3 == WeaponType.CelestialLight.getVal()
                 || mid3 == WeaponType.Fist.getVal()
                 || mid3 == WeaponType.Chakram.getVal()) {
             wt = mid3;
