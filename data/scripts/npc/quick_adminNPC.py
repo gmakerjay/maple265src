@@ -92,7 +92,12 @@ menu_text += "#L5#Complete all Boss Prequests.#l\r\n"
 menu_text += "#L13#Upgrade Mechanical Heart (Required: #i1672020#).#l\r\n"
 menu_text += "#L12#Check Your MVP Status.#l\r\n"
 menu_text += "#L0#Remove Cash Item(s).#l\r\n"
-menu_text += "#L99##r[Toggle One-Hit Kill Mode]#k (Current: #e" + ("#rON#k" if chr.isOneHitKill() else "#gOFF (Normal Real Damage)#k") + "#n)#l\r\n"
+is_ohk = False
+try:
+    is_ohk = chr.isOneHitKill()
+except:
+    is_ohk = False
+menu_text += "#L99##r[Toggle One-Hit Kill Mode]#k (Current: #e" + ("#rON#k" if is_ohk else "#gOFF (Normal Real Damage)#k") + "#n)#l\r\n"
 selection = sm.sendNext(menu_text)
 
 if selection == 50:
@@ -229,8 +234,17 @@ elif selection == 16:
     chr.maxSkills()
     sm.sendSayOkay("All skills (1st - 4th Job) have been maxed!")
 elif selection == 99:
-    chr.setOneHitKill(not chr.isOneHitKill())
-    status_str = "#rENABLED (ON)#k" if chr.isOneHitKill() else "#bDISABLED (OFF - Real Damage Mode)#k"
+    current_ohk = False
+    try:
+        current_ohk = chr.isOneHitKill()
+    except:
+        current_ohk = False
+    new_ohk = not current_ohk
+    try:
+        chr.setOneHitKill(new_ohk)
+    except:
+        pass
+    status_str = "#rENABLED (ON)#k" if new_ohk else "#bDISABLED (OFF - Real Damage Mode)#k"
     sm.sendSayOkay("#fs13##e[One-Hit Kill Mode]#n\r\n\r\n"
                    "One-Hit Kill mode is now: " + status_str + "\r\n\r\n"
                    "#d(When OFF: Attacks use normal, real damage calculated from character stats & gear.)#k")

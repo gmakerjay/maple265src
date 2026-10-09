@@ -586,11 +586,29 @@ public class AdminCommands {
         }
     }
 
+    @Command(names = {"adminnpc", "admin"}, requiredType = GameMaster)
+    public static class AdminNpcCmd extends AdminCommand {
+
+        public static void execute(Char chr, String[] args) {
+            chr.getScriptManager().startScript(chr, 9010000, "quick_adminNPC", ScriptType.Npc);
+        }
+    }
+
     @Command(names = {"npc", "spawnnpc"}, requiredType = GameMaster)
     public static class NPC extends AdminCommand {
 
         public static void execute(Char chr, String[] args) {
-            int id = Integer.parseInt(args[1]);
+            if (args.length < 2) {
+                chr.chatMessage("Usage: !npc <npcID> or use !adminnpc to open Admin Menu.");
+                return;
+            }
+            int id;
+            try {
+                id = Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+                chr.chatMessage("Invalid NPC ID.");
+                return;
+            }
             Npc npc = NpcData.getNpcDeepCopyById(id);
             if (npc == null) {
                 chr.chatMessage("Could not find an npc with that ID.");

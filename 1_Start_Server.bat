@@ -1,23 +1,81 @@
 @echo off
 setlocal enabledelayedexpansion
-title MapleStory v265 Portable Server (Zero-Install Runner)
+title MapleStory v265 Portable Server (SERVERGAMEOFFLINE-FACEBOOK PAGE)
 color 0B
 cd /d "%~dp0"
 
 echo.
 echo ==============================================================================
+echo                    SERVERGAMEOFFLINE-FACEBOOK PAGE                           
 echo             MapleStory v265 / v214 Full Portable Server Runner                
 echo              (Zero-Install MariaDB Engine + Portable JDK 21)                  
 echo ==============================================================================
 echo.
 
-REM ===== 0. Check & Start Portable MariaDB Engine =====
-echo [*] Checking Database Engine (MariaDB / MySQL)...
-set "DB_PORT=3306"
+REM ===== 0. Read Configured Database Port =====
+set "DB_PORT=33066"
+set "DB_BACKUP_PORT=33076"
+
+if exist "%~dp0server.properties" (
+    for /f "tokens=1,2 delims==" %%A in ('type "%~dp0server.properties" ^| findstr /R "^db\.port="') do (
+        set "VAL=%%B"
+        set "VAL=!VAL: =!"
+        if not "!VAL!"=="" set "DB_PORT=!VAL!"
+    )
+    for /f "tokens=1,2 delims==" %%A in ('type "%~dp0server.properties" ^| findstr /R "^db\.backupPort="') do (
+        set "VAL=%%B"
+        set "VAL=!VAL: =!"
+        if not "!VAL!"=="" set "DB_BACKUP_PORT=!VAL!"
+    )
+)
+
+echo [*] Database target port: %DB_PORT% (Far port to prevent collision with system MySQL 3306)
+
+REM ===== 0.1 Check & Port Collision Diagnostic =====
+set "PORT_CONFLICT=0"
 netstat -ano | findstr ":%DB_PORT%" | findstr "LISTENING" >nul 2>&1
 if %ERRORLEVEL% EQU 0 (
-    echo [v] Database is already active on port %DB_PORT%.
-    goto :db_check_done
+    if exist "%~dp0mariadb\bin\mysqladmin.exe" (
+        "%~dp0mariadb\bin\mysqladmin.exe" -u root -proot -P %DB_PORT% ping >nul 2>&1
+        if !ERRORLEVEL! EQU 0 (
+            echo [v] Portable MariaDB is already active and responsive on port %DB_PORT%.
+            goto :db_ready_skip_start
+        ) else (
+            set "PORT_CONFLICT=1"
+        )
+    ) else (
+        set "PORT_CONFLICT=1"
+    )
+)
+
+if "!PORT_CONFLICT!"=="1" (
+    echo [!] WARNING: Port %DB_PORT% is occupied by an external application or process!
+    echo [*] Checking backup port %DB_BACKUP_PORT%...
+    netstat -ano | findstr ":%DB_BACKUP_PORT%" | findstr "LISTENING" >nul 2>&1
+    if !ERRORLEVEL! EQU 0 (
+        echo [!] Backup port %DB_BACKUP_PORT% is also occupied.
+        echo [*] Auto-scanning for an available high-range port...
+        set "FOUND_FREE=0"
+        for /L %%P in (33080,1,33099) do (
+            if "!FOUND_FREE!"=="0" (
+                netstat -ano | findstr ":%%P" | findstr "LISTENING" >nul 2>&1
+                if !ERRORLEVEL! NEQ 0 (
+                    set "DB_PORT=%%P"
+                    set "FOUND_FREE=1"
+                    echo [v] Found free alternative port: !DB_PORT!
+                )
+            )
+        )
+    ) else (
+        set "DB_PORT=%DB_BACKUP_PORT%"
+        echo [v] Automatically switched to backup port: %DB_PORT%
+    )
+    
+    REM Auto-sync updated port into server.properties
+    if exist "%~dp0server.properties" (
+        powershell -NoProfile -Command "$f = '%~dp0server.properties'; if (Test-Path $f) { $c = Get-Content $f -Raw; $c = $c -replace '(?m)^db\.port=.*', 'db.port=!DB_PORT!'; $c = $c -replace '(?m)^db\.url=.*', 'db.url=jdbc:mariadb://127.0.0.1:!DB_PORT!/vietmaple?allowMultiQueries=true&useSSL=false&serverTimezone=Asia/Bangkok'; [IO.File]::WriteAllText($f, $c) }"
+        echo [v] Synchronized fallback port into server.properties: %DB_PORT%
+    )
 )
 
 if not exist "%~dp0mariadb\bin\mysqld.exe" (
@@ -26,15 +84,51 @@ if not exist "%~dp0mariadb\bin\mysqld.exe" (
     goto :db_check_done
 )
 
-echo [*] Starting Portable MariaDB Engine (Auto-Save to mariadb\data\)...
-start "Portable MariaDB" /min /D "%~dp0mariadb" "%~dp0mariadb\bin\mysqld.exe" --defaults-file="%~dp0mariadb\my.ini" --basedir="%~dp0mariadb" --datadir="%~dp0mariadb\data" --console
+REM 0.2 Sync my.ini dynamically to current path & port
+if exist "%~dp0mariadb\data\my.ini" del /f /q "%~dp0mariadb\data\my.ini" >nul 2>&1
+set "SAFE_MARIADB=%~dp0mariadb"
+set "SAFE_MARIADB=!SAFE_MARIADB:\=/!"
+set "SAFE_DATA=%~dp0mariadb/data"
+set "SAFE_DATA=!SAFE_DATA:\=/!"
+(
+    echo [client]
+    echo port=%DB_PORT%
+    echo socket=mysql.sock
+    echo default-character-set=utf8mb4
+    echo.
+    echo [mysqld]
+    echo port=%DB_PORT%
+    echo bind-address=127.0.0.1
+    echo basedir="!SAFE_MARIADB!"
+    echo datadir="!SAFE_DATA!"
+    echo character-set-server=utf8mb4
+    echo collation-server=utf8mb4_unicode_ci
+    echo default-storage-engine=InnoDB
+    echo max_allowed_packet=1024M
+    echo innodb_buffer_pool_size=256M
+    echo innodb_log_file_size=64M
+    echo sql_mode=NO_ENGINE_SUBSTITUTION
+) > "%~dp0mariadb\my.ini"
+
+REM 0.3 Auto-initialize system tables if not found
+if not exist "%~dp0mariadb\data\mysql" (
+    echo [*] Initializing Portable MariaDB system data...
+    if exist "%~dp0mariadb\bin\mariadb-install-db.exe" (
+        "%~dp0mariadb\bin\mariadb-install-db.exe" "--datadir=%~dp0mariadb\data" "--password=root" >nul 2>&1
+    ) else if exist "%~dp0mariadb\bin\mysql_install_db.exe" (
+        "%~dp0mariadb\bin\mysql_install_db.exe" "--datadir=%~dp0mariadb\data" "--password=root" >nul 2>&1
+    )
+)
+
+echo [*] Starting Portable MariaDB Engine on port %DB_PORT% (Auto-Save to mariadb\data\)...
+start "Portable MariaDB [SERVERGAMEOFFLINE]" /min /D "%~dp0mariadb" "%~dp0mariadb\bin\mysqld.exe" --defaults-file="%~dp0mariadb\my.ini" --basedir="%~dp0mariadb" --datadir="%~dp0mariadb\data" --console
 echo [*] Waiting for MariaDB to initialize on port %DB_PORT%...
 set "DB_READY=0"
 for /L %%i in (1,1,30) do (
     if "!DB_READY!"=="0" (
-        timeout /t 1 /nobreak >nul
+        ping 127.0.0.1 -n 2 >nul
         if exist "%~dp0mariadb\bin\mysqladmin.exe" (
-            "%~dp0mariadb\bin\mysqladmin.exe" -u root -proot ping >nul 2>&1
+            "%~dp0mariadb\bin\mysqladmin.exe" -u root -proot -P %DB_PORT% ping >nul 2>&1
             if !ERRORLEVEL! EQU 0 (
                 set "DB_READY=1"
                 echo [v] Portable MariaDB is ready and responsive on port %DB_PORT%!
@@ -55,6 +149,7 @@ if "!DB_READY!"=="0" (
     exit /b 1
 )
 
+:db_ready_skip_start
 :db_check_done
 
 REM Auto-import database on first launch if vietmaple data does not exist
@@ -140,13 +235,14 @@ if %ERRORLEVEL% EQU 0 (
             taskkill /F /PID %%A >nul 2>&1
         )
     )
-    timeout /t 1 /nobreak >nul
+    ping 127.0.0.1 -n 2 >nul
     echo [v] Old server processes cleared.
 )
 
 REM ===== 4. Launch MapleStory Server =====
 echo.
 echo ==============================================================================
+echo                    SERVERGAMEOFFLINE-FACEBOOK PAGE                           
 echo   Starting MapleStory Server...
 echo   JVM Options: --enable-preview -server -Xms1G -Xmx4G
 echo ==============================================================================

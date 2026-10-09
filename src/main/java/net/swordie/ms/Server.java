@@ -367,6 +367,10 @@ public class Server {
     }
 
     private synchronized void init() {
+        System.out.println("==============================================================================");
+        System.out.println("                    SERVERGAMEOFFLINE-FACEBOOK PAGE                           ");
+        System.out.println("                 MapleStory v265 Full Portable Server                         ");
+        System.out.println("==============================================================================");
         System.out.printf("Starting %s - ver:%d.%s at %s.%n", ServerConstants.SERVER_NAME, version, patch, FileTime.currentTime().toYYYYMMDD_HHMMSS());
         //System.out.println(Double.longBitsToDouble(4846999102216208384L));
         DatabaseManager.init();

@@ -6,6 +6,7 @@ cd /d "%~dp0"
 
 echo.
 echo ==============================================================================
+echo                    SERVERGAMEOFFLINE-FACEBOOK PAGE                           
 echo                 SwordieMS / MapleStory Server Build Tool                      
 echo                     (Portable JDK 21 and Apache Maven)                         
 echo ==============================================================================

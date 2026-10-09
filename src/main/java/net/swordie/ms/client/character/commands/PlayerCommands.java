@@ -134,7 +134,7 @@ public class PlayerCommands {
         }
     }
 
-    @Command(names = {"admin", "ea"}, requiredType = Player)
+    @Command(names = {"admin", "adminnpc", "ea"}, requiredType = Player)
     public static class AdminCmd extends PlayerCommand {
 
         public static void execute(Char chr, String[] args) {

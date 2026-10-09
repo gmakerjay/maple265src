@@ -1,11 +1,12 @@
 @echo off
 setlocal enabledelayedexpansion
-title Import Database - MapleStory VN (vietmaple)
+title Import Database - MapleStory VN (SERVERGAMEOFFLINE-FACEBOOK PAGE)
 color 0E
 cd /d "%~dp0"
 
 echo.
 echo ==============================================================================
+echo                    SERVERGAMEOFFLINE-FACEBOOK PAGE                           
 echo                 Import Database Tool (MapleStory VN)                          
 echo ==============================================================================
 echo.
@@ -86,9 +87,6 @@ echo.
 REM 2. Check SQL file
 set "SQL_FILE=%~dp0backup.sql"
 if not exist "!SQL_FILE!" (
-    if exist "%~dp0v214 src\backup.sql" set "SQL_FILE=%~dp0v214 src\backup.sql"
-)
-if not exist "!SQL_FILE!" (
     if exist "%~dp0..\backup.sql" set "SQL_FILE=%~dp0..\backup.sql"
 )
 
@@ -103,9 +101,17 @@ echo.
 
 REM 3. Defaults
 set "DB_HOST=127.0.0.1"
-set "DB_PORT=3306"
+set "DB_PORT=33066"
 set "DB_USER=root"
 set "DB_PASS=root"
+
+if exist "%~dp0server.properties" (
+    for /f "tokens=1,2 delims==" %%A in ('type "%~dp0server.properties" ^| findstr /R "^db\.port="') do (
+        set "VAL=%%B"
+        set "VAL=!VAL: =!"
+        if not "!VAL!"=="" set "DB_PORT=!VAL!"
+    )
+)
 
 REM Check auto mode
 if "%1"=="-y" goto StartImport
@@ -138,6 +144,37 @@ if "!DB_HOST!"=="127.0.0.1" (
     powershell -NoProfile -Command "$client = New-Object System.Net.Sockets.TcpClient; try { $client.Connect('127.0.0.1', [int]'!DB_PORT!'); $client.Close(); exit 0 } catch { exit 1 }" >nul 2>&1
     if !ERRORLEVEL! NEQ 0 (
         if exist "%~dp0mariadb\bin\mysqld.exe" (
+            if exist "%~dp0mariadb\data\my.ini" del /f /q "%~dp0mariadb\data\my.ini" >nul 2>&1
+            set "SAFE_MARIADB=%~dp0mariadb"
+            set "SAFE_MARIADB=!SAFE_MARIADB:\=/!"
+            set "SAFE_DATA=%~dp0mariadb/data"
+            set "SAFE_DATA=!SAFE_DATA:\=/!"
+            (
+                echo [client]
+                echo port=!DB_PORT!
+                echo socket=mysql.sock
+                echo default-character-set=utf8mb4
+                echo.
+                echo [mysqld]
+                echo port=!DB_PORT!
+                echo bind-address=127.0.0.1
+                echo basedir="!SAFE_MARIADB!"
+                echo datadir="!SAFE_DATA!"
+                echo character-set-server=utf8mb4
+                echo collation-server=utf8mb4_unicode_ci
+                echo default-storage-engine=InnoDB
+                echo max_allowed_packet=1024M
+                echo innodb_buffer_pool_size=256M
+                echo innodb_log_file_size=64M
+                echo sql_mode=NO_ENGINE_SUBSTITUTION
+            ) > "%~dp0mariadb\my.ini"
+
+            if not exist "%~dp0mariadb\data\mysql" (
+                if exist "%~dp0mariadb\bin\mariadb-install-db.exe" (
+                    "%~dp0mariadb\bin\mariadb-install-db.exe" "--datadir=%~dp0mariadb\data" "--password=root" >nul 2>&1
+                )
+            )
+
             echo [*] Starting Portable MariaDB Engine on port !DB_PORT!...
             start "MariaDB Portable" /min /D "%~dp0mariadb" "%~dp0mariadb\bin\mysqld.exe" --defaults-file="%~dp0mariadb\my.ini" --basedir="%~dp0mariadb" --datadir="%~dp0mariadb\data" --console
             powershell -NoProfile -Command "$port=[int]'!DB_PORT!'; for ($i=0; $i -lt 30; $i++) { try { $c=New-Object System.Net.Sockets.TcpClient; $c.Connect('127.0.0.1', $port); $c.Close(); exit 0 } catch { Start-Sleep -Milliseconds 500 } }; exit 1"
@@ -176,7 +213,7 @@ echo.
 REM 4. Auto-update server.properties
 set "PROP_FILE=%~dp0server.properties"
 if not exist "!PROP_FILE!" (
-    if exist "%~dp0v214 src\server.properties" set "PROP_FILE=%~dp0v214 src\server.properties"
+    if exist "%~dp0..\server.properties" set "PROP_FILE=%~dp0..\server.properties"
 )
 if not exist "!PROP_FILE!" goto DoneSync
 

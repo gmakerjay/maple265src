@@ -1,0 +1,44 @@
+==============================================================================
+                    SERVERGAMEOFFLINE-FACEBOOK PAGE
+               MapleStory v265 / v263 Zero-Install Server
+==============================================================================
+
+[1] HOW TO START THE SERVER:
+    - Double-click '1_Start_Server.bat'
+    - It automatically starts Portable MariaDB (Port 33066) and launches the server.
+    - Wait until the console shows:
+      "MapleStory V265 Server is online and ready for connections!"
+
+[2] HOW TO STOP THE SERVER:
+    - Double-click '3_Stop_Server.bat'
+    - This will safely flush database changes and stop all server channels.
+
+[3] HOW TO ADJUST DROP RATE & EXP RATES:
+    - Open 'server.properties' in Notepad (or use Option [4] in 4_Server_Control_Panel.bat).
+    - Find the line:
+        server.dropRate=20
+      Change '20' to your desired multiplier (e.g., 50 for 50x drop, 100 for 100x drop).
+    - Other rates you can adjust:
+        server.expRate=100          (Base EXP multiplier)
+        server.expRateBelow100=100  (EXP for Level < 100)
+        server.expRate101to210=500  (EXP for Level 101-210)
+        server.mesoRate=100         (Meso drop multiplier)
+    - Save the file and restart the server!
+
+[4] IN-GAME GM COMMANDS:
+    - In game chat, type:
+        !adminnpc   - Opens the All-in-One Admin NPC Menu (Level, Mesos, Items, Buffs)
+        !admin      - Alias for Admin NPC Menu
+        !item <id>  - Gives item directly to your inventory
+        !drop <id>  - Spawns item on the ground
+        !meso <amount> - Gives meso
+        !level <lvl>   - Sets character level
+        !heal       - Fully restores HP and MP
+        !job <id>   - Changes character job
+        !warp <map> - Teleports to specified map ID
+
+[5] HOW TO CONNECT GAME CLIENT:
+    - Copy all files from 'Client_Patch_Files' into your MapleStory v265 game folder.
+    - Run 'Run_Game.bat' (or Launcher.exe) inside your game folder.
+
+==============================================================================

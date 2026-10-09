@@ -923,13 +923,15 @@ public class Field {
             }
             other.initPets(chr);
         }
-        if (FieldConstants.HENESYS_ID == getId()) {
+        if (FieldConstants.HENESYS_ID == getId() && Server.get().bot != null) {
             final OutPacket packet = UserPool.userEnterField(Server.get().bot);
             chr.write(packet);
         }
         for (Char bot : getBots()) {
-            final OutPacket packet = UserPool.userEnterField(bot);
-            chr.write(packet);
+            if (bot != null) {
+                final OutPacket packet = UserPool.userEnterField(bot);
+                chr.write(packet);
+            }
         }
     }
 

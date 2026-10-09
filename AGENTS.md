@@ -1,0 +1,27 @@
+# MapleStory Server Runner - Project Memory & Rules
+
+## 1. Official Distribution Package
+- โฟลเดอร์ **`Server263`** (`c:\Users\admin\Documents\MapleStory_Server_Runner\Server263`) คือ **"ซอสที่ทำการแพ็คแล้วพร้อมแจกจ่าย"** ของโปรเจกต์นี้ (Ready-to-distribute Zero-Install Portable Package)
+- ห้ามใส่ Source Code, Build Tools (Maven), หรือไฟล์ขยะลงใน `Server263`
+- ต้องรันได้ทันที **100% ในทุกเครื่องและทุกไดรฟ์** (C:, D:, E:, USB Drive ฯลฯ) โดยไม่ต้องติดตั้ง Java, MariaDB, หรือ MySQL ในระบบเครื่อง
+
+## 2. กฎความ Portable ข้ามเครื่องและข้ามไดรฟ์ (Strict Portability Rules)
+1. **ห้ามมี Hardcoded Path**: ห้ามเขียน Path เต็มแบบ `C:\...` หรือ `C:/Users/...` ลงในไฟล์คอนฟิก (`my.ini`, `server.properties`, batch scripts) ภายใน `Server263` โดยเด็ดขาด
+2. **Path สัมพัทธ์และไดนามิก**:
+   - ใช้ `%~dp0` ในไฟล์ Batch script เสมอ
+   - MariaDB ใช้พอร์ตดีฟอลต์ `33066` เพื่อหลบชน MySQL 3306 ของเครื่องเป้าหมาย
+   - ลบไฟล์ `mariadb\data\my.ini` เก่าทิ้งอัตโนมัติ เพื่อป้องกันการจดจำ Path จากเครื่องเดิม
+   - สคริปต์จะทำการ Generate `mariadb\my.ini` แบบไดนามิกตาม Directory ปัจจุบัน พร้อมครอบเครื่องหมายคำพูด `""` ป้องกันปัญหาโฟลเดอร์ที่มีช่องว่าง (Spaces in path)
+3. **โครงสร้างภายใน `Server263`**:
+   - `mariadb/`: MariaDB Portable Engine (พอร์ต 33066)
+   - `jdk21/`: OpenJDK 21 Portable Runtime
+   - `maplestory.jar`: Pre-compiled Fat JAR (~138 MB)
+   - `data/`: ข้อมูล `wz265`, `dat265`, `scripts`, `resources`
+   - `Client_Patch_Files/`: ไฟล์ Patch สำหรับต่อเข้าเล่น (Launcher.exe, Localhost.dll, Run_Game.bat, launcher.ini)
+   - `server.properties`: คอนฟิกเรท Drop / EXP / Port
+   - `1_Start_Server.bat`, `3_Stop_Server.bat`, `4_Server_Control_Panel.bat`, `Import_Database.bat`
+
+## 3. ความสัมพันธ์กับโฟลเดอร์อื่น
+- **Root Directory**: ไฟล์ Batch ที่ Root (`1_Start_Server.bat`, `3_Stop_Server.bat`, `4_Server_Control_Panel.bat`) จะชี้ตรงมาที่ `Server263` เป็นหลัก
+- **`v214 src/`**: สภาพแวดล้อมสำหรับพัฒนาและคอมไพล์โค้ดต้นฉบับ (Development & Source Workspace)
+- **`maple265src/`**: Raw Git Clone จากรีโป หากมีคนกดรัน สคริปต์จะแจ้งเตือนและ Redirect ไปที่ `Server263` ทันที
