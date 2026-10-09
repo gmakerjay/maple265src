@@ -265,3 +265,46 @@ MapleStory_Server_Runner/
 - [x] **New Jobs Bugfix**: Lynn, Mo Xuan, Kain, Lara ปรับแต่งสเตตัสและแจกไอเทมเริ่มต้นเรียบร้อย
 - [x] **Safe Shutdown**: สคริปต์ `3_Stop_Server.bat` สั่ง Flush MariaDB Buffer Pool ก่อนปิด ไม่เสี่ยง DB Corrupt
 - [x] **Client Ready**: ไฟล์ `Client_Patch_Files` พร้อมนำไปวางในโฟลเดอร์เกม MapleStory v265 เพื่อเข้าเล่นได้ทันที
+
+- [x] **Khali V & HEXA 6th Job**: อัปเกรดระบบสกิล V Matrix (Astra, Void Burst, Resonate Ultimatum) และ HEXA Matrix (Wake the Void Origin Cutscene, Absolute Freeze Bind, Party Effect, 10 HEXA Mastery Skills) เรียบร้อย 100%
+- [x] **Incremental Patch Package**: จัดทำแพ็กเกจแพตช์ Server263_Patch_20261009_1307.zip พร้อม 1-Click Installer Apply_Patch.bat
+
+---
+
+## 🚀 9. การพัฒนาระบบ V Matrix และ HEXA Matrix คลาส 6 (9 ตุลาคม 2569)
+
+### 9.1 ภาพรวมการ Audit ทั้ง 35 อาชีพในเซิร์ฟเวอร์
+1. **สถานะการปลดล็อก (LoginJob Status)**:
+   - ปลดล็อกเป็น JobFlag.ENABLED ให้ผู้เล่นสร้างเล่นได้ครบทุกอาชีพ (35 อาชีพ)
+   - ปิดเพียง 2 อาชีพตามแพตช์ทางการของ MapleStory v260+ คือ JETT (ลบออกจากเกม) และ CHASE (Beast Tamer ถูกแทนที่ด้วย Lynn)
+2. **ระบบฐานราก HEXA Matrix (Core Engine & UI)**:
+   - สมบูรณ์ 100%: HexaCore.java โหลดข้อมูล Node, Stat, Cost จาก Etc.wz/HexaCore.img.xml โดยตรง
+   - มีระบบหัก Sol Erda / Sol Erda Fragments และบันทึกลง SQL (hexaskills, hexastats) ผ่าน UserHandler.java
+3. **สถานะความพร้อมของสกิลต่อสู้ในระดับคลาส 6 แยกตามสายอาชีพ**:
+   - **กลุ่มที่เขียนโค้ดต่อสู้คลาส 6 แล้ว (Coded)**: Adele, Kanna, Hayato, Xenon, BattleMage, Kaiser, Phantom, Demon Avenger, Wild Hunter
+   - **กลุ่มที่ได้รับการอัปเกรดใหม่ (Newly Upgraded)**: Khali (คาร์ลี) — เขียนระบบ V Matrix และ HEXA ครบ 100%
+   - **กลุ่มที่ยังรอคิวการพัฒนา (Uncoded Roadmap)**: Lara, Illium, Hoyoung (ทำบางส่วน), Explorer บางสาย และ Resistance บางสาย (ซึ่งตัวเกมอาศัยการส่งดาเมจดิบจาก Client)
+
+### 9.2 รายละเอียดการอัปเกรดอาชีพ Khali (Khali.java)
+- **6th Job Origin Skill (Wake the Void - 154141504 & 154141505)**:
+  - เมื่อกดใช้ มอบสถานะอมตะสมบูรณ์แบบ (CharacterTemporaryStat.IndieNotDamaged) 7 วินาทีตลอดช่วงคัทซีน
+  - รีเซ็ตคูลดาวน์สกิลตระกูล Void Rush ทั้งหมดทันที
+  - ล็อคและสาปมอนสเตอร์/บอสด้วย MobStat.Freeze (10 วินาที) และ MobStat.OriginDebuff (20 วินาที)
+  - กระจายเอฟเฟกต์คัทซีนคลาส 6 ให้เพื่อนในปาร์ตี้ผ่าน UserLocal.showHexaSkillEff(chr)
+  - กระตุ้นการระเบิดจักรา triggerResonate()
+- **6th Job HEXA Mastery Skills (10 สกิล)**:
+  - บรรจุสกิล HEXA เข้าในวงคอมโบ isArtsSkill(), isHexSkill(), isVoidSkill():
+    - Arts Flurry VI (154141000), Crescentum VI (154141001), Triple Bash VI (154141002) -> ลดคูลดาวน์สกิล Hex 1 วินาทีทุกฮิต
+    - Chakram Sweep VI (154141011), Chakram Split VI (154141009), Chakram Fury VI (154141010), Death Blossom VI (154141012) -> ถูกลดคูลดาวน์เมื่อใช้ Arts
+    - Void Blitz VI (154141008) -> จุดระเบิดจักราเมื่อพุ่งผ่าน
+    - Hexa Deceiving Blade (154141014) -> มอบบัฟ PAD 30 หน่วย 180 วินาที
+- **5th Job V Matrix Enhancements**:
+  - Arts: Astra (400041087): มอบสถานะลดดาเมจจากการโจมตี 75% (IndieDamReduceR) ระหว่างร่าย
+  - Void Burst (400041084): มอบสถานะอมตะ 3 วินาที (IndieNotDamaged) พร้อมจุดชนวนจักรา
+  - Resonate: Ultimatum (400041089): ฟังก์ชัน spawnResonateUltimatumVortices() เสกวงจักรา Chakri ทันที 4 จุดรอบตัว และจุดระเบิดจักราทำดาเมจมหาศาลทันที
+  - Hex: Pandemonium (400041082): บรรจุเข้าใน Hex Skills เพื่อรับผลลดคูลดาวน์จาก Arts ได้อย่างถูกต้อง
+
+### 9.3 ข้อมูลแพ็กเกจแพตช์อัปเดต (Distribution Package)
+- **โฟลเดอร์แพตช์**: Patches/Server263_Patch_20261009_1307/
+- **ไฟล์ ZIP พร้อมแจกจ่าย**: Patches/Server263_Patch_20261009_1307.zip (ขนาดเพียง 121.50 MB)
+- **วิธีการใช้งาน**: แตกไฟล์แล้วดับเบิลคลิก Apply_Patch.bat เพื่อติดตั้งลงใน Server263 ได้ภายใน 2 วินาที โดยไม่ต้องแปลงหรือบีบอัดไฟล์ WZ ใหม่แม้แต่น้อย

@@ -15,11 +15,14 @@ import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
 import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
 import net.swordie.ms.client.jobs.Job;
 import net.swordie.ms.connection.InPacket;
+import net.swordie.ms.connection.packet.UserLocal;
 import net.swordie.ms.constants.FieldConstants;
 import net.swordie.ms.constants.JobConstants;
 import net.swordie.ms.enums.ChatType;
 import net.swordie.ms.life.AffectedArea;
 import net.swordie.ms.life.mob.Mob;
+import net.swordie.ms.life.mob.MobStat;
+import net.swordie.ms.life.mob.MobTemporaryStat;
 import net.swordie.ms.loaders.ItemData;
 import net.swordie.ms.loaders.SkillData;
 import net.swordie.ms.scripts.ScriptManagerImpl;
@@ -87,7 +90,22 @@ public class Khali extends Job {
 
     // ===== Hyper Skills (15414) =====
     public static final int HEX_SANDSTORM = 154141500;
+
+    // ===== 6th Job HEXA Origin Skill =====
     public static final int WAKE_THE_VOID = 154141504;
+    public static final int WAKE_THE_VOID_EXPLOSION = 154141505;
+
+    // ===== 6th Job HEXA Mastery Skills =====
+    public static final int HEXA_ARTS_FLURRY = 154141000;
+    public static final int HEXA_ARTS_CRESCENTUM = 154141001;
+    public static final int HEXA_ARTS_TRIPLE_BASH = 154141002;
+    public static final int HEXA_VOID_BLITZ = 154141008;
+    public static final int HEXA_CHAKRAM_SPLIT = 154141009;
+    public static final int HEXA_CHAKRAM_FURY = 154141010;
+    public static final int HEXA_CHAKRAM_SWEEP = 154141011;
+    public static final int HEXA_DEATH_BLOSSOM = 154141012;
+    public static final int HEXA_RESONATE = 154141013;
+    public static final int HEXA_DECEIVING_BLADE = 154141014;
 
     // ===== V Skills (5th Job) =====
     public static final int HEX_PANDEMONIUM = 400041082;
@@ -101,7 +119,11 @@ public class Khali extends Job {
             HEX_CHAKRAM_FURY,
             HEX_SANDSTORM,
             HEX_PANDEMONIUM,
-            DEATH_BLOSSOM
+            DEATH_BLOSSOM,
+            HEXA_CHAKRAM_SWEEP,
+            HEXA_CHAKRAM_SPLIT,
+            HEXA_CHAKRAM_FURY,
+            HEXA_DEATH_BLOSSOM
     };
 
     public static final int[] VOID_SKILLS = new int[]{
@@ -111,7 +133,10 @@ public class Khali extends Job {
             VOID_RUSH_4,
             VOID_RUSH_5,
             VOID_BLITZ,
-            VOID_BURST
+            VOID_BURST,
+            HEXA_VOID_BLITZ,
+            WAKE_THE_VOID,
+            WAKE_THE_VOID_EXPLOSION
     };
 
     public Khali(Char chr) {
@@ -124,7 +149,10 @@ public class Khali extends Job {
                 || skillID == ARTS_CRESCENTUM
                 || skillID == ARTS_TRIPLE_BASH
                 || skillID == ARTS_FLURRY
-                || skillID == ARTS_ASTRA;
+                || skillID == ARTS_ASTRA
+                || skillID == HEXA_ARTS_FLURRY
+                || skillID == HEXA_ARTS_CRESCENTUM
+                || skillID == HEXA_ARTS_TRIPLE_BASH;
     }
 
     public static boolean isHexSkill(int skillID) {
@@ -260,6 +288,7 @@ public class Khali extends Job {
                 tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
                 break;
             case DECEIVING_BLADE:
+            case HEXA_DECEIVING_BLADE:
                 o1.nReason = skillID;
                 o1.nValue = si != null ? si.getValue(SkillStat.indiePad, slv) : 30;
                 o1.tTerm = si != null ? si.getValue(SkillStat.time, slv) : 180;
@@ -277,11 +306,37 @@ public class Khali extends Job {
                 o1.tTerm = si != null ? si.getValue(SkillStat.time, slv) : 30;
                 tsm.sendStat(CharacterTemporaryStat.IndieBDR, o1);
                 break;
-            case WAKE_THE_VOID:
+            case ARTS_ASTRA:
+                // Channeling damage reduction (-75%)
                 o1.nReason = skillID;
-                o1.nValue = si != null ? si.getValue(SkillStat.indieDamR, slv) : 25;
-                o1.tTerm = si != null ? si.getValue(SkillStat.time, slv) : 30;
-                tsm.sendStat(CharacterTemporaryStat.IndieDamR, o1);
+                o1.nValue = -75;
+                o1.tTerm = 5;
+                tsm.sendStat(CharacterTemporaryStat.IndieDamReduceR, o1);
+                break;
+            case VOID_BURST:
+                // Invincibility during Void Burst
+                o1.nReason = skillID;
+                o1.nValue = 1;
+                o1.tTerm = 3;
+                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                triggerResonate(chr);
+                break;
+            case RESONATE_ULTIMATUM:
+                // Manifest 4 Chakri vortices around character immediately and trigger Resonate
+                spawnResonateUltimatumVortices(chr);
+                break;
+            case WAKE_THE_VOID:
+            case WAKE_THE_VOID_EXPLOSION:
+                // Origin cutscene invincibility (7s) + reset Void Rush cooldowns
+                o1.nReason = skillID;
+                o1.nValue = 1;
+                o1.tTerm = 7;
+                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                for (int voidSkill : VOID_SKILLS) {
+                    chr.resetSkillCoolTime(voidSkill);
+                }
+                triggerResonate(chr);
+                chr.chatMessage(ChatType.Notice, "[Origin] Wake the Void activated! Absolute Invincibility active.");
                 break;
             case FLORAN_HEROS_WILL:
                 tsm.removeAllDebuffs();
@@ -315,10 +370,62 @@ public class Khali extends Job {
             }
         }
 
+        // Wake the Void (Origin Skill) Freeze/Bind and Origin Debuff
+        if (skillID == WAKE_THE_VOID || skillID == WAKE_THE_VOID_EXPLOSION) {
+            for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                if (mob != null && mob.getHp() > 0) {
+                    MobTemporaryStat mts = mob.getTemporaryStat();
+                    EnumMap<MobStat, Option> map = new EnumMap<>(MobStat.class);
+                    Option opt1 = new Option();
+                    Option opt2 = new Option();
+                    opt1.nOption = 1;
+                    opt1.rOption = skillID;
+                    opt1.tOption = 10; // 10s Absolute Freeze / Bind
+                    opt1.cOption = chr.getId();
+                    map.put(MobStat.Freeze, opt1);
+
+                    opt2.nOption = 10;
+                    opt2.rOption = skillID;
+                    opt2.tOption = 20; // 20s Origin Debuff
+                    opt2.xOption = 22;
+                    map.put(MobStat.OriginDebuff, opt2);
+                    mts.addStatOptions(mob, map);
+                }
+            }
+            if (chr.getParty() != null) {
+                for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                    other.write(UserLocal.showHexaSkillEff(chr));
+                }
+            }
+            triggerResonate(chr);
+        }
+
         // Void Rush skills trigger Resonate if passing through a Chakri
         if (isVoidSkill(skillID)) {
             triggerResonate(chr);
         }
+    }
+
+    private void spawnResonateUltimatumVortices(Char chr) {
+        Field field = chr.getField();
+        if (field == null || chr.getPosition() == null) {
+            return;
+        }
+        Position pos = chr.getPosition();
+        int[][] offsets = {{-150, 0}, {150, 0}, {-80, -60}, {80, -60}};
+        for (int[] off : offsets) {
+            Position vPos = new Position(pos.getX() + off[0], pos.getY() + off[1]);
+            AffectedArea aa = AffectedArea.getAffectedArea(chr, SUMMON_CHAKRI, 1);
+            aa.setSkillID(SUMMON_CHAKRI);
+            aa.setPosition(vPos);
+            aa.setRect(vPos.getRectAround(new Rect(-60, -60, 60, 60)));
+            aa.setDelay((short) 1);
+            aa.setDuration(20000);
+            field.spawnAffectedArea(aa);
+        }
+        triggerResonate(chr);
+        chr.chatMessage(ChatType.Notice, "[Resonate: Ultimatum] Chakri Vortices manifested!");
     }
 
     private void spawnChakriVortex(Char chr, int mobObjId) {

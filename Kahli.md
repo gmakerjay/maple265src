@@ -171,3 +171,27 @@ Item weapon = ItemData.getItemDeepCopy(1404000);    // Eneth Canis (ชาคร
 ```
 
 
+
+---
+
+## ⚡ 9. ทักษะคลาส 5 (V Matrix) และคลาส 6 (HEXA Matrix)
+
+### สกิลคลาส 5 (V Matrix Skills)
+* **400041082**: **Hex: Pandemonium** — เรียกกงจักรยักษ์หมุนฟัน (Hex Skill / รับผลลดคูลดาวน์จาก Arts)
+* **400041084**: **Void Burst** — พุ่งโจมตีไร้เงา (มอบสถานะอมตะ 3 วินาที + จุดระเบิดจักรา Resonate)
+* **400041087**: **Arts: Astra** — ยิงจักราต่อเนื่อง (ลดดาเมจที่ได้รับ 75% ระหว่างร่าย)
+* **400041089**: **Resonate: Ultimatum** — เสกวงจักรา Chakri Vortex ทันที 4 จุดรอบตัว และจุดระเบิดจักราทำดาเมจมหาศาล
+
+### สกิลคลาส 6 (HEXA Matrix & Origin)
+* **154141504**: **Wake the Void (Origin Skill)** — คัทซีนพายุทรายกลืนกิน (มอบสถานะอมตะ 7 วินาที, รีเซ็ตคูลดาวน์สกิล Void ทั้งหมด, ล็อคบอสด้วย Absolute Freeze 10 วิ + Origin Debuff 20 วิ)
+* **154141505**: **Wake the Void (Follow-up Attack)**
+* **154141000**: **HEXA Arts: Flurry** (ร่างอัปเกรดคลาส 6 ของ Arts: Flurry)
+* **154141001**: **HEXA Arts: Crescentum**
+* **154141002**: **HEXA Arts: Triple Bash**
+* **154141008**: **HEXA Void Blitz**
+* **154141009**: **HEXA Hex: Chakram Split**
+* **154141010**: **HEXA Hex: Chakram Fury**
+* **154141011**: **HEXA Hex: Chakram Sweep**
+* **154141012**: **HEXA Death Blossom**
+* **154141013**: **HEXA Resonate**
+* **154141014**: **HEXA Deceiving Blade** (บัฟ PAD 30 หน่วย 180 วินาที)
