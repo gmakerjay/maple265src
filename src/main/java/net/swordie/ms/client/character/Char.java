@@ -9830,30 +9830,38 @@ public class Char {
     public static List<Integer> getSiaErdaLinkSkills(int coreID) {
         List<Integer> list = new ArrayList<>();
         switch (coreID) {
-            case 10000: // Origin Stone: Celestial Design
+            case 10000051: // Origin: Celestial Design
+            case 10000:
                 list.add(182141500);
                 break;
-            case 500: // Ultimate Stone: SHINE Ray / SHINE Antares
+            case 20000204: // Mastery: SHINE Ray / SHINE Antares
+            case 500:
                 list.add(182141000);
                 list.add(182141001);
                 break;
-            case 100: // Skill Stone: Sol Janus
-                list.add(400001064);
-                break;
-            case 101: // Sirius Boost
+            case 30000205: // Shine Boost
+            case 102:
+            case 103:
                 list.add(500004200);
                 break;
-            case 102:
-            case 103: // Shine Boost
+            case 30000206: // Stellar XI - Sirius Boost
+            case 101:
                 list.add(500004201);
                 break;
+            case 30000207: // Stellar XII - Sadalsuud Boost
             case 104:
-            case 105: // Sadalsuud Boost
+            case 105:
                 list.add(500004202);
                 break;
+            case 30000208: // Savior's Circle Boost
             case 106:
-            case 107: // Savior's Circle Boost
+            case 107:
                 list.add(500004203);
+                break;
+            case 40000000: // Sol Janus
+            case 100:
+                list.add(500001000);
+                list.add(400001064);
                 break;
         }
         return list;

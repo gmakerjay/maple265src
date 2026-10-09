@@ -45,6 +45,7 @@ import net.swordie.ms.client.jobs.resistance.Blaster;
 import net.swordie.ms.client.jobs.resistance.Xenon;
 import net.swordie.ms.client.jobs.resistance.demon.DemonAvenger;
 import net.swordie.ms.client.jobs.sengoku.Hayato;
+import net.swordie.ms.client.jobs.shine.SiaAstelle;
 import net.swordie.ms.connection.InPacket;
 import net.swordie.ms.connection.packet.*;
 import net.swordie.ms.constants.*;
@@ -275,7 +276,8 @@ public class SkillHandler {
         if (skillID == Cannoneer.NUCLEAR_OPTION) {
             chr.write(UserLocal.skillUseResult((byte) 0, skillID));
         }
-        if (skillID == BlazeWizard.FLASHFIRE || skillID == Adele.NOBLE_SUMMONS || skillID == Adele.HEXA_NOBLE_SUMMONS) {
+        if (skillID == BlazeWizard.FLASHFIRE || skillID == Adele.NOBLE_SUMMONS || skillID == Adele.HEXA_NOBLE_SUMMONS
+                || skillID == SiaAstelle.STARRY_FLOW || skillID == SiaAstelle.STARRY_LEAP) {
             chr.write(UserLocal.skillUseResult((byte) 1, 0));
         }
         if (skillID == Shadower.INTO_DARKNESS) {

@@ -764,21 +764,11 @@ public class Illium extends Job {
                 tsm.sendStat(NotDamaged, o1);
                 break;
             case LONGINUS_ZONE:
-                AffectedArea aa = AffectedArea.getPassiveAA(chr, LONGINUS_ZONE, slv);
-                if (getCrystal() == null) {
-                    pos = chr.getPosition();
-                } else {
-                    pos = getCrystal().getPosition();
-                }
-                aa.setPosition(pos);
-                aa.setRect(aa.getPosition().getRectAround(si.getFirstRect()));
-                aa.setSkillID(LONGINUS_ZONE);
-                aa.setDelay((short) 18);
-                chr.getField().spawnAffectedArea(aa);
                 o1.nValue = 1;
                 o1.nReason = skillID;
                 o1.tTerm = 3;
                 tsm.sendStat(IndieNotDamaged, o1);
+                chr.dispose();
                 break;
             case CRYSTALLINE_SPIRIT:
                 if (getShards() > 0) {
@@ -795,11 +785,11 @@ public class Illium extends Job {
                 field.spawnAddSummon(Shard);
                 break;
             case CRYSTAL_GATE:
-                summon = Summon.getSummonByAndSetStat(chr, CRYSTAL_GATE_PORTAL, slv);
-                summon.setMoveAbility(MoveAbility.Stop);
-                summon.setAssistType(AssistType.None);
-                summon.setSummonTerm(si.getValue(time, slv));
-                field.spawnSummon(summon);
+                o1.nReason = skillID;
+                o1.nValue = si != null && si.getValue(s, slv) > 0 ? si.getValue(s, slv) : 10;
+                o1.tTerm = si != null && si.getValue(time, slv) > 0 ? si.getValue(time, slv) : 80;
+                tsm.sendStat(IndieMAD, o1);
+                chr.dispose();
                 break;
             case EXCIDIUM:
                 // Origin Skill 6th Job: 7 seconds invincibility (iframe) during cast animation
@@ -814,33 +804,18 @@ public class Illium extends Job {
                 }
                 break;
             case MYTOCRYSTAL_EXPANSE:
-                AffectedArea aaExpanse = AffectedArea.getPassiveAA(chr, skillID, slv);
-                aaExpanse.setPosition(chr.getPosition());
-                aaExpanse.setRect(aaExpanse.getPosition().getRectAround(si.getFirstRect()));
-                aaExpanse.setSkillID(skillID);
-                aaExpanse.setDelay((short) 18);
-                chr.getField().spawnAffectedArea(aaExpanse);
                 o1.nValue = 1;
                 o1.nReason = skillID;
                 o1.tTerm = 6;
                 tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                chr.dispose();
                 break;
             case HEXA_LONGINUS_ZONE:
-                AffectedArea aaHexa = AffectedArea.getPassiveAA(chr, skillID, slv);
-                if (getCrystal() == null) {
-                    pos = chr.getPosition();
-                } else {
-                    pos = getCrystal().getPosition();
-                }
-                aaHexa.setPosition(pos);
-                aaHexa.setRect(aaHexa.getPosition().getRectAround(si.getFirstRect()));
-                aaHexa.setSkillID(skillID);
-                aaHexa.setDelay((short) 18);
-                chr.getField().spawnAffectedArea(aaHexa);
                 o1.nValue = 1;
                 o1.nReason = skillID;
                 o1.tTerm = 3;
                 tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                chr.dispose();
                 break;
             case HEXA_EX:
                 summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
@@ -856,12 +831,12 @@ public class Illium extends Job {
                 break;
             case HEXA_CRYSTAL_SKILL_DEUS:
                 field.getSummons().stream().filter(s -> s.getOwnerId() == chr.getId() && (s.getSkillID() == MACHINA || s.getSkillID() == EX || s.getSkillID() == HEXA_MACHINA || s.getSkillID() == HEXA_EX)).forEach(field::removeLife);
-                summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
+                summon = Summon.getSummonByAndSetStat(chr, CRYSTAL_SKILL_DEUS, slv);
                 summon.setMoveAbility(MoveAbility.Walk);
                 field.spawnSummon(summon);
 
                 for (int i = 0; i < 5; i++) {
-                    summon = Summon.getSummonByAndSetStat(chr, HEXA_CRYSTAL_SKILL_DEUS_SUB, slv);
+                    summon = Summon.getSummonByAndSetStat(chr, DEUS_SUB, slv);
                     summon.setMoveAbility(MoveAbility.Fly);
                     summon.setAssistType(AssistType.AttackCounter);
                     field.spawnAddSummon(summon);

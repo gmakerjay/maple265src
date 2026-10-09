@@ -15,6 +15,7 @@ import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
 import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
 import net.swordie.ms.client.jobs.Job;
 import net.swordie.ms.connection.InPacket;
+import net.swordie.ms.connection.packet.WvsContext;
 import net.swordie.ms.constants.FieldConstants;
 import net.swordie.ms.constants.JobConstants;
 import net.swordie.ms.enums.AssistType;
@@ -292,6 +293,13 @@ public class SiaAstelle extends Job {
                         chr.addSkill(sId, sId == 500081000 ? 1 : 30, sId == 500081000 ? 1 : 30);
                     }
                 }
+                int[] siaCores = {10000051, 20000204, 30000205, 30000206, 30000207, 30000208, 40000000};
+                for (int coreId : siaCores) {
+                    if (chr.getHexaSkillLevel(coreId) == 0) {
+                        chr.setHexaSkill(coreId, 1);
+                    }
+                }
+                chr.write(WvsContext.hexaSkillsUpdate(chr));
                 chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Sia] 6th Job Erda Link & HEXA Skills unlocked!");
                 sm.sendSayOkay("#e[Erda Link]\nCongratulations! 6th Job Erda Link skills have been unlocked!\n#bCelestial Design (Origin), SHINE Ray, SHINE Antares, Sol Janus, and Erda Link Stats#k are now active.");
             } else {
@@ -350,6 +358,13 @@ public class SiaAstelle extends Job {
                         chr.addSkill(sId, sId == 500081000 ? 1 : 30, sId == 500081000 ? 1 : 30);
                     }
                 }
+                int[] siaCores = {10000051, 20000204, 30000205, 30000206, 30000207, 30000208, 40000000};
+                for (int coreId : siaCores) {
+                    if (chr.getHexaSkillLevel(coreId) == 0) {
+                        chr.setHexaSkill(coreId, 1);
+                    }
+                }
+                chr.write(WvsContext.hexaSkillsUpdate(chr));
             }
         }
     }
@@ -527,6 +542,12 @@ public class SiaAstelle extends Job {
                 int healPercent = si != null && si.getValue(SkillStat.hp, slv) > 0 ? si.getValue(SkillStat.hp, slv) : 20;
                 chr.heal((int) (chr.getMaxHP() * (healPercent / 100.0)));
                 recordStellagramMark(4, "Link");
+                chr.dispose();
+                break;
+
+            // ----- Movement / Teleport Skills -----
+            case STARRY_FLOW:
+            case STARRY_LEAP:
                 chr.dispose();
                 break;
 
