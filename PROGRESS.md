@@ -317,3 +317,10 @@ MapleStory_Server_Runner/
 - [x] **Private Developer Testing Command (!endgame)**: เพิ่มคำสั่งลับเฉพาะผู้พัฒนาที่มีสิทธิ์ Admin (`requiredType = Admin`) ใน `AdminCommands.java` ปลอดภัย ไม่กระทบไฟล์สาธารณะ:
   - `!endgame` หรือ `!test6`: บูสต์ตัวละครปัจจุบันเป็น Lv.260 + ปลดล็อกเควสต์คลาส 5 (1460-1466) & คลาส 6 (1488) + สกิลคลาส 1-4 เต็ม + สกิล V-Matrix และ HEXA คลาส 6 (Origin Lv.30 + HEXA Mastery Lv.30) + เงิน 2 พันล้าน Mesos + Sol Erda x20 + Sol Erda Fragments x1,000 + อาวุธ Arcane Umbra
   - รองรับการเปลี่ยนอาชีพและรับสกิลคลาส 6 ทันทีในคำสั่งเดียว: `!endgame khali`, `!endgame lara`, `!endgame illium`, `!endgame ark`, `!endgame hoyoung`, `!endgame kain`
+
+### 9.4 แก้ไขข้อผิดพลาดและปรับปรุงความเสถียรของคำสั่งลับ (!endgame)
+- **แก้ไข ClassCastException (`Integer cannot be cast to Short`)**: ใน `AdminCommands.setupEndgame` ขณะส่งแพ็กเก็ต `Stat.job` ตัวเกมต้องการข้อมูลประเภท `Short` จึงทำการแปลง `targetJob.shortValue()` ให้ตรงตามสเปกแพ็กเก็ตของ WvsContext
+- **แก้ไขบั๊ก String Format ใน `Char.java`**: แก้ไขข้อผิดพลาดในเมธอด `addSkill` บรรทัดที่ 3537 ที่มี Format specifier `%d` เกิน ซึ่งอาจทำให้เกิด `MissingFormatArgumentException` เมื่อค้นหาไอดีสกิลไม่พบ
+- **เพิ่มระบบ Fault-Tolerance**: ครอบบล็อก `try-catch` อิสระในทุกส่วนของการทำงาน (การเปลี่ยนอาชีพ, ปรับเลเวล, บันทึกเควสต์, แม็กซ์สกิล, มอบสกิลคลาส 6, และแจกไอเทม) เพื่อป้องกันไม่ให้ข้อผิดพลาดจุดใดจุดหนึ่งขัดจังหวะการทำงาน
+- **อัปเดตแพ็กเกจแพตช์**: รัน `tools/create_patch.py` สร้างแพตช์ล่าสุด `Patches/Server263_Patch_20261009_1437.zip` (121.51 MB)
+- **อัปเดตไฟล์เซิร์ฟเวอร์**: คอมไพล์ผ่าน 100% (`BUILD SUCCESS`) และเขียนทับ `Server263/maplestory.jar` เรียบร้อยแล้ว
