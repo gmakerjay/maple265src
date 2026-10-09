@@ -46,3 +46,27 @@
    - บรรจุสกิลคลาส 6 เข้าไปใน Array / ฟังก์ชันตรวจสอบประเภทสกิลของอาชีพนั้นๆ (เช่น `possessionSkills`, `executionSkills`, `isHumanitySkill()`, `isEarthSkill()` ฯลฯ) เพื่อให้ระบบชาร์จเกจและคอมโบทำงานได้อย่างไร้รอยต่อ
 4. **กระบวนการทดสอบและจัดส่ง**:
    - ทำทีละอาชีพ -> รัน `mvn clean package -DskipTests` -> ตรวจสอบ `BUILD SUCCESS` -> อัปเดต `maplestory.jar` -> รัน `tools/create_patch.py` -> อัปเดต `PROGRESS.md` -> Git Commit & Push
+
+## 6. คำสั่งลับสำหรับทดสอบระบบเฉพาะผู้พัฒนา (Private Admin Testing Commands)
+- **ห้ามใส่ปุ่มโกงหรือเมนูทดสอบลงในสคริปต์สาธารณะเด็ดขาด**: ไฟล์สำหรับแจกจ่ายผู้เล่นทั่วไป (`quick_adminNPC.py`, `PlayerCommands.java` ฯลฯ) ต้องสะอาด 100% ปราศจากปุ่มโกง
+- **การทดสอบทำผ่านคำสั่งลับระดับ Admin เท่านั้น** (`requiredType = Admin` ใน `AdminCommands.java`):
+  - ไอดีดีฟอลต์ในตัวเกมคือ `admin` / `admin` ซึ่งมีสิทธิ์ `Admin` (Permission Level 4) อยู่แล้ว
+  - **คำสั่งบูสต์ตัวละครปัจจุบัน**:
+    - `!endgame` หรือ `!test6` หรือ `!boost`
+  - **คำสั่งเปลี่ยนอาชีพและบูสต์ทันทีในคำสั่งเดียว**:
+    - `!endgame khali` (Flora - 15412)
+    - `!endgame lara` (Anima - 16212)
+    - `!endgame illium` (Flora - 15212)
+    - `!endgame ark` (Flora - 15512)
+    - `!endgame hoyoung` (Anima - 16412)
+    - `!endgame kain` (Nova - 6312)
+  - **ผลลัพธ์อัตโนมัติ**:
+    1. ปรับเลเวลตัวละครเป็น 260
+    2. สำเร็จเควสต์คลาส 5 (1460-1466) และเควสต์คลาส 6 (1488) ทันที
+    3. แม็กซ์สกิลคลาส 1 - 4 เต็มทุกสกิล (`chr.maxSkills()`)
+    4. มอบสกิล V-Matrix คลาส 5 ประจำอาชีพ เลเวล 30 เต็ม
+    5. มอบ Origin Skill คลาส 6 (Lv.30) และ HEXA Mastery Skills คลาส 6 ทุกสกิล (Lv.30)
+    6. เพิ่มเงิน 2,000,000,000 Mesos
+    7. มอบ Sol Erda Energy x20 และ Sol Erda Fragment x1,000
+    8. มอบอาวุธ Arcane Umbra ประจำอาชีพ และฟื้นฟู HP/MP เต็ม 100%
+- **เมื่อเขียนโค้ดคลาส 6 ให้กับอาชีพใหม่ในอนาคต**: ให้เพิ่มรหัสสกิล V-Matrix และ HEXA ของอาชีพนั้นลงในเมธอด `AdminCommands.setupEndgame(chr, targetJob)` เสมอเพื่อให้สามารถทดสอบได้ทันที
