@@ -309,4 +309,5 @@ MapleStory_Server_Runner/
 - **ไฟล์ ZIP พร้อมแจกจ่าย**: Patches/Server263_Patch_20261009_1307.zip (ขนาดเพียง 121.50 MB)
 - **วิธีการใช้งาน**: แตกไฟล์แล้วดับเบิลคลิก Apply_Patch.bat เพื่อติดตั้งลงใน Server263 ได้ภายใน 2 วินาที โดยไม่ต้องแปลงหรือบีบอัดไฟล์ WZ ใหม่แม้แต่น้อย
 - [x] **Lara V & HEXA 6th Job**: อัปเกรดระบบสกิล V Matrix (Big Stretch, Land's Connection, Mountain Embrace -60% Damage Reduction, Vine Coil 10s Stun Bind) และ HEXA Matrix (Cornucopia Origin Cutscene 7s Invincibility, Absolute Freeze Bind 10s, Origin Debuff 20s, 10 HEXA Mastery Skills) คอมไพล์ผ่าน 100%
-- [x] **Updated Patch Package**: สร้างแพตช์อัปเดตใหม่ Server263_Patch_20261009_1349.zip รวมโค้ด Khali + Lara เรียบร้อย
+- [x] **Illium V & HEXA 6th Job**: อัปเกรดระบบสกิล 6th Job Origin Excidium (7s Invincibility, 10s Absolute Freeze Bind, 20s Origin Debuff, Party Cutscene Effect), Mytocrystal Expanse (6s Invincibility, Crystal Expanse Area 20s, Umbral Brand Procs), 10 HEXA Mastery Skills (Radiant Javelin, Winged Javelin, Longinus Spear, Reaction Destruction/Domination, Vortex Wings, Ex, Machina, Deus, Longinus Zone, Umbral Brand III), และ V-Skill Crystal Gate คอมไพล์ผ่าน 100%
+- [x] **Updated Patch Package**: สร้างแพตช์อัปเดตใหม่ Server263_Patch_20261009_1356.zip (121.50 MB) รวมโค้ด Khali + Lara + Illium เรียบร้อย

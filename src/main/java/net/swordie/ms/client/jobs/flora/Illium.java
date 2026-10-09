@@ -16,6 +16,7 @@ import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
 import net.swordie.ms.client.jobs.Job;
 import net.swordie.ms.connection.InPacket;
 import net.swordie.ms.connection.packet.Summoned;
+import net.swordie.ms.connection.packet.UserLocal;
 import net.swordie.ms.constants.FieldConstants;
 import net.swordie.ms.constants.JobConstants;
 import net.swordie.ms.enums.AssistType;
@@ -103,6 +104,35 @@ public class Illium extends Job {
     public static final int CRYSTAL_GATE = 400021099;
     public static final int CRYSTAL_GATE_PORTAL = 400021100;
     public static final int CRYSTAL_GATE_PORTAL_ATTACK = 400021111;
+
+    // 6th Job (HEXA Matrix)
+    public static final int EXCIDIUM = 152141508; // Origin Skill Cast
+    public static final int EXCIDIUM_ATTACK = 152141509; // Origin Skill Attack
+    public static final int MYTOCRYSTAL_EXPANSE = 152141500;
+    public static final int MYTOCRYSTAL_EXPANSE_ATTACK_1 = 152141501;
+    public static final int MYTOCRYSTAL_EXPANSE_ATTACK_2 = 152141502;
+    public static final int MYTOCRYSTAL_EXPANSE_ATTACK_3 = 152141503;
+    public static final int MYTOCRYSTAL_EXPANSE_ATTACK_4 = 152141504;
+    public static final int MYTOCRYSTAL_EXPANSE_ATTACK_5 = 152141505;
+    public static final int MYTOCRYSTAL_EXPANSE_ATTACK_6 = 152141506;
+
+    // HEXA Mastery Skills
+    public static final int HEXA_RADIANT_JAVELIN = 152141000;
+    public static final int HEXA_RADIANT_JAVELIN_2 = 152141001;
+    public static final int HEXA_RADIANT_ENCHANTED_JAVELIN = 152141002;
+    public static final int HEXA_WINGED_JAVELIN = 152141004;
+    public static final int HEXA_WINGED_ENCHANTED_JAVELIN = 152141005;
+    public static final int HEXA_WINGED_JAVELIN_2 = 152141006;
+    public static final int HEXA_REACTION_DESTRUCTION = 152141007;
+    public static final int HEXA_REACTION_DOMINATION = 152141008;
+    public static final int HEXA_VORTEX_WINGS = 152141009;
+    public static final int HEXA_EX = 152141010;
+    public static final int HEXA_MACHINA = 152141011;
+    public static final int HEXA_CRYSTAL_SKILL_DEUS = 152141012;
+    public static final int HEXA_CRYSTAL_SKILL_DEUS_SUB = 152141013;
+    public static final int HEXA_LONGINUS_SPEAR = 152141014;
+    public static final int HEXA_LONGINUS_ZONE = 152141015;
+    public static final int HEXA_UMBRAL_BRAND_III = 152140016;
 
     public static final int CRYSTAL_SKILL_ID_VORTEX_OF_LIGHT = 1;
     public static final int CRYSTAL_SKILL_ID_RESONANCE = 2;
@@ -231,9 +261,13 @@ public class Illium extends Job {
         changeCrystalCharge(getCrystalCharge() + increment);
         chr.getField().broadcast(Summoned.upgradeStage(getCrystal(), 3)); // resets crystal attacks
 
-        if (!chr.hasSkillOnCooldown(REACTION_DESTRUCTION_II) && (chr.getSkillLevel(REACTION_DESTRUCTION_II) >= 1) && (skillId == RADIANT_JAVELIN_II || skillId == RADIANT_JAVELIN || skillId == RADIANT_JAVELIN || skillId == LONGINUS_SPEAR)) {
+        if (!chr.hasSkillOnCooldown(REACTION_DESTRUCTION_II) && (chr.getSkillLevel(REACTION_DESTRUCTION_II) >= 1) &&
+                (skillId == RADIANT_JAVELIN_II || skillId == RADIANT_JAVELIN || skillId == LONGINUS_SPEAR ||
+                 skillId == HEXA_RADIANT_JAVELIN || skillId == HEXA_RADIANT_JAVELIN_2 || skillId == HEXA_RADIANT_ENCHANTED_JAVELIN ||
+                 skillId == HEXA_WINGED_JAVELIN || skillId == HEXA_WINGED_ENCHANTED_JAVELIN || skillId == HEXA_WINGED_JAVELIN_2 || skillId == HEXA_LONGINUS_SPEAR)) {
             doDestructionII();
-        } else if (!chr.hasSkillOnCooldown(REACTION_DESTRUCTION) && (chr.getSkillLevel(REACTION_DESTRUCTION) >= 1) && (skillId == RADIANT_JAVELIN || skillId == RADIANT_JAVELIN)) {
+        } else if (!chr.hasSkillOnCooldown(REACTION_DESTRUCTION) && (chr.getSkillLevel(REACTION_DESTRUCTION) >= 1) &&
+                (skillId == RADIANT_JAVELIN || skillId == HEXA_RADIANT_JAVELIN || skillId == HEXA_RADIANT_JAVELIN_2)) {
             doDestruction();
         }
     }
@@ -321,11 +355,18 @@ public class Illium extends Job {
         switch (skillId) {
             case RADIANT_JAVELIN:
             case RADIANT_JAVELIN_II:
+            case HEXA_RADIANT_JAVELIN:
+            case HEXA_RADIANT_JAVELIN_2:
+            case HEXA_RADIANT_ENCHANTED_JAVELIN:
+            case HEXA_WINGED_JAVELIN:
+            case HEXA_WINGED_ENCHANTED_JAVELIN:
+            case HEXA_WINGED_JAVELIN_2:
                 return 1;
             case RADIANT_ORB:
             case RADIANT_ORB_II:
                 return 2;
             case LONGINUS_SPEAR:
+            case HEXA_LONGINUS_SPEAR:
                 return 3;
         }
         return 0;
@@ -395,11 +436,65 @@ public class Illium extends Job {
             bonusConversionOverdriveAttack();
         }
         switch (skillID) {
+            case EXCIDIUM:
+            case EXCIDIUM_ATTACK:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob == null) continue;
+                    MobTemporaryStat mts = mob.getTemporaryStat();
+                    EnumMap<MobStat, Option> map = new EnumMap<>(MobStat.class);
+                    Option opt1 = new Option();
+                    Option opt2 = new Option();
+                    opt1.nOption = 1;
+                    opt1.rOption = skillID;
+                    opt1.tOption = 10; // 10s Absolute Freeze / Bind
+                    opt1.cOption = chr.getId();
+                    map.put(MobStat.Freeze, opt1);
+
+                    opt2.nOption = 10;
+                    opt2.rOption = skillID;
+                    opt2.tOption = 20; // 20s Origin Debuff
+                    opt2.xOption = 22;
+                    map.put(MobStat.OriginDebuff, opt2);
+                    mts.addStatOptions(mob, map);
+                }
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
+                break;
+            case MYTOCRYSTAL_EXPANSE:
+            case MYTOCRYSTAL_EXPANSE_ATTACK_1:
+            case MYTOCRYSTAL_EXPANSE_ATTACK_2:
+            case MYTOCRYSTAL_EXPANSE_ATTACK_3:
+            case MYTOCRYSTAL_EXPANSE_ATTACK_4:
+            case MYTOCRYSTAL_EXPANSE_ATTACK_5:
+            case MYTOCRYSTAL_EXPANSE_ATTACK_6:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    applyUmbralBrand(mai.mobId);
+                }
+                break;
+            case RADIANT_JAVELIN:
+            case RADIANT_JAVELIN_II:
+            case HEXA_RADIANT_JAVELIN:
+            case HEXA_RADIANT_JAVELIN_2:
+            case HEXA_RADIANT_ENCHANTED_JAVELIN:
+            case HEXA_WINGED_JAVELIN:
+            case HEXA_WINGED_ENCHANTED_JAVELIN:
+            case HEXA_WINGED_JAVELIN_2:
+            case LONGINUS_SPEAR:
+            case HEXA_LONGINUS_SPEAR:
+                if (getCrystal() != null) {
+                    incrementCrystal(skillID);
+                }
+                break;
             case DEPLOY_CRYSTAL:
                 int attackingSkillId = attackInfo.summonSpecialSkillId;
                 switch (attackingSkillId) {
                     case REACTION_DOMINATION:
                     case REACTION_DOMINATION_II:
+                    case HEXA_REACTION_DOMINATION:
                         slv = chr.getSkillLevel(attackingSkillId);
                         chr.setSkillCooldown(attackingSkillId, slv);
                         si = SkillData.getSkillInfoById(attackingSkillId);
@@ -419,6 +514,7 @@ public class Illium extends Job {
                 chr.getField().broadcast(Summoned.upgradeStage(getCrystal(), 3)); // resets crystal attacks
                 break;
             case VORTEX_WINGS:
+            case HEXA_VORTEX_WINGS:
                 handleVortexWings();
                 break;
         }
@@ -492,8 +588,16 @@ public class Illium extends Job {
             case RADIANT_JAVELIN:
             case RADIANT_JAVELIN_II:
             case RADIANT_JAVELIN_ENHANCED:
-                ForceAtomEnum fae = skillID == RADIANT_JAVELIN_ENHANCED ? ForceAtomEnum.GLORY_WING_JAVELIN : ForceAtomEnum.RADIANT_JAVELIN;
-                ForceAtomInfo fai = new ForceAtomInfo(chr.getNewForceAtomKey(), skillID == RADIANT_JAVELIN_II ? 2 : 1, 50, 50,
+            case HEXA_RADIANT_JAVELIN:
+            case HEXA_RADIANT_JAVELIN_2:
+            case HEXA_RADIANT_ENCHANTED_JAVELIN:
+            case HEXA_WINGED_JAVELIN:
+            case HEXA_WINGED_ENCHANTED_JAVELIN:
+            case HEXA_WINGED_JAVELIN_2:
+                boolean isWinged = (skillID == RADIANT_JAVELIN_ENHANCED || skillID == HEXA_RADIANT_ENCHANTED_JAVELIN ||
+                        skillID == HEXA_WINGED_JAVELIN || skillID == HEXA_WINGED_ENCHANTED_JAVELIN || skillID == HEXA_WINGED_JAVELIN_2);
+                ForceAtomEnum fae = isWinged ? ForceAtomEnum.GLORY_WING_JAVELIN : ForceAtomEnum.RADIANT_JAVELIN;
+                ForceAtomInfo fai = new ForceAtomInfo(chr.getNewForceAtomKey(), (skillID == RADIANT_JAVELIN_II || skillID == HEXA_RADIANT_JAVELIN || skillID == HEXA_RADIANT_JAVELIN_2) ? 2 : 1, 50, 50,
                         0, 300, Util.getCurrentTime(), 0, 0,
                         new Position(-48, 7));
                 Position pos = new Position(0, 0);
@@ -506,11 +610,11 @@ public class Illium extends Job {
                         true, 0, skillID, fai, si.getFirstRect(), 0, 0,
                         pos, 0, pos, 0);
 
-                if (skillID != RADIANT_JAVELIN_ENHANCED) {
+                if (!isWinged) {
                     fa.setRect2(si.getLastRect());
                 }
                 chr.createForceAtom(fa);
-                if (skillID == RADIANT_JAVELIN_II) {
+                if (skillID == RADIANT_JAVELIN_II || skillID == HEXA_RADIANT_JAVELIN || skillID == HEXA_RADIANT_JAVELIN_2) {
                     handleRadiantAtom();
                 }
                 break;
@@ -698,6 +802,83 @@ public class Illium extends Job {
                 Shard.setSummonTerm(30);
                 Shard.setPosition(getCrystal().getPosition());
                 field.spawnAddSummon(Shard);
+                break;
+            case CRYSTAL_GATE:
+                summon = Summon.getSummonByAndSetStat(chr, CRYSTAL_GATE_PORTAL, slv);
+                summon.setMoveAbility(MoveAbility.Stop);
+                summon.setAssistType(AssistType.None);
+                summon.setSummonTerm(si.getValue(time, slv));
+                field.spawnSummon(summon);
+                break;
+            case EXCIDIUM:
+                // Origin Skill 6th Job: 7 seconds invincibility (iframe) during cast animation
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 7;
+                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
+                break;
+            case MYTOCRYSTAL_EXPANSE:
+                AffectedArea aaExpanse = AffectedArea.getPassiveAA(chr, skillID, slv);
+                aaExpanse.setPosition(chr.getPosition());
+                aaExpanse.setRect(aaExpanse.getPosition().getRectAround(si.getFirstRect()));
+                aaExpanse.setSkillID(skillID);
+                aaExpanse.setDelay((short) 18);
+                chr.getField().spawnAffectedArea(aaExpanse);
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 6;
+                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                break;
+            case HEXA_LONGINUS_ZONE:
+                AffectedArea aaHexa = AffectedArea.getPassiveAA(chr, skillID, slv);
+                if (getCrystal() == null) {
+                    pos = chr.getPosition();
+                } else {
+                    pos = getCrystal().getPosition();
+                }
+                aaHexa.setPosition(pos);
+                aaHexa.setRect(aaHexa.getPosition().getRectAround(si.getFirstRect()));
+                aaHexa.setSkillID(skillID);
+                aaHexa.setDelay((short) 18);
+                chr.getField().spawnAffectedArea(aaHexa);
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 3;
+                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                break;
+            case HEXA_EX:
+                summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
+                summon.setMoveAbility(MoveAbility.Walk);
+                summon.setAssistType(AssistType.AttackCounter);
+                field.spawnSummon(summon);
+                break;
+            case HEXA_MACHINA:
+                summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
+                summon.setMoveAbility(MoveAbility.Fly);
+                summon.setAssistType(AssistType.Attack);
+                field.spawnSummon(summon);
+                break;
+            case HEXA_CRYSTAL_SKILL_DEUS:
+                field.getSummons().stream().filter(s -> s.getOwnerId() == chr.getId() && (s.getSkillID() == MACHINA || s.getSkillID() == EX || s.getSkillID() == HEXA_MACHINA || s.getSkillID() == HEXA_EX)).forEach(field::removeLife);
+                summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
+                summon.setMoveAbility(MoveAbility.Walk);
+                field.spawnSummon(summon);
+
+                for (int i = 0; i < 5; i++) {
+                    summon = Summon.getSummonByAndSetStat(chr, HEXA_CRYSTAL_SKILL_DEUS_SUB, slv);
+                    summon.setMoveAbility(MoveAbility.Fly);
+                    summon.setAssistType(AssistType.AttackCounter);
+                    field.spawnAddSummon(summon);
+                }
+
+                crystalSkillMap.put(CRYSTAL_SKILL_ID_DEUS, false);
+                chr.getField().broadcast(Summoned.stateChanged(getCrystal(), 2, crystalSkillMap));
+                chr.getField().broadcast(Summoned.upgradeStage(getCrystal(), 3));
                 break;
         }
     }
