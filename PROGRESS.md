@@ -1,6 +1,6 @@
 # รายงานความคืบหน้าโครงการ (Project Progress Report)
 **โครงการ:** MapleStory v265 / v214 Portable Server (SwordieMS Architecture)  
-**วันที่บันทึก:** 6 ตุลาคม 2569 (2026-10-06)  
+**วันที่บันทึก:** 9 ตุลาคม 2569 (2026-10-09)  
 **สถานะ:** เข้าเล่นในเกมได้สำเร็จ 100% (In-Game Playable / อยู่ระหว่างทดสอบระบบระยะยาว)
 
 ---
@@ -566,6 +566,51 @@ MapleStory_Server_Runner/
 - [x] **อัปเดตคำสั่ง `!endgame` ใน `AdminCommands.java`**:
   - เพิ่มการแจกอุปกรณ์ Arcane Umbra, อาวุธรองคลาส 4, ตราสัญลักษณ์, และชุดเกราะตรงสาย 100% สำหรับ Ren, Lynn, MoXuan, Sia Astelle, Cadena, Pathfinder, Kinesis
 - [x] **คอมไพล์ผ่านสมบูรณ์ 100% (Maven BUILD SUCCESS)** และรีสตาร์ตเซิร์ฟเวอร์เปิดให้บริการพอร์ต 8484 และ 8585-8594 ครบทุกแชนแนล
+
+---
+
+### 9.8 การวิเคราะห์และพัฒนาระบบ Erda Link (SHINE Matrix 6th Job สำหรับ Sia Astelle), กลไก Teleport, ดาเมจซัมมอนจริง และการแก้ไข Packet Cooltime Sync v265.3
+
+**วันที่ดำเนินการ:** 9 ตุลาคม 2569 (2026-10-09)  
+**สถานะ:** อิมพลีเมนต์เสร็จสมบูรณ์ 100%, Build JAR ผ่าน, Deploy สู่เซิร์ฟเวอร์ และ Push สู่ GitHub เรียบร้อย
+
+#### 🌌 1. การวิเคราะห์และเชื่อมต่อระบบ Erda Link (คลาส 6 สำหรับสายอาชีพ SHINE)
+- **โครงสร้างระบบ:** ใน MapleStory v265 Nexon ได้ออกแบบระบบคลาส 6 รูปแบบใหม่เฉพาะของอาชีพสาย SHINE (Sia Astelle `182xx` และ Erel Light `181xx`) ในชื่อ **Erda Link** (`ErdaLinkUI.img.xml`, `ErdaLink.img.xml`, `ShineStone.img.xml`) แทนที่ระบบ HEXA Matrix เดิม
+- **การจัดสรรหิน Shine Stone และสกิลคลาส 6 ของ Sia:**
+  1. **Origin Stone (ID: 10000):** ปลดล็อกสกิล Origin คลาส 6 → `Celestial Design (182141500)` สกิลคัตซีนอลังการสร้างความเสียหายมหาศาลและพันธนาการศัตรู
+  2. **Ultimate Stone (ID: 500):** ปลดล็อกสกิล Mastery คลาส 6 → `SHINE Ray (182141000)` และ `SHINE Antares (182141001)`
+  3. **Skill Stone (ID: 100):** สกิลคลาส 6 ส่วนกลาง → `Sol Janus (400001064)`
+  4. **Boost Stones (ID: 101–107):** บูสต์สกิลเดิม → `Sirius Boost (500004200)`, `Shine Boost (500004201)`, `Sadalsuud Boost (500004202)`, `Savior's Circle Boost (500004203)`
+  5. **Erda Link Stat (Hexa Stat):** สเตตัสเสริมคลาส 6 → (ID: `500081000`)
+- **การปรับปรุงระดับซอร์สโค้ดเซิร์ฟเวอร์:**
+  - `Char.java`: เพิ่ม Job ID `18214` ใน `maxSkills()` เมื่อเลเวล 260+, เพิ่มฟังก์ชัน `getSiaErdaLinkSkills(coreID)` และอัปเดต `setHexaSkill()` รองรับ Erda Link Stone
+  - `SiaAstelle.java`: อัปเดต `handleJobAdvance()` และ `handleInitAfterMigrate()` ให้ปลดล็อกสกิล Erda Link ทั้ง 9 สกิลของคลาส 6 อัตโนมัติเมื่อตัวละครเลเวล 260+
+  - `UserHandler.java`: รองรับรหัสหิน Erda Link ของ Sia ในแพ็กเก็ต `handleHexaMatrixOperationRequest` สำหรับการเปิดใช้งาน (Case 0) และการอัปเลเวล (Case 1)
+  - `Database`: บันทึกสกิลคลาส 6 ทั้งหมดลงในตาราง `skills` ให้ตัวละคร Sia พร้อมใช้งานทันที
+
+#### 🏃‍♂️ 2. กลไกการทำงานของสกิล Teleport (Starry Flow) & Up Jump (Starry Leap)
+- **การตรวจสอบดาต้า:** ตรวจสอบไฟล์ WZ `18200.xml` สกิล `Starry Flow (182001004)` เป็น `Type 41, CasterMove 1` (Directional Teleport)
+- **สาเหตุที่เคยกดไม่ติด:** ตัวเกม MapleStory บังคับให้การกดสกิล Teleport ชนิดนี้ **ต้องกดปุ่มทิศทาง (← ซ้าย, → ขวา, ↑ ขึ้น, ↓ ลง) ค้างไว้พร้อมกับกดปุ่มสกิลเสมอ** หากกดลอยๆ อยู่กับที่จะไม่เกิดการทำงาน
+- **สกิลสนับสนุนการเคลื่อนที่:**
+  - `Starry Leap (182001005)`: พุ่งตัวขึ้นที่สูง (Up Jump) โดยกด **ลูกศรขึ้น (↑) + กระโดด (Jump)**
+  - `Starry Boost (182111008)`: สกิลคลาส 3 แบบ Toggle ช่วยเพิ่มระยะเทเลพอร์ตแนวนอน +65 และแนวตั้ง +25
+
+#### ⚔️ 3. การพิสูจน์ดาเมจจริงของสกิล Summon (Stellar Constellations)
+- ตรวจสอบยืนยันจาก Server Packet & Combat Logs:
+  - สกิลซัมมอนกลุ่มดาว เช่น `Stellar XI - Sirius (400021143)` ส่งแพ็กเก็ต `SUMMONED_ATTACK (730)` เข้าสู่เซิร์ฟเวอร์
+  - เซิร์ฟเวอร์คำนวณดาเมจจริงและหักลด HP มอนสเตอร์จริง (ดาเมจเฉลี่ย 300,000 – 600,000+ ต่อฮิต)
+  - มอนสเตอร์เลือดลดลงจนถึง 0 และดรอป EXP / ไอเทมอย่างถูกต้องสมบูรณ์ ยืนยันว่าไม่ใช่แค่แอนิเมชั่นหลอกตา 100%
+
+#### 📡 4. การแก้ไขปัญหา Network Opcode Desync v265.3
+- **ปัญหา:** Client ส่งแพ็กเก็ต Opcode `1157` ทุกๆ 30 วินาทีเพื่อรายงานคูลดาวน์สกิล (Client Sync Cooltime Request) แต่เซิร์ฟเวอร์แมปไว้เป็น `1015` ทำให้เซิร์ฟเวอร์มองเป็น Unhandled Opcode
+- **การแก้ไข:** แก้ไขค่าใน `InHeader.java` ให้ `CLIENT_SYNC_COOLTIME_REQUEST = 1157` ตามแพ็กเก็ตโครงสร้างจริงของ GMS v265.3
+
+#### 🚀 5. การ Build, Deploy และ Git Version Control
+- คอมไพล์โปรเจกต์ด้วย Portable Maven 3.9.15 และ JDK 21 (`BUILD SUCCESS`)
+- อัปเดต Fat JAR ไปยัง `Server263\maplestory.jar` (~138 MB)
+- รีสตาร์ตเซิร์ฟเวอร์เสร็จสมบูรณ์ พอร์ต Login 8484 และ Channel 8585–8594 พร้อมให้บริการ
+- บันทึกการเปลี่ยนแปลงและ Push ขึ้น GitHub: Commit `8f6f9c8` (Branch: `main`)
+
 
 
 
