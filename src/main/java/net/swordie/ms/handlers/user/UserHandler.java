@@ -2091,6 +2091,34 @@ public class UserHandler {
                 int job = chr.getJob();
                 HexaCore.HexaSkillCoreData coreData = HexaCore.getSkillCoreData(coreID);
                 if (coreData == null) {
+                    if (JobConstants.isSiaAstelle((short) job)) {
+                        List<Integer> siaSkills = Char.getSiaErdaLinkSkills(coreID);
+                        if (!siaSkills.isEmpty()) {
+                            int erdaCost = 1;
+                            int erdaFragmentCost = 100;
+                            int currentSolErdas = chr.getSolErda();
+                            long currentSolErdaFragments = 0;
+                            for (int id : HexaMatrixConstants.solErdaFragments) {
+                                currentSolErdaFragments += sm.getQuantityOfItem(id);
+                            }
+                            if (erdaCost > currentSolErdas || erdaFragmentCost > currentSolErdaFragments) {
+                                chr.chatPopup(String.format("Bạn không đủ Sol Erda / Sol Erda Fragments để mở khoá Erda Link này. (Yêu cầu: %d Sol Erda, %d Fragments)", erdaCost, erdaFragmentCost));
+                                chr.dispose();
+                                return;
+                            }
+                            int need = erdaFragmentCost;
+                            for (int id : HexaMatrixConstants.solErdaFragments) {
+                                int take = Math.min(sm.getQuantityOfItem(id), need);
+                                if (take > 0) chr.consumeItem(id, take);
+                                if ((need -= take) == 0) break;
+                            }
+                            chr.addSolErda(-erdaCost);
+                            chr.setHexaSkill(coreID, 1);
+                            chr.write(WvsContext.hexaSkillsUpdate(chr));
+                            chr.write(WvsContext.hexaMessage(type, 0, coreID, 0));
+                            break;
+                        }
+                    }
                     chr.chatPopup("Lỗi không xác định.");
                     chr.dispose();
                     return;
@@ -2183,13 +2211,14 @@ public class UserHandler {
                         erdaCost += HexaMatrixConstants.getSolErdaCostToUpgrade(HexaMatrixConstants.HexaMatrixSkill.MASTERY_CORE, i);
                     } else if (coreType == 3) {
                         erdaCost += HexaMatrixConstants.getSolErdaCostToUpgrade(HexaMatrixConstants.HexaMatrixSkill.BOOST_CORE, i);
-                    } else {
-                        if (coreType != 4) {
-                            chr.chatPopup("Lỗi không xác định.");
-                            chr.dispose();
-                            return;
-                        }
+                    } else if (coreType == 4) {
                         erdaCost += HexaMatrixConstants.getSolErdaCostToUpgrade(HexaMatrixConstants.HexaMatrixSkill.COMMON_CORE, i);
+                    } else if (JobConstants.isSiaAstelle(chr.getJob())) {
+                        erdaCost += (solErdaReq / Math.max(1, nextLevel - coreLevel));
+                    } else {
+                        chr.chatPopup("Lỗi không xác định.");
+                        chr.dispose();
+                        return;
                     }
                     if (coreType == 1) {
                         erdaFragmentCost += HexaMatrixConstants.getSolErdaFragmentCostToUpgrade(HexaMatrixConstants.HexaMatrixSkill.SKILL_CORE, i);
@@ -2197,13 +2226,14 @@ public class UserHandler {
                         erdaFragmentCost += HexaMatrixConstants.getSolErdaFragmentCostToUpgrade(HexaMatrixConstants.HexaMatrixSkill.MASTERY_CORE, i);
                     } else if (coreType == 3) {
                         erdaFragmentCost += HexaMatrixConstants.getSolErdaFragmentCostToUpgrade(HexaMatrixConstants.HexaMatrixSkill.BOOST_CORE, i);
-                    } else {
-                        if (coreType != 4) {
-                            chr.chatPopup("Lỗi không xác định.");
-                            chr.dispose();
-                            return;
-                        }
+                    } else if (coreType == 4) {
                         erdaFragmentCost += HexaMatrixConstants.getSolErdaFragmentCostToUpgrade(HexaMatrixConstants.HexaMatrixSkill.COMMON_CORE, i);
+                    } else if (JobConstants.isSiaAstelle(chr.getJob())) {
+                        erdaFragmentCost += (solErdaFragmentReq / Math.max(1, nextLevel - coreLevel));
+                    } else {
+                        chr.chatPopup("Lỗi không xác định.");
+                        chr.dispose();
+                        return;
                     }
                 }
                 if (erdaCost != solErdaReq || erdaFragmentCost != solErdaFragmentReq) {

@@ -275,7 +275,28 @@ public class SiaAstelle extends Job {
             chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Sia] Successfully advanced to 4th Job (18212)!");
         } else if (curJob == JobConstants.JobEnum.SIA_4.getJobId()) {
             chr.maxSkills();
-            sm.sendSayOkay("#eYou are already at 4th Job (Sia Astelle). All skills have been refreshed and maxed!");
+            if (chr.getLevel() >= 260) {
+                int[] hexaSkills = {
+                    CELESTIAL_DESIGN,
+                    SHINE_RAY,
+                    SHINE_STELLAR_I_ANTARES,
+                    400001064,
+                    500081000,
+                    500004200,
+                    500004201,
+                    500004202,
+                    500004203
+                };
+                for (int sId : hexaSkills) {
+                    if (!chr.hasSkill(sId)) {
+                        chr.addSkill(sId, sId == 500081000 ? 1 : 30, sId == 500081000 ? 1 : 30);
+                    }
+                }
+                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Sia] 6th Job Erda Link & HEXA Skills unlocked!");
+                sm.sendSayOkay("#e[Erda Link]\nCongratulations! 6th Job Erda Link skills have been unlocked!\n#bCelestial Design (Origin), SHINE Ray, SHINE Antares, Sol Janus, and Erda Link Stats#k are now active.");
+            } else {
+                sm.sendSayOkay("#eYou are already at 4th Job (Sia Astelle). Reach #rLv. 260#k to unlock 6th Job Erda Link!");
+            }
         }
     }
 
@@ -308,8 +329,28 @@ public class SiaAstelle extends Job {
             sm.warp(FieldConstants.HOME_MAP);
         }
 
-        if (chr.getJob() == JobConstants.JobEnum.SIA_4.getJobId() && !chr.hasSkill(182121000)) {
-            chr.maxSkills();
+        if (chr.getJob() == JobConstants.JobEnum.SIA_4.getJobId()) {
+            if (!chr.hasSkill(182121000)) {
+                chr.maxSkills();
+            }
+            if (chr.getLevel() >= 260) {
+                int[] hexaSkills = {
+                    CELESTIAL_DESIGN,
+                    SHINE_RAY,
+                    SHINE_STELLAR_I_ANTARES,
+                    400001064,
+                    500081000,
+                    500004200,
+                    500004201,
+                    500004202,
+                    500004203
+                };
+                for (int sId : hexaSkills) {
+                    if (!chr.hasSkill(sId)) {
+                        chr.addSkill(sId, sId == 500081000 ? 1 : 30, sId == 500081000 ? 1 : 30);
+                    }
+                }
+            }
         }
     }
 

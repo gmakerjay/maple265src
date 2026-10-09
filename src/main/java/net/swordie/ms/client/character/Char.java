@@ -9827,10 +9827,72 @@ public class Char {
         }
     }
 
+    public static List<Integer> getSiaErdaLinkSkills(int coreID) {
+        List<Integer> list = new ArrayList<>();
+        switch (coreID) {
+            case 10000: // Origin Stone: Celestial Design
+                list.add(182141500);
+                break;
+            case 500: // Ultimate Stone: SHINE Ray / SHINE Antares
+                list.add(182141000);
+                list.add(182141001);
+                break;
+            case 100: // Skill Stone: Sol Janus
+                list.add(400001064);
+                break;
+            case 101: // Sirius Boost
+                list.add(500004200);
+                break;
+            case 102:
+            case 103: // Shine Boost
+                list.add(500004201);
+                break;
+            case 104:
+            case 105: // Sadalsuud Boost
+                list.add(500004202);
+                break;
+            case 106:
+            case 107: // Savior's Circle Boost
+                list.add(500004203);
+                break;
+        }
+        return list;
+    }
+
     public void setHexaSkill(int coreID, int level) {
         boolean hasCore = false;
         HexaCore.HexaSkillCoreData coreData = HexaCore.getSkillCoreData(coreID);
         if (coreData == null) {
+            List<Integer> siaSkills = getSiaErdaLinkSkills(coreID);
+            if (!siaSkills.isEmpty()) {
+                for (HexaSkill hexaSkill : getHexaSkills()) {
+                    if (hexaSkill.getSkillId() == coreID) {
+                        hexaSkill.setSkillLevel(level);
+                        hexaSkill.saveToSQL();
+                        hasCore = true;
+                        break;
+                    }
+                }
+                if (!hasCore) {
+                    HexaSkill hexaSkill = new HexaSkill(coreID, level);
+                    hexaSkill.setCharId(getId());
+                    getHexaSkills().add(hexaSkill);
+                    hexaSkill.saveToSQL();
+                }
+                List<Skill> skills = new ArrayList<>();
+                for (Integer sId : siaSkills) {
+                    Skill s = SkillData.getSkillDeepCopyById(sId);
+                    if (s != null) {
+                        s.setCharId(getId());
+                        s.setCurrentLevel(level);
+                        s.setMasterLevel(30);
+                        s.setMaxLevel(30);
+                        s.saveToSQL();
+                        skills.add(s);
+                    }
+                }
+                addListSkill(skills);
+            }
             return;
         }
         List<Integer> coreSkillList = coreData.getConnectSkills();
@@ -12357,6 +12419,9 @@ public class Char {
             jobs.add((short) (job == 2212 ? 2210 : job % 100 == 70 ? 508 : job - (job % 100)));
         } else {
             jobs.add(job);
+        }
+        if (getLevel() >= 260 && JobConstants.isSiaAstelle(job)) {
+            jobs.add((short) 18214);
         }
         for (short j : jobs) {
             for (Skill skill : SkillData.getSkillsByJob(j)) {
