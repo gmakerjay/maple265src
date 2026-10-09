@@ -29,6 +29,7 @@ import net.swordie.ms.connection.packet.*;
 import net.swordie.ms.constants.EventConstants;
 import net.swordie.ms.constants.GameConstants;
 import net.swordie.ms.constants.ItemConstants;
+import net.swordie.ms.constants.JobConstants;
 import net.swordie.ms.constants.JobConstants.JobEnum;
 import net.swordie.ms.enums.*;
 import net.swordie.ms.handlers.header.OutHeader;
@@ -2542,6 +2543,155 @@ public class AdminCommands {
                     break;
                 }
             }
+        }
+    }
+
+    public static void setupEndgame(Char chr, Integer targetJob) {
+        if (targetJob != null && targetJob > 0) {
+            chr.setJob(targetJob);
+            Map<Stat, Object> stats = new HashMap<>();
+            stats.put(Stat.job, targetJob);
+            chr.sendStatsPacket(stats);
+        }
+        short job = chr.getJob();
+
+        // 1. Level to 260
+        chr.setStatAndSendPacket(Stat.level, (short) 260);
+        chr.setStatAndSendPacket(Stat.exp, 0);
+        chr.getJobHandler().handleLevelUp((short) 260);
+
+        // 2. Max HP and MP
+        chr.heal(chr.getMaxHP(), true);
+        chr.setStatAndSendPacket(Stat.mp, chr.getMaxMP());
+
+        // 3. Mesos: 2 Billion
+        chr.addMoney(2000000000L);
+
+        // 4. Complete 5th Job (1460-1466) & 6th Job (1488)
+        for (int q = 1460; q <= 1466; q++) {
+            chr.completeQuest(q);
+        }
+        chr.completeQuest(1488);
+        OutPacket outPacket = new OutPacket(OutHeader.MESSAGE);
+        outPacket.encodeByte(QUEST_RECORD_MESSAGE.getVal());
+        outPacket.encodeInt(1488);
+        outPacket.encodeByte(2);
+        outPacket.encodeFT(FileTime.currentTime());
+        chr.write(outPacket);
+
+        // 5. Max 1st - 4th Job Skills
+        chr.maxSkills();
+
+        // 6. Add 5th Job V-Matrix & 6th Job HEXA Skills
+        List<Integer> vSkills = new ArrayList<>();
+        List<Integer> hexaSkills = new ArrayList<>();
+        int weaponId = 0;
+
+        if (JobConstants.isKhali(job)) {
+            vSkills.addAll(List.of(400041065, 400041066, 400041067, 400041068));
+            hexaSkills.addAll(List.of(
+                    154141504,
+                    154140000, 154140001, 154140002, 154140003, 154140004,
+                    154140005, 154140006, 154140007, 154140008, 154140009
+            ));
+            weaponId = 1292024;
+        } else if (JobConstants.isLara(job)) {
+            vSkills.addAll(List.of(400021095, 400021096, 400021097, 400021098));
+            hexaSkills.addAll(List.of(
+                    162141502,
+                    162140000, 162140001, 162140002, 162140003, 162140004,
+                    162140005, 162140006, 162140007, 162140008, 162140009, 162140010
+            ));
+            weaponId = 1372230;
+        } else if (JobConstants.isIllium(job)) {
+            vSkills.addAll(List.of(152141500, 400021066, 400021067, 400021074, 400021099));
+            hexaSkills.addAll(List.of(
+                    152141508,
+                    152140000, 152140001, 152140002, 152140003, 152140004,
+                    152140005, 152140006, 152140007
+            ));
+            weaponId = 1282024;
+        } else if (JobConstants.isArk(job)) {
+            vSkills.addAll(List.of(155141500, 400051037, 400051038, 400051047, 400051070));
+            hexaSkills.addAll(List.of(
+                    155141502,
+                    155140000, 155140001, 155140002, 155140003, 155140004,
+                    155140005, 155140006, 155140007, 155140008, 155140009
+            ));
+            weaponId = 1482223;
+        } else if (JobConstants.isHoYoung(job)) {
+            vSkills.addAll(List.of(164141500, 400041047, 400041048, 400041052, 400041058));
+            hexaSkills.addAll(List.of(
+                    164141503,
+                    164140000, 164140001, 164140002, 164140003, 164140004,
+                    164140005, 164140006, 164140007, 164140008, 164140009
+            ));
+            weaponId = 1272023;
+        } else if (JobConstants.isKain(job)) {
+            vSkills.addAll(List.of(63141500, 400031057, 400031058, 400031059, 400031060));
+            hexaSkills.addAll(List.of(
+                    63141506,
+                    63140000, 63140001, 63140002, 63140003, 63140004,
+                    63140005, 63140006, 63140007, 63140008, 63140009,
+                    63140010, 63140011, 63140012
+            ));
+            weaponId = 1214022;
+        }
+
+        for (int skillId : vSkills) {
+            chr.addSkill(skillId, 30, 30);
+        }
+        for (int skillId : hexaSkills) {
+            chr.addSkill(skillId, 30, 30);
+        }
+
+        // 7. Add Sol Erda Energy & Fragments
+        Item solErda = ItemData.getItemDeepCopy(2636421, true);
+        if (solErda != null) {
+            solErda.setQuantity((short) 20);
+            chr.addItemToInventory(solErda);
+        }
+        Item fragments = ItemData.getItemDeepCopy(4009548, true);
+        if (fragments != null) {
+            fragments.setQuantity((short) 1000);
+            chr.addItemToInventory(fragments);
+        }
+
+        // 8. Add Arcane Umbra Weapon if available
+        if (weaponId > 0) {
+            Equip equip = ItemData.getEquipDeepCopyFromID(weaponId, true);
+            if (equip != null) {
+                chr.addItemToInventory(equip);
+            }
+        }
+
+        chr.chatMessage(SpeakerChannel, String.format("[End-Game Booster] Complete! Level 260 | 6th Job Unlocked | 2B Mesos | %d V-Skills | %d HEXA Skills Lv.30", vSkills.size(), hexaSkills.size()));
+    }
+
+    @Command(names = {"endgame", "boost", "test6", "hexa"}, requiredType = Admin)
+    public static class EndgameCmd extends AdminCommand {
+
+        public static void execute(Char chr, String[] args) {
+            Integer targetJob = null;
+            if (args.length > 1) {
+                String arg = args[1].toLowerCase();
+                if (Util.isNumber(arg)) {
+                    targetJob = Integer.parseInt(arg);
+                } else if (arg.contains("khali")) {
+                    targetJob = 15412;
+                } else if (arg.contains("lara")) {
+                    targetJob = 16212;
+                } else if (arg.contains("illium")) {
+                    targetJob = 15212;
+                } else if (arg.contains("ark")) {
+                    targetJob = 15512;
+                } else if (arg.contains("hoyoung") || arg.contains("hy")) {
+                    targetJob = 16412;
+                } else if (arg.contains("kain")) {
+                    targetJob = 6312;
+                }
+            }
+            setupEndgame(chr, targetJob);
         }
     }
 }
