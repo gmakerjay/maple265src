@@ -17,6 +17,7 @@ import net.swordie.ms.client.jobs.Job;
 import net.swordie.ms.connection.InPacket;
 import net.swordie.ms.connection.packet.Effect;
 import net.swordie.ms.connection.packet.Summoned;
+import net.swordie.ms.connection.packet.UserLocal;
 import net.swordie.ms.connection.packet.UserPacket;
 import net.swordie.ms.connection.packet.WvsContext;
 import net.swordie.ms.constants.FieldConstants;
@@ -143,6 +144,38 @@ public class HoYoung extends Job {
     // HEXA Boosts
     public static final int HEXA_CLONE_RAMPAGE = 500061014;
     public static final int HEXA_CLONE_RAMPAGE_ATOM = 500061015; // TODO
+
+    // 6th Job (HEXA Matrix)
+    public static final int MILLENNIUM_SPIRIT = 164141503; // Origin Skill Cast
+    public static final int MILLENNIUM_SPIRIT_ATTACK = 164141504; // Origin Skill Attack
+    public static final int SAGE_APOTHEOSIS = 164141500; // 6th Job Active
+    public static final int SAGE_APOTHEOSIS_ATTACK_1 = 164141501;
+    public static final int SAGE_APOTHEOSIS_ATTACK_2 = 164141502;
+    public static final int UNIVERSAL_HARMONY = 164141029; // Passive Mastery
+
+    // HEXA Mastery Skills
+    public static final int HEXA_CONSUMING_FLAMES = 164141000;
+    public static final int HEXA_CONSUMING_FLAMES_1 = 164141013;
+    public static final int HEXA_CONSUMING_FLAMES_2 = 164141018;
+    public static final int HEXA_STONE_TREMOR = 164141005;
+    public static final int HEXA_STONE_TREMOR_1 = 164141019;
+    public static final int HEXA_STONE_TREMOR_2 = 164141025;
+    public static final int HEXA_GOLD_BANDED_CUDGEL = 164141011;
+    public static final int HEXA_GOLD_BANDED_CUDGEL_1 = 164141026;
+    public static final int HEXA_GOLD_BANDED_CUDGEL_2 = 164141027;
+    public static final int HEXA_GOLD_BANDED_CUDGEL_3 = 164141028;
+    public static final int HEXA_HUMANITY_AS_YOU_WILL_FAN = 164141030;
+    public static final int HEXA_HUMANITY_AS_YOU_WILL_FAN_1 = 164141042;
+    public static final int HEXA_GROUND_SHATTERING_WAVE = 164141031;
+    public static final int HEXA_GROUND_SHATTERING_WAVE_1 = 164141043;
+    public static final int HEXA_IRON_FAN_GALE = 164141035;
+    public static final int HEXA_IRON_FAN_GALE_1 = 164141041;
+    public static final int HEXA_IRON_FAN_GALE_2 = 164141047;
+    public static final int HEXA_IRON_FAN_GALE_3 = 164141053;
+    public static final int HEXA_TALISMAN_CLONE = 164141054;
+    public static final int HEXA_SEEKING_GHOST_FLAME = 164141056;
+    public static final int HEXA_SCROLL_BUTTERFLY_DREAM = 164141057;
+    public static final int HEXA_SCROLL_STAR_VORTEX = 164141059;
 
     // Gauge
     private static final int MAX_TALISMAN_ENERGY = 100;
@@ -309,21 +342,27 @@ public class HoYoung extends Job {
 
     private boolean isHumanitySkill(int skillId) {
         return switch (skillId) {
-            case HUMANITY_AS_YOU_WILL_FAN, GOLD_BANDED_CUDGEL -> true;
+            case HUMANITY_AS_YOU_WILL_FAN, GOLD_BANDED_CUDGEL,
+                 HEXA_HUMANITY_AS_YOU_WILL_FAN, HEXA_HUMANITY_AS_YOU_WILL_FAN_1,
+                 HEXA_GOLD_BANDED_CUDGEL, HEXA_GOLD_BANDED_CUDGEL_1, HEXA_GOLD_BANDED_CUDGEL_2, HEXA_GOLD_BANDED_CUDGEL_3 -> true;
             default -> false;
         };
     }
 
     private boolean isEarthSkill(int skillId) {
         return switch (skillId) {
-            case STONE_TREMOR, GROUND_SHATTERING_WAVE -> true;
+            case STONE_TREMOR, GROUND_SHATTERING_WAVE,
+                 HEXA_STONE_TREMOR, HEXA_STONE_TREMOR_1, HEXA_STONE_TREMOR_2,
+                 HEXA_GROUND_SHATTERING_WAVE, HEXA_GROUND_SHATTERING_WAVE_1 -> true;
             default -> false;
         };
     }
 
     private boolean isHeavenSkill(int skill) {
         return switch (skill) {
-            case CONSUMING_FLAMES, IRON_FAN_GALE -> true;
+            case CONSUMING_FLAMES, IRON_FAN_GALE,
+                 HEXA_CONSUMING_FLAMES, HEXA_CONSUMING_FLAMES_1, HEXA_CONSUMING_FLAMES_2,
+                 HEXA_IRON_FAN_GALE, HEXA_IRON_FAN_GALE_1, HEXA_IRON_FAN_GALE_2, HEXA_IRON_FAN_GALE_3 -> true;
             default -> false;
         };
     }
@@ -334,14 +373,16 @@ public class HoYoung extends Job {
 
     private boolean isTalismanSkill(int skillId) {
         return switch (skillId) {
-            case TALISMAN_EVIL_SEALING_GOURD, CLONE, SEEKING_GHOST_FLAME, WARP_GATE -> true;
+            case TALISMAN_EVIL_SEALING_GOURD, CLONE, SEEKING_GHOST_FLAME, WARP_GATE,
+                 HEXA_TALISMAN_CLONE, HEXA_SEEKING_GHOST_FLAME -> true;
             default -> false;
         };
     }
 
     private boolean isScrollSkill(int skillId) {
         return switch (skillId) {
-            case DEGENERATION, BUTTERFLY_DREAM, STAR_VORTEX -> true;
+            case DEGENERATION, BUTTERFLY_DREAM, STAR_VORTEX,
+                 HEXA_SCROLL_BUTTERFLY_DREAM, HEXA_SCROLL_STAR_VORTEX -> true;
             default -> false;
         };
     }
@@ -523,10 +564,45 @@ public class HoYoung extends Job {
                 this.isUsingGourdToss = true;
                 break;
             case GROUND_SHATTERING_WAVE:
+            case HEXA_GROUND_SHATTERING_WAVE:
                 o1.nValue = si.getValue(SkillStat.x, slv);
                 o1.nReason = OUT_OF_SIGHT;
                 o1.tTerm = 2;
                 tsm.sendStat(DarkSight, o1);
+                break;
+            case MILLENNIUM_SPIRIT:
+            case MILLENNIUM_SPIRIT_ATTACK:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob targetMob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (targetMob == null) continue;
+                    MobTemporaryStat mts = targetMob.getTemporaryStat();
+                    EnumMap<MobStat, Option> map = new EnumMap<>(MobStat.class);
+                    Option opt1 = new Option();
+                    Option opt2 = new Option();
+                    opt1.nOption = 1;
+                    opt1.rOption = skillID;
+                    opt1.tOption = 10; // 10s Absolute Freeze / Bind
+                    opt1.cOption = chr.getId();
+                    map.put(MobStat.Freeze, opt1);
+
+                    opt2.nOption = 10;
+                    opt2.rOption = skillID;
+                    opt2.tOption = 20; // 20s Origin Debuff
+                    opt2.xOption = 22;
+                    map.put(MobStat.OriginDebuff, opt2);
+                    mts.addStatOptions(targetMob, map);
+                }
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
+                break;
+            case SAGE_APOTHEOSIS:
+            case SAGE_APOTHEOSIS_ATTACK_1:
+            case SAGE_APOTHEOSIS_ATTACK_2:
+                handleSpellGauge(MAX_TALISMAN_ENERGY, MAX_SCROLL_ENERGY);
+                break;
         }
         handleSpellGauge(
                 isTalismanSkill(skillID) ? 0 : getTalismanEnergy(),
@@ -701,6 +777,26 @@ public class HoYoung extends Job {
                 summon.setMoveAbility(MoveAbility.Stop);
                 field.spawnSummon(summon);
                 this.sageTigerSongyuCount = 0;
+                break;
+            case MILLENNIUM_SPIRIT:
+                // Origin Skill 6th Job: 7 seconds invincibility (iframe) during cast animation
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 7;
+                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
+                break;
+            case SAGE_APOTHEOSIS:
+                // 6th Job Active: 6s invincibility (ndTime: 5500), maximize gauges
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 6;
+                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                handleSpellGauge(MAX_TALISMAN_ENERGY, MAX_SCROLL_ENERGY);
                 break;
         }
         handleSpellGauge(
