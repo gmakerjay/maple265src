@@ -219,7 +219,9 @@ public class Kinesis extends Job {
                 skillID != PSYCHIC_TORNADO_1 &&
                 skillID != PSYCHIC_TORNADO_2 &&
                 skillID != PSYCHIC_TORNADO_3 &&
-                skillID != PSYCHIC_TORNADO
+                skillID != PSYCHIC_TORNADO &&
+                skillID != HEXA_ULTIMATE_BPM &&
+                skillID != HEXA_ULTIMATE_METAL_PRESS
         ) {
             kinesisPPAttack(skillID, slv, si, attackInfo);
         }
@@ -305,7 +307,7 @@ public class Kinesis extends Job {
         if (chr.getTemporaryStatManager().hasStat(KinesisPsychicOver)) {
             ppCons = ppCons / 2;
         }
-        if (skillID == ULTIMATE_BPM) {
+        if (skillID == ULTIMATE_BPM || skillID == HEXA_ULTIMATE_BPM) {
             ppCons = si.getValue(w, slv); // why nexon..
         }
         if (skillID == KINETIC_JAUNT) {

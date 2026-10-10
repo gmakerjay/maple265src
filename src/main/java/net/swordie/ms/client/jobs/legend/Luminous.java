@@ -191,6 +191,7 @@ public class Luminous extends Job {
                 tsm.sendStat(Larkness, o);
                 equilibriumTimer = chr.getTimer().addEvent(this::changeMode, getMoreEquilibriumTime(), TimeUnit.SECONDS);
                 chr.resetSkillCoolTime(ENDER);
+                chr.resetSkillCoolTime(HEXA_ENDER);
                 chr.resetSkillCoolTime(DEATH_SCYTHE);
             }
         } else if (SkillConstants.isLarknessDarkSkill(skillID)) {
@@ -201,6 +202,7 @@ public class Luminous extends Job {
                 tsm.sendStat(Larkness, o);
                 equilibriumTimer = chr.getTimer().addEvent(this::changeMode, getMoreEquilibriumTime(), TimeUnit.SECONDS);
                 chr.resetSkillCoolTime(ENDER);
+                chr.resetSkillCoolTime(HEXA_ENDER);
                 chr.resetSkillCoolTime(DEATH_SCYTHE);
             }
         }
@@ -412,20 +414,6 @@ public class Luminous extends Job {
         LarknessManager lm = tsm.getLarknessManager();
         Option o1 = new Option();
         switch (skillID) {
-            case HARMONIC_PARADOX:
-            case LUSTROUS_ORB:
-                o1.nReason = skillID;
-                o1.nValue = 1;
-                o1.tTerm = 7;
-                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
-                if (chr.getParty() != null) {
-                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
-                        other.write(UserLocal.showHexaSkillEff(chr));
-                    }
-                }
-                chr.chatMessage(ChatType.Notice, "[Origin] Harmonic Paradox activated! Light and Dark achieve ultimate equilibrium.");
-                chr.dispose();
-                break;
             case SHADOW_SHELL:
                 o1.nOption = 3;
                 o1.rOption = skillID;
@@ -473,6 +461,7 @@ public class Luminous extends Job {
                 }
                 this.equilibriumTimer = chr.getTimer().addEvent(this::changeMode, getMoreEquilibriumTime(), TimeUnit.SECONDS);
                 chr.resetSkillCoolTime(ENDER);
+                chr.resetSkillCoolTime(HEXA_ENDER);
                 chr.resetSkillCoolTime(DEATH_SCYTHE);
                 break;
             case HEROIC_MEMORIES_LUMI:
@@ -518,6 +507,30 @@ public class Luminous extends Job {
             case HEROS_WILL_LUMI:
                 tsm.removeAllDebuffs();
                 break;
+            case HARMONIC_PARADOX:
+            case LUSTROUS_ORB:
+                // Origin cutscene invincibility (7s) + enter Equilibrium
+                o1.nReason = skillID;
+                o1.nValue = 1;
+                o1.tTerm = 7;
+                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                chr.write(UserLocal.showHexaSkillEff(chr));
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
+                Option eqOpt = new Option();
+                eqOpt.nOption = 1;
+                eqOpt.rOption = EQUILIBRIUM_LIGHT;
+                tsm.sendStat(Larkness, eqOpt);
+                this.equilibriumTimer = chr.getTimer().addEvent(this::changeMode, getMoreEquilibriumTime(), TimeUnit.SECONDS);
+                chr.resetSkillCoolTime(ENDER);
+                chr.resetSkillCoolTime(HEXA_ENDER);
+                chr.resetSkillCoolTime(DEATH_SCYTHE);
+                chr.chatMessage(ChatType.Notice, "[Origin] Harmonic Paradox! Equilibrium awakened.");
+                chr.dispose();
+                break;
 
         }
     }
@@ -525,6 +538,7 @@ public class Luminous extends Job {
     public int alterCooldownSkill(int skillID) {
         switch (skillID) {
             case ENDER:
+            case HEXA_ENDER:
             case DEATH_SCYTHE:
                 if (equilibriumTimer != null && !equilibriumTimer.isDone()) {
                     return 0;

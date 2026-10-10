@@ -1127,7 +1127,7 @@ public class SkillConstants {
         if (prefix == 8000) {
             prefix = skillID / 100;
         }
-        return prefix == 10000 || prefix == 10100 || prefix == 10110 || prefix == 10111 || prefix == 10112;
+        return prefix == 10000 || prefix == 10100 || prefix == 10110 || prefix == 10111 || prefix == 10112 || prefix == 10114;
     }
 
     public static boolean isUsercloneSummonedAbleSkill(int skillID) {
@@ -1644,6 +1644,9 @@ public class SkillConstants {
             case 27120211:
             case 27121201:
             case 27121202:
+            case 27141004: // HEXA_APOCALYPSE
+            case 27140002: // HEXA_ENDLESS_DARKNESS (passive)
+            case 27141003: // HEXA_ENDLESS_DARKNESS (active/attack)
             case 80001892:
                 return true;
         }
@@ -1659,6 +1662,9 @@ public class SkillConstants {
             case 27111100:
             case 27111101:
             case 27121100:
+            case 27141001: // HEXA_REFLECTION
+            case 27140005: // HEXA_ETERNAL_LIGHT (passive)
+            case 27141006: // HEXA_ETERNAL_LIGHT (active/attack)
             case 80001891:
                 return true;
         }

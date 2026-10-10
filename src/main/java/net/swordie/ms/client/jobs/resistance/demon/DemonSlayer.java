@@ -173,6 +173,7 @@ public class DemonSlayer extends Job {
                 }
                 break;
             case DEMON_CRY:
+            case HEXA_DEMON_CRY:
                 if (!mts.hasCurrentMobStatBySkillId(skillID)) {
                     o1.nOption = -si.getValue(y, slv);
                     o1.rOption = skillID;
@@ -195,6 +196,7 @@ public class DemonSlayer extends Job {
                 }
                 break;
             case DEMON_IMPACT:
+            case HEXA_DEMON_IMPACT:
                 if (!mts.hasCurrentMobStatBySkillId(skillID)) {
                     o1.nOption = -20;
                     o1.rOption = skillID;
@@ -220,7 +222,7 @@ public class DemonSlayer extends Job {
             //Max Fury
             if (chr.hasSkill(MAX_FURY)) {
                 switch (attackInfo.skillId) {
-                    case DEMON_LASH, DEMON_LASH_3, DEMON_LASH_4, DEMON_AWAKENING_LASH_1, DEMON_AWAKENING_LASH_2, DEMON_AWAKENING_LASH_3, DEMON_AWAKENING_LASH_4 -> {
+                    case DEMON_LASH, DEMON_LASH_3, DEMON_LASH_4, DEMON_AWAKENING_LASH_1, DEMON_AWAKENING_LASH_2, DEMON_AWAKENING_LASH_3, DEMON_AWAKENING_LASH_4, HEXA_DEMON_LASH -> {
                         SkillInfo maxFuryInfo = SkillData.getSkillInfoById(MAX_FURY);
                         if (maxFuryInfo != null) {
                             if (Util.succeedProp(maxFuryInfo.getValue(prop, chr.getSkillLevel(MAX_FURY)))) {
@@ -318,7 +320,7 @@ public class DemonSlayer extends Job {
 
                 //Attacking with Demon Lash
                 switch (attackInfo.skillId) {
-                    case DEMON_LASH, DEMON_LASH_2, DEMON_LASH_3, DEMON_LASH_4, DEMON_AWAKENING_LASH_1, DEMON_AWAKENING_LASH_2, DEMON_AWAKENING_LASH_3, DEMON_AWAKENING_LASH_4 -> {
+                    case DEMON_LASH, DEMON_LASH_2, DEMON_LASH_3, DEMON_LASH_4, DEMON_AWAKENING_LASH_1, DEMON_AWAKENING_LASH_2, DEMON_AWAKENING_LASH_3, DEMON_AWAKENING_LASH_4, HEXA_DEMON_LASH -> {
                         ForceAtomEnum fae = ForceAtomEnum.DEMON_SLAYER_FURY_1;
                         if (mob.isBoss()) {
                             fae = ForceAtomEnum.DEMON_SLAYER_FURY_1_BOSS;
