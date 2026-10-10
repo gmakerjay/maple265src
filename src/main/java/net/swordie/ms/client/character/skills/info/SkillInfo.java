@@ -55,6 +55,8 @@ public class SkillInfo {
     private boolean ignoreCounter;
     private boolean petPassive;
     private boolean isSequenceOn;
+    // true when Skill.wz has a <summon> node for this skill (client needs it to render SUMMONED_CREATED)
+    private boolean summonNode;
     private int weapon;
     private int setItemPartsCount;
     private int setItemReason;
@@ -425,6 +427,14 @@ public class SkillInfo {
 
     public void setSequenceOn(boolean isSequenceOn) {
         this.isSequenceOn = isSequenceOn;
+    }
+
+    public boolean hasSummonNode() {
+        return summonNode;
+    }
+
+    public void setSummonNode(boolean summonNode) {
+        this.summonNode = summonNode;
     }
 
     public int getWeapon() {

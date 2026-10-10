@@ -70,6 +70,10 @@ public class Mechanic extends Citizen {
     public static final int ROBOT_MASTERY = 35120001;
     public static final int BOTS_N_TOTS = 35121009; //Special Summon
     public static final int BOTS_N_TOTS_SUB_SUMMON = 35121011; // Summon that spawn from the main BotsNtots
+    // HEXA (6th job) summons - own WZ summon nodes
+    public static final int HEXA_ROBO_LAUNCHER_RM7 = 35141006;
+    public static final int HEXA_BOTS_N_TOTS = 35141008;
+    public static final int HEXA_BOTS_N_TOTS_SUB_SUMMON = 35141009;
     public static final int MAPLE_WARRIOR_MECH = 35121007; //Buff
     public static final int ENHANCED_SUPPORT_UNIT = 35120002;
     public static final int HEROS_WILL_MECH = 35121008;
@@ -138,11 +142,15 @@ public class Mechanic extends Citizen {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         Position position = summon.getPosition();
 
-        if ((tsm.getOptByCTSAndSkill(IndieEmpty, BOTS_N_TOTS) != null) && chr.hasSkill(BOTS_N_TOTS)) {
+        boolean hexa = summon.getSkillID() == HEXA_BOTS_N_TOTS;
+        int mainId = hexa ? HEXA_BOTS_N_TOTS : BOTS_N_TOTS;
+        int subId = hexa ? HEXA_BOTS_N_TOTS_SUB_SUMMON : BOTS_N_TOTS_SUB_SUMMON;
+
+        if ((tsm.getOptByCTSAndSkill(IndieEmpty, mainId) != null) && chr.hasSkill(mainId)) {
             if (chr.getField().findFootHoldBelow(position) != null) {
-                Skill skill = chr.getSkill(BOTS_N_TOTS);
+                Skill skill = chr.getSkill(mainId);
                 int slv = skill.getCurrentLevel();
-                Summon subSummon = Summon.getSummonByAndSetStat(chr, BOTS_N_TOTS_SUB_SUMMON, slv);
+                Summon subSummon = Summon.getSummonByAndSetStat(chr, subId, slv);
                 subSummon.setCurFoothold((short) chr.getField().findFootHoldBelow(position).getId());
                 subSummon.setPosition(position);
                 subSummon.setAttackActive(false);
@@ -513,6 +521,7 @@ public class Mechanic extends Citizen {
                 applySupportUnitDebuffOnMob(skillID);
                 break;
             case ROBO_LAUNCHER_RM7:
+            case HEXA_ROBO_LAUNCHER_RM7:
                 summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
                 field = chr.getField();
                 summon.setFlyMob(true);
@@ -520,6 +529,7 @@ public class Mechanic extends Citizen {
                 field.spawnSummon(summon);
                 break;
             case BOTS_N_TOTS:
+            case HEXA_BOTS_N_TOTS:
                 summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
                 field = chr.getField();
                 summon.setFlyMob(false);

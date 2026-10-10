@@ -40,12 +40,14 @@ public class Lynn extends Job {
 
     public static final int FOCUS_HEAL = 172001001; // IndieLoopEffect (charID) + IndieDotHealHP (349)
     public static final int FOCUS_HEAL_2 = 172001003;
+    public static final int HEXA_FOCUS_HEAL = 172141005; // WZ 17214: same common stats (time/s2) as FOCUS_HEAL
     public static final int PAN = 172000011; // Spirit Guide Unity: Pan | IndiePMdR (5-10-15)
     public static final int PENNI = 172100011; // Spirit Guide Unity: Penni | IndiePMdR (5-10-15)
 
     public static final int PECK = 172101003;
     public static final int PECK_III = 172111003;
     public static final int PECK_IV = 172121003;
+    public static final int HEXA_PECK = 172141004; // WZ 17214: HEXA Peck (type 51, summon node)
 
     public static final int STRIKE_1 = 172001000;
     public static final int STRIKE_2 = 172101000;
@@ -151,6 +153,7 @@ public class Lynn extends Job {
         OutPacket outPacket;
         switch (skillID) {
             case FOCUS_HEAL:
+            case HEXA_FOCUS_HEAL:
                 if (chr.hasSkill(172120001)) {
                     var boostSI = SkillData.getSkillInfoById(172120001);
                     var boostSLV = chr.getSkillLevel(172120001);
@@ -209,6 +212,7 @@ public class Lynn extends Job {
             case PECK:
             case PECK_III:
             case PECK_IV:
+            case HEXA_PECK:
                 if (mode == 0) {
                     mode = skillID;
                 } else {

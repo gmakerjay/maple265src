@@ -600,7 +600,8 @@ public class Summon extends Life {
             case DarkKnight.HEX_OF_THE_EVIL_EYE -> ((DarkKnight) job).giveHexOfTheEvilEyeBuffs();
             case net.swordie.ms.client.jobs.resistance.Mechanic.SUPPORT_UNIT_HEX, net.swordie.ms.client.jobs.resistance.Mechanic.ENHANCED_SUPPORT_UNIT ->
                     ((Mechanic) job).healFromSupportUnit(this);
-            case net.swordie.ms.client.jobs.resistance.Mechanic.BOTS_N_TOTS ->
+            case net.swordie.ms.client.jobs.resistance.Mechanic.BOTS_N_TOTS,
+                 net.swordie.ms.client.jobs.resistance.Mechanic.HEXA_BOTS_N_TOTS ->
                     ((net.swordie.ms.client.jobs.resistance.Mechanic) job).spawnBotsNTotsSubSummons(this);
             case Shade.SPIRIT_BOND_MAX_2 -> ((Shade) job).doSpiritWard();
             case NightLord.DARK_LORDS_OMEN -> ((NightLord) job).createDarkLordOmenForceAtoms(this);

@@ -415,6 +415,7 @@ public class Pathfinder extends Job {
                 }
                 break;
             case RAVEN:
+            case HEXA_SHADOW_RAVEN:
             case FURY_OF_THE_WILD:
                 if (getRelicChargeSkill() != null && getRelicChargeSkill().getSkillId() == RELIC_CHARGE_II) {
                     addRelicGauge(10);
@@ -643,6 +644,7 @@ public class Pathfinder extends Job {
                 chr.dispose();
                 break;
             case RAVEN:
+            case HEXA_SHADOW_RAVEN:
                 Summon summon = Summon.getSummonByAndSetStat(c.getChr(), skillID, slv);
                 summon.setFlyMob(true);
                 summon.setMoveAbility(MoveAbility.Fly);
@@ -713,17 +715,19 @@ public class Pathfinder extends Job {
             case RAVEN_TEMPEST: // TODO  Re-Summon once RavenTempest is done
                 Summon oldSummon = chr.getField().getSummons()
                         .stream()
-                        .filter(l -> (l.getSkillID() == Pathfinder.RAVEN)
+                        .filter(l -> (l.getSkillID() == Pathfinder.RAVEN || l.getSkillID() == Pathfinder.HEXA_SHADOW_RAVEN)
                                 && l.getOwnerId() == chr.getId())
                         .findAny().orElse(null);
                 if (oldSummon == null) {
                     return;
                 }
+                int ravenId = oldSummon.getSkillID();
+                int ravenLv = oldSummon.getSlv() > 0 ? oldSummon.getSlv() : chr.getSkillLevel(ravenId);
                 chr.getField().removeLife(oldSummon.getObjectId(), true);
-                tsm.removeStatsBySkill(RAVEN);
+                tsm.removeStatsBySkill(ravenId);
                 tsm.removeStatsBySkill(FURY_OF_THE_WILD);
                 reduceRelicGauge(300);
-                chr.getTimer().addEvent(() -> reSummon(RAVEN, slv), 27, TimeUnit.SECONDS);
+                chr.getTimer().addEvent(() -> reSummon(ravenId, ravenLv), 27, TimeUnit.SECONDS);
                 break;
             case AWAKENED_RELIC:
                 o1.nOption = 1;

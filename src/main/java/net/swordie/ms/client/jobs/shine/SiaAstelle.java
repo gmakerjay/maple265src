@@ -26,6 +26,7 @@ import net.swordie.ms.life.mob.Mob;
 import net.swordie.ms.life.mob.MobStat;
 import net.swordie.ms.life.mob.MobTemporaryStat;
 import net.swordie.ms.loaders.ItemData;
+import net.swordie.ms.loaders.Etc.HexaCore.HexaCore;
 import net.swordie.ms.scripts.ScriptManagerImpl;
 
 import java.util.ArrayList;
@@ -277,29 +278,7 @@ public class SiaAstelle extends Job {
         } else if (curJob == JobConstants.JobEnum.SIA_4.getJobId()) {
             chr.maxSkills();
             if (chr.getLevel() >= 260) {
-                int[] hexaSkills = {
-                    CELESTIAL_DESIGN,
-                    SHINE_RAY,
-                    SHINE_STELLAR_I_ANTARES,
-                    400001064,
-                    500081000,
-                    500004200,
-                    500004201,
-                    500004202,
-                    500004203
-                };
-                for (int sId : hexaSkills) {
-                    if (!chr.hasSkill(sId)) {
-                        chr.addSkill(sId, sId == 500081000 ? 1 : 30, sId == 500081000 ? 1 : 30);
-                    }
-                }
-                int[] siaCores = {10000051, 20000204, 30000205, 30000206, 30000207, 30000208, 40000000};
-                for (int coreId : siaCores) {
-                    if (chr.getHexaSkillLevel(coreId) == 0) {
-                        chr.setHexaSkill(coreId, 1);
-                    }
-                }
-                chr.write(WvsContext.hexaSkillsUpdate(chr));
+                unlockErdaLink();
                 chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Sia] 6th Job Erda Link & HEXA Skills unlocked!");
                 sm.sendSayOkay("#e[Erda Link]\nCongratulations! 6th Job Erda Link skills have been unlocked!\n#bCelestial Design (Origin), SHINE Ray, SHINE Antares, Sol Janus, and Erda Link Stats#k are now active.");
             } else {
@@ -342,30 +321,54 @@ public class SiaAstelle extends Job {
                 chr.maxSkills();
             }
             if (chr.getLevel() >= 260) {
-                int[] hexaSkills = {
-                    CELESTIAL_DESIGN,
-                    SHINE_RAY,
-                    SHINE_STELLAR_I_ANTARES,
-                    400001064,
-                    500081000,
-                    500004200,
-                    500004201,
-                    500004202,
-                    500004203
-                };
-                for (int sId : hexaSkills) {
-                    if (!chr.hasSkill(sId)) {
-                        chr.addSkill(sId, sId == 500081000 ? 1 : 30, sId == 500081000 ? 1 : 30);
-                    }
-                }
-                int[] siaCores = {10000051, 20000204, 30000205, 30000206, 30000207, 30000208, 40000000};
-                for (int coreId : siaCores) {
-                    if (chr.getHexaSkillLevel(coreId) == 0) {
-                        chr.setHexaSkill(coreId, 1);
-                    }
-                }
-                chr.write(WvsContext.hexaSkillsUpdate(chr));
+                unlockErdaLink();
             }
+        }
+    }
+
+    // ===== Erda Link (Sia 6th job / HEXA) =====
+
+    // HexaCore.img job 18212: Origin, Mastery (SHINE Ray + SHINE Antares), 4x Boost, Sol Janus
+    private static final int[] SIA_ERDA_LINK_CORES = {10000051, 20000204, 30000205, 30000206, 30000207, 30000208, 40000000};
+    private static final int ERDA_FOUNTAIN = 400001064;
+    private static final int ERDA_LINK_STATS = 500081000;
+
+    /**
+     * Opens every Erda Link core at Lv.1 (only cores that are still locked) and repairs cores whose
+     * connected skills are missing. Connected skills are granted by Char#setHexaSkill at the core
+     * level (from HexaCore.img), so they are never pre-added at Lv.30 here (that desynced the
+     * skill level from the core level shown in the Erda Link / HEXA UI).
+     */
+    private void unlockErdaLink() {
+        boolean changed = false;
+        for (int coreId : SIA_ERDA_LINK_CORES) {
+            int coreLv = chr.getHexaSkillLevel(coreId);
+            if (coreLv <= 0) {
+                chr.setHexaSkill(coreId, 1);
+                changed = true;
+                continue;
+            }
+            HexaCore.HexaSkillCoreData coreData = HexaCore.getSkillCoreData(coreId);
+            List<Integer> connected = coreData != null ? coreData.getConnectSkills() : Char.getSiaErdaLinkSkills(coreId);
+            for (int sId : connected) {
+                if (!chr.hasSkill(sId)) {
+                    chr.setHexaSkill(coreId, coreLv);
+                    changed = true;
+                    break;
+                }
+            }
+        }
+        // Not part of any core row
+        if (!chr.hasSkill(ERDA_FOUNTAIN)) {
+            chr.addSkill(ERDA_FOUNTAIN, 30, 30);
+            changed = true;
+        }
+        if (!chr.hasSkill(ERDA_LINK_STATS)) {
+            chr.addSkill(ERDA_LINK_STATS, 1, 1);
+            changed = true;
+        }
+        if (changed) {
+            chr.write(WvsContext.hexaSkillsUpdate(chr));
         }
     }
 
@@ -418,12 +421,12 @@ public class SiaAstelle extends Job {
         int m3 = stellagramRecord.get(2);
         int m4 = stellagramRecord.get(3);
 
-        int slv = 30;
-
         // 1. Antares (Stellar I): Ray - Ray - Ray - Ray (1, 1, 1, 1)
         if (m1 == 1 && m2 == 1 && m3 == 1 && m4 == 1) {
             stellagramRecord.clear();
-            spawnAntares(slv);
+            // SHINE Antares (HEXA) replaces Antares once its Mastery core is unlocked
+            int antaresId = chr.getSkillLevel(SHINE_STELLAR_I_ANTARES) > 0 ? SHINE_STELLAR_I_ANTARES : STELLAR_I_ANTARES;
+            spawnAntares(antaresId, chr.getSkillLevel(antaresId));
             chr.chatMessage(ChatType.Notice, "[Stellagram Fusion] ✨ Stellar I - Antares Activated! (Rabbit Hole Summon)");
             return;
         }
@@ -431,7 +434,7 @@ public class SiaAstelle extends Job {
         // 2. Algol (Stellar II): Boom - Boom - Boom - Boom (2, 2, 2, 2)
         if (m1 == 2 && m2 == 2 && m3 == 2 && m4 == 2) {
             stellagramRecord.clear();
-            spawnAlgol(slv);
+            spawnAlgol(chr.getSkillLevel(STELLAR_II_ALGOL));
             chr.chatMessage(ChatType.Notice, "[Stellagram Fusion] 🦎 Stellar II - Algol Activated! (Lizard Summon)");
             return;
         }
@@ -439,7 +442,7 @@ public class SiaAstelle extends Job {
         // 3. Bellatrix (Stellar IV): Ray - Ray - Boom - Pole (1, 1, 2, 3)
         if (m1 == 1 && m2 == 1 && m3 == 2 && m4 == 3) {
             stellagramRecord.clear();
-            applyBellatrixBuff(STELLAR_IV_BELLATRIX, slv);
+            applyBellatrixBuff(STELLAR_IV_BELLATRIX, chr.getSkillLevel(STELLAR_IV_BELLATRIX));
             chr.chatMessage(ChatType.Notice, "[Stellagram Fusion] 💫 Stellar IV - Bellatrix Activated! (Damage Buff & Starlight Link)");
             return;
         }
@@ -447,7 +450,7 @@ public class SiaAstelle extends Job {
         // 4. Fomalhaut (Stellar V): Boom - Boom - Boom - Pole (2, 2, 2, 3)
         if (m1 == 2 && m2 == 2 && m3 == 2 && m4 == 3) {
             stellagramRecord.clear();
-            applyFomalhautBuff(STELLAR_V_FOMALHAUT, slv);
+            applyFomalhautBuff(STELLAR_V_FOMALHAUT, chr.getSkillLevel(STELLAR_V_FOMALHAUT));
             chr.chatMessage(ChatType.Notice, "[Stellagram Fusion] 🐚 Stellar V - Fomalhaut Activated! (Horned Conches Damage Buff)");
             return;
         }
@@ -455,7 +458,7 @@ public class SiaAstelle extends Job {
         // 5. Izar (Stellar VI): Boom - Boom - Pole - Link (2, 2, 3, 4)
         if (m1 == 2 && m2 == 2 && m3 == 3 && m4 == 4) {
             stellagramRecord.clear();
-            applyIzarBuff(STELLAR_VI_IZAR, slv);
+            applyIzarBuff(STELLAR_VI_IZAR, chr.getSkillLevel(STELLAR_VI_IZAR));
             chr.chatMessage(ChatType.Notice, "[Stellagram Fusion] ⚔️ Stellar VI - Izar Activated! (Orbiting Blades Final Damage Buff)");
             return;
         }
@@ -463,7 +466,7 @@ public class SiaAstelle extends Job {
         // 6. Vega (Stellar VII): Ray - Ray - Ray - Link (1, 1, 1, 4)
         if (m1 == 1 && m2 == 1 && m3 == 1 && m4 == 4) {
             stellagramRecord.clear();
-            applyVegaBuff(STELLAR_VII_VEGA, slv);
+            applyVegaBuff(STELLAR_VII_VEGA, chr.getSkillLevel(STELLAR_VII_VEGA));
             chr.chatMessage(ChatType.Notice, "[Stellagram Fusion] 🕊️ Stellar VII - Vega Activated! (Starlit Gust & Starlight Wings)");
             return;
         }
@@ -471,7 +474,7 @@ public class SiaAstelle extends Job {
         // 7. Canopus (Stellar IX): Ray - Ray - Pole - Link (1, 1, 3, 4)
         if (m1 == 1 && m2 == 1 && m3 == 3 && m4 == 4) {
             stellagramRecord.clear();
-            spawnCanopus(slv);
+            spawnCanopus(chr.getSkillLevel(STELLAR_IX_CANOPUS));
             chr.chatMessage(ChatType.Notice, "[Stellagram Fusion] ⚓ Stellar IX - Canopus Activated! (Anchor Summon)");
             return;
         }
@@ -479,7 +482,7 @@ public class SiaAstelle extends Job {
         // 8. Capella (Stellar X): Ray - Ray - Boom - Link (1, 1, 2, 4)
         if (m1 == 1 && m2 == 1 && m3 == 2 && m4 == 4) {
             stellagramRecord.clear();
-            applyCapellaBuff(STELLAR_X_CAPELLA, slv);
+            applyCapellaBuff(STELLAR_X_CAPELLA, chr.getSkillLevel(STELLAR_X_CAPELLA));
             chr.chatMessage(ChatType.Notice, "[Stellagram Fusion] 🌟 Stellar X - Capella Activated! (Crit Rate + Crit DMG Buff)");
             return;
         }
@@ -487,7 +490,7 @@ public class SiaAstelle extends Job {
         // 9. Alchiba (Stellar III): 4x Pole (3, 3, 3, 3)
         if (m1 == 3 && m2 == 3 && m3 == 3 && m4 == 3) {
             stellagramRecord.clear();
-            applyAlchibaBuff(STELLAR_III_ALCHIBA, slv);
+            applyAlchibaBuff(STELLAR_III_ALCHIBA, chr.getSkillLevel(STELLAR_III_ALCHIBA));
             chr.chatMessage(ChatType.Notice, "[Stellagram Fusion] 🛡️ Stellar III - Alchiba Activated! (Witch's Protection: IED & Magic ATT)");
             return;
         }
@@ -495,7 +498,7 @@ public class SiaAstelle extends Job {
         // 10. Sadalmelik (Stellar VIII): 4x Link (4, 4, 4, 4)
         if (m1 == 4 && m2 == 4 && m3 == 4 && m4 == 4) {
             stellagramRecord.clear();
-            applySadalmelikBuff(STELLAR_VIII_SADALMELIK, slv);
+            applySadalmelikBuff(STELLAR_VIII_SADALMELIK, chr.getSkillLevel(STELLAR_VIII_SADALMELIK));
             chr.chatMessage(ChatType.Notice, "[Stellagram Fusion] 👑 Stellar VIII - Sadalmelik Activated! (Invincibility Buff)");
             return;
         }
@@ -556,7 +559,7 @@ public class SiaAstelle extends Job {
             case STELLAR_I_ANTARES_SUB:
             case SHINE_STELLAR_I_ANTARES:
             case SHINE_STELLAR_I_ANTARES_SUB:
-                spawnAntares(slv);
+                spawnAntares(skillID, slv);
                 chr.dispose();
                 break;
 
@@ -801,9 +804,15 @@ public class SiaAstelle extends Job {
 
     // ===== Helper Spawn & Buff Methods =====
 
-    private void spawnAntares(int slv) {
-        if (chr.getField() != null) {
-            Summon summon = Summon.getSummonByAndSetStat(chr, STELLAR_I_ANTARES, slv);
+    private void spawnAntares(int skillID, int slv) {
+        // SHINE Antares has its own summon node (182141001); spawning 182001001 with a HEXA level was wrong
+        int summonId = (skillID == SHINE_STELLAR_I_ANTARES || skillID == SHINE_STELLAR_I_ANTARES_SUB)
+                ? SHINE_STELLAR_I_ANTARES : STELLAR_I_ANTARES;
+        if (slv <= 0) {
+            slv = chr.getSkillLevel(summonId);
+        }
+        if (slv > 0 && chr.getField() != null) {
+            Summon summon = Summon.getSummonByAndSetStat(chr, summonId, slv);
             summon.setMoveAbility(MoveAbility.Stop);
             summon.setAssistType(AssistType.Attack);
             chr.getField().spawnSummon(summon);
@@ -811,7 +820,7 @@ public class SiaAstelle extends Job {
     }
 
     private void spawnAlgol(int slv) {
-        if (chr.getField() != null) {
+        if (slv > 0 && chr.getField() != null) {
             Summon summon = Summon.getSummonByAndSetStat(chr, STELLAR_II_ALGOL, slv);
             summon.setMoveAbility(MoveAbility.Stop);
             summon.setAssistType(AssistType.Attack);
@@ -847,7 +856,7 @@ public class SiaAstelle extends Job {
     }
 
     private void spawnCanopus(int slv) {
-        if (chr.getField() != null) {
+        if (slv > 0 && chr.getField() != null) {
             Summon summon = Summon.getSummonByAndSetStat(chr, STELLAR_IX_CANOPUS, slv);
             summon.setMoveAbility(MoveAbility.Stop);
             summon.setAssistType(AssistType.Attack);

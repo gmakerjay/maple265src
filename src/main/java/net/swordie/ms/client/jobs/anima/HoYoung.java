@@ -176,6 +176,7 @@ public class HoYoung extends Job {
     public static final int HEXA_SEEKING_GHOST_FLAME = 164141056;
     public static final int HEXA_SCROLL_BUTTERFLY_DREAM = 164141057;
     public static final int HEXA_SCROLL_STAR_VORTEX = 164141059;
+    public static final int HEXA_SCROLL_STAR_VORTEX_1 = 164141060; // follow-up (no summon node, like STAR_VORTEX_1)
 
     // Gauge
     private static final int MAX_TALISMAN_ENERGY = 100;
@@ -669,6 +670,7 @@ public class HoYoung extends Job {
                 tsm.sendStat(IndieStatR, o1);
                 break;
             case CLONE:
+            case HEXA_TALISMAN_CLONE:
                 o1.rOption = CLONE;
                 o1.nOption = 1;
                 o1.yOption = CLONE;
@@ -676,6 +678,7 @@ public class HoYoung extends Job {
                 tsm.sendStat(AnimaThiefCloneAttack, o1);
                 break;
             case SEEKING_GHOST_FLAME:
+            case HEXA_SEEKING_GHOST_FLAME:
                 summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
                 summon.setFlyMob(true);
                 summon.setMoveAction((byte) 4);
@@ -684,13 +687,17 @@ public class HoYoung extends Job {
                 field.spawnSummon(summon);
                 break;
             case STAR_VORTEX:
+            case HEXA_SCROLL_STAR_VORTEX:
                 summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
                 summon.setMoveAbility(MoveAbility.Stop);
                 field.spawnSummon(summon);
                 break;
             case STAR_VORTEX_1:
+            case HEXA_SCROLL_STAR_VORTEX_1:
                 List<Char> chrList = new ArrayList<>();
-                chr.getField().getSummons().stream().filter(s -> s.getSkillID() == STAR_VORTEX && s.getOwnerId() == chr.getId()).forEach(chr.getField()::removeLife);
+                chr.getField().getSummons().stream()
+                        .filter(s -> (s.getSkillID() == STAR_VORTEX || s.getSkillID() == HEXA_SCROLL_STAR_VORTEX) && s.getOwnerId() == chr.getId())
+                        .toList().forEach(chr.getField()::removeLife);
                 int percentHealed = 5;
                 if (chr.getParty() != null) {
                     chrList.addAll(chr.getParty().getPartyMembersInSameField(chr));
@@ -717,6 +724,7 @@ public class HoYoung extends Job {
                 field.spawnSummon(summon);
                 break;
             case BUTTERFLY_DREAM:
+            case HEXA_SCROLL_BUTTERFLY_DREAM:
                 o1.nOption = 1;
                 o1.rOption = skillID;
                 o1.tOption = si.getValue(SkillStat.time, slv);

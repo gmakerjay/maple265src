@@ -1087,6 +1087,36 @@ MapleStory_Server_Runner/
 #### 📦 Build & Deploy
 - `BUILD SUCCESS` (Maven 3.9.15 + JDK 21), Deploy `maplestory.jar` (138,632,846 ไบต์) ไปยัง `v214 src\`, Root และ `Server263\`
 
+### 20. Audit Mo Xuan / Sia Astelle / คลาสใหม่, Erda Link (HEXA) และระบบกันเกมแครชจาก Asset WZ (10 ตุลาคม 2569)
+
+ตรวจทุก Skill ID ที่โค้ดเรียกใช้เทียบกับ `Server263/data/wz265/Skill.wz` (index 13,481 สกิล, 853 สกิลที่มี node `summon`)
+
+#### 🛡️ กันเกมแครชจาก Node WZ ที่ไม่มีอยู่จริง
+- `SkillData` บันทึกว่าแต่ละสกิลมี node `<summon>` หรือไม่ (`SkillInfo.hasSummonNode()`) + `SkillData.canSpawnSummon(id)`
+- `Field.spawnLife`: บล็อก Summon ที่สกิลไม่มี node `summon` ใน Skill.wz (Client โหลด `skill/<id>/summon` ตอน SUMMONED_CREATED → ไม่มี = แครช) พร้อม Log `[SummonGuard]`
+- AngelicBuster: Sparkle Burst (400051011) ไม่มี node summon → เลิกสร้าง Summon
+
+#### 🌀 Mo Xuan
+- เพิ่ม HEXA ทุกตัวเข้า Logic เดิม: Xuanshan Arts Tian/Di (HEXA 1-4), Divine Art (Thunder/Flame/Wind/Tide/Howling Storm), Soul Art Black Wind, Qi Projection (HEXA กับปกติเป็น Toggle เดียวกัน ไม่ซ้อน)
+- Heir of the Divine: แก้ `Math.max` → `Math.min` (เดิมได้ 5 Stack ทันที)
+- Awaken: ฟื้น HP **และ MP** x% ทุก `w` วินาทีตาม WZ (เดิม Hardcode 3 วิ และฟื้นแค่ HP)
+- เช็ก 4th job ใช้ 175121003 (ของจริง) แทน 175121000 ที่ไม่มีใน WZ (เดิม `maxSkills()` ทำงานทุกครั้งที่ล็อกอิน)
+
+#### ✨ Sia Astelle / Erda Link
+- `unlockErdaLink()`: เปิด Core Erda Link ที่ยังล็อกเป็น Lv.1 และซ่อม Core ที่สกิลเชื่อมหาย โดยให้สกิลตามเลเวล Core จริงผ่าน `setHexaSkill` (เดิมแจกสกิล Lv.30 ตรง ๆ → เลเวลสกิลไม่ตรงกับ UI Erda Link)
+- Stellar ทุกดวงใช้เลเวลสกิลจริงแทน Hardcode 30; SHINE Antares ใช้ Summon ของตัวเอง (182141001) แทน 182001001
+
+#### 🧩 คลาสอื่น (HEXA ที่ต้องมี Logic ฝั่งเซิร์ฟเวอร์)
+- Lynn: HEXA [Focus] Heal ทำงานเหมือนสกิลปกติ
+- Khali: แก้ HEXA ID ผิด (`HEXA_ARTS_TRIPLE_BASH` → `HEXA_ARTS_CRESCENTUM_2`), เพิ่ม HEXA Void Rush
+- Mechanic: HEXA Robo Launcher RM7 / Bots 'n Tots + Sub Summon ของ HEXA เอง
+- Pathfinder: HEXA Shadow Raven ทำงานเหมือน Raven ปกติ และตอน Re-summon ใช้ ID/เลเวลของ Raven ตัวที่ถูกเรียกจริง (เดิมบังคับเป็น Raven ปกติ)
+- HoYoung: HEXA Star Vortex (+ follow-up 164141060), Butterfly Dream, Talisman Clone, Seeking Ghost Flame
+- Zero: HEXA Throwing Weapon (101141022) สร้าง Summon เหมือนสกิลปกติ
+
+#### 📦 Build & Deploy
+- `BUILD SUCCESS` (Maven 3.9.15 + JDK 21), Deploy `maplestory.jar` (138,634,273 ไบต์) ไปยัง `v214 src\` และ `Server263\`
+
 
 
 

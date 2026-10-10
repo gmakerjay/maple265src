@@ -98,8 +98,11 @@ public class Khali extends Job {
     // ===== 6th Job HEXA Mastery Skills =====
     public static final int HEXA_ARTS_FLURRY = 154141000;
     public static final int HEXA_ARTS_CRESCENTUM = 154141001;
-    public static final int HEXA_ARTS_TRIPLE_BASH = 154141002;
-    public static final int HEXA_VOID_BLITZ = 154141008;
+    public static final int HEXA_ARTS_CRESCENTUM_2 = 154141002; // WZ: hidden 'HEXA Arts: Crescentum' follow-up hit
+    public static final int HEXA_VOID_RUSH = 154141003;
+    public static final int HEXA_VOID_RUSH_2 = 154141004;
+    public static final int HEXA_VOID_BLITZ = 154141007;
+    public static final int HEXA_VOID_BLITZ_2 = 154141008;
     public static final int HEXA_CHAKRAM_SPLIT = 154141009;
     public static final int HEXA_CHAKRAM_FURY = 154141010;
     public static final int HEXA_CHAKRAM_SWEEP = 154141011;
@@ -135,6 +138,9 @@ public class Khali extends Job {
             VOID_BLITZ,
             VOID_BURST,
             HEXA_VOID_BLITZ,
+            HEXA_VOID_BLITZ_2,
+            HEXA_VOID_RUSH,
+            HEXA_VOID_RUSH_2,
             WAKE_THE_VOID,
             WAKE_THE_VOID_EXPLOSION
     };
@@ -152,7 +158,7 @@ public class Khali extends Job {
                 || skillID == ARTS_ASTRA
                 || skillID == HEXA_ARTS_FLURRY
                 || skillID == HEXA_ARTS_CRESCENTUM
-                || skillID == HEXA_ARTS_TRIPLE_BASH;
+                || skillID == HEXA_ARTS_CRESCENTUM_2;
     }
 
     public static boolean isHexSkill(int skillID) {

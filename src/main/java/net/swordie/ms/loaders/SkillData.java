@@ -628,6 +628,9 @@ public class SkillData {
                                     case "isSequenceOn":
                                         skill.setSequenceOn(intVal != 0);
                                         break;
+                                    case "summon":
+                                        skill.setSummonNode(true);
+                                        break;
                                     case "weapon":
                                         skill.setWeapon(intVal);
                                         break;
@@ -773,6 +776,20 @@ public class SkillData {
             skillInfo = loadSkill(file);
         }
         return skillInfo;
+    }
+
+    /**
+     * Whether a summon with this skill id can be safely sent to the client (SUMMONED_CREATED).
+     * The client loads Skill.wz/.../skill/[id]/summon when creating a summon; if that node does not exist the
+     * client crashes (INVALID_GAME_DATA). Skills are loaded from WZ XML on startup, so the summon node flag is
+     * reliable when the WZ skills are loaded. If WZ skills were not loaded (empty map) we do not block anything.
+     */
+    public static boolean canSpawnSummon(int skillId) {
+        if (skills.isEmpty()) {
+            return true;
+        }
+        SkillInfo si = skills.get(skillId);
+        return si != null && si.hasSummonNode();
     }
 
     public static Skill getSkillDeepCopyById(int skillId) {

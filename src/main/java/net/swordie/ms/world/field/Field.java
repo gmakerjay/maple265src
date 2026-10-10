@@ -671,6 +671,12 @@ public class Field {
     }
 
     public void spawnLife(Life life, Char onlyChar) {
+        if (life instanceof Summon summon && !SkillData.canSpawnSummon(summon.getSkillID())) {
+            // Client loads Skill.wz/.../skill/<id>/summon on SUMMONED_CREATED; a missing node = client crash.
+            System.err.printf("[SummonGuard] Blocked summon skill %d (owner %d, field %d): no <summon> node in Skill.wz%n",
+                    summon.getSkillID(), summon.getOwnerId(), getId());
+            return;
+        }
         addLife(life);
         if (!getChars().isEmpty()) {
             if (life instanceof Npc || life instanceof Mob) {

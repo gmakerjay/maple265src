@@ -632,12 +632,8 @@ public class AngelicBuster extends Job {
                 o1.rOption = skillID;
                 o1.tOption = si.getValue(time, slv);
                 tsm.sendStat(EnergyBust, o1);
-                Summon summon = Summon.getSummonByAndSetStat(c.getChr(), skillID, slv);
-                summon.setFlyMob(false);
-                summon.setMoveAbility(MoveAbility.Stop);
-                summon.setAssistType(AssistType.None);
-                summon.setPosition(new Position(chr.getPosition().getX(), chr.getPosition().getY() - 100));
-                chr.getField().spawnSummon(summon);
+                // Sparkle Burst (400051011) has no <summon> node in Skill.wz/40005 (v265) - it is a buff + attack only.
+                // Spawning a summon for it makes the client crash on SUMMONED_CREATED, so no summon is created here.
                 break;
             case SOUL_SEEKER:
                 createSoulSeekerForceAtom();

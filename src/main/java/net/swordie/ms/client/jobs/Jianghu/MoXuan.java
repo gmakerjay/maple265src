@@ -85,6 +85,28 @@ public class MoXuan extends Job {
     // HEXA Boosts
     public static final int HEXA_SOUL_ART_THE_OPENED_GATE = 500061070;
 
+    // HEXA Mastery / Origin (Skill.wz/Skill_00002/17514.xml, HexaCore job 17512)
+    public static final int HEXA_XUANSHAN_ARTS_TIAN = 175141000;
+    public static final int HEXA_XUANSHAN_ARTS_TIAN_2 = 175141001;
+    public static final int HEXA_XUANSHAN_ARTS_TIAN_3 = 175141002;
+    public static final int HEXA_XUANSHAN_ARTS_DI = 175141003;
+    public static final int HEXA_XUANSHAN_ARTS_DI_2 = 175141004;
+    public static final int HEXA_XUANSHAN_ARTS_DI_3 = 175141005;
+    public static final int HEXA_DIVINE_ART_HOWLING_STORM = 175141006;
+    public static final int HEXA_DIVINE_ART_HOWLING_STORM_2 = 175141007;
+    public static final int HEXA_XUANSHAN_ARTS_TIAN_4 = 175141008;
+    public static final int HEXA_XUANSHAN_ARTS_DI_4 = 175141009;
+    public static final int HEXA_DIVINE_ART_ERUPTING_FLAME = 175141010;
+    public static final int HEXA_DIVINE_ART_RIGHTEOUS_THUNDER = 175141011;
+    public static final int HEXA_DIVINE_ART_SWIRLING_TIDE = 175141012;
+    public static final int HEXA_DIVINE_ART_SWIRLING_TIDE_2 = 175141013;
+    public static final int HEXA_SOUL_ART_BLACK_WIND = 175141014;
+    public static final int HEXA_DIVINE_ART_TEARING_WIND = 175141015;
+    public static final int HEXA_SECRET_ART_QI_PROJECTION = 175141016;
+    public static final int SOUL_ART_JIANGHU_DRAGON = 175141500; // Origin
+
+    private static final int HEIR_OF_THE_DIVINE_MAX_STACK = 5; // Skill.wz 175120016 common/y
+
     // EFFECT 106:
     // 175120016 - Heir of the Divine => 01 01 00 => khi dùng 175001003 - Divine Art: Erupting Flame
     // 175120016 - Heir of the Divine => 01 01 00 => khi dùng 175111001 - Divine Art: Righteous Thunder
@@ -160,12 +182,14 @@ public class MoXuan extends Job {
         handleSpecialEffect(skillID);
         switch (skillID) {
             case DIVINE_ART_SWIRLING_TIDE:
+            case HEXA_DIVINE_ART_SWIRLING_TIDE:
                 o1.nOption = 10;
                 o1.rOption = skillID;
                 o1.tOption = 5;
                 tsm.sendStat(MukHyun_SEON_PUNG_GAG, o1);
                 break;
             case DIVINE_ART_SWIRLING_TIDE_2:
+            case HEXA_DIVINE_ART_SWIRLING_TIDE_2:
                 o1.nOption = 2010; // 10010
                 o1.rOption = skillID;
                 o1.tOption = 5;
@@ -173,6 +197,7 @@ public class MoXuan extends Job {
                 break;
             case SECRET_ART_QI_DISRUPTION:
             case SOUL_ART_BLACK_WIND:
+            case HEXA_SOUL_ART_BLACK_WIND:
             case SOUL_ART_BENEATH_HEAVEN:
                 o1.nValue = 1;
                 o1.nReason = skillID;
@@ -181,6 +206,7 @@ public class MoXuan extends Job {
                 tsm.sendStat(IndieNotDamaged, o1);
                 break;
             case DIVINE_ART_HOWLING_STROM_ATTACK:
+            case HEXA_DIVINE_ART_HOWLING_STORM:
                 o1.nValue = 1;
                 o1.nReason = skillID;
                 o1.tTerm = 4;
@@ -200,6 +226,10 @@ public class MoXuan extends Job {
             case XUANSHAN_ARTS_TIAN:
             case XUANSHAN_STRIKE_TIAN:
             case XUANSHAN_CROSS_TIAN:
+            case HEXA_XUANSHAN_ARTS_TIAN:
+            case HEXA_XUANSHAN_ARTS_TIAN_2:
+            case HEXA_XUANSHAN_ARTS_TIAN_3:
+            case HEXA_XUANSHAN_ARTS_TIAN_4:
                 if (this.godPower.get() == 110) {
                     this.godPower.set(120);
                 } else {
@@ -210,6 +240,10 @@ public class MoXuan extends Job {
             case XUANSHAN_ARTS_DI:
             case XUANSHAN_STRIKE_DI:
             case XUANSHAN_CROSS_DI:
+            case HEXA_XUANSHAN_ARTS_DI:
+            case HEXA_XUANSHAN_ARTS_DI_2:
+            case HEXA_XUANSHAN_ARTS_DI_3:
+            case HEXA_XUANSHAN_ARTS_DI_4:
                 if (this.godPower.get() == 210) {
                     this.godPower.set(220);
                 } else {
@@ -219,6 +253,8 @@ public class MoXuan extends Job {
                 break;
             case DIVINE_ART_RIGHTEOUS_THUNDER:
             case DIVINE_ART_ERUPTING_FLAME:
+            case HEXA_DIVINE_ART_RIGHTEOUS_THUNDER:
+            case HEXA_DIVINE_ART_ERUPTING_FLAME:
                 chr.write(UserPacket.effect(Effect.sendMoXuanEff(1, 1, 0, 0)));
                 this.powerType.set(2);
                 this.godPower.set(1);
@@ -226,6 +262,7 @@ public class MoXuan extends Job {
                 stack = true;
                 break;
             case DIVINE_ART_TEARING_WIND:
+            case HEXA_DIVINE_ART_TEARING_WIND:
                 chr.write(UserPacket.effect(Effect.sendMoXuanEff(2, 1, 0, 0)));
                 this.powerType.set(2);
                 this.godPower.set(2);
@@ -233,19 +270,22 @@ public class MoXuan extends Job {
                 stack = true;
                 break;
             case DIVINE_ART_SWIRLING_TIDE:
+            case HEXA_DIVINE_ART_SWIRLING_TIDE:
                 chr.write(UserPacket.effect(Effect.sendMoXuanEff(2, 1, 1, 0)));
                 this.powerType.set(2);
                 this.godPower.set(0);
                 chr.write(WvsContext.sendMoXuanStack(this.powerType.get(), this.godPower.get()));
                 stack = true;
                 break;
-            case (DIVINE_ART_SWIRLING_TIDE + 1):
+            case DIVINE_ART_SWIRLING_TIDE_2:
+            case HEXA_DIVINE_ART_SWIRLING_TIDE_2:
                 this.powerType.set(1000);
                 this.godPower.set(0);
                 chr.write(WvsContext.sendMoXuanStack(this.powerType.get(), this.godPower.get()));
                 stack = true;
                 break;
             case DIVINE_ART_HOWLING_STROM_ATTACK:
+            case HEXA_DIVINE_ART_HOWLING_STORM:
                 chr.write(UserPacket.effect(Effect.sendMoXuanEff(1, 2, Util.getRandom(0, 1), 0)));
                 this.powerType.set(2);
                 this.godPower.set(1);
@@ -259,7 +299,9 @@ public class MoXuan extends Job {
         if (stack && chr.hasSkill(MoXuan.HEIR_OF_THE_DIVINE)) {
             TemporaryStatManager tsm = chr.getTemporaryStatManager();
             Option o1 = new Option();
-            o1.nOption = tsm.hasStat(MukHyunDivine) ? (int) Math.max(tsm.getTotalNOptionOfStat(MukHyunDivine) + 1, 5) : 1;
+            // Heir of the Divine stacks up to 5 (was Math.max which forced 5 stacks after the first hit)
+            o1.nOption = tsm.hasStat(MukHyunDivine)
+                    ? (int) Math.min(tsm.getTotalNOptionOfStat(MukHyunDivine) + 1, HEIR_OF_THE_DIVINE_MAX_STACK) : 1;
             o1.rOption = MoXuan.HEIR_OF_THE_DIVINE;
             o1.tOption = 60;
             tsm.sendStat(MukHyunDivine, o1);
@@ -301,10 +343,13 @@ public class MoXuan extends Job {
                 tsm.sendStat(MukHyun_HO_SIN_GANG_GI, o1);
                 break;
             case SECRET_ART_QI_PROJECTION:
+            case HEXA_SECRET_ART_QI_PROJECTION:
                 if (tsm.hasStatBySkillId(skillID)) {
                     tsm.removeStatsBySkill(skillID);
                 } else {
                     tsm.removeStatsBySkill(SOUL_ART_THE_CONQUERED_SELF);
+                    // normal and HEXA Qi Projection are the same toggle - never keep both active
+                    tsm.removeStatsBySkill(skillID == SECRET_ART_QI_PROJECTION ? HEXA_SECRET_ART_QI_PROJECTION : SECRET_ART_QI_PROJECTION);
                     o1.nValue = 132160; // min 132140
                     o1.nReason = skillID;
                     tsm.sendStat(IndiePeriodicalSkillActivation, o1);
@@ -315,6 +360,7 @@ public class MoXuan extends Job {
                     tsm.removeStatsBySkill(skillID);
                 } else {
                     tsm.removeStatsBySkill(SECRET_ART_QI_PROJECTION);
+                    tsm.removeStatsBySkill(HEXA_SECRET_ART_QI_PROJECTION);
                     o1.nValue = 132160; // min 132140
                     o1.nReason = skillID;
                     tsm.sendStat(IndiePeriodicalSkillActivation, o1);
@@ -351,26 +397,37 @@ public class MoXuan extends Job {
         updateVSkillStackBuff(chr, count);
     }
 
-    private void awaken() {
+    private void awaken(long now) {
         if (!chr.hasSkill(AWAKEN)) {
             return;
         }
         SkillInfo si = SkillData.getSkillInfoById(AWAKEN);
-        if (si != null) {
-            int slv = chr.getSkillLevel(AWAKEN);
-            if (chr.getHP() < chr.getMaxHP()) {
-                int healAmount = (int) (chr.getMaxHP() * si.getValue(x, slv) / 100);
-                chr.heal(healAmount);
-            }
+        if (si == null) {
+            return;
+        }
+        int slv = chr.getSkillLevel(AWAKEN);
+        // Awaken: "Restores #x% of Max HP/MP every #w sec, even in combat" (Skill.wz 175000006)
+        long interval = Math.max(1, si.getValue(w, slv)) * 1000L;
+        if (this.awaken != 0 && now - this.awaken < interval) {
+            return;
+        }
+        this.awaken = now;
+        int healR = si.getValue(x, slv);
+        if (healR <= 0) {
+            return;
+        }
+        if (chr.getHP() > 0 && chr.getHP() < chr.getMaxHP()) {
+            chr.heal((int) (chr.getMaxHP() * healR / 100L));
+        }
+        if (chr.getHP() > 0 && chr.getMP() < chr.getMaxMP()) {
+            chr.healMP((int) (chr.getMaxMP() * healR / 100L));
         }
     }
 
     @Override
     public void update(long now) {
         super.update(now);
-        if (this.awaken == 0 || now - this.awaken >= 3000L) {
-            awaken();
-        }
+        awaken(now);
     }
 
     @Override
@@ -542,7 +599,9 @@ public class MoXuan extends Job {
             sm.giveAndEquip(1352862);
         }
 
-        if (chr.getJob() == JobConstants.JobEnum.MOXUAN_4.getJobId() && !chr.hasSkill(175121000)) {
+        // 175121003 (Divine Art: Howling Storm) is a real 4th job skill; 175121000 does not exist in Skill.wz,
+        // which made maxSkills() run on every login.
+        if (chr.getJob() == JobConstants.JobEnum.MOXUAN_4.getJobId() && !chr.hasSkill(DIVINE_ART_HOWLING_STROM_ATTACK)) {
             chr.maxSkills();
         }
 

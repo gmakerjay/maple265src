@@ -121,6 +121,7 @@ public class Zero extends Job {
     public static final int HEXA_SPIN_DRIVER = 101141017;
     public static final int HEXA_ROLLING_CROSS = 101141014;
     public static final int HEXA_FLASH_ASSAULT = 101141023;
+    public static final int HEXA_THROWING_WEAPON = 101141022; // summon (Skill.wz 10114 has <summon>)
     public static final int HEXA_FLASH_CUT = 101141021;
     public static final int HEXA_MOON_STRIKE = 101141029;
     public static final int HEXA_RISING_SLASH = 101141026;
@@ -743,6 +744,7 @@ public class Zero extends Job {
                 break;
             case THROWING_WEAPON:
             case ADVANCED_THROWING_WEAPON:
+            case HEXA_THROWING_WEAPON:
                 Summon summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
                 summon.setFlyMob(true);
                 summon.setMoveAbility(MoveAbility.FixVMove);
