@@ -414,7 +414,7 @@ public class HexaCore {
                                             String dataInfoValue = XMLApi.getNamedAttribute(mainStatNode, "value");
                                             switch (dataInfoName) {
                                                 case "maxLevel":
-                                                    hexaStatInfo.stats.getLeft().maxLevel = Integer.parseInt(dataInfoValue);
+                                                    hexaStatInfo.stats.getRight().maxLevel = Integer.parseInt(dataInfoValue);
                                                     break;
                                                 case "type":
                                                     Map<Integer, List<Tuple<HexaStatType, Integer>>> typeValues = new HashMap<>();

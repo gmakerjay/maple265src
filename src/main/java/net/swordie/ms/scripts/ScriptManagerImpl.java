@@ -4374,7 +4374,6 @@ public class ScriptManagerImpl implements ScriptManager {
             return;
         }
         List<MatrixCore> cores = new ArrayList<>();
-        quantity = MatrixConstants.SLOT_MAX - currentQuantity;
         for (int i = 0; i < quantity; i++) {
             int coreID = 0, skillID1 = 0, skillID2 = 0, skillID3 = 0;
             List<VCoreData> coreData = new LinkedList<>();
@@ -4389,31 +4388,19 @@ public class ScriptManagerImpl implements ScriptManager {
                 coreData.addAll(VCore.getSpecialNodes());
                 type = 3;
             }
-            VCoreData vCoreData = null;
-            if (Randomizer.isSuccess(GameConstants.JOB_CORE_CHANCE) && type != 3) {
-                List<VCoreData> jobVCoreData = new ArrayList<>();
-                for (VCoreData v : coreData) {
-                    if (Short.parseShort(v.getJobs().get(0)) == chr.getJob()) {
-                        jobVCoreData.add(v);
-                    }
-                }
-                vCoreData = jobVCoreData.get(Randomizer.nextInt(jobVCoreData.size()));
-            } else {
-                vCoreData = coreData.get(Randomizer.nextInt(coreData.size()));
+            if (coreData.isEmpty()) {
+                continue;
             }
+            VCoreData vCoreData = pickNodeStoneCore(coreData, Randomizer.isSuccess(GameConstants.JOB_CORE_CHANCE) && type != 3);
             coreID = vCoreData.getCoreID();
-            if (type != 3) {
+            if (type != 3 && !vCoreData.getConnectSkills().isEmpty()) {
                 skillID1 = vCoreData.getConnectSkills().get(0);
             }
             switch (vCoreData.getType()) {
                 case VCore.BOOST:
-                    short jobID = Short.parseShort(vCoreData.getJobs().get(0));
-                    List<Integer> boostSkills = VCore.getBoostSkillByJobID(jobID);
-                    boostSkills.remove((Integer) skillID1);
-                    skillID2 = boostSkills.get(Randomizer.nextInt(boostSkills.size()));
-                    boostSkills.remove((Integer) skillID2);
-                    skillID3 = boostSkills.get(Randomizer.nextInt(boostSkills.size()));
-                    boostSkills.remove((Integer) skillID3);
+                    int[] secondarySkills = rollBoostSecondarySkills(vCoreData, skillID1);
+                    skillID2 = secondarySkills[0];
+                    skillID3 = secondarySkills[1];
                     break;
                 case VCore.SKILL:
                     break;
@@ -4430,7 +4417,64 @@ public class ScriptManagerImpl implements ScriptManager {
             chr.getMatrixCore().add(add);
         }
         chr.write(WvsContext.updateVMatrix(chr, false, 0, 0));
-        chr.consumeItem(itemID, quantity);
+        chr.consumeItem(itemID, cores.size());
+    }
+
+    /**
+     * Returns the given nodes that belong to the character's job (job list entry parsed safely).
+     */
+    private List<VCoreData> filterNodesByCharJob(List<VCoreData> coreData) {
+        List<VCoreData> jobVCoreData = new ArrayList<>();
+        for (VCoreData v : coreData) {
+            if (v == null || v.getJobs() == null || v.getJobs().isEmpty()) {
+                continue;
+            }
+            try {
+                if (Short.parseShort(v.getJobs().get(0)) == chr.getJob()) {
+                    jobVCoreData.add(v);
+                }
+            } catch (NumberFormatException ignored) {
+                // class/all/none nodes
+            }
+        }
+        return jobVCoreData;
+    }
+
+    /**
+     * Picks a random node from the (non empty) list, preferring the character's job nodes if requested and available.
+     */
+    private VCoreData pickNodeStoneCore(List<VCoreData> coreData, boolean preferJob) {
+        if (preferJob) {
+            List<VCoreData> jobVCoreData = filterNodesByCharJob(coreData);
+            if (!jobVCoreData.isEmpty()) {
+                return jobVCoreData.get(Randomizer.nextInt(jobVCoreData.size()));
+            }
+        }
+        return coreData.get(Randomizer.nextInt(coreData.size()));
+    }
+
+    /**
+     * Rolls the 2 secondary skills of a boost node (different from each other and from the main skill).
+     * Returns {0, 0} if the job doesn't have enough boost skills.
+     */
+    private int[] rollBoostSecondarySkills(VCoreData vCoreData, int skillID1) {
+        int[] result = new int[2];
+        if (vCoreData.getJobs() == null || vCoreData.getJobs().isEmpty()) {
+            return result;
+        }
+        List<Integer> boostSkills;
+        try {
+            boostSkills = new ArrayList<>(VCore.getBoostSkillByJobID(Short.parseShort(vCoreData.getJobs().get(0))));
+        } catch (NumberFormatException e) {
+            return result;
+        }
+        boostSkills.remove((Integer) skillID1);
+        if (boostSkills.size() < 2) {
+            return result;
+        }
+        result[0] = boostSkills.remove(Randomizer.nextInt(boostSkills.size()));
+        result[1] = boostSkills.remove(Randomizer.nextInt(boostSkills.size()));
+        return result;
     }
 
     public boolean openNodeStonesInBulk(int kind, int itemID, int quantity) {
@@ -4503,11 +4547,10 @@ public class ScriptManagerImpl implements ScriptManager {
                     if (boostSkills == null || boostSkills.size() < 3) break;
 
                     int nSize = boostSkills.size();
-                    int a, b, c;
+                    int b, c;
 
-                    do { a = boostSkills.get(Randomizer.nextInt(nSize)); } while (a == skillID1);
-                    do { b = boostSkills.get(Randomizer.nextInt(nSize)); } while (b == skillID1 || b == a);
-                    do { c = boostSkills.get(Randomizer.nextInt(nSize)); } while (c == skillID1 || c == a || c == b);
+                    do { b = boostSkills.get(Randomizer.nextInt(nSize)); } while (b == skillID1);
+                    do { c = boostSkills.get(Randomizer.nextInt(nSize)); } while (c == skillID1 || c == b);
 
                     skillID2 = b;
                     skillID3 = c;
@@ -4548,31 +4591,19 @@ public class ScriptManagerImpl implements ScriptManager {
                 coreData.addAll(VCore.getSpecialNodes());
                 type = 3;
             }
-            VCoreData vCoreData = null;
-            if (Randomizer.isSuccess(GameConstants.JOB_CORE_CHANCE) && type != 3) {
-                List<VCoreData> jobVCoreData = new ArrayList<>();
-                for (VCoreData v : coreData) {
-                    if (Short.parseShort(v.getJobs().get(0)) == chr.getJob()) {
-                        jobVCoreData.add(v);
-                    }
-                }
-                vCoreData = jobVCoreData.get(Randomizer.nextInt(jobVCoreData.size()));
-            } else {
-                vCoreData = coreData.get(Randomizer.nextInt(coreData.size()));
+            if (coreData.isEmpty()) {
+                return false;
             }
+            VCoreData vCoreData = pickNodeStoneCore(coreData, Randomizer.isSuccess(GameConstants.JOB_CORE_CHANCE) && type != 3);
             coreID = vCoreData.getCoreID();
-            if (type != 3) {
+            if (type != 3 && !vCoreData.getConnectSkills().isEmpty()) {
                 skillID1 = vCoreData.getConnectSkills().get(0);
             }
             switch (vCoreData.getType()) {
                 case VCore.BOOST:
-                    short jobID = Short.parseShort(vCoreData.getJobs().get(0));
-                    List<Integer> boostSkills = VCore.getBoostSkillByJobID(jobID);
-                    boostSkills.remove((Integer) skillID1);
-                    skillID2 = boostSkills.get(Randomizer.nextInt(boostSkills.size()));
-                    boostSkills.remove((Integer) skillID2);
-                    skillID3 = boostSkills.get(Randomizer.nextInt(boostSkills.size()));
-                    boostSkills.remove((Integer) skillID3);
+                    int[] secondarySkills = rollBoostSecondarySkills(vCoreData, skillID1);
+                    skillID2 = secondarySkills[0];
+                    skillID3 = secondarySkills[1];
                     break;
                 case VCore.SKILL:
                     break;
@@ -4595,15 +4626,12 @@ public class ScriptManagerImpl implements ScriptManager {
         int currentQuantity = chr.getInactiveMatrixCore().size();
         if (currentQuantity <= MatrixConstants.SLOT_MAX) {
             int coreID = 0, skillID1 = 0, skillID2 = 0, skillID3 = 0;
-            List<VCoreData> coreData = new LinkedList<>(VCore.getJobNodes());
-            List<VCoreData> jobVCoreData = new ArrayList<>();
-            for (VCoreData v : coreData) {
-                if (Short.parseShort(v.getJobs().get(0)) == chr.getJob()) {
-                    jobVCoreData.add(v);
-                }
+            List<VCoreData> jobVCoreData = filterNodesByCharJob(VCore.getJobNodes());
+            if (jobVCoreData.isEmpty()) {
+                return false;
             }
             VCoreData vCoreData = jobVCoreData.get(Randomizer.nextInt(jobVCoreData.size()));
-            if (vCoreData != null) {
+            if (vCoreData != null && !vCoreData.getConnectSkills().isEmpty()) {
                 coreID = vCoreData.getCoreID();
                 skillID1 = vCoreData.getConnectSkills().get(0);
                 MatrixCore core = new MatrixCore(chr.getId(), coreID, skillID1, skillID2, skillID3);
@@ -4690,7 +4718,7 @@ public class ScriptManagerImpl implements ScriptManager {
         if (currentQuantity <= MatrixConstants.SLOT_MAX) {
             VCoreData vCoreData = VCore.getCore(coreID);
             if (vCoreData != null) {
-                skillID1 = vCoreData.getConnectSkills().get(0);
+                skillID1 = vCoreData.getConnectSkills().isEmpty() ? 0 : vCoreData.getConnectSkills().get(0);
                 MatrixCore core = new MatrixCore(chr.getId(), coreID, skillID1, 0, 0);
                 chr.addMatrixCore(core);
                 core.saveToSQL();

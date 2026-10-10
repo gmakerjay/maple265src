@@ -2,7 +2,10 @@ package net.swordie.ms.client.character.skills.matrix;
 
 import net.swordie.ms.connection.OutPacket;
 import net.swordie.ms.connection.hikariCP.DatabaseManager;
+import net.swordie.ms.constants.MatrixConstants;
 import net.swordie.ms.enums.MatrixStateType;
+import net.swordie.ms.loaders.Etc.VCore.VCore;
+import net.swordie.ms.loaders.Etc.VCore.VCoreData;
 import net.swordie.ms.util.DataPrinter;
 import net.swordie.ms.util.FileTime;
 
@@ -172,7 +175,8 @@ public class MatrixCore implements Serializable {
         this.skillID1 = skillID1;
         this.skillID2 = skillID2;
         this.skillID3 = skillID3;
-        this.maxLevel = 25;
+        VCoreData coreData = VCore.getCore(coreID);
+        this.maxLevel = coreData != null ? VCore.getMaxLevel(coreData.getType()) : MatrixConstants.GRADE_MAX;
         this.experience = 0;
     }
 
@@ -215,7 +219,7 @@ public class MatrixCore implements Serializable {
     }
 
     public boolean isActive() {
-        return slot != -1;
+        return slot >= 0 && state != MatrixStateType.DISASSEMBLED;
     }
 
     public int getCoreID() {

@@ -2080,6 +2080,45 @@ public class UserHandler {
         }
     }
 
+    private static final int HEXA_SKILL_MAX_LEVEL = 30;
+    private static final int HEXA_STAT_LINE_MAX_LEVEL = 10;
+
+    /**
+     * Returns the HEXA core type (1 = Skill/Origin, 2 = Mastery, 3 = Boost, 4 = Common) of a core id,
+     * also mapping the legacy Sia Astelle Erda Link ids. Returns 0 if the id is unknown.
+     */
+    private static int getHexaCoreType(int coreID) {
+        int coreType = coreID / 10_000_000;
+        if (coreType >= 1 && coreType <= 4) {
+            return coreType;
+        }
+        switch (coreID) {
+            case 10000:
+                return 1;
+            case 500:
+                return 2;
+            case 101: case 102: case 103: case 104: case 105: case 106: case 107:
+                return 3;
+            case 100:
+                return 4;
+        }
+        return 0;
+    }
+
+    private static HexaMatrixConstants.HexaMatrixSkill getHexaSkillTypeByCoreType(int coreType) {
+        switch (coreType) {
+            case 1:
+                return HexaMatrixConstants.HexaMatrixSkill.SKILL_CORE;
+            case 2:
+                return HexaMatrixConstants.HexaMatrixSkill.MASTERY_CORE;
+            case 3:
+                return HexaMatrixConstants.HexaMatrixSkill.BOOST_CORE;
+            case 4:
+                return HexaMatrixConstants.HexaMatrixSkill.COMMON_CORE;
+        }
+        return null;
+    }
+
     @Handler(op = InHeader.HEXA_MATRIX_OPREATION)
     public static void handleHexaMatrixOperationRequest(Char chr, InPacket inPacket) {
         ScriptManagerImpl sm = chr.getScriptManager();
@@ -2087,43 +2126,27 @@ public class UserHandler {
         switch (type) {
             case 0: {
                 int coreID = inPacket.decodeInt();
-                int coreType = coreID / 10000000;
                 int job = chr.getJob();
-                HexaCore.HexaSkillCoreData coreData = HexaCore.getSkillCoreData(coreID);
-                if (coreData == null) {
-                    if (JobConstants.isSiaAstelle((short) job)) {
-                        List<Integer> siaSkills = Char.getSiaErdaLinkSkills(coreID);
-                        if (!siaSkills.isEmpty()) {
-                            int erdaCost = 1;
-                            int erdaFragmentCost = 100;
-                            int currentSolErdas = chr.getSolErda();
-                            long currentSolErdaFragments = 0;
-                            for (int id : HexaMatrixConstants.solErdaFragments) {
-                                currentSolErdaFragments += sm.getQuantityOfItem(id);
-                            }
-                            if (erdaCost > currentSolErdas || erdaFragmentCost > currentSolErdaFragments) {
-                                chr.chatPopup(String.format("Bạn không đủ Sol Erda / Sol Erda Fragments để mở khoá Erda Link này. (Yêu cầu: %d Sol Erda, %d Fragments)", erdaCost, erdaFragmentCost));
-                                chr.dispose();
-                                return;
-                            }
-                            int need = erdaFragmentCost;
-                            for (int id : HexaMatrixConstants.solErdaFragments) {
-                                int take = Math.min(sm.getQuantityOfItem(id), need);
-                                if (take > 0) chr.consumeItem(id, take);
-                                if ((need -= take) == 0) break;
-                            }
-                            chr.addSolErda(-erdaCost);
-                            chr.setHexaSkill(coreID, 1);
-                            chr.write(WvsContext.hexaSkillsUpdate(chr));
-                            chr.write(WvsContext.hexaMessage(type, 0, coreID, 0));
-                            break;
-                        }
-                    }
-                    chr.chatPopup("Lỗi không xác định.");
+                if (chr.getLevel() < 260) {
+                    chr.chatPopup("Bạn cần đạt cấp 260 để sử dụng HEXA Matrix.");
                     chr.dispose();
                     return;
                 }
-                if (!HexaCore.hasSkillCoreByJob(coreType, coreID, job)) {
+                if (chr.getHexaSkillLevel(coreID) > 0) {
+                    chr.chatPopup("Kỹ năng HEXA này đã được mở khoá.");
+                    chr.dispose();
+                    return;
+                }
+                // Legacy Sia Astelle Erda Link ids are mapped to their real core type so they pay the normal cost.
+                int coreType = getHexaCoreType(coreID);
+                HexaCore.HexaSkillCoreData coreData = HexaCore.getSkillCoreData(coreID);
+                if (coreData == null) {
+                    if (coreType == 0 || !JobConstants.isSiaAstelle((short) job) || Char.getSiaErdaLinkSkills(coreID).isEmpty()) {
+                        chr.chatPopup("Lỗi không xác định.");
+                        chr.dispose();
+                        return;
+                    }
+                } else if (!HexaCore.hasSkillCoreByJob(coreID / 10000000, coreID, job)) {
                     chr.chatPopup(String.format("Nghề của bạn không thể mở khoá kỹ năng : %s (%d).", coreData.getName(), coreID));
                     chr.dispose();
                     return;
@@ -2196,45 +2219,30 @@ public class UserHandler {
                 int solErdaReq = inPacket.decodeInt();
                 int solErdaFragmentReq = inPacket.decodeInt();
                 int coreLevel = chr.getHexaSkillLevel(coreID);
-                if (coreLevel != currentLevel || coreLevel >= nextLevel) {
+                int coreType = getHexaCoreType(coreID);
+                HexaMatrixConstants.HexaMatrixSkill skillType = getHexaSkillTypeByCoreType(coreType);
+                HexaCore.HexaSkillCoreData coreData = HexaCore.getSkillCoreData(coreID);
+                boolean validCore = skillType != null && (coreData != null
+                        ? HexaCore.hasSkillCoreByJob(coreID / 10_000_000, coreID, chr.getJob())
+                        : JobConstants.isSiaAstelle((short) chr.getJob()) && !Char.getSiaErdaLinkSkills(coreID).isEmpty());
+                if (!validCore) {
+                    chr.chatPopup("Lỗi không xác định.");
+                    chr.dispose();
+                    return;
+                }
+                int maxLevel = coreData != null && coreData.getMaxLevel() > 0
+                        ? Math.min(coreData.getMaxLevel(), HEXA_SKILL_MAX_LEVEL) : HEXA_SKILL_MAX_LEVEL;
+                // coreLevel must be >= 1 (core activated) - cost tables are indexed by level - 1
+                if (coreLevel < 1 || coreLevel != currentLevel || coreLevel >= nextLevel || nextLevel > maxLevel) {
                     chr.chatPopup("Dữ liệu nhân vật của bạn không đúng.");
                     chr.dispose();
                     return;
                 }
                 int erdaCost = 0;
                 int erdaFragmentCost = 0;
-                int coreType = coreID / 10_000_000;
                 for (int i = coreLevel; i < nextLevel; i++) {
-                    if (coreType == 1) {
-                        erdaCost += HexaMatrixConstants.getSolErdaCostToUpgrade(HexaMatrixConstants.HexaMatrixSkill.SKILL_CORE, i);
-                    } else if (coreType == 2) {
-                        erdaCost += HexaMatrixConstants.getSolErdaCostToUpgrade(HexaMatrixConstants.HexaMatrixSkill.MASTERY_CORE, i);
-                    } else if (coreType == 3) {
-                        erdaCost += HexaMatrixConstants.getSolErdaCostToUpgrade(HexaMatrixConstants.HexaMatrixSkill.BOOST_CORE, i);
-                    } else if (coreType == 4) {
-                        erdaCost += HexaMatrixConstants.getSolErdaCostToUpgrade(HexaMatrixConstants.HexaMatrixSkill.COMMON_CORE, i);
-                    } else if (JobConstants.isSiaAstelle(chr.getJob())) {
-                        erdaCost += (solErdaReq / Math.max(1, nextLevel - coreLevel));
-                    } else {
-                        chr.chatPopup("Lỗi không xác định.");
-                        chr.dispose();
-                        return;
-                    }
-                    if (coreType == 1) {
-                        erdaFragmentCost += HexaMatrixConstants.getSolErdaFragmentCostToUpgrade(HexaMatrixConstants.HexaMatrixSkill.SKILL_CORE, i);
-                    } else if (coreType == 2) {
-                        erdaFragmentCost += HexaMatrixConstants.getSolErdaFragmentCostToUpgrade(HexaMatrixConstants.HexaMatrixSkill.MASTERY_CORE, i);
-                    } else if (coreType == 3) {
-                        erdaFragmentCost += HexaMatrixConstants.getSolErdaFragmentCostToUpgrade(HexaMatrixConstants.HexaMatrixSkill.BOOST_CORE, i);
-                    } else if (coreType == 4) {
-                        erdaFragmentCost += HexaMatrixConstants.getSolErdaFragmentCostToUpgrade(HexaMatrixConstants.HexaMatrixSkill.COMMON_CORE, i);
-                    } else if (JobConstants.isSiaAstelle(chr.getJob())) {
-                        erdaFragmentCost += (solErdaFragmentReq / Math.max(1, nextLevel - coreLevel));
-                    } else {
-                        chr.chatPopup("Lỗi không xác định.");
-                        chr.dispose();
-                        return;
-                    }
+                    erdaCost += HexaMatrixConstants.getSolErdaCostToUpgrade(skillType, i);
+                    erdaFragmentCost += HexaMatrixConstants.getSolErdaFragmentCostToUpgrade(skillType, i);
                 }
                 if (erdaCost != solErdaReq || erdaFragmentCost != solErdaFragmentReq) {
                     chr.chatPopup("Dữ liệu nhân vật của bạn không đúng.");
@@ -2288,8 +2296,30 @@ public class UserHandler {
                     chr.dispose();
                     return;
                 }
+                if (chr.getHexaStatByCoreID(coreID) != null) {
+                    chr.chatPopup("Hexa Stat này đã được mở khoá.");
+                    chr.dispose();
+                    return;
+                }
+                HexaCore.HexaStatType newType0 = HexaCore.HexaStatType.getValByType(stat0);
+                HexaCore.HexaStatType newType1 = HexaCore.HexaStatType.getValByType(stat1);
+                HexaCore.HexaStatType newType2 = HexaCore.HexaStatType.getValByType(stat2);
+                if (newType0 == null || newType1 == null || newType2 == null
+                        || newType0 == newType1 || newType0 == newType2 || newType1 == newType2) {
+                    chr.chatPopup("Dữ liệu nhân vật của bạn không đúng.");
+                    chr.dispose();
+                    return;
+                }
+                // Each Stat Node has its own unlock cost (I: 5/10, II: 10/200, III: 15/350)
                 int erdaCost = HexaMatrixConstants.getSolErdaCostToActivate(HexaMatrixConstants.HexaMatrixSkill.HEXA_STAT);
                 int erdaFragmentCost = HexaMatrixConstants.getSolErdaFragmentCostToActivate(HexaMatrixConstants.HexaMatrixSkill.HEXA_STAT);
+                for (HexaMatrixConstants.HexaStatCore statCore : HexaMatrixConstants.statCores) {
+                    if (statCore.id == coreID) {
+                        erdaCost = statCore.solErdaCostToUnlock;
+                        erdaFragmentCost = statCore.solErdaFragmentCostToUnlock;
+                        break;
+                    }
+                }
                 int currentSolErdas = chr.getSolErda();
                 long currentSolErdaFragments = 0;
                 for (int id : HexaMatrixConstants.solErdaFragments) {
@@ -2322,9 +2352,9 @@ public class UserHandler {
                     hexaStat = new HexaStat(coreID, stat);
                 }
                 hexaStat.setCharId(chr.getId());
-                hexaStat.getStats().put(0, new Tuple<>(HexaCore.HexaStatType.getValByType(stat0), 1));
-                hexaStat.getStats().put(1, new Tuple<>(HexaCore.HexaStatType.getValByType(stat1), 1));
-                hexaStat.getStats().put(2, new Tuple<>(HexaCore.HexaStatType.getValByType(stat2), 1));
+                hexaStat.getStats().put(0, new Tuple<>(newType0, 1));
+                hexaStat.getStats().put(1, new Tuple<>(newType1, 1));
+                hexaStat.getStats().put(2, new Tuple<>(newType2, 1));
                 hexaStat.saveToSQL();
                 chr.getHexaStats().put(stat, hexaStat);
                 if (!chr.hasSkill(500071000)) {
@@ -2355,7 +2385,8 @@ public class UserHandler {
                 int level0 = info0.getRight();
                 int level1 = info1.getRight();
                 int level2 = info2.getRight();
-                if (level0 + level1 + level2 >= coreData.getMaxLevel()) {
+                int statMaxLevel = coreData.getMaxLevel() > 0 ? coreData.getMaxLevel() : 20;
+                if (level0 + level1 + level2 >= statMaxLevel) {
                     chr.chatPopup("Cấp độ của các chỉ số HEXA đã đạt cấp tối đa.");
                     chr.dispose();
                     return;
@@ -2380,20 +2411,28 @@ public class UserHandler {
                 double random = new Random().nextDouble();
                 int result;
                 int oldLevel;
-                if (random < HexaMatrixConstants.getHexaStatWeight(level0) && level0 < 10) {
+                // Main stat succeeds with weight(mainLevel); otherwise one of the non-maxed additional stats is raised.
+                if (level0 < HEXA_STAT_LINE_MAX_LEVEL && random < HexaMatrixConstants.getHexaStatWeight(level0)) {
                     result = 0;
-                    oldLevel = level0;
-                } else if (random < HexaMatrixConstants.getHexaStatWeight(level1) && level1 < 10) {
-                    result = 1;
-                    oldLevel = level1;
                 } else {
-                    if (level2 >= 10) {
-                        result = 1;
-                        oldLevel = level1;
-                    } else {
-                        result = 2;
-                        oldLevel = level2;
+                    List<Integer> candidates = new ArrayList<>();
+                    if (level1 < HEXA_STAT_LINE_MAX_LEVEL) {
+                        candidates.add(1);
                     }
+                    if (level2 < HEXA_STAT_LINE_MAX_LEVEL) {
+                        candidates.add(2);
+                    }
+                    if (candidates.isEmpty()) {
+                        result = 0;
+                    } else {
+                        result = candidates.get(new Random().nextInt(candidates.size()));
+                    }
+                }
+                oldLevel = result == 0 ? level0 : result == 1 ? level1 : level2;
+                if (oldLevel >= HEXA_STAT_LINE_MAX_LEVEL) {
+                    chr.chatPopup("Cấp độ của các chỉ số HEXA đã đạt cấp tối đa.");
+                    chr.dispose();
+                    return;
                 }
                 hexaStat.getStats().get(result).setRight(oldLevel + 1);
                 int need = erdaFragmentCost;
@@ -2454,6 +2493,11 @@ public class UserHandler {
             }
             case 7: {
                 long cost = inPacket.decodeLong();
+                if (cost < 0) {
+                    chr.chatPopup("Dữ liệu nhân vật của bạn không đúng.");
+                    chr.dispose();
+                    return;
+                }
                 if (chr.getMoney() < cost) {
                     chr.chatPopup(String.format("Bạn không đủ tiền meso để thực hiện hành động này. (Yêu cầu: %s/%s)", Util.getNumberFormat(chr.getMoney()), Util.getNumberFormat(cost)));
                     chr.dispose();
@@ -2462,26 +2506,32 @@ public class UserHandler {
                 int size = inPacket.decodeInt();
                 for (int i = 0; i < size; i++) {
                     int coreID = inPacket.decodeInt();
-                    int stat = HexaMatrixConstants.getHexaStatByCoreID(coreID);
-                    HexaStat hexaStat = chr.getHexaStats().get(stat);
+                    // always read the 3 stat types so the packet stays in sync, even when the core is skipped
+                    int statType0 = inPacket.decodeInt();
+                    int statType1 = inPacket.decodeInt();
+                    int statType2 = inPacket.decodeInt();
+                    HexaStat hexaStat = chr.getHexaStatByCoreID(coreID);
                     if (hexaStat == null) {
                         continue;
                     }
-                    int statType0 = inPacket.decodeInt();
+                    Tuple<HexaCore.HexaStatType, Integer> line0 = hexaStat.getStats().get(0);
+                    Tuple<HexaCore.HexaStatType, Integer> line1 = hexaStat.getStats().get(1);
+                    Tuple<HexaCore.HexaStatType, Integer> line2 = hexaStat.getStats().get(2);
+                    if (line0 == null || line1 == null || line2 == null) {
+                        continue;
+                    }
                     HexaCore.HexaStatType type0 = HexaCore.HexaStatType.getValByType(statType0);
-                    if (type0 != null) {
-                        hexaStat.getStats().get(0).setLeft(type0);
-                    }
-                    int statType1 = inPacket.decodeInt();
                     HexaCore.HexaStatType type1 = HexaCore.HexaStatType.getValByType(statType1);
-                    if (type1 != null) {
-                        hexaStat.getStats().get(1).setLeft(type1);
-                    }
-                    int statType2 = inPacket.decodeInt();
                     HexaCore.HexaStatType type2 = HexaCore.HexaStatType.getValByType(statType2);
-                    if (type2 != null) {
-                        hexaStat.getStats().get(0).setLeft(type2);
+                    HexaCore.HexaStatType final0 = type0 != null ? type0 : line0.getLeft();
+                    HexaCore.HexaStatType final1 = type1 != null ? type1 : line1.getLeft();
+                    HexaCore.HexaStatType final2 = type2 != null ? type2 : line2.getLeft();
+                    if (final0 == final1 || final0 == final2 || final1 == final2) {
+                        continue; // the 3 lines of a stat node must be different
                     }
+                    line0.setLeft(final0);
+                    line1.setLeft(final1);
+                    line2.setLeft(final2);
                     hexaStat.saveToSQL();
                 }
                 chr.deductMoney(cost);
@@ -2513,8 +2563,9 @@ public class UserHandler {
                     break;
                 }
             }
-            if (rewardPerOne <= 0) {
-                return; // item không hợp lệ
+            if (rewardPerOne <= 0 || erdaCost <= 0) {
+                chr.dispose();
+                return; // item không hợp lệ / số lượng không hợp lệ
             }
             int currentSolErdas = chr.getSolErda();
             if (erdaCost > currentSolErdas) {
@@ -2522,13 +2573,14 @@ public class UserHandler {
                 chr.dispose();
                 return;
             }
-            chr.addSolErda(-erdaCost);
             int rewardQty = rewardPerOne * erdaCost;
+            // check inventory space before taking the Sol Erda so nothing is lost on a full inventory
             if (!chr.canHold(itemID, rewardQty)) {
                 chr.chatPopup("Túi của bạn đã đầy.");
                 chr.dispose();
                 return;
             }
+            chr.addSolErda(-erdaCost);
             chr.addItemToInventory(itemID, rewardQty);
             chr.write(WvsContext.hexaSkillErdaConversion(1, erdaCost, itemID, rewardQty));
         }

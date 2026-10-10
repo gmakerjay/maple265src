@@ -41,6 +41,8 @@ public class QuestConstants {
 
     public static final int EQUIPPED_PRESET = 333335; // preset=%d
 
+    public static final int V_SKILL_NODE_REWARD = 333336; // custom: j<jobID>=1 when the free 5th job V nodes were given
+
     public static final int CRYSTAL_ALL = 501619; // count=180;time=20251102;max=180;type=2
     public static final int CRYSTAL_WEEKLY = 101990; // time=20251220;data=16200000=9210002;max=14
     public static final int CRYSTAL_MAX_ALL = 180; // 180

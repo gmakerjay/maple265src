@@ -3044,14 +3044,7 @@ public class Char {
 
         if (getLevel() >= 200) {
             initMatrixSlots();
-            for (int i = 0; i < MatrixConstants.MAX_NODE_SLOTS; i++) {
-                MatrixCore mc = getMatrixCoreByPosition(i);
-                if (mc != null && mc.getState().getVal() != MatrixStateType.DISASSEMBLED.getVal()) {
-                    if (mc.getState().getVal() == MatrixStateType.ACTIVE.getVal()) {
-                        MatrixHandler.setNodeSkill(this, mc, MatrixUpdateType.Activate);
-                    }
-                }
-            }
+            MatrixHandler.recalcMatrixSkills(this, null);
             write(WvsContext.updateVMatrix(this, true, MatrixUpdateType.Update.getVal(), 0));
             var itemID = hasQuest(1473) ? Integer.parseInt(getQRValueByKey(1473, "itemID")) : 0;
             if (itemID >= 2435734 && itemID <= 2435736) {
@@ -3614,7 +3607,7 @@ public class Char {
     public void addListSkill(List<Skill> skills) {
         List<Skill> visibleSkills = new ArrayList<>();
         for (Skill skill : skills) {
-            if (skill == null && !SkillConstants.isMakingSkill(skill.getSkillId())) {
+            if (skill == null) {
                 System.out.println("Unable to addListSkill since Skill is NULL.");
                 continue;
             }
@@ -3623,6 +3616,29 @@ public class Char {
             }
             if (!hasSkill(skill.getSkillId())) {
                 addSkill(skill);
+            }
+        }
+        if (!visibleSkills.isEmpty()) {
+            write(WvsContext.changeSkillRecordResult(visibleSkills, true, false, false));
+        }
+    }
+
+    /**
+     * Applies the given skills to this Char, updating the level of skills the Char already has
+     * (and removing them when the given level is 0), then sends a single skill record update.
+     * Unlike {@link #addListSkill(List)}, existing skills are always overwritten.
+     *
+     * @param skills the skills (with the wanted current/master level) to apply
+     */
+    public void applySkillList(List<Skill> skills) {
+        List<Skill> visibleSkills = new ArrayList<>();
+        for (Skill skill : skills) {
+            if (skill == null) {
+                continue;
+            }
+            addSkill(skill);
+            if (!SkillConstants.isSpecialInvisibleSkill(skill.getSkillId())) {
+                visibleSkills.add(skill);
             }
         }
         if (!visibleSkills.isEmpty()) {
@@ -9752,13 +9768,13 @@ public class Char {
                 continue;
             }
             Tuple<HexaCore.HexaStatType, Integer> info0 = hexaStat.getStats().get(0);
-            int stat0 = info0 == null ? -1 : info0.getLeft().ordinal();
+            int stat0 = info0 == null || info0.getLeft() == null ? -1 : info0.getLeft().ordinal();
             int level0 = info0 == null ? 0 : info0.getRight();
             Tuple<HexaCore.HexaStatType, Integer> info1 = hexaStat.getStats().get(1);
-            int stat1 = info1 == null ? -1 : info1.getLeft().ordinal();
+            int stat1 = info1 == null || info1.getLeft() == null ? -1 : info1.getLeft().ordinal();
             int level1 = info1 == null ? 0 : info1.getRight();
             Tuple<HexaCore.HexaStatType, Integer> info2 = hexaStat.getStats().get(2);
-            int stat2 = info2 == null ? -1 : info2.getLeft().ordinal();
+            int stat2 = info2 == null || info2.getLeft() == null ? -1 : info2.getLeft().ordinal();
             int level2 = info2 == null ? 0 : info2.getRight();
 
             outPacket.encodeInt(hexaStat.getCoreId());
@@ -9915,14 +9931,14 @@ public class Char {
                     Skill s = SkillData.getSkillDeepCopyById(sId);
                     if (s != null) {
                         s.setCharId(getId());
-                        s.setCurrentLevel(level);
+                        s.setCurrentLevel(Math.min(30, level));
                         s.setMasterLevel(30);
                         s.setMaxLevel(30);
-                        s.saveToSQL();
                         skills.add(s);
                     }
                 }
-                addListSkill(skills);
+                // applySkillList persists through addSkill (updates existing rows instead of inserting copies)
+                applySkillList(skills);
             }
             return;
         }
@@ -9953,11 +9969,11 @@ public class Char {
                 skill.setCurrentLevel(Math.min(maxLevel, level));
                 skill.setMasterLevel(maxLevel);
                 skill.setMaxLevel(maxLevel);
-                skill.saveToSQL();
                 skills.add(skill);
             }
         }
-        addListSkill(skills);
+        // applySkillList persists through addSkill (updates existing rows instead of inserting copies)
+        applySkillList(skills);
     }
 
     public int getHexaSkillLevel(int coreID) {

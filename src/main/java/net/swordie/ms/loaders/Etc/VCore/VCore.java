@@ -46,19 +46,23 @@ public class VCore {
     }
 
     public static boolean isSkillNode(int coreID) {
-        return getCore(coreID).getType() == SKILL;
+        VCoreData core = getCore(coreID);
+        return core != null && core.getType() == SKILL;
     }
 
     public static boolean isBoostNode(int coreID) {
-        return getCore(coreID).getType() == BOOST;
+        VCoreData core = getCore(coreID);
+        return core != null && core.getType() == BOOST;
     }
 
     public static boolean isSpecialNode(int coreID) {
-        return getCore(coreID).getType() == SPECIAL;
+        VCoreData core = getCore(coreID);
+        return core != null && core.getType() == SPECIAL;
     }
 
     public static boolean isExpNode(int coreID) {
-        return getCore(coreID).getType() == EXP;
+        VCoreData core = getCore(coreID);
+        return core != null && core.getType() == EXP;
     }
 
     public static int getMaxLevel(int type) {

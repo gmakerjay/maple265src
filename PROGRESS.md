@@ -1048,6 +1048,45 @@ MapleStory_Server_Runner/
 - `!mesos <จำนวน>`: เสกเงิน Meso
 - เมนู `[Starter Package]` ใน NPC Admin: รับ 1,000,000 Cash Points + 100,000 DP + Vac Pet ฟรี 1 ครั้งต่อบัญชี
 
+---
+
+### 19. Full Audit ระบบ V Matrix (5th Job) และ HEXA Matrix (6th Job) (10 ตุลาคม 2569)
+
+#### ✅ ส่วนที่ตรวจแล้วถูกต้อง (ไม่แก้)
+- ตารางค่า Sol Erda / Fragment ของ HEXA Skill Core (Origin/Mastery/Boost/Common) ใน `HexaMatrixConstants` ตรงกับ GMS
+- โครงสร้าง Loader `VCore.java` / `HexaCore.java` (ยกเว้นบั๊ก maxLevel ด้านล่าง), ฟังก์ชันเปิด Nodestone แบบ Bulk ส่วนใหญ่
+
+#### 🔷 HEXA Matrix
+- `HexaCore.load()`: ค่า `maxLevel` ของ Additional Stat ไปเขียนทับ Main Stat → แก้ให้เขียนลง `getRight()`
+- `UserHandler.handleHexaMatrixOperationRequest`:
+  - Case 0 (เปิด Core): เพิ่มเช็กเลเวล 260 และกันเปิดซ้ำ (เดิมเปิดซ้ำได้ → เลเวลรีเซ็ต + เสีย Erda), Sia legacy core คิดราคาตามประเภทจริง
+  - Case 1 (อัปเกรด): กัน `coreLevel = 0` (AIOOBE), กันเกิน Max Level 30, เช็กอาชีพ, **ปิดช่องโหว่ Sia ที่เชื่อราคาจากไคลเอนต์**
+  - Case 2 (เปิด Stat Node): ใช้ราคาแยกตาม Node I/II/III (5/10, 10/200, 15/350), กันเปิดซ้ำ, ตรวจ Stat Type ต้องไม่ว่างและไม่ซ้ำกัน
+  - Case 3 (Enhance Stat): แก้ลอจิกสุ่มผิด (เดิมใช้ weight ของบรรทัดรอง และดัน Additional เกิน 10 ได้)
+  - Case 7: แก้ `type2` เขียนผิด index 0 → 2, แก้ Packet desync เมื่อข้าม Core, กัน `cost` ติดลบ (เสก Meso)
+  - `handleErdaConversion`: กันจำนวนติดลบ (เสก Sol Erda) และเช็กช่องกระเป๋าก่อนหัก Erda
+- `Char.setHexaSkill`: เลิก `saveToSQL()` บน Deep Copy (สร้างแถวซ้ำใน DB ทุกครั้งที่อัป) และอัปเดตเลเวลสกิลฝั่งเซิร์ฟเวอร์จริงผ่าน `applySkillList()` ใหม่
+- `Char.encodeHexaStats`: กัน NPE เมื่อ Stat Type เป็น null; `Char.addListSkill`: แก้ NPE ใน null-guard
+
+#### 🔶 V Matrix (`MatrixHandler.java` เขียนใหม่ทั้งไฟล์)
+- ทุก Action ตรวจ index/null/state (เดิม IndexOutOfBounds/NPE ได้หลายจุด, `type` null)
+- **ปิดช่องโหว่:** Disassemble ซ้ำได้ Shard ไม่จำกัด, ใช้ Node ตัวเอง/ที่แยกแล้วเป็นวัตถุดิบ (EXP ไม่จำกัด), Craft จำนวนติดลบได้ Shard, Custom Boost ไม่หัก Shard, EnhanceSlot ไม่มีเพดาน
+- Enhance: จำกัด Max Level 25, ใช้ EXP Node เป็นวัตถุดิบได้ (ตาม GMS), Node ที่ล็อก/สวมอยู่ใช้เป็นวัตถุดิบไม่ได้, บันทึก DB ทันที
+- Craft: เช็ก Shard/ช่องเก็บ 500, Boost Node สุ่มสกิลรองแยกแต่ละชิ้น; Custom Boost ราคา 500 (WZ) และตรวจสกิลต้องอยู่ในลิสต์อาชีพ + ไม่ซ้ำ
+- ExpandSlot: แก้ราคา (AIOOBE เมื่อ slot > 18), ใช้ `REQ_LV_BY_MATRIX_SLOT_POS`, จำกัดล่วงหน้า 10 เลเวล, ต้องเปิดตามลำดับ, กันซื้อซ้ำ
+- Activate/Swap: ใช้ตำแหน่งจริงฝั่งเซิร์ฟเวอร์, Boost 2 อันห้ามมีสกิลหลักซ้ำ, Special Node สูงสุด 1 (`SPECIAL_SLOT_MAX`)
+- **ระบบคำนวณเลเวลสกิลใหม่ `recalcMatrixSkills()`**: รวมเลเวล Boost จากหลาย Node (สูงสุด 50 + Slot 10 = 60), V Skill สูงสุด 25 + 5 = 30, Special = 1; ถอด Node หนึ่งไม่ลบสกิลที่ Node อื่นยังให้อยู่
+- `MatrixCore`: `isActive()` ไม่นับ Node ที่แยกแล้ว, Max Level ตามประเภท (Special/EXP = 1); `VCore.isXNode()` กัน NPE
+- `Job.GiveVSkills`: มอบ V Node ฟรีครั้งเดียวต่ออาชีพ (QR custom `333336`) — เดิม @job ซ้ำได้ Node ฟรีไม่จำกัด; การสร้าง Slot ใช้ `initMatrixSlots()` (บันทึก DB)
+- `ScriptManagerImpl` (Nodestone): กัน `nextInt(0)`/parse crash, แก้บั๊ก `openNodeWithCustomValue` ที่สร้าง Node เต็มกระเป๋าจากหินชิ้นเดียว, แก้ลูปไม่สิ้นสุดใน Bulk Boost roll
+
+#### ⚠️ ข้อสังเกตที่ยังไม่แก้ (ไม่กระทบการทำงาน)
+- `HexaMatrixConstants.sixthJob*Core` / `linkedCoreSkill` ไม่ถูกใช้งาน (dead code)
+- ค่า HEXA Stat คำนวณฝั่ง Client ผ่านสกิล `500071000` (เซิร์ฟเวอร์ไม่ได้คำนวณดาเมจจาก Stat เอง)
+
+#### 📦 Build & Deploy
+- `BUILD SUCCESS` (Maven 3.9.15 + JDK 21), Deploy `maplestory.jar` (138,632,846 ไบต์) ไปยัง `v214 src\`, Root และ `Server263\`
+
 
 
 

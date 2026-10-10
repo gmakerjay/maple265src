@@ -2494,11 +2494,7 @@ public abstract class Job {
                 message += "Bạn đã đạt Cấp độ 200 và đã sẵn sàng cho #b[Thăng Cấp Nghề 5]#k!\r\n\r\n";
                 message += "Hoàn thành nhiệm vụ #r[Thăng Cấp Nghề] 5th Job: Call of The Erdas#k để mở khóa Thăng Cấp Nghề 5 của bạn!\r\n";
                 chr.write(UserLocal.addPopupSay(9010000, 6000, message, "FarmSE.img/boxResult"));
-                if (chr.getMatrixSlot().size() < MatrixConstants.MAX_NODE_SLOTS) {
-                    for (int i = chr.getMatrixSlot().size(); i < MatrixConstants.MAX_NODE_SLOTS; i++) {
-                        chr.getMatrixSlot().add(new MatrixSlot(chr.getId(), i));
-                    }
-                }
+                chr.initMatrixSlots();
                 GiveVSkills();
             }
             case 210 -> {
@@ -2965,11 +2961,7 @@ public abstract class Job {
                 short finalTarget = JobConstants.getTargetJobForLevel(chosen, level, subJob);
                 chr.setJob(finalTarget);
                 if (level >= 200) {
-                    if (chr.getMatrixSlot().size() < MatrixConstants.MAX_NODE_SLOTS) {
-                        for (int i = chr.getMatrixSlot().size(); i < MatrixConstants.MAX_NODE_SLOTS; i++) {
-                            chr.getMatrixSlot().add(new MatrixSlot(chr.getId(), i));
-                        }
-                    }
+                    chr.initMatrixSlots();
                     if (chr.getJobHandler() != null) {
                         chr.getJobHandler().GiveVSkills();
                     }
@@ -3004,11 +2996,7 @@ public abstract class Job {
                     }
                     chr.setJob(target);
                     if (level >= 200) {
-                        if (chr.getMatrixSlot().size() < MatrixConstants.MAX_NODE_SLOTS) {
-                            for (int i = chr.getMatrixSlot().size(); i < MatrixConstants.MAX_NODE_SLOTS; i++) {
-                                chr.getMatrixSlot().add(new MatrixSlot(chr.getId(), i));
-                            }
-                        }
+                        chr.initMatrixSlots();
                         if (chr.getJobHandler() != null) {
                             chr.getJobHandler().GiveVSkills();
                         }
@@ -3024,11 +3012,7 @@ public abstract class Job {
         if (target != curJob) {
             chr.setJob(target);
             if (level >= 200) {
-                if (chr.getMatrixSlot().size() < MatrixConstants.MAX_NODE_SLOTS) {
-                    for (int i = chr.getMatrixSlot().size(); i < MatrixConstants.MAX_NODE_SLOTS; i++) {
-                        chr.getMatrixSlot().add(new MatrixSlot(chr.getId(), i));
-                    }
-                }
+                chr.initMatrixSlots();
                 if (chr.getJobHandler() != null) {
                     chr.getJobHandler().GiveVSkills();
                 }
@@ -3251,15 +3235,37 @@ public abstract class Job {
     }
 
     public void GiveVSkills() {
-        for (int VSkill : MatrixConstants.GetVSkillsToGiveUponReachingV((int)chr.getJob())) {
+        int jobID = chr.getJob();
+        String rewardKey = "j" + jobID;
+        // the free 5th job nodes are only given once per job (prevents farming nodes by re-advancing)
+        if (chr.hasQuest(QuestConstants.V_SKILL_NODE_REWARD)
+                && "1".equals(chr.getQRValueByKey(QuestConstants.V_SKILL_NODE_REWARD, rewardKey))) {
+            return;
+        }
+        boolean given = false;
+        for (int VSkill : MatrixConstants.GetVSkillsToGiveUponReachingV(jobID)) {
+            boolean alreadyOwned = chr.getMatrixCore().stream()
+                    .anyMatch(c -> c.getState() != MatrixStateType.DISASSEMBLED && c.getSkillID1() == VSkill);
+            if (alreadyOwned) {
+                continue;
+            }
             for (VCoreData data : VCore.getSkillNodes()) {
-                if (data != null && data.getConnectSkills().getFirst() == VSkill) {
+                if (data != null && !data.getConnectSkills().isEmpty() && data.getConnectSkills().getFirst() == VSkill) {
                     MatrixCore core = new MatrixCore(chr.getId(), data.getCoreID(), data.getConnectSkills().getFirst(), 0, 0);
                     core.saveToSQL();
                     chr.getMatrixCore().add(core);
-                    chr.write(WvsContext.updateVMatrix(chr, true, MatrixUpdateType.Update.getVal(), 0));
+                    given = true;
+                    break;
                 }
             }
+        }
+        if (!chr.hasQuest(QuestConstants.V_SKILL_NODE_REWARD)) {
+            chr.createQuestWithQRValue(QuestConstants.V_SKILL_NODE_REWARD, rewardKey + "=1");
+        } else {
+            chr.setQRValueByKey(QuestConstants.V_SKILL_NODE_REWARD, rewardKey, "1");
+        }
+        if (given) {
+            chr.write(WvsContext.updateVMatrix(chr, true, MatrixUpdateType.Update.getVal(), 0));
         }
     }
 
