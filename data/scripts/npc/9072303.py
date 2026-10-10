@@ -1,2 +1,3 @@
 sm.setNpcBoxChat(1530330)
-chr.getJobHandler().handleJobAdvance()
+import fast_job_advance
+fast_job_advance.open_fast_job_advance(sm, chr)

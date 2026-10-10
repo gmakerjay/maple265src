@@ -60,6 +60,7 @@ import net.swordie.ms.loaders.ItemData;
 import net.swordie.ms.loaders.SkillData;
 import net.swordie.ms.loaders.StringData;
 import net.swordie.ms.loaders.containerclasses.PetInfo;
+import net.swordie.ms.scripts.ScriptManagerImpl;
 import net.swordie.ms.scripts.ScriptType;
 import net.swordie.ms.util.*;
 import net.swordie.ms.util.container.Tuple;
@@ -2519,6 +2520,39 @@ public abstract class Job {
         if (level == 50 || level == 100 || level == 150 || level == 200 || level == 210 || level == 220 || level == 230 || level == 240 || level == 250 || level == 255 || level == 260 || level == 265 || level == 270 || level == 275 || level == 300) {
             AchievementHandler.handleLevelUp(chr, level);
         }
+
+        // Auto Job Advance
+        try {
+            short curJob = chr.getJob();
+            short nextJob = JobConstants.getNextJob(curJob, level, chr.getSubJob());
+            if (nextJob != 0 && nextJob != curJob) {
+                chr.setJob(nextJob);
+                Map<Stat, Object> autoJobStats = new HashMap<>();
+                autoJobStats.put(Stat.job, nextJob);
+                chr.sendStatsPacket(autoJobStats);
+                chr.maxSkills();
+                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Auto Job Advance] Congratulations! You have advanced to " + JobConstants.getCleanJobName(nextJob) + " (" + nextJob + ")!");
+            } else {
+                List<Short> branch = JobConstants.getBranchOptions(curJob, level, chr.getSubJob());
+                if (branch != null && !branch.isEmpty()) {
+                    chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Job Advance] You can now advance your job! Please talk to Quick Admin NPC or use Fast Job Advance to select your path.");
+                }
+            }
+            if (level >= 200 && !chr.hasQuestCompleted(1465)) {
+                chr.completeQuest(1465);
+                for (int q = 1460; q <= 1466; q++) {
+                    try {
+                        chr.completeQuest(q);
+                    } catch (Exception ignored) {}
+                }
+            }
+            if (level >= 260 && !chr.hasQuestCompleted(1488)) {
+                chr.completeQuest(1488);
+            }
+        } catch (Exception e) {
+            // Log or ignore to prevent level up breaking
+        }
+
         autoAP();
     }
 
@@ -2885,6 +2919,66 @@ public abstract class Job {
     }
 
     public void handleJobAdvance() {
+        ScriptManagerImpl sm = chr.getScriptManager();
+        short curJob = chr.getJob();
+        int level = chr.getLevel();
+        int subJob = chr.getSubJob();
+
+        if (level >= 200 && !chr.hasQuestCompleted(1465)) {
+            chr.completeQuest(1465);
+            for (int q = 1460; q <= 1466; q++) {
+                try {
+                    chr.completeQuest(q);
+                } catch (Exception ignored) {}
+            }
+        }
+        if (level >= 260 && !chr.hasQuestCompleted(1488)) {
+            chr.completeQuest(1488);
+        }
+
+        List<Short> branches = JobConstants.getBranchOptions(curJob, level, subJob);
+        if (branches != null && !branches.isEmpty()) {
+            StringBuilder sb = new StringBuilder("#fs13##e[Job Advancement]#n\r\n\r\nPlease select your desired class branch:\r\n\r\n");
+            for (short b : branches) {
+                sb.append("#L").append(b).append("##b").append(JobConstants.getCleanJobName(b)).append("#k (ID: ").append(b).append(")#l\r\n");
+            }
+            int selected = sm.sendNext(sb.toString());
+            if (selected > 0) {
+                short chosen = (short) selected;
+                List<Short> subBranches = JobConstants.getBranchOptions(chosen, level, subJob);
+                if (subBranches != null && !subBranches.isEmpty()) {
+                    StringBuilder sb2 = new StringBuilder("#fs13##e[Specialization Choice]#n\r\n\r\nPlease choose your specialization:\r\n\r\n");
+                    for (short sbJob : subBranches) {
+                        sb2.append("#L").append(sbJob).append("##b").append(JobConstants.getCleanJobName(sbJob)).append("#k (ID: ").append(sbJob).append(")#l\r\n");
+                    }
+                    int subSelected = sm.sendNext(sb2.toString());
+                    if (subSelected > 0) {
+                        chosen = (short) subSelected;
+                    }
+                }
+                short finalTarget = JobConstants.getTargetJobForLevel(chosen, level, subJob);
+                chr.setJob(finalTarget);
+                Map<Stat, Object> stats = new HashMap<>();
+                stats.put(Stat.job, finalTarget);
+                chr.sendStatsPacket(stats);
+                chr.maxSkills();
+                sm.sendSayOkay("#fs13##bCongratulations!#k\r\nYou have successfully advanced to #e" + JobConstants.getCleanJobName(finalTarget) + " (" + finalTarget + ")#n!\r\n\r\nAll your skills (1st - 4th Job) have been refreshed and maximized.");
+                return;
+            }
+        }
+
+        short target = JobConstants.getTargetJobForLevel(curJob, level, subJob);
+        if (target != curJob) {
+            chr.setJob(target);
+            Map<Stat, Object> stats = new HashMap<>();
+            stats.put(Stat.job, target);
+            chr.sendStatsPacket(stats);
+            chr.maxSkills();
+            sm.sendSayOkay("#fs13##bCongratulations!#k\r\nYou have successfully advanced to #e" + JobConstants.getCleanJobName(target) + " (" + target + ")#n!\r\n\r\nAll your skills (1st - 4th Job) have been refreshed and maximized.");
+        } else {
+            chr.maxSkills();
+            sm.sendSayOkay("#fs13#You have already reached the highest job advancement for your current level (" + JobConstants.getCleanJobName(curJob) + ").\r\n\r\nAll your skills (1st - 4th Job) have been refreshed and maximized!");
+        }
     }
 
     /**

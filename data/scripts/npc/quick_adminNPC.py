@@ -227,9 +227,8 @@ elif selection == 12:
 elif selection == 13:
     sm.upgradeMechanicalHeart()
 elif selection == 14:
-    if chr.getLevel() >= 200 and not sm.hasQuestCompleted(1465):
-        chr.completeQuest(1465)
-    chr.getJobHandler().handleJobAdvance()
+    import fast_job_advance
+    fast_job_advance.open_fast_job_advance(sm, chr)
 elif selection == 16:
     chr.maxSkills()
     sm.sendSayOkay("All skills (1st - 4th Job) have been maxed!")

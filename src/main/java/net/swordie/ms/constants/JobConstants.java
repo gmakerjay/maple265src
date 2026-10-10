@@ -1491,6 +1491,7 @@ public class JobConstants {
             case 6000:
             case 6001:
             case 6002:
+            case 6003: // Kain Beginner
             case 5000:
             case 4001:
             case 4002:
@@ -1626,6 +1627,628 @@ public class JobConstants {
     public static boolean isPirateEquipJob(short id) {
         return isAdventurerPirate(id) || isThunderBreaker(id) || isShade(id) || isAngelicBuster(id) ||
                 isXenon(id) || isMechanic(id) || isJett(id) || isArk(id) || isMoXuan(id) || isYeti(id);
+    }
+
+    public static String getCleanJobName(short jobId) {
+        switch (jobId) {
+            case 0: return "Beginner";
+            case 100: return "Warrior";
+            case 110: return "Fighter";
+            case 111: return "Crusader";
+            case 112: return "Hero";
+            case 120: return "Page";
+            case 121: return "White Knight";
+            case 122: return "Paladin";
+            case 130: return "Spearman";
+            case 131: return "Dragon Knight";
+            case 132: return "Dark Knight";
+            case 200: return "Magician";
+            case 210: return "Wizard (F/P)";
+            case 211: return "Mage (F/P)";
+            case 212: return "Arch Mage (F/P)";
+            case 220: return "Wizard (I/L)";
+            case 221: return "Mage (I/L)";
+            case 222: return "Arch Mage (I/L)";
+            case 230: return "Cleric";
+            case 231: return "Priest";
+            case 232: return "Bishop";
+            case 300: return "Bowman";
+            case 310: return "Hunter";
+            case 311: return "Ranger";
+            case 312: return "Bowmaster";
+            case 320: return "Crossbowman";
+            case 321: return "Sniper";
+            case 322: return "Marksman";
+            case 301: return "Pathfinder (1st)";
+            case 330: return "Pathfinder (2nd)";
+            case 331: return "Pathfinder (3rd)";
+            case 332: return "Pathfinder (4th)";
+            case 400: return "Thief";
+            case 410: return "Assassin";
+            case 411: return "Hermit";
+            case 412: return "Night Lord";
+            case 420: return "Bandit";
+            case 421: return "Chief Bandit";
+            case 422: return "Shadower";
+            case 430: return "Blade Recruit";
+            case 431: return "Blade Acolyte";
+            case 432: return "Blade Specialist";
+            case 433: return "Blade Lord";
+            case 434: return "Blade Master";
+            case 500: return "Pirate";
+            case 510: return "Brawler";
+            case 511: return "Marauder";
+            case 512: return "Buccaneer";
+            case 520: return "Gunslinger";
+            case 521: return "Outlaw";
+            case 522: return "Corsair";
+            case 501: return "Cannoneer (Beginner)";
+            case 530: return "Cannoneer";
+            case 531: return "Cannon Blaster";
+            case 532: return "Cannon Master";
+            case 508: return "Jett (1st)";
+            case 570: return "Jett (2nd)";
+            case 571: return "Jett (3rd)";
+            case 572: return "Jett (4th)";
+            case 1000: return "Noblesse";
+            case 1100: return "Dawn Warrior (1st)";
+            case 1110: return "Dawn Warrior (2nd)";
+            case 1111: return "Dawn Warrior (3rd)";
+            case 1112: return "Dawn Warrior (4th)";
+            case 1200: return "Blaze Wizard (1st)";
+            case 1210: return "Blaze Wizard (2nd)";
+            case 1211: return "Blaze Wizard (3rd)";
+            case 1212: return "Blaze Wizard (4th)";
+            case 1300: return "Wind Archer (1st)";
+            case 1310: return "Wind Archer (2nd)";
+            case 1311: return "Wind Archer (3rd)";
+            case 1312: return "Wind Archer (4th)";
+            case 1400: return "Night Walker (1st)";
+            case 1410: return "Night Walker (2nd)";
+            case 1411: return "Night Walker (3rd)";
+            case 1412: return "Night Walker (4th)";
+            case 1500: return "Thunder Breaker (1st)";
+            case 1510: return "Thunder Breaker (2nd)";
+            case 1511: return "Thunder Breaker (3rd)";
+            case 1512: return "Thunder Breaker (4th)";
+            case 2000: return "Aran (Beginner)";
+            case 2100: return "Aran (1st)";
+            case 2110: return "Aran (2nd)";
+            case 2111: return "Aran (3rd)";
+            case 2112: return "Aran (4th)";
+            case 2001: return "Evan (Beginner)";
+            case 2200:
+            case 2210: return "Evan (1st)";
+            case 2212: return "Evan (2nd)";
+            case 2214: return "Evan (3rd)";
+            case 2217: return "Evan (4th)";
+            case 2002: return "Mercedes (Beginner)";
+            case 2300: return "Mercedes (1st)";
+            case 2310: return "Mercedes (2nd)";
+            case 2311: return "Mercedes (3rd)";
+            case 2312: return "Mercedes (4th)";
+            case 2003: return "Phantom (Beginner)";
+            case 2400: return "Phantom (1st)";
+            case 2410: return "Phantom (2nd)";
+            case 2411: return "Phantom (3rd)";
+            case 2412: return "Phantom (4th)";
+            case 2004: return "Luminous (Beginner)";
+            case 2700: return "Luminous (1st)";
+            case 2710: return "Luminous (2nd)";
+            case 2711: return "Luminous (3rd)";
+            case 2712: return "Luminous (4th)";
+            case 2005: return "Shade (Beginner)";
+            case 2500: return "Shade (1st)";
+            case 2510: return "Shade (2nd)";
+            case 2511: return "Shade (3rd)";
+            case 2512: return "Shade (4th)";
+            case 3000: return "Citizen";
+            case 3200: return "Battle Mage (1st)";
+            case 3210: return "Battle Mage (2nd)";
+            case 3211: return "Battle Mage (3rd)";
+            case 3212: return "Battle Mage (4th)";
+            case 3300: return "Wild Hunter (1st)";
+            case 3310: return "Wild Hunter (2nd)";
+            case 3311: return "Wild Hunter (3rd)";
+            case 3312: return "Wild Hunter (4th)";
+            case 3500: return "Mechanic (1st)";
+            case 3510: return "Mechanic (2nd)";
+            case 3511: return "Mechanic (3rd)";
+            case 3512: return "Mechanic (4th)";
+            case 3700: return "Blaster (1st)";
+            case 3710: return "Blaster (2nd)";
+            case 3711: return "Blaster (3rd)";
+            case 3712: return "Blaster (4th)";
+            case 3001: return "Demon (Beginner)";
+            case 3100: return "Demon Slayer (1st)";
+            case 3110: return "Demon Slayer (2nd)";
+            case 3111: return "Demon Slayer (3rd)";
+            case 3112: return "Demon Slayer (4th)";
+            case 3101: return "Demon Avenger (1st)";
+            case 3120: return "Demon Avenger (2nd)";
+            case 3121: return "Demon Avenger (3rd)";
+            case 3122: return "Demon Avenger (4th)";
+            case 3002: return "Xenon (Beginner)";
+            case 3600: return "Xenon (1st)";
+            case 3610: return "Xenon (2nd)";
+            case 3611: return "Xenon (3rd)";
+            case 3612: return "Xenon (4th)";
+            case 4001: return "Hayato (Beginner)";
+            case 4100: return "Hayato (1st)";
+            case 4110: return "Hayato (2nd)";
+            case 4111: return "Hayato (3rd)";
+            case 4112: return "Hayato (4th)";
+            case 4002: return "Kanna (Beginner)";
+            case 4200: return "Kanna (1st)";
+            case 4210: return "Kanna (2nd)";
+            case 4211: return "Kanna (3rd)";
+            case 4212: return "Kanna (4th)";
+            case 5000: return "Nameless Warden";
+            case 5100: return "Mihile (1st)";
+            case 5110: return "Mihile (2nd)";
+            case 5111: return "Mihile (3rd)";
+            case 5112: return "Mihile (4th)";
+            case 6000: return "Kaiser (Beginner)";
+            case 6100: return "Kaiser (1st)";
+            case 6110: return "Kaiser (2nd)";
+            case 6111: return "Kaiser (3rd)";
+            case 6112: return "Kaiser (4th)";
+            case 6001: return "Angelic Buster (Beginner)";
+            case 6500: return "Angelic Buster (1st)";
+            case 6510: return "Angelic Buster (2nd)";
+            case 6511: return "Angelic Buster (3rd)";
+            case 6512: return "Angelic Buster (4th)";
+            case 6002: return "Cadena (Beginner)";
+            case 6400: return "Cadena (1st)";
+            case 6410: return "Cadena (2nd)";
+            case 6411: return "Cadena (3rd)";
+            case 6412: return "Cadena (4th)";
+            case 6003: return "Kain (Beginner)";
+            case 6300: return "Kain (1st)";
+            case 6310: return "Kain (2nd)";
+            case 6311: return "Kain (3rd)";
+            case 6312: return "Kain (4th)";
+            case 10000: return "Zero (Beginner)";
+            case 10100: return "Zero (1st)";
+            case 10110: return "Zero (2nd)";
+            case 10111: return "Zero (3rd)";
+            case 10112: return "Zero (4th)";
+            case 11000: return "Beast Tamer (Beginner)";
+            case 11200: return "Beast Tamer (1st)";
+            case 11210: return "Beast Tamer (2nd)";
+            case 11211: return "Beast Tamer (3rd)";
+            case 11212: return "Beast Tamer (4th)";
+            case 14000: return "Kinesis (Beginner)";
+            case 14200: return "Kinesis (1st)";
+            case 14210: return "Kinesis (2nd)";
+            case 14211: return "Kinesis (3rd)";
+            case 14212: return "Kinesis (4th)";
+            case 15000: return "Illium (Beginner)";
+            case 15200: return "Illium (1st)";
+            case 15210: return "Illium (2nd)";
+            case 15211: return "Illium (3rd)";
+            case 15212: return "Illium (4th)";
+            case 15001: return "Ark (Beginner)";
+            case 15500: return "Ark (1st)";
+            case 15510: return "Ark (2nd)";
+            case 15511: return "Ark (3rd)";
+            case 15512: return "Ark (4th)";
+            case 15002: return "Adele (Beginner)";
+            case 15100: return "Adele (1st)";
+            case 15110: return "Adele (2nd)";
+            case 15111: return "Adele (3rd)";
+            case 15112: return "Adele (4th)";
+            case 15003: return "Khali (Beginner)";
+            case 15400: return "Khali (1st)";
+            case 15410: return "Khali (2nd)";
+            case 15411: return "Khali (3rd)";
+            case 15412: return "Khali (4th)";
+            case 16000: return "Hoyoung (Beginner)";
+            case 16400: return "Hoyoung (1st)";
+            case 16410: return "Hoyoung (2nd)";
+            case 16411: return "Hoyoung (3rd)";
+            case 16412: return "Hoyoung (4th)";
+            case 16001: return "Lara (Beginner)";
+            case 16200: return "Lara (1st)";
+            case 16210: return "Lara (2nd)";
+            case 16211: return "Lara (3rd)";
+            case 16212: return "Lara (4th)";
+            case 16002: return "Ren (Beginner)";
+            case 16100: return "Ren (1st)";
+            case 16110: return "Ren (2nd)";
+            case 16111: return "Ren (3rd)";
+            case 16112: return "Ren (4th)";
+            case 17000: return "MoXuan (Beginner)";
+            case 17500: return "MoXuan (1st)";
+            case 17510: return "MoXuan (2nd)";
+            case 17511: return "MoXuan (3rd)";
+            case 17512: return "MoXuan (4th)";
+            case 17001: return "Lynn (Beginner)";
+            case 17200: return "Lynn (1st)";
+            case 17210: return "Lynn (2nd)";
+            case 17211: return "Lynn (3rd)";
+            case 17212: return "Lynn (4th)";
+            case 18000: return "Sia (Beginner)";
+            case 18200: return "Sia (1st)";
+            case 18210: return "Sia (2nd)";
+            case 18211: return "Sia (3rd)";
+            case 18212: return "Sia (4th)";
+            default: {
+                JobEnum je = JobEnum.getJobById(jobId);
+                if (je != null) {
+                    return je.name().replace('_', ' ');
+                }
+                return getJobNameById(jobId).trim();
+            }
+        }
+    }
+
+    public static List<Short> getBranchOptions(short job, int level, int subJob) {
+        List<Short> list = new ArrayList<>();
+        if (job == 0) {
+            if (subJob == 1 && level >= 20) {
+                list.add((short) 430); // Dual Blade
+            } else if (subJob == 2 && level >= 10) {
+                list.add((short) 530); // Cannoneer
+            } else if (subJob == 3 && level >= 10) {
+                list.add((short) 301); // Pathfinder
+            } else if (level >= 10) {
+                list.add((short) 100); // Warrior
+                list.add((short) 200); // Magician
+                list.add((short) 300); // Bowman
+                list.add((short) 400); // Thief
+                list.add((short) 500); // Pirate
+            }
+        } else if (job == 1000 && level >= 10) { // Noblesse
+            list.add((short) 1100); // Dawn Warrior
+            list.add((short) 1200); // Blaze Wizard
+            list.add((short) 1300); // Wind Archer
+            list.add((short) 1400); // Night Walker
+            list.add((short) 1500); // Thunder Breaker
+        } else if (job == 3000 && level >= 10) { // Citizen
+            list.add((short) 3200); // Battle Mage
+            list.add((short) 3300); // Wild Hunter
+            list.add((short) 3500); // Mechanic
+            list.add((short) 3700); // Blaster
+        } else if (job == 3001 && level >= 10) { // Demon
+            list.add((short) 3100); // Demon Slayer
+            list.add((short) 3101); // Demon Avenger
+        } else if (job == 100 && level >= 30) { // Warrior
+            list.add((short) 110); // Fighter
+            list.add((short) 120); // Page
+            list.add((short) 130); // Spearman
+        } else if (job == 200 && level >= 30) { // Magician
+            list.add((short) 210); // Wizard (F/P)
+            list.add((short) 220); // Wizard (I/L)
+            list.add((short) 230); // Cleric
+        } else if (job == 300 && level >= 30) { // Bowman
+            list.add((short) 310); // Hunter
+            list.add((short) 320); // Crossbowman
+        } else if (job == 400 && level >= 30) { // Thief
+            if (subJob == 1) {
+                list.add((short) 431); // Dual Blade
+            } else {
+                list.add((short) 410); // Assassin (Night Lord path)
+                list.add((short) 420); // Bandit (Shadower path)
+            }
+        } else if (job == 500 && level >= 30) { // Pirate
+            list.add((short) 510); // Brawler
+            list.add((short) 520); // Gunslinger
+        }
+        return list;
+    }
+
+    public static short getTargetJobForLevel(short job, int level, int subJob) {
+        // Dual Blade
+        if (job >= 430 && job <= 434) {
+            if (level >= 100) return 434;
+            if (level >= 60) return 433;
+            if (level >= 45) return 432;
+            if (level >= 30) return 431;
+            if (level >= 20) return 430;
+            return job;
+        }
+        if (job == 400 && subJob == 1) {
+            if (level >= 100) return 434;
+            if (level >= 60) return 433;
+            if (level >= 45) return 432;
+            if (level >= 30) return 431;
+            if (level >= 20) return 430;
+            return job;
+        }
+
+        // Evan
+        if (job == 2001 || (job >= 2200 && job <= 2218)) {
+            if (level >= 100) return 2217;
+            if (level >= 60) return 2214;
+            if (level >= 30) return 2212;
+            if (level >= 10) return 2200;
+            return job;
+        }
+
+        // Cannoneer
+        if (job == 501 || (job >= 530 && job <= 532)) {
+            if (level >= 100) return 532;
+            if (level >= 60) return 531;
+            if (level >= 10) return 530;
+            return job;
+        }
+
+        // Pathfinder
+        if (job == 301 || (job >= 330 && job <= 332)) {
+            if (level >= 100) return 332;
+            if (level >= 60) return 331;
+            if (level >= 30) return 330;
+            if (level >= 10) return 301;
+            return job;
+        }
+
+        // Jett
+        if (job == 508 || (job >= 570 && job <= 572)) {
+            if (level >= 100) return 572;
+            if (level >= 60) return 571;
+            if (level >= 30) return 570;
+            if (level >= 10) return 508;
+            return job;
+        }
+
+        // Explorer 2nd job paths (Fighter, Page, Spearman, F/P, I/L, Cleric, Hunter, Crossbowman, Assassin, Bandit, Brawler, Gunslinger)
+        if ((job >= 110 && job <= 132) || (job >= 210 && job <= 232) || (job >= 310 && job <= 322) || (job >= 410 && job <= 422) || (job >= 510 && job <= 522)) {
+            int branchBase = job - (job % 10);
+            if (level >= 100) return (short) (branchBase + 2);
+            if (level >= 60) return (short) (branchBase + 1);
+            return (short) branchBase;
+        }
+
+        // Cygnus Knights
+        if (job >= 1100 && job <= 1512) {
+            int knightBase = (job / 100) * 100;
+            if (level >= 100) return (short) (knightBase + 12);
+            if (level >= 60) return (short) (knightBase + 11);
+            if (level >= 30) return (short) (knightBase + 10);
+            return (short) knightBase;
+        }
+
+        // Mihile
+        if (job == 5000 || (job >= 5100 && job <= 5112)) {
+            if (level >= 100) return 5112;
+            if (level >= 60) return 5111;
+            if (level >= 30) return 5110;
+            if (level >= 10) return 5100;
+            return job;
+        }
+
+        // Resistance (Battle Mage 3200, Wild Hunter 3300, Mechanic 3500, Blaster 3700)
+        if ((job >= 3200 && job <= 3212) || (job >= 3300 && job <= 3312) || (job >= 3500 && job <= 3512) || (job >= 3700 && job <= 3712)) {
+            int resBase = (job / 100) * 100;
+            if (level >= 100) return (short) (resBase + 12);
+            if (level >= 60) return (short) (resBase + 11);
+            if (level >= 30) return (short) (resBase + 10);
+            return (short) resBase;
+        }
+
+        // Demon Slayer & Demon Avenger
+        if (job == 3100 || (job >= 3110 && job <= 3112)) {
+            if (level >= 100) return 3112;
+            if (level >= 60) return 3111;
+            if (level >= 30) return 3110;
+            return 3100;
+        }
+        if (job == 3101 || (job >= 3120 && job <= 3122)) {
+            if (level >= 100) return 3122;
+            if (level >= 60) return 3121;
+            if (level >= 30) return 3120;
+            return 3101;
+        }
+
+        // Xenon
+        if (job == 3002 || (job >= 3600 && job <= 3612)) {
+            if (level >= 100) return 3612;
+            if (level >= 60) return 3611;
+            if (level >= 30) return 3610;
+            if (level >= 10) return 3600;
+            return job;
+        }
+
+        // Sengoku (Hayato 4100, Kanna 4200)
+        if (job == 4001 || (job >= 4100 && job <= 4112)) {
+            if (level >= 100) return 4112;
+            if (level >= 60) return 4111;
+            if (level >= 30) return 4110;
+            if (level >= 10) return 4100;
+            return job;
+        }
+        if (job == 4002 || (job >= 4200 && job <= 4212)) {
+            if (level >= 100) return 4212;
+            if (level >= 60) return 4211;
+            if (level >= 30) return 4210;
+            if (level >= 10) return 4200;
+            return job;
+        }
+
+        // Heroes: Aran, Mercedes, Phantom, Luminous, Shade
+        if (job == 2000 || (job >= 2100 && job <= 2112)) {
+            if (level >= 100) return 2112;
+            if (level >= 60) return 2111;
+            if (level >= 30) return 2110;
+            if (level >= 10) return 2100;
+            return job;
+        }
+        if (job == 2002 || (job >= 2300 && job <= 2312)) {
+            if (level >= 100) return 2312;
+            if (level >= 60) return 2311;
+            if (level >= 30) return 2310;
+            if (level >= 10) return 2300;
+            return job;
+        }
+        if (job == 2003 || (job >= 2400 && job <= 2412)) {
+            if (level >= 100) return 2412;
+            if (level >= 60) return 2411;
+            if (level >= 30) return 2410;
+            if (level >= 10) return 2400;
+            return job;
+        }
+        if (job == 2004 || (job >= 2700 && job <= 2712)) {
+            if (level >= 100) return 2712;
+            if (level >= 60) return 2711;
+            if (level >= 30) return 2710;
+            if (level >= 10) return 2700;
+            return job;
+        }
+        if (job == 2005 || (job >= 2500 && job <= 2512)) {
+            if (level >= 100) return 2512;
+            if (level >= 60) return 2511;
+            if (level >= 30) return 2510;
+            if (level >= 10) return 2500;
+            return job;
+        }
+
+        // Nova: Kaiser, Angelic Buster, Cadena, Kain
+        if (job == 6000 || (job >= 6100 && job <= 6112)) {
+            if (level >= 100) return 6112;
+            if (level >= 60) return 6111;
+            if (level >= 30) return 6110;
+            if (level >= 10) return 6100;
+            return job;
+        }
+        if (job == 6001 || (job >= 6500 && job <= 6512)) {
+            if (level >= 100) return 6512;
+            if (level >= 60) return 6511;
+            if (level >= 30) return 6510;
+            if (level >= 10) return 6500;
+            return job;
+        }
+        if (job == 6002 || (job >= 6400 && job <= 6412)) {
+            if (level >= 100) return 6412;
+            if (level >= 60) return 6411;
+            if (level >= 30) return 6410;
+            if (level >= 10) return 6400;
+            return job;
+        }
+        if (job == 6003 || (job >= 6300 && job <= 6312)) {
+            if (level >= 100) return 6312;
+            if (level >= 60) return 6311;
+            if (level >= 30) return 6310;
+            if (level >= 10) return 6300;
+            return job;
+        }
+
+        // Zero
+        if (job == 10000 || (job >= 10100 && job <= 10112)) {
+            if (level >= 100) return 10112;
+            if (level >= 60) return 10111;
+            if (level >= 30) return 10110;
+            if (level >= 10) return 10100;
+            return job;
+        }
+
+        // Beast Tamer
+        if (job == 11000 || (job >= 11200 && job <= 11212)) {
+            if (level >= 100) return 11212;
+            if (level >= 60) return 11211;
+            if (level >= 30) return 11210;
+            if (level >= 10) return 11200;
+            return job;
+        }
+
+        // Kinesis
+        if (job == 14000 || (job >= 14200 && job <= 14212)) {
+            if (level >= 100) return 14212;
+            if (level >= 60) return 14211;
+            if (level >= 30) return 14210;
+            if (level >= 10) return 14200;
+            return job;
+        }
+
+        // Flora: Illium (15200), Ark (15500), Adele (15100), Khali (15400)
+        if (job == 15000 || (job >= 15200 && job <= 15212)) {
+            if (level >= 100) return 15212;
+            if (level >= 60) return 15211;
+            if (level >= 30) return 15210;
+            if (level >= 10) return 15200;
+            return job;
+        }
+        if (job == 15001 || (job >= 15500 && job <= 15512)) {
+            if (level >= 100) return 15512;
+            if (level >= 60) return 15511;
+            if (level >= 30) return 15510;
+            if (level >= 10) return 15500;
+            return job;
+        }
+        if (job == 15002 || (job >= 15100 && job <= 15112)) {
+            if (level >= 100) return 15112;
+            if (level >= 60) return 15111;
+            if (level >= 30) return 15110;
+            if (level >= 10) return 15100;
+            return job;
+        }
+        if (job == 15003 || (job >= 15400 && job <= 15412)) {
+            if (level >= 100) return 15412;
+            if (level >= 60) return 15411;
+            if (level >= 30) return 15410;
+            if (level >= 10) return 15400;
+            return job;
+        }
+
+        // Anima: Hoyoung (16400), Lara (16200), Ren (16100)
+        if (job == 16000 || (job >= 16400 && job <= 16412)) {
+            if (level >= 100) return 16412;
+            if (level >= 60) return 16411;
+            if (level >= 30) return 16410;
+            if (level >= 10) return 16400;
+            return job;
+        }
+        if (job == 16001 || (job >= 16200 && job <= 16212)) {
+            if (level >= 100) return 16212;
+            if (level >= 60) return 16211;
+            if (level >= 30) return 16210;
+            if (level >= 10) return 16200;
+            return job;
+        }
+        if (job == 16002 || (job >= 16100 && job <= 16112)) {
+            if (level >= 100) return 16112;
+            if (level >= 60) return 16111;
+            if (level >= 30) return 16110;
+            if (level >= 10) return 16100;
+            return job;
+        }
+
+        // Jianghu & Other: MoXuan (17500), Lynn (17200), Sia (18200)
+        if (job == 17000 || (job >= 17500 && job <= 17512)) {
+            if (level >= 100) return 17512;
+            if (level >= 60) return 17511;
+            if (level >= 30) return 17510;
+            if (level >= 10) return 17500;
+            return job;
+        }
+        if (job == 17001 || (job >= 17200 && job <= 17212)) {
+            if (level >= 100) return 17212;
+            if (level >= 60) return 17211;
+            if (level >= 30) return 17210;
+            if (level >= 10) return 17200;
+            return job;
+        }
+        if (job == 18000 || (job >= 18200 && job <= 18212)) {
+            if (level >= 100) return 18212;
+            if (level >= 60) return 18211;
+            if (level >= 30) return 18210;
+            if (level >= 10) return 18200;
+            return job;
+        }
+
+        return job;
+    }
+
+    public static short getNextJob(short job, int level, int subJob) {
+        short target = getTargetJobForLevel(job, level, subJob);
+        if (target != job) {
+            List<Short> branches = getBranchOptions(job, level, subJob);
+            if (branches != null && !branches.isEmpty()) {
+                return 0; // Requires manual branch choice
+            }
+            return target;
+        }
+        return 0;
     }
 
     public static boolean canJobAdvance(short jobId) {
