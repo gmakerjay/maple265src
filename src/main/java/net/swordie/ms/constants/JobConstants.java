@@ -1883,6 +1883,119 @@ public class JobConstants {
         }
     }
 
+    public static List<Short> getJobChain(short job) {
+        List<Short> jobs = new ArrayList<>();
+        if (job == 0) {
+            jobs.add((short) 0);
+            return jobs;
+        }
+        // Dual Blade
+        if (job >= 430 && job <= 434) {
+            jobs.add((short) 400);
+            for (short j = 430; j <= job; j++) {
+                jobs.add(j);
+            }
+            return jobs;
+        }
+        if (job == 400) {
+            jobs.add((short) 400);
+            return jobs;
+        }
+
+        // Cannoneer
+        if ((job >= 530 && job <= 532) || job == 501) {
+            jobs.add((short) 501);
+            if (job >= 530) jobs.add((short) 530);
+            if (job >= 531) jobs.add((short) 531);
+            if (job >= 532) jobs.add((short) 532);
+            return jobs;
+        }
+
+        // Pathfinder
+        if ((job >= 330 && job <= 332) || job == 301) {
+            jobs.add((short) 301);
+            if (job >= 330) jobs.add((short) 330);
+            if (job >= 331) jobs.add((short) 331);
+            if (job >= 332) jobs.add((short) 332);
+            return jobs;
+        }
+
+        // Jett
+        if ((job >= 570 && job <= 572) || job == 508) {
+            jobs.add((short) 508);
+            if (job >= 570) jobs.add((short) 570);
+            if (job >= 571) jobs.add((short) 571);
+            if (job >= 572) jobs.add((short) 572);
+            return jobs;
+        }
+
+        // Demon Avenger
+        if ((job >= 3120 && job <= 3122) || job == 3101) {
+            jobs.add((short) 3101);
+            if (job >= 3120) jobs.add((short) 3120);
+            if (job >= 3121) jobs.add((short) 3121);
+            if (job >= 3122) jobs.add((short) 3122);
+            return jobs;
+        }
+
+        // Evan
+        if ((job >= 2200 && job <= 2218) || job == 2001) {
+            short[] evanChain = new short[]{2200, 2210, 2212, 2214, 2217, 2218};
+            for (short ej : evanChain) {
+                if (ej <= job) {
+                    jobs.add(ej);
+                }
+            }
+            return jobs;
+        }
+
+        // Explorer 2nd-4th job
+        if ((job >= 110 && job <= 132) || (job >= 210 && job <= 232) || (job >= 310 && job <= 322) || (job >= 410 && job <= 422) || (job >= 510 && job <= 522)) {
+            short base1st = (short) ((job / 100) * 100);
+            short base2nd = (short) ((job / 10) * 10);
+            jobs.add(base1st);
+            jobs.add(base2nd);
+            if (job >= base2nd + 1) {
+                jobs.add((short) (base2nd + 1));
+            }
+            if (job >= base2nd + 2) {
+                jobs.add((short) (base2nd + 2));
+            }
+            return jobs;
+        }
+
+        // Cygnus, Resistance, Heroes, Nova, Flora, Anima, Jianghu, etc.
+        // Standard formula: 1st job = (job / 100) * 100
+        // 2nd job = base + 10, 3rd job = base + 11, 4th job = base + 12
+        int mod = job % 100;
+        if (mod == 10 || mod == 11 || mod == 12) {
+            short base = (short) ((job / 100) * 100);
+            if (isCygnusKnight(job)) {
+                jobs.add((short) 1000);
+            } else if (isMihile(job)) {
+                jobs.add((short) 5000);
+            }
+            jobs.add(base);
+            jobs.add((short) (base + 10));
+            if (job >= base + 11) {
+                jobs.add((short) (base + 11));
+            }
+            if (job >= base + 12) {
+                jobs.add((short) (base + 12));
+            }
+            return jobs;
+        }
+
+        // 1st job only (e.g. 100, 200, 300, 400, 500, 1100, 15100, etc.)
+        if (isCygnusKnight(job) && job != 1000) {
+            jobs.add((short) 1000);
+        } else if (isMihile(job) && job != 5000) {
+            jobs.add((short) 5000);
+        }
+        jobs.add(job);
+        return jobs;
+    }
+
     public static List<Short> getBranchOptions(short job, int level, int subJob) {
         List<Short> list = new ArrayList<>();
         if (job == 0) {

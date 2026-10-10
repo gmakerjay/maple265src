@@ -134,6 +134,7 @@ public class Warrior extends Beginner {
             sm.completeQuestNoRewards(level == 60 ? 1430 : 1450);
             sm.addSPJobAdv(jobID, 5);
             sm.addSPJobAdv(next, 3);
+            chr.maxSkills();
         }
     }
 

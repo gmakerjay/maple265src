@@ -1088,6 +1088,7 @@ public class ScriptManagerImpl implements ScriptManager {
 
         addAP(apAmount); //Standard added AP upon Job Advancing
         addSPJobAdv(jobID, spAmount); //Standard added SP upon Job Advancing
+        chr.maxSkills();
     }
 
     @Override
@@ -1125,6 +1126,7 @@ public class ScriptManagerImpl implements ScriptManager {
 
         addAP(apAmount); //Standard added AP upon Job Advancing
         addSPJobAdv(jobID, spAmount); //Standard added SP upon Job Advancing
+        chr.maxSkills();
         modifiedCharacter();
     }
 

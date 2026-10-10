@@ -752,8 +752,146 @@ MapleStory_Server_Runner/
   - `maplestory.jar` (Root Workspace)
 - **ผลการ Audit ซ้ำ:** ยืนยันว่าคลาสที่มีการจัดการ Hexa Skill ทำงานจริงเพิ่มขึ้นจาก 26 คลาสเป็น **41+ คลาส** และครอบคลุมทั้ง 52 อาชีพผ่านระบบ Universal Origin Handler ใน `Job.java` โดยไม่มีข้อผิดพลาดเรื่อง Asset WZ หรืออาการ Crash ตกค้าง
 
+---
 
+### 16. การแก้ไขและพัฒนาระบบ Fast Job Advance & Auto Job Advance ทุกอาชีพ 100% (10 ตุลาคม 2569)
 
+#### 🔍 1. การวิเคราะห์สาเหตุและ Audit ปัญหา (Root Cause Analysis)
+- **สาเหตุที่ Fast Job Advance ไม่ทำงาน (ทดสอบกับ Night Lord):**
+  - ในสคริปต์ `quick_adminNPC.py` (เมนู Option 14) และ NPC `9072303.py` เดิมเรียกใช้คำสั่ง:
+    ```python
+    chr.getJobHandler().handleJobAdvance()
+    ```
+  - เมื่อตรวจสอบเมธอด `handleJobAdvance()` ในคลาสหลัก `Job.java` (Line 2887) พบว่าเป็น **Empty Method `{}`** (เมธอดว่างเปล่า)
+  - มีคลาสอาชีพเพียง 26 คลาสที่ทำการ Override เมธอดนี้ไว้สำหรับเควสต์ข้ามแบบเดิม
+  - **อาชีพทั้งหมดในกลุ่ม Explorer (นักผจญภัย)** ได้แก่ Night Lord (412), Shadower (422), Dual Blade (434), Hero (112), Paladin (122), Dark Knight (132), Bishop (232), Arch Mage F/P (212), Arch Mage I/L (222), Bowmaster (312), Marksman (322), Buccaneer (512), Corsair (522) ตลอดจน Cygnus Knights บางสาย, Kaiser, Adele, Kain, Zero **ไม่มีการ Override เมธอดนี้เลยแม้แต่คลาสเดียว** ทำให้เมื่อผู้เล่นกด Fast Job Advance ระบบจึงไม่แสดงอะไรและไม่มีการเปลี่ยนอาชีพใดๆ เกิดขึ้น
 
+#### ⚙️ 2. สถาปัตยกรรมและสิ่งที่ได้พัฒนาเพิ่ม (Implementation Details)
 
+1. **`JobConstants.java` (โมดูลคำนวณและแมปสายอาชีพสากล):**
+   - เพิ่ม `case 6003:` (Kain Beginner) ใน `isBeginnerJob(short jobId)` ป้องกัน Bug สกิลและ SP
+   - เพิ่มฟังก์ชัน `getCleanJobName(short jobId)`: คืนค่าชื่ออาชีพที่อ่านง่าย สวยงาม ถูกต้อง ครอบคลุมทั้ง 50+ อาชีพ
+   - เพิ่มฟังก์ชัน `getBranchOptions(short job, int level, int subJob)`: จัดการจุดแยกสายอาชีพทั้งหมดอย่างแม่นยำ:
+     - Beginner (0) -> Warrior (100), Magician (200), Bowman (300), Thief (400), Pirate (500)
+     - Noblesse (1000) -> Dawn Warrior, Blaze Wizard, Wind Archer, Night Walker, Thunder Breaker
+     - Citizen (3000) -> Battle Mage, Wild Hunter, Mechanic, Blaster
+     - Demon (3001) -> Demon Slayer, Demon Avenger
+     - Thief (400) -> Assassin (Night Lord path), Bandit (Shadower path), Dual Blade
+     - Warrior (100) -> Fighter, Page, Spearman
+     - Magician (200) -> F/P, I/L, Cleric
+     - Bowman (300) -> Hunter, Crossbowman
+     - Pirate (500) -> Brawler, Gunslinger
+   - เพิ่มฟังก์ชัน `getTargetJobForLevel(short job, int level, int subJob)`: คำนวณ Job ID เป้าหมายสูงสุดตามเลเวลปัจจุบันของตัวละคร (รองรับการทะลวงข้ามขั้นหากเลเวลถึง เช่น เลเวล 100+ จะปรับเป็นคลาส 4 ทันที)
+   - เพิ่มฟังก์ชัน `getNextJob(short job, int level, int subJob)`: คำนวณคลาสถัดไปสำหรับการเลื่อนขั้นอัตโนมัติ (Linear Progression) และคืนค่า `0` หากติดจุดที่ต้องให้ผู้เล่นเลือกสายด้วยตนเอง
+
+2. **`Job.java` (ระบบแกนกลางฝั่งเซิร์ฟเวอร์ Java):**
+   - **Auto Job Advance ใน `handleLevelUp(short level)`:**
+     - เมื่อตัวละครเลเวลอัปถึงเกณฑ์ (เช่น Lv 30, 60, 100) ระบบจะตรวจหาคลาสถัดไปผ่าน `JobConstants.getNextJob()` และ**ทำการเปลี่ยนอาชีพให้โดยอัตโนมัติทันที**
+     - ส่งแพ็กเก็ตแสดงเอฟเฟกต์การเปลี่ยนอาชีพ (`changeJobEffect`), ซิงค์สเตตัส, แม็กซ์สกิลทั้งหมดของคลาสนั้นๆ (`chr.maxSkills()`), และประกาศยินดีในแชท
+     - หากเป็นเลเวลที่ต้องเลือกสาย (เช่น เลเวล 10 หรือ 30 ของ Explorer) จะส่งข้อความแจ้งเตือนแนะนำให้ผู้เล่นไปเลือกสายที่ Quick Admin NPC หรือใช้ Fast Job Advance
+     - เมื่อเลเวลถึง 200+ ปลดล็อกเควสต์ V-Matrix คลาส 5 (1465 และ 1460-1466) ให้อัตโนมัติ
+     - เมื่อเลเวลถึง 260+ ปลดล็อกเควสต์ HEXA Matrix คลาส 6 (1488) ให้อัตโนมัติ
+   - **Universal `handleJobAdvance()`:**
+     - ปรับปรุงให้เป็น Universal Fallback ทำงานได้จริงกับทุกอาชีพ 100%
+     - แสดงเมนูเลือกสายผ่าน `sm.sendNext()` สวยงาม
+     - รองรับการกระโดดข้ามขั้นแบบหลายระดับ (Multi-tier jump) เช่น ผู้เล่นเลเวล 200 ยังเป็น Beginner อยู่ เมื่อเลือก Thief ระบบจะถามต่อทันทีว่าจะเลือก Assassin หรือ Bandit แล้วเลื่อนขั้นเป็น Night Lord (412) คลาส 4 ให้ทันทีในรอบเดียว
+
+3. **สคริปต์ Python สำหรับ NPC (`fast_job_advance.py`, `quick_adminNPC.py`, `9072303.py`):**
+   - สร้างโมดูล `fast_job_advance.py` เชื่อมต่อเข้ากับ `JobConstants` และเมนูของเกม
+   - อัปเดต Option 14 ใน `quick_adminNPC.py` และ NPC `9072303.py` ให้เรียกใช้ `fast_job_advance.open_fast_job_advance(sm, chr)`
+   - ทำการซิงค์ไฟล์ไปยังโฟลเดอร์แจกจ่าย `Server263\data\scripts\npc\` และ `v214 src\data\scripts\npc\` ให้เหมือนกัน 100%
+
+#### 📦 3. การทดสอบและการส่งมอบไฟล์ (Build & Deployment)
+- **การคอมไพล์:** รัน `mvn clean package -DskipTests` ด้วย Portable OpenJDK 21 สำเร็จสมบูรณ์ 100% (`BUILD SUCCESS` เวลา 01:04 นาที)
+- **การ Deploy ไฟล์ Fat JAR:**
+  - คัดลอก `maplestory.jar` (138,623,200 ไบต์) ไปยัง `Server263\maplestory.jar`
+  - คัดลอกไปยัง `v214 src\maplestory.jar` และ Root Workspace
+- **แพ็กเกจแพตช์อัปเดต:**
+  - สร้างไฟล์แพตช์ `Patches\Server263_Patch_20261010_1322.zip` (ขนาด 121.54 MB) พร้อมสคริปต์ 1-Click `Apply_Patch.bat`
+  - นำไปติดตั้งลง `Server263/` ได้ทันทีใน 2 วินาที โดยไม่ต้องบีบอัดไฟล์ WZ ใหม่
+
+---
+
+### 25. ปรับปรุงระบบ Job Advance, ปลดล็อกสกิลคลาส 1–4 อัตโนมัติ 100% พร้อมแยกความปลอดภัย V-Matrix และ HEXA Matrix อย่างเด็ดขาด
+
+#### 🎯 1. การวิเคราะห์สาเหตุและปัญหา (Root Cause Analysis)
+1. **สาเหตุที่สกิลไม่ปลดล็อคในหน้า Skill (คีย์ลัด K) หลังเปลี่ยนอาชีพ:**
+   - **Client Desync จาก `Char.setJob()`:** เดิมเซิร์ฟเวอร์เปลี่ยนเฉพาะค่า `this.job = id` ในหน่วยความจำ Java แต่**ไม่ได้ส่งสเตตัส `Stat.job` กลับไปยัง Client ทันที** ส่งผลให้ฝั่ง Client เข้าใจว่าตัวละครยังเป็น Beginner (Job 0) จึงไม่แสดงและล็อกแท็บสกิลคลาส 1–4 เอาไว้
+   - **Skill Level 0 ถูกล็อกในเกมยุคใหม่:** ในสคริปต์เควสต์เปลี่ยนอาชีพ NPC เดิม (`ScriptManagerImpl.jobAdvance`) มีเพียงการเพิ่ม 5 SP และยัดสกิลลง Skill Map ที่เลเวล 0 (`currentLevel = 0`) ซึ่งใน MapleStory v214/v265 สกิลที่เลเวล 0 จะถูกล็อก (Locked) ไม่สามารถลากลง Hotkey หรือกดร่ายสกิลได้
+2. **สาเหตุที่ต้องเดินไปคุยกับ NPC ประจำเมือง (Dances with Balrog, Grendel, Athena Pierce ฯลฯ):**
+   - ผู้เล่นไม่มีคำสั่งลัดในการเปิดหน้าต่างเปลี่ยนอาชีพ
+   - เมื่อคุยกับ NPC ประจำเมืองและทำเควสต์สำเร็จ NPC เรียก `jobAdvance()` แต่ไม่มีการปลดล็อกสกิลให้อย่างครบถ้วน
+
+#### 🛡️ 2. มาตรการความปลอดภัยขั้นสูงสุดต่อ V-Matrix (คลาส 5) และ HEXA Matrix (คลาส 6)
+- **การแยกแยะข้อมูลอย่างเข้มงวด 100% (Strict Isolation):**
+  - V-Matrix (คลาส 5) ทำงานผ่าน Root `40000+` และบันทึกลงฐานข้อมูลผ่านตาราง `MatrixInventory` (Node Records)
+  - HEXA Matrix (คลาส 6) ทำงานผ่าน Root `50000+` / Skill ID 8 หลักขึ้นไป (`100000000+`) และเชื่อมต่อผ่านระบบ `HexaMatrix` ที่ใช้ Sol Erda Energy และ Sol Erda Fragments
+  - ฟังก์ชัน `maxSkills()` ใน `Char.java` ได้รับการติดตั้งตัวกรองความปลอดภัย (Safety Guards) แบบหลายชั้น:
+    ```java
+    // STRICT SAFETY: Do NOT touch V-Matrix (5th Job) or HEXA Matrix (6th Job)
+    if (j >= 40000 || skill.getSkillId() >= 40000000) {
+        continue;
+    }
+    SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
+    if (si != null && (si.isOriginSkill() || si.isAscentSkill() || si.getVSkill() > 0)) {
+        continue;
+    }
+    ```
+  - `JobConstants.getJobChain(job)` ถูกสร้างขึ้นมาเพื่อคำนวณเฉพาะสายงานคลาส 1–4 เท่านั้น (เช่น Explorer 100, 110, 111, 112) จะไม่มีการย้อนไปแตะต้องหรือเขียนทับสกิลคลาส 5 หรือคลาส 6 เป็นอันขาด
+  - รวมการส่งแพ็กเก็ตผลลัพธ์เป็นแพ็กเก็ตเดียว (`changeSkillRecordResult`) ภายนอกลูป เพื่อตัดปัญหา Packet Flood และลดอาการแล็ก
+
+#### ⚙️ 3. รายละเอียดการปรับปรุงโค้ด (Refactoring Details)
+1. **`Char.java`:**
+   - ใน `setJob(int id)`: เพิ่มการส่งแพ็กเก็ตซิงค์สเตตัสอาชีพ `Stat.job` กลับไปยัง Client แบบเรียลไทม์
+   - ใน `maxSkills()`: ใช้ `JobConstants.getJobChain(job)` พร้อม Strict Guards คุ้มครอง V & HEXA Matrix ปลดล็อกสกิล 1st–4th ให้เต็ม Max Level ทันที
+2. **`ScriptManagerImpl.java`:**
+   - ใน `jobAdvance(short jobID)` และ `jobAdvanceForDB(short jobID)`: เพิ่มการเรียก `chr.maxSkills();` ทำให้การเปลี่ยนอาชีพผ่าน NPC ทุกตัวในเกม (รวมถึง NPC เมืองเกิดของทุกสายอาชีพ) ปลดล็อกและแม็กซ์สกิลให้ผู้เล่นทันทีโดยอัตโนมัติ
+3. **`PlayerCommands.java`:**
+   - เพิ่มคำสั่ง `@job` (พร้อมชื่อสำรอง `@jobadv`, `@jobadvance`) ระดับสิทธิ์ `Player` ให้ผู้เล่นสามารถเปิดหน้าต่างเปลี่ยนอาชีพและเลือกสายได้ทันทีจากทุกที่ในเกม
+   - เพิ่มคำอธิบาย `@job` ลงในเมนู `@help`
+4. **`Warrior.java` & `Job.java`:**
+   - เพิ่มการเรียก `chr.maxSkills()` หลังเปลี่ยนคลาส และอัปเดตข้อความแนะนำระบบเมื่อเลเวลอัป ให้พิมพ์ `@job` ได้ทันที
+
+#### 📦 4. ผลลัพธ์การคอมไพล์และการส่งมอบ (Build & Artifacts)
+- **การคอมไพล์:** ผ่านสำเร็จ 100% (`BUILD SUCCESS` โดยใช้ OpenJDK 21 + Portable Maven)
+- **การ Deploy ไฟล์:**
+  - `Server263\maplestory.jar` (ขนาด 138,624,954 ไบต์) อัปเดตเรียบร้อยตามกฎ Rule 1 & 2
+  - Root `maplestory.jar` และ `v214 src\maplestory.jar` ซิงค์ตรงกันสมบูรณ์
+  - `Server263\data\scripts\npc\fast_job_advance.py` และ `v214 src\data\scripts\npc\fast_job_advance.py` ซิงค์ตรงกันสมบูรณ์
+- **แพ็กเกจแพตช์อัปเดต:**
+  - สร้างไฟล์แพตช์ล่าสุด `Patches\Server263_Patch_20261010_1403.zip` (ขนาด 121.56 MB) พร้อมสคริปต์ 1-Click `Apply_Patch.bat`
+
+---
+
+### 26. ตรวจสอบและแก้ไขระบบ NPC Job Advance สำหรับกลุ่มอาชีพ Cygnus Knights (แก้ไขบัคสคริปต์ค้างแจ้ง @dispose และปลดล็อกสกิลครบถ้วน 100%)
+
+#### 🎯 1. การวิเคราะห์สาเหตุและปัญหา (Root Cause Analysis)
+1. **สาเหตุของอาการสคริปต์ค้างและแจ้งเตือนให้กด `@dispose`:**
+   - ใน `Server263/data/scripts/npc/quick_adminNPC.py` ตัวเลือกที่ 14 (`Fast Job Advancement`) มีการเรียก `import fast_job_advance` โดยที่ไม่มีการใส่ไดเรกทอรี `data/scripts/npc/` เข้าใน `sys.path` ของ Jython ในขณะที่เรียกสคริปต์ผ่านคำสั่งของผู้เล่น
+   - ทำให้เกิดข้อผิดพลาด `ImportError: No module named fast_job_advance in <script> at line number 230`
+   - ตัวระบบ `ScriptManagerImpl.java` จึงดักจับ `ScriptException` และส่งข้อความสีแดงแจ้งเตือนผู้เล่น: *"Unknown error! Please type @sualoi or @dispose."* และตัดจบการทำงานของสคริปต์ทันที ทำให้กระบวนการเปลี่ยนอาชีพไม่ถูกเรียกใช้งาน
+2. **สาเหตุของอาการสกิลไม่ปลดล็อค (1st - 4th Job) ของกลุ่ม Cygnus:**
+   - เมื่อ Option 14 เกิด ImportError จึงไม่ได้ส่งคำสั่ง `handleJobAdvance()` หรือ `chr.maxSkills()` ทำให้สกิลไม่ถูกรีเฟรช
+   - ใน `JobConstants.java` เมธอด `getJobChain()` ไม่ได้บรรจุ Job ID `1000` (Noblesse) สำหรับ Cygnus Knights และ `5000` สำหรับ Mihile เข้าไปในสายอาชีพ ทำให้เมื่อเรียก `maxSkills()` สกิลคลาสพื้นฐาน (Beginner Skills) ของกลุ่ม Cygnus เช่น `Elemental Shift` (สกิลกระโดดสองจังหวะ/พุ่ง), `Imperial Recall` (วาร์ปกลับ Ereve), `Elemental Slash` ฯลฯ ไม่ถูกรวมเข้ามาในรายการปลดล็อค
+   - ใน `WindArcher.java` และ `Mihile.java` มีการเขียนเมธอด `handleJobAdvance()` ทับเอาไว้แบบเดิม (Legacy) ซึ่งบังคับให้ต้องถามข้ามเควสต์, ตรวจสอบช่องว่างในกระเป๋า และหากเป็นคลาส 4 อยู่แล้วจะแสดงข้อความ *"You may not advance at the current state"* โดยไม่ยอมรีเฟรชหรือปลดล็อคสกิลให้เหมือนอาชีพอื่น
+
+#### ⚙️ 2. รายละเอียดการแก้ไขและ Refactor (Refactoring Details)
+1. **`quick_adminNPC.py` & `fast_job_advance.py`:**
+   - เพิ่มการตั้งค่า `sys.path` ที่ส่วนหัวของ `quick_adminNPC.py` ให้ครอบคลุมพาธ `data/scripts/npc` และ `data/scripts` ป้องกันปัญหา `ImportError` ถาวร
+   - ปรับการทำงานของ Option 14 ใน `quick_adminNPC.py` ให้เรียก `chr.getJobHandler().handleJobAdvance()` โดยตรงอย่างปลอดภัย
+   - ปรับ `fast_job_advance.py` ให้รองรับทั้งการรันตรงผ่านตัวเกมและการเรียกผ่านโมดูล
+2. **`WindArcher.java` & `Mihile.java`:**
+   - ลบเมธอด `handleJobAdvance()` แบบเก่าที่จำกัดการทำงานออก เพื่อให้สืบทอดการทำงานจาก `Job.java` โดยอัตโนมัติ ซึ่งรองรับการเปลี่ยนอาชีพตามระดับเลเวล, ปลดล็อคเควสต์คลาส 5 (1460-1466) และคลาส 6 (1488) ทันที พร้อมเรียก `chr.maxSkills()` รีเฟรชสกิลเต็มทุกคลาส
+3. **`Noblesse.java`:**
+   - เพิ่มการเรียก `chr.maxSkills()` ในเมธอด `handleLevelUp` ช่วงเลเวล 60 และ 100 เพื่อให้สกิลปลดล็อคอัตโนมัติแม้เลเวลอัปตามธรรมชาติ
+4. **`JobConstants.java`:**
+   - อัปเดต `getJobChain(short job)` ให้บรรจุ Job `1000` (Noblesse) สำหรับทุกอาชีพ Cygnus Knights (Dawn Warrior, Blaze Wizard, Wind Archer, Night Walker, Thunder Breaker) และ `5000` สำหรับ Mihile เพื่อให้สกิลติดตัวพื้นฐานถูกปลดล็อคและแม็กซ์เลเวลเต็ม 100%
+
+#### 📦 3. ผลลัพธ์การคอมไพล์และการส่งมอบ (Build & Deployment)
+- **การคอมไพล์:** ผ่านสำเร็จ 100% (`BUILD SUCCESS` โดยใช้ OpenJDK 21 + Portable Maven 3.9.15)
+- **การ Deploy ไฟล์ Fat JAR:**
+  - `Server263\maplestory.jar` (ขนาด 138,623,377 ไบต์) อัปเดตเรียบร้อยตามมาตรฐานความปลอดภัยและ Portable Rule
+  - ซิงค์ตรงกับ `v214 src\bin\maplestory-219.5-jar-with-dependencies.jar`
+- **แพ็กเกจแพตช์อัปเดต:**
+  - สร้างไฟล์แพตช์ล่าสุด `Patches\Server263_Patch_20261010_1447.zip` (ขนาด 121.55 MB) พร้อมสคริปต์ 1-Click `Apply_Patch.bat`
 

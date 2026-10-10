@@ -47,6 +47,7 @@ public class PlayerCommands {
             chr.chatMessage("@checkboss: Check remaining cooldowns for boss encounters.");
             chr.chatMessage("@checkmob: Check nearby monsters and their drop tables.");
             chr.chatMessage("@home: Teleport to Henesys.");
+            chr.chatMessage("@job: Open Job Advancement menu.");
             chr.chatMessage("@warp: Open Universal Warp Center (Major Towns & Fields).");
             chr.chatMessage("@boss: Open Boss Arena & Boss Warp (Up to Kaling Extreme).");
             chr.chatMessage("@admin: Open Maple Administrator Services.");
@@ -139,6 +140,16 @@ public class PlayerCommands {
 
         public static void execute(Char chr, String[] args) {
             chr.getScriptManager().startScript(chr, 9010000, "quick_adminNPC", ScriptType.Npc);
+        }
+    }
+
+    @Command(names = {"job", "jobadv", "jobadvance"}, requiredType = Player)
+    public static class JobAdvanceCmd extends PlayerCommand {
+
+        public static void execute(Char chr, String[] args) {
+            if (chr.getJobHandler() != null) {
+                chr.getJobHandler().handleJobAdvance();
+            }
         }
     }
 

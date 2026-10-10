@@ -136,6 +136,7 @@ public class Noblesse extends Job {
             sm.giveItem(level == 60 ? 1142068 : 1142069);
             sm.addSPJobAdv(jobID, 5);
             sm.addSPJobAdv(next, 3);
+            chr.maxSkills();
         }
     }
 }

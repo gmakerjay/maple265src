@@ -2535,7 +2535,7 @@ public abstract class Job {
             } else {
                 List<Short> branch = JobConstants.getBranchOptions(curJob, level, chr.getSubJob());
                 if (branch != null && !branch.isEmpty()) {
-                    chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Job Advance] You can now advance your job! Please talk to Quick Admin NPC or use Fast Job Advance to select your path.");
+                    chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Job Advance] You can now advance your job! Type @job in chat or talk to the Maple Administrator to choose your path!");
                 }
             }
             if (level >= 200 && !chr.hasQuestCompleted(1465)) {

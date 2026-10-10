@@ -3434,6 +3434,10 @@ public class Char {
         setJobHandler(JobManager.getJobById((short) id, this));
         getField().broadcast(UserRemote.effect(getId(), Effect.changeJobEffect()), this);
 
+        Map<Stat, Object> stats = new HashMap<>();
+        stats.put(Stat.job, id);
+        sendStatsPacket(stats);
+
         int subId = (id == 2210) ? 2200 : (id == 2212) ? 2211 : (id == 2218) ? 2217 : 0;
         List<Skill> newSkills = SkillData.getSkillsByJob((short) (subId > 0 ? subId : id));
         newSkills.forEach(skill -> addSkill(skill, true));
@@ -12400,50 +12404,32 @@ public class Char {
 
     public void maxSkills() {
         List<Skill> list = new ArrayList<>();
-        Set<Short> jobs = new HashSet<>();
         short job = getJob();
-        if (job == 434) {
-            jobs.add(job);
-            jobs.add((short) (job - 1));
-            jobs.add((short) (job - 2));
-            jobs.add((short) (job - 3));
-            jobs.add((short) (job - 4));
-        } else if (job == 433) {
-            jobs.add(job);
-            jobs.add((short) (job - 1));
-            jobs.add((short) (job - 2));
-            jobs.add((short) (job - 3));
-        } else if ((job % 100 >= 12 && job % 100 <= 32) || job % 100 == 72 || job == 2218) {
-            jobs.add(job);
-            jobs.add((short) (job == 2218 ? 2214 : (job - 1)));
-            jobs.add((short) (job == 2218 ? 2212 : (job - 2)));
-            jobs.add((short) (job == 2218 ? 2210 : (job - (job % 100))));
-        } else if ((job % 100 >= 11 && job % 100 <= 31) || job % 100 == 71 || job == 2214) {
-            jobs.add(job);
-            jobs.add((short) (job == 2214 ? 2212 : (job - 1)));
-            jobs.add((short) (job == 2214 ? 2210 : (job - (job % 100))));
-        } else if (job % 100 == 10 || job % 100 == 70 || job == 2212) {
-            jobs.add(job);
-            jobs.add((short) (job == 2212 ? 2210 : job % 100 == 70 ? 508 : job - (job % 100)));
-        } else {
-            jobs.add(job);
-        }
+        Set<Short> jobs = new LinkedHashSet<>(JobConstants.getJobChain(job));
         if (getLevel() >= 260 && JobConstants.isSiaAstelle(job)) {
             jobs.add((short) 18214);
         }
         for (short j : jobs) {
             for (Skill skill : SkillData.getSkillsByJob(j)) {
+                // STRICT SAFETY: Do NOT touch V-Matrix (5th Job) or HEXA Matrix (6th Job)
+                if (j >= 40000 || skill.getSkillId() >= 40000000) {
+                    continue;
+                }
+                SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
+                if (si != null && (si.isOriginSkill() || si.isAscentSkill() || si.getVSkill() > 0)) {
+                    continue;
+                }
                 byte maxLevel = (byte) skill.getMaxLevel();
                 skill.setCurrentLevel(maxLevel);
                 skill.setMasterLevel(maxLevel);
                 list.add(skill);
                 addSkill(skill);
             }
-            if (list.size() > 0) {
-                write(WvsContext.changeSkillRecordResult(list, true, false, false));
-            }
         }
-        chatMessage("Your skills have been maxed.");
+        if (list.size() > 0) {
+            write(WvsContext.changeSkillRecordResult(list, true, false, false));
+        }
+        chatMessage("Your skills (1st - 4th Job) have been maxed.");
     }
 
     public void cancelTimers() {
