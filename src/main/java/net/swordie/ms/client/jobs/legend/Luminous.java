@@ -9,6 +9,7 @@ import net.swordie.ms.client.character.skills.LarknessManager;
 import net.swordie.ms.client.character.skills.Option;
 import net.swordie.ms.client.character.skills.Skill;
 import net.swordie.ms.client.character.skills.info.AttackInfo;
+import net.swordie.ms.client.character.skills.info.MobAttackInfo;
 import net.swordie.ms.client.character.skills.info.SkillInfo;
 import net.swordie.ms.client.character.skills.info.SkillUseInfo;
 import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
@@ -16,12 +17,14 @@ import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
 import net.swordie.ms.client.jobs.Job;
 import net.swordie.ms.connection.InPacket;
 import net.swordie.ms.connection.packet.Effect;
+import net.swordie.ms.connection.packet.UserLocal;
 import net.swordie.ms.connection.packet.UserPacket;
 import net.swordie.ms.connection.packet.UserRemote;
 import net.swordie.ms.constants.FieldConstants;
 import net.swordie.ms.constants.JobConstants;
 import net.swordie.ms.constants.SkillConstants;
 import net.swordie.ms.enums.AssistType;
+import net.swordie.ms.enums.ChatType;
 import net.swordie.ms.enums.MoveAbility;
 import net.swordie.ms.enums.Stat;
 import net.swordie.ms.life.AffectedArea;
@@ -90,6 +93,16 @@ public class Luminous extends Job {
     public static final int LIBERATION_ORB_DARK_BULLET = 400021108; // Passive Dark
     public static final int LIBERATION_ORB_IMBALANCE_ATTACK = 400021109;
     public static final int LIBERATION_ORB_BALANCE_ATTACK = 400021110;
+
+    // ===== 6th Job HEXA Matrix Skills =====
+    public static final int HARMONIC_PARADOX = 27141500; // Origin Skill
+    public static final int LUSTROUS_ORB = 27141502; // Origin Second Skill
+    public static final int HEXA_ENDER = 27141000;
+    public static final int HEXA_REFLECTION = 27141001;
+    public static final int HEXA_ENDLESS_DARKNESS = 27140002;
+    public static final int HEXA_APOCALYPSE = 27141004;
+    public static final int HEXA_ETERNAL_LIGHT = 27140005;
+    public static final int HEXA_TWILIGHT_NOVA = 27141007;
 
     private final int[] addedSkills = new int[]{
             EQUILIBRIUM_DARK,
@@ -317,6 +330,21 @@ public class Luminous extends Job {
             newStats.clear();
         }
         switch (skillID) {
+            case HARMONIC_PARADOX:
+            case LUSTROUS_ORB:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob != null && mob.getHp() > 0) {
+                        MobTemporaryStat mts = mob.getTemporaryStat();
+                        Option opt1 = new Option();
+                        opt1.nOption = 1;
+                        opt1.rOption = skillID;
+                        opt1.tOption = 10; // 10s Absolute Freeze / Bind
+                        opt1.cOption = chr.getId();
+                        mts.addStatOptions(mob, MobStat.Freeze, opt1);
+                    }
+                }
+                break;
             case RAY_OF_REDEMPTION:
                 chr.heal(chr.getMaxHP()); // 800% Recovery
                 break;
@@ -328,6 +356,7 @@ public class Luminous extends Job {
                 }
                 break;
             case ENDER:
+            case HEXA_ENDER:
                 if (chr.hasSkill(BAPTISM_OF_LIGHT_AND_DARKNESS)) {
                     incrementSwordsOfConsciousness();
                 }
@@ -383,6 +412,20 @@ public class Luminous extends Job {
         LarknessManager lm = tsm.getLarknessManager();
         Option o1 = new Option();
         switch (skillID) {
+            case HARMONIC_PARADOX:
+            case LUSTROUS_ORB:
+                o1.nReason = skillID;
+                o1.nValue = 1;
+                o1.tTerm = 7;
+                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
+                chr.chatMessage(ChatType.Notice, "[Origin] Harmonic Paradox activated! Light and Dark achieve ultimate equilibrium.");
+                chr.dispose();
+                break;
             case SHADOW_SHELL:
                 o1.nOption = 3;
                 o1.rOption = skillID;

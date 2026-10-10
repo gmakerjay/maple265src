@@ -330,6 +330,28 @@ public abstract class Job {
             // Extra Skill Request
             handleExtraSkill(si, skillID, attackInfo);
             if (hasHitMobs) {
+                // 6th Job Origin Skill: 10s Absolute Bind (Freeze) & 20s Origin Debuff
+                if (SkillConstants.isOriginSkill(skillID)) {
+                    for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                        Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                        if (mob != null && mob.getHp() > 0) {
+                            MobTemporaryStat mts = mob.getTemporaryStat();
+                            Option opt1 = new Option();
+                            opt1.nOption = 1;
+                            opt1.rOption = skillID;
+                            opt1.tOption = 10; // 10s Absolute Freeze / Bind
+                            opt1.cOption = chr.getId();
+                            mts.addStatOptions(mob, MobStat.Freeze, opt1);
+
+                            Option opt2 = new Option();
+                            opt2.nOption = 1;
+                            opt2.rOption = skillID;
+                            opt2.tOption = 20; // 20s Origin Debuff
+                            opt2.cOption = chr.getId();
+                            mts.addStatOptions(mob, MobStat.OriginDebuff, opt2);
+                        }
+                    }
+                }
                 if (tsm.hasStat(GuidedArrow) && !SkillConstants.isForceAtomSkill(skillID)) {
                     guideGuidedArrowForceAtom(attackInfo);
                 }
@@ -750,6 +772,19 @@ public abstract class Job {
             Option o6 = new Option();
             applyHpCost(skillID);
             applyNdTime(chr, si, slv);
+            // 6th Job Origin Skill: 7s Absolute Invincibility (IndieNotDamaged) & Party Cutscene
+            if (SkillConstants.isOriginSkill(skillID)) {
+                o1.nReason = skillID;
+                o1.nValue = 1;
+                o1.tTerm = 7;
+                tsm.sendStat(IndieNotDamaged, o1);
+                chr.write(UserLocal.showHexaSkillEff(chr));
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
+            }
             int noviceSkill = SkillConstants.getNoviceSkillFromRace(skillID);
             if (noviceSkill == 1085 || noviceSkill == 1087 || noviceSkill == 1090 || noviceSkill == 1179) {
                 summon = Summon.getSummonByAndSetStat(c.getChr(), skillID, slv);

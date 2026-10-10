@@ -158,8 +158,9 @@ public class Lara extends Job {
     public static final int WINDING_MOUNTAIN_RIDGE_2 = 400021131;
 
     // ===== 6th Job HEXA Origin Skill =====
+    public static final int UNIVERSE_IN_BLOOM = 162141500;
+    public static final int UNIVERSE_IN_BLOOM_ATTACK = 162141501;
     public static final int CORNUCOPIA = 162141502;
-    public static final int CORNUCOPIA_SUB = 162141503;
 
     // ===== 6th Job HEXA Mastery Skills =====
     public static final int HEXA_ERUPTION_HEAVING_RIVER = 162141001;
@@ -428,14 +429,21 @@ public class Lara extends Job {
                 o1.tTerm = si != null ? si.getValue(SkillStat.time, slv) : 20;
                 tsm.sendStat(CharacterTemporaryStat.IndieDamR, o1);
                 break;
+            case UNIVERSE_IN_BLOOM:
+            case UNIVERSE_IN_BLOOM_ATTACK:
             case CORNUCOPIA:
-            case CORNUCOPIA_SUB:
                 // Origin cutscene invincibility (7s)
                 o1.nReason = skillID;
                 o1.nValue = 1;
                 o1.tTerm = 7;
                 tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
-                chr.chatMessage(ChatType.Notice, "[Origin] Cornucopia activated! Nature's bounty purifies all.");
+                chr.write(UserLocal.showHexaSkillEff(chr));
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
+                chr.chatMessage(ChatType.Notice, "[Origin] Universe in Bloom activated! Nature's bounty purifies all.");
                 chr.dispose();
                 break;
             default:
@@ -465,8 +473,8 @@ public class Lara extends Job {
             }
         }
 
-        // Origin Skill: Cornucopia (10s Freeze / Bind, Party Effect)
-        if (skillID == CORNUCOPIA || skillID == CORNUCOPIA_SUB) {
+        // Origin Skill: Universe in Bloom / Cornucopia (10s Freeze / Bind, Party Effect)
+        if (skillID == UNIVERSE_IN_BLOOM || skillID == UNIVERSE_IN_BLOOM_ATTACK || skillID == CORNUCOPIA) {
             for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
                 Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
                 if (mob != null && mob.getHp() > 0) {
@@ -477,6 +485,12 @@ public class Lara extends Job {
                     opt1.tOption = 10; // 10s Absolute Freeze / Bind
                     opt1.cOption = chr.getId();
                     mts.addStatOptions(mob, MobStat.Freeze, opt1);
+                    Option opt2 = new Option();
+                    opt2.nOption = 1;
+                    opt2.rOption = skillID;
+                    opt2.tOption = 20; // 20s Origin Debuff
+                    opt2.cOption = chr.getId();
+                    mts.addStatOptions(mob, MobStat.OriginDebuff, opt2);
                 }
             }
             if (chr.getParty() != null) {

@@ -12,6 +12,7 @@ import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
 import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
 import net.swordie.ms.client.jobs.Job;
 import net.swordie.ms.connection.InPacket;
+import net.swordie.ms.connection.packet.UserLocal;
 import net.swordie.ms.constants.JobConstants;
 import net.swordie.ms.enums.*;
 import net.swordie.ms.life.Life;
@@ -81,6 +82,17 @@ public class DemonSlayer extends Job {
     public static final int DEMON_AWAKENING_LASH_4 = 400011018;
     public static final int DEMON_BANE = 400011110;
     public static final int DEMON_BANE_2 = 400011111;
+
+    // ===== 6th Job HEXA Matrix Skills =====
+    public static final int NIGHTMARE = 31141500; // Origin Skill
+    public static final int AMETHYSTINE_INCURSION = 31141504; // Origin Second Skill
+    public static final int HEXA_DEMON_IMPACT = 31141000;
+    public static final int HEXA_DEMON_LASH = 31141002;
+    public static final int HEXA_INFERNAL_CONCUSSION = 31141008;
+    public static final int HEXA_DEMON_CRY = 31141012;
+    public static final int HEXA_DARK_METAMORPHOSIS = 31141009;
+    public static final int HEXA_CERBERUS_CHOMP = 31141013;
+    public static final int HEXA_DEMONIC_PLUME = 31140016;
 
     private final int[] addedSkills = new int[]{
             CURSE_OF_FURY,
@@ -222,7 +234,23 @@ public class DemonSlayer extends Job {
             leechAuraHealing(attackInfo, now);
         }
         switch (attackInfo.skillId) {
+            case NIGHTMARE:
+            case AMETHYSTINE_INCURSION:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob != null && mob.getHp() > 0) {
+                        MobTemporaryStat mts = mob.getTemporaryStat();
+                        Option opt1 = new Option();
+                        opt1.nOption = 1;
+                        opt1.rOption = skillID;
+                        opt1.tOption = 10; // 10s Absolute Freeze / Bind
+                        opt1.cOption = chr.getId();
+                        mts.addStatOptions(mob, MobStat.Freeze, opt1);
+                    }
+                }
+                break;
             case CERBERUS_CHOMP:
+            case HEXA_CERBERUS_CHOMP:
                 int furyabsorbed = si.getValue(x, slv);
                 chr.healMP(furyabsorbed);
                 break;
@@ -231,6 +259,7 @@ public class DemonSlayer extends Job {
                 chr.heal(hpheal);
                 break;
             case DEMON_CRY:
+            case HEXA_DEMON_CRY:
                 chr.setSkillCooldown(skillID, slv);
                 break;
         }
@@ -381,6 +410,20 @@ public class DemonSlayer extends Job {
         Option o3 = new Option();
         Option o4 = new Option();
         switch (skillID) {
+            case NIGHTMARE:
+            case AMETHYSTINE_INCURSION:
+                o1.nReason = skillID;
+                o1.nValue = 1;
+                o1.tTerm = 7;
+                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
+                chr.chatMessage(ChatType.Notice, "[Origin] Nightmare activated! Dark fury overwhelms the battlefield.");
+                chr.dispose();
+                break;
             case BATTLE_PACT_DS:
                 o1.nOption = si.getValue(x, slv);
                 o1.rOption = skillID;

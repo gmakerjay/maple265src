@@ -14,6 +14,7 @@ import net.swordie.ms.client.character.skills.Option;
 import net.swordie.ms.client.character.skills.Skill;
 import net.swordie.ms.client.character.skills.SkillStat;
 import net.swordie.ms.client.character.skills.info.AttackInfo;
+import net.swordie.ms.client.character.skills.info.MobAttackInfo;
 import net.swordie.ms.client.character.skills.info.SkillInfo;
 import net.swordie.ms.client.character.skills.info.SkillUseInfo;
 import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
@@ -23,6 +24,7 @@ import net.swordie.ms.connection.packet.*;
 import net.swordie.ms.constants.JobConstants;
 import net.swordie.ms.constants.QuestConstants;
 import net.swordie.ms.constants.SkillConstants;
+import net.swordie.ms.enums.ChatType;
 import net.swordie.ms.enums.MoveAbility;
 import net.swordie.ms.enums.Stat;
 import net.swordie.ms.handlers.GlobalTimerManager;
@@ -111,6 +113,18 @@ public class Zero extends Job {
     public static final int TRANSCENDENT_RHINNE_PRAYER = 400001045;
     public static final int TRANSCENDENT_RHINNE_PRAYER_ATTACK = 400001056;
 
+    // ===== 6th Job HEXA Matrix Skills =====
+    public static final int END_TIME = 101141500; // Origin Skill
+    public static final int BITEMPORIS = 101141503; // Origin Second Skill
+    public static final int HEXA_WIND_CUTTER = 101141000;
+    public static final int HEXA_GIGA_CRASH = 101141006;
+    public static final int HEXA_SPIN_DRIVER = 101141017;
+    public static final int HEXA_ROLLING_CROSS = 101141014;
+    public static final int HEXA_FLASH_ASSAULT = 101141023;
+    public static final int HEXA_FLASH_CUT = 101141021;
+    public static final int HEXA_MOON_STRIKE = 101141029;
+    public static final int HEXA_RISING_SLASH = 101141026;
+    public static final int HEXA_SHADOW_RAIN = 101141033;
 
     private final int[] addedSkills = new int[]{
             DUAL_COMBAT,
@@ -423,6 +437,21 @@ public class Zero extends Job {
             }
         }
         switch (skillID) {
+            case END_TIME:
+            case BITEMPORIS:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob != null && mob.getHp() > 0) {
+                        MobTemporaryStat mts = mob.getTemporaryStat();
+                        Option opt1 = new Option();
+                        opt1.nOption = 1;
+                        opt1.rOption = skillID;
+                        opt1.tOption = 10; // 10s Absolute Freeze / Bind
+                        opt1.cOption = chr.getId();
+                        mts.addStatOptions(mob, MobStat.Freeze, opt1);
+                    }
+                }
+                break;
             case ADV_EARTH_BREAK_SHOCK_INIT:
                 slv = (byte) chr.getSkill(ADV_EARTH_BREAK).getCurrentLevel();
                 SkillInfo fci = SkillData.getSkillInfoById(ADV_EARTH_BREAK);
@@ -601,6 +630,20 @@ public class Zero extends Job {
         Option o5 = new Option();
         Option o6 = new Option();
         switch (skillID) {
+            case END_TIME:
+            case BITEMPORIS:
+                o1.nReason = skillID;
+                o1.nValue = 1;
+                o1.tTerm = 7;
+                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
+                chr.chatMessage(ChatType.Notice, "[Origin] End Time activated! Dual transcendent forces sever the timeline.");
+                chr.dispose();
+                break;
             case DIVINE_FORCE:
                 if (tsm.hasStatBySkillId(DIVINE_FORCE) || tsm.hasStatBySkillId(DIVINE_SPEED)) {
                     tsm.removeStatsBySkill(DIVINE_FORCE);

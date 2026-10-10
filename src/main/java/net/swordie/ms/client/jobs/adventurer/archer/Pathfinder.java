@@ -17,6 +17,7 @@ import net.swordie.ms.constants.FieldConstants;
 import net.swordie.ms.constants.JobConstants;
 import net.swordie.ms.constants.SkillConstants;
 import net.swordie.ms.enums.AssistType;
+import net.swordie.ms.enums.ChatType;
 import net.swordie.ms.enums.ForceAtomEnum;
 import net.swordie.ms.enums.MoveAbility;
 import net.swordie.ms.enums.TSIndex;
@@ -118,6 +119,19 @@ public class Pathfinder extends Job {
     public static final int RELIC_UNBOUND_BURST_1 = 400031049;
     public static final int RELIC_UNBOUND_BURST_2 = 400031050;
     public static final int RELIC_UNBOUND_TORRENT = 400031051; // Summon
+
+    // ===== 6th Job HEXA Matrix Skills =====
+    public static final int FORSAKEN_RELIC = 3341500; // Origin Skill
+    public static final int PIERCING_RELIC = 3341505; // Origin Second Skill
+    public static final int HEXA_CARDINAL_BURST = 3341000;
+    public static final int HEXA_BOUNTIFUL_BURST = 3341002;
+    public static final int HEXA_CARDINAL_DELUGE = 3341004;
+    public static final int HEXA_BOUNTIFUL_DELUGE = 3341005;
+    public static final int HEXA_CARDINAL_TORRENT = 3341008;
+    public static final int HEXA_GLYPH_OF_IMPALEMENT = 3341006;
+    public static final int HEXA_ANCIENT_ASTRA = 3341010;
+    public static final int HEXA_SHADOW_RAVEN = 3341024;
+    public static final int HEXA_COMBO_ASSAULT = 3341016;
 
     private static final int[] addedSkills = new int[]{
             ANCIENT_CURSE,
@@ -377,6 +391,21 @@ public class Pathfinder extends Job {
         }
         Option o1 = new Option();
         switch (skillID) {
+            case FORSAKEN_RELIC:
+            case PIERCING_RELIC:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob != null && mob.getHp() > 0) {
+                        MobTemporaryStat mts = mob.getTemporaryStat();
+                        Option opt1 = new Option();
+                        opt1.nOption = 1;
+                        opt1.rOption = skillID;
+                        opt1.tOption = 10; // 10s Absolute Freeze / Bind
+                        opt1.cOption = chr.getId();
+                        mts.addStatOptions(mob, MobStat.Freeze, opt1);
+                    }
+                }
+                break;
             case SWARM_SHOT:
                 createSplitMistelForceAtom(attackInfo);
                 break;
@@ -599,6 +628,20 @@ public class Pathfinder extends Job {
         Field field = chr.getField();
         Option o1 = new Option();
         switch (skillID) {
+            case FORSAKEN_RELIC:
+            case PIERCING_RELIC:
+                o1.nReason = skillID;
+                o1.nValue = 1;
+                o1.tTerm = 7;
+                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
+                chr.chatMessage(ChatType.Notice, "[Origin] Forsaken Relic activated! Ancient powers awaken.");
+                chr.dispose();
+                break;
             case RAVEN:
                 Summon summon = Summon.getSummonByAndSetStat(c.getChr(), skillID, slv);
                 summon.setFlyMob(true);

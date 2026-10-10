@@ -15,8 +15,10 @@ import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
 import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
 import net.swordie.ms.client.jobs.Job;
 import net.swordie.ms.connection.InPacket;
+import net.swordie.ms.connection.packet.UserLocal;
 import net.swordie.ms.connection.packet.UserRemote;
 import net.swordie.ms.constants.JobConstants;
+import net.swordie.ms.enums.ChatType;
 import net.swordie.ms.enums.ForceAtomEnum;
 import net.swordie.ms.life.mob.Mob;
 import net.swordie.ms.life.mob.MobStat;
@@ -90,6 +92,16 @@ public class Kinesis extends Job {
     public static final int LAW_OF_GRAVITY_2 = 400021097;
     public static final int LAW_OF_GRAVITY_3 = 400021098;
     public static final int LAW_OF_GRAVITY_4 = 400021104; // AA
+
+    // ===== 6th Job HEXA Matrix Skills =====
+    public static final int FROM_ANOTHER_REALM = 142141500; // Origin Skill
+    public static final int FRACTAL_HORIZON = 142141502; // Origin Second Skill
+    public static final int HEXA_ULTIMATE_METAL_PRESS = 142141000;
+    public static final int HEXA_PSYCHIC_GRAB = 142140001;
+    public static final int HEXA_ULTIMATE_PSYCHIC_SHOT = 142140004;
+    public static final int HEXA_ULTIMATE_TRAINWRECK = 142141005;
+    public static final int HEXA_ULTIMATE_BPM = 142141006;
+    public static final int HEXA_KINETIC_COMBO = 142140007;
 
     private final int[] addedSkills = new int[]{
     };
@@ -213,6 +225,21 @@ public class Kinesis extends Job {
         }
         Option o = new Option();
         switch (skillID) {
+            case FROM_ANOTHER_REALM:
+            case FRACTAL_HORIZON:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob != null && mob.getHp() > 0) {
+                        MobTemporaryStat mts = mob.getTemporaryStat();
+                        Option opt1 = new Option();
+                        opt1.nOption = 1;
+                        opt1.rOption = skillID;
+                        opt1.tOption = 10; // 10s Absolute Freeze / Bind
+                        opt1.cOption = chr.getId();
+                        mts.addStatOptions(mob, MobStat.Freeze, opt1);
+                    }
+                }
+                break;
             case MIND_BREAK:
                 int count = 0;
                 for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
@@ -378,6 +405,20 @@ public class Kinesis extends Job {
                 o1.rOption = skillID;
                 o1.tOption = si.getValue(time, slv);
                 tsm.sendStat(NewFlying, o1); //38s
+                break;
+            case FROM_ANOTHER_REALM:
+            case FRACTAL_HORIZON:
+                o1.nReason = skillID;
+                o1.nValue = 1;
+                o1.tTerm = 7;
+                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
+                chr.chatMessage(ChatType.Notice, "[Origin] From Another Realm activated! Spacetime distorts under telekinetic mass.");
+                chr.dispose();
                 break;
             case PSYCHIC_TORNADO:
                 o1.nOption = 1;

@@ -80,7 +80,9 @@ public class Shade extends Job {
 
     public static final int SPIRIT_FLOW = 400051010;
     public static final int SPIRITGATE_SUMMONER = 400051022;
-    public static final int SPIRITGATE_SUMMONS = 400051023;
+    public static final int SPIRITGATE_ATOM = 400051023;
+    public static final int SPIRITGATE_SUMMONS = 400051028;
+    public static final int SPIRITGATE_SUMMONS_2 = 400051029;
     public static final int TRUE_SPIRIT_CLAW = 400051043;
     public static final int SMASHING_MULTIPUNCH_KEYDOWN = 400051078;
     public static final int SMASHING_MULTIPUNCH_FINALE = 400051079;
@@ -181,6 +183,8 @@ public class Shade extends Job {
                 }
                 break;
             case SPIRITGATE_SUMMONS:
+            case SPIRITGATE_SUMMONS_2:
+            case SPIRITGATE_ATOM:
                 si = SkillData.getSkillInfoById(SPIRITGATE_SUMMONER);
                 slv = (byte) chr.getSkillLevel(SPIRITGATE_SUMMONER);
                 o1.rOption = skillID;
@@ -222,6 +226,8 @@ public class Shade extends Job {
         if (skillID != FOX_SPIRITS_ATOM
                 && skillID != FOX_SPIRITS_ATOM_2
                 && skillID != SPIRITGATE_SUMMONS
+                && skillID != SPIRITGATE_SUMMONS_2
+                && skillID != SPIRITGATE_ATOM
                 && skillID != SPIRIT_TRAP
                 && tsm.hasStat(TempSecondaryStat)) {
             doSpiritFlowBonusAttack(now);

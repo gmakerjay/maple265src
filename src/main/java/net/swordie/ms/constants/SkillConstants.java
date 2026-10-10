@@ -178,6 +178,22 @@ public class SkillConstants {
     public static final int MIGHTY_ROAR = 80001807;
     public static final int FEROCIOUS_ROAR = 80001808;
 
+    public static boolean isOriginSkill(int skillID) {
+        int sub = skillID % 100000;
+        if (sub >= 41500 && sub <= 41599) {
+            return true;
+        }
+        // Dual Blade Origin (4361500, 4361504)
+        if (skillID >= 4361500 && skillID <= 4361599) {
+            return true;
+        }
+        // Evan Origin (22201500, 22201502)
+        if (skillID >= 22201500 && skillID <= 22201599) {
+            return true;
+        }
+        return false;
+    }
+
     // used for char specific Xenon pod cooldown.
     public static final int XENON_POD_FOR_COOLDOWN = 899999999;
 

@@ -2745,6 +2745,26 @@ public class AdminCommands {
             secondaryId = 1353203; // Chess Piece
             emblemId = 1190557; // Mitra Magician Emblem
             armors = mageArmors;
+        } else if (JobConstants.isLuminous(job)) {
+            weaponId = 1212120; // Arcane Umbra Shining Rod
+            secondaryId = 1352403; // Orb
+            emblemId = 1190557; // Mitra Magician Emblem
+            armors = mageArmors;
+        } else if (JobConstants.isDemonSlayer(job)) {
+            weaponId = 1312204; // Arcane Umbra One-Handed Axe
+            secondaryId = 1352003; // Force Shield
+            emblemId = 1190555; // Mitra Warrior Emblem
+            armors = warriorArmors;
+        } else if (JobConstants.isDemonAvenger(job)) {
+            weaponId = 1232114; // Arcane Umbra Desperado
+            secondaryId = 1352004; // Demon Shield
+            emblemId = 1190555; // Mitra Warrior Emblem
+            armors = warriorArmors;
+        } else if (JobConstants.isZero(job)) {
+            weaponId = 1562007; // Lazuli Type 9
+            secondaryId = 1572007; // Lapis Type 9
+            emblemId = 1190555; // Mitra Warrior Emblem
+            armors = warriorArmors;
         } else {
             if (JobConstants.isWarriorEquipJob(job)) {
                 weaponId = 1402259;
@@ -2863,6 +2883,82 @@ public class AdminCommands {
                     targetJob = 17512;
                 } else if (arg.contains("xenon")) {
                     targetJob = 3612;
+                } else if (arg.contains("zero")) {
+                    targetJob = 10112;
+                } else if (arg.contains("kinesis")) {
+                    targetJob = 14212;
+                } else if (arg.contains("pathfinder") || arg.contains("pf")) {
+                    targetJob = 332;
+                } else if (arg.contains("demonslayer") || arg.contains("ds")) {
+                    targetJob = 3112;
+                } else if (arg.contains("demonavenger") || arg.contains("da")) {
+                    targetJob = 3122;
+                } else if (arg.contains("luminous") || arg.contains("lumi")) {
+                    targetJob = 2712;
+                } else if (arg.contains("cadena")) {
+                    targetJob = 6412;
+                } else if (arg.contains("hero")) {
+                    targetJob = 112;
+                } else if (arg.contains("paladin")) {
+                    targetJob = 122;
+                } else if (arg.contains("darkknight") || arg.contains("drk")) {
+                    targetJob = 132;
+                } else if (arg.contains("fp") || arg.contains("firepoison")) {
+                    targetJob = 212;
+                } else if (arg.contains("il") || arg.contains("icelightning")) {
+                    targetJob = 222;
+                } else if (arg.contains("bishop") || arg.contains("bish")) {
+                    targetJob = 232;
+                } else if (arg.contains("bowmaster") || arg.contains("bm")) {
+                    targetJob = 312;
+                } else if (arg.contains("marksman") || arg.contains("mm")) {
+                    targetJob = 322;
+                } else if (arg.contains("nightlord") || arg.contains("nl")) {
+                    targetJob = 412;
+                } else if (arg.contains("shadower") || arg.contains("shad")) {
+                    targetJob = 422;
+                } else if (arg.contains("dualblade") || arg.contains("db")) {
+                    targetJob = 434;
+                } else if (arg.contains("buccaneer") || arg.contains("bucc")) {
+                    targetJob = 512;
+                } else if (arg.contains("corsair") || arg.contains("sair")) {
+                    targetJob = 522;
+                } else if (arg.contains("cannoneer") || arg.contains("cannon")) {
+                    targetJob = 532;
+                } else if (arg.contains("dawnwarrior") || arg.contains("dw")) {
+                    targetJob = 1112;
+                } else if (arg.contains("blazewizard") || arg.contains("bw")) {
+                    targetJob = 1212;
+                } else if (arg.contains("windarcher") || arg.contains("wa")) {
+                    targetJob = 1312;
+                } else if (arg.contains("nightwalker") || arg.contains("nw")) {
+                    targetJob = 1412;
+                } else if (arg.contains("thunderbreaker") || arg.contains("tb")) {
+                    targetJob = 1512;
+                } else if (arg.contains("mihile")) {
+                    targetJob = 5112;
+                } else if (arg.contains("aran")) {
+                    targetJob = 2112;
+                } else if (arg.contains("evan")) {
+                    targetJob = 2218;
+                } else if (arg.contains("mercedes") || arg.contains("merc")) {
+                    targetJob = 2312;
+                } else if (arg.contains("phantom")) {
+                    targetJob = 2412;
+                } else if (arg.contains("shade")) {
+                    targetJob = 2512;
+                } else if (arg.contains("battlemage") || arg.contains("bam")) {
+                    targetJob = 3212;
+                } else if (arg.contains("wildhunter") || arg.contains("wh")) {
+                    targetJob = 3312;
+                } else if (arg.contains("mechanic") || arg.contains("mech")) {
+                    targetJob = 3512;
+                } else if (arg.contains("blaster")) {
+                    targetJob = 3712;
+                } else if (arg.contains("kaiser")) {
+                    targetJob = 6112;
+                } else if (arg.contains("angelicbuster") || arg.contains("ab")) {
+                    targetJob = 6512;
                 }
             }
             setupEndgame(chr, targetJob);
