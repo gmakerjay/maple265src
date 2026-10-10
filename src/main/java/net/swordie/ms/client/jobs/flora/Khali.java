@@ -263,71 +263,7 @@ public class Khali extends Job {
         }
     }
 
-    @Override
-    public void handleJobAdvance() {
-        ScriptManagerImpl sm = chr.getScriptManager();
-        short curJob = chr.getJob();
-        if (curJob == JobConstants.JobEnum.KHALI_1.getJobId() || curJob == JobConstants.JobEnum.KHALI.getJobId()) {
-            if (chr.getLevel() < 30) {
-                sm.sendSayOkay("#eThis job requires you to be at least level #r30#k prior to advancement.");
-                return;
-            }
-            if (chr.getLevel() >= 100) {
-                sm.setJob(JobConstants.JobEnum.KHALI_4.getJobId());
-                sm.addSPJobAdv(JobConstants.JobEnum.KHALI_1.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.KHALI_2.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.KHALI_3.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.KHALI_4.getJobId(), 5);
-                chr.maxSkills();
-                chr.chatMessage(ChatType.Notice, "[Khali] Advanced to 4th Job (15412)!");
-            } else if (chr.getLevel() >= 60) {
-                sm.setJob(JobConstants.JobEnum.KHALI_3.getJobId());
-                sm.addSPJobAdv(JobConstants.JobEnum.KHALI_1.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.KHALI_2.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.KHALI_3.getJobId(), 5);
-                chr.maxSkills();
-                chr.chatMessage(ChatType.Notice, "[Khali] Advanced to 3rd Job (15411)!");
-            } else {
-                sm.setJob(JobConstants.JobEnum.KHALI_2.getJobId());
-                sm.addSPJobAdv(JobConstants.JobEnum.KHALI_1.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.KHALI_2.getJobId(), 5);
-                chr.maxSkills();
-                chr.chatMessage(ChatType.Notice, "[Khali] Advanced to 2nd Job (15410)!");
-            }
-        } else if (curJob == JobConstants.JobEnum.KHALI_2.getJobId()) {
-            if (chr.getLevel() < 60) {
-                sm.sendSayOkay("#eThis job requires you to be at least level #r60#k prior to advancement.");
-                return;
-            }
-            if (chr.getLevel() >= 100) {
-                sm.setJob(JobConstants.JobEnum.KHALI_4.getJobId());
-                sm.addSPJobAdv(JobConstants.JobEnum.KHALI_2.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.KHALI_3.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.KHALI_4.getJobId(), 5);
-                chr.maxSkills();
-                chr.chatMessage(ChatType.Notice, "[Khali] Advanced to 4th Job (15412)!");
-            } else {
-                sm.setJob(JobConstants.JobEnum.KHALI_3.getJobId());
-                sm.addSPJobAdv(JobConstants.JobEnum.KHALI_2.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.KHALI_3.getJobId(), 5);
-                chr.maxSkills();
-                chr.chatMessage(ChatType.Notice, "[Khali] Advanced to 3rd Job (15411)!");
-            }
-        } else if (curJob == JobConstants.JobEnum.KHALI_3.getJobId()) {
-            if (chr.getLevel() < 100) {
-                sm.sendSayOkay("#eThis job requires you to be at least level #r100#k prior to advancement.");
-                return;
-            }
-            sm.setJob(JobConstants.JobEnum.KHALI_4.getJobId());
-            sm.addSPJobAdv(JobConstants.JobEnum.KHALI_3.getJobId(), 5);
-            sm.addSPJobAdv(JobConstants.JobEnum.KHALI_4.getJobId(), 5);
-            chr.maxSkills();
-            chr.chatMessage(ChatType.Notice, "[Khali] Advanced to 4th Job (15412)!");
-        } else if (curJob == JobConstants.JobEnum.KHALI_4.getJobId()) {
-            chr.maxSkills();
-            sm.sendSayOkay("#eYou are already at 4th Job (Khali). All skills have been refreshed and maxed!");
-        }
-    }
+
 
     @Override
     public void handleInitAfterMigrate(Char chr) {

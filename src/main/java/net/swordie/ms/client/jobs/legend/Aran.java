@@ -599,61 +599,6 @@ public class Aran extends Job {
         }
     }
 
-    @Override
-    public void handleJobAdvance() {
-        ScriptManagerImpl sm = chr.getScriptManager();
-        if (chr.getJob() == JobConstants.JobEnum.ARAN1.getJobId()) {
-            if (chr.getLevel() < 30) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r30#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                if (sm.getEmptyInventorySlots(1) < 1) {
-                    sm.sendSayOkay("#ePlease make m ore space in your EQUIP inventory.");
-                    return;
-                }
-                sm.jobAdvance(JobConstants.JobEnum.ARAN2.getJobId());
-                sm.giveItem(1142130);
-                sm.completeQuestNoRewards(21200);
-                sm.completeQuestNoRewards(21201);
-                sm.completeQuestNoRewards(21202);
-            }
-        } else if (chr.getJob() == JobConstants.JobEnum.ARAN2.getJobId()) {
-            if (chr.getLevel() < 60) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r60#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                if (sm.getEmptyInventorySlots(1) < 1) {
-                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
-                    return;
-                }
-                sm.jobAdvance(JobConstants.JobEnum.ARAN3.getJobId());
-                sm.giveItem(1142131);
-                sm.completeQuestNoRewards(21300);
-                sm.completeQuestNoRewards(21301);
-                sm.completeQuestNoRewards(21302);
-                sm.completeQuestNoRewards(21303);
-            }
-        } else if (chr.getJob() == JobConstants.JobEnum.ARAN3.getJobId()) {
-            if (chr.getLevel() < 100) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r100#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                if (sm.getEmptyInventorySlots(1) < 1) {
-                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
-                    return;
-                }
-                sm.jobAdvance(JobConstants.JobEnum.ARAN4.getJobId());
-                sm.giveItem(1142132);
-                sm.completeQuestNoRewards(21400);
-                sm.completeQuestNoRewards(21401);
-            }
-        } else {
-            sm.sendSayOkay("#eYou may not advance at the current state.");
-        }
-    }
 
     @Override
     public void handleRemoveCTS(CharacterTemporaryStat cts,  List<Option> options) {

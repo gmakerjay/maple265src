@@ -642,61 +642,6 @@ public class BattleMage extends Citizen {
         super.handleHit(c, inPacket, hitInfo);
     }
 
-    @Override
-    public void handleJobAdvance() {
-        ScriptManagerImpl sm = chr.getScriptManager();
-        if (chr.getJob() == JobConstants.JobEnum.BATTLE_MAGE_1.getJobId()) {
-            if (chr.getLevel() < 30) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r30#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                if (sm.getEmptyInventorySlots(1) < 1) {
-                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
-                    return;
-                }
-                sm.jobAdvance(JobConstants.JobEnum.BATTLE_MAGE_2.getJobId());
-                sm.giveItem(1142243);
-                sm.completeQuestNoRewards(23020);
-                sm.completeQuestNoRewards(23023);
-            }
-        } else if (chr.getJob() == JobConstants.JobEnum.BATTLE_MAGE_2.getJobId()) {
-            if (chr.getLevel() < 60) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r60#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                if (sm.getEmptyInventorySlots(1) < 1) {
-                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
-                    return;
-                }
-                sm.jobAdvance(JobConstants.JobEnum.BATTLE_MAGE_3.getJobId());
-                sm.giveItem(1142244);
-                sm.completeQuestNoRewards(23030);
-                sm.completeQuestNoRewards(23033);
-            }
-        } else if (chr.getJob() == JobConstants.JobEnum.BATTLE_MAGE_3.getJobId()) {
-            if (chr.getLevel() < 100) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r100#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                if (sm.getEmptyInventorySlots(1) < 1) {
-                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
-                    return;
-                }
-                sm.jobAdvance(JobConstants.JobEnum.BATTLE_MAGE_4.getJobId());
-                sm.giveItem(1142245);
-                sm.completeQuestNoRewards(23040);
-                sm.completeQuestNoRewards(23043);
-                sm.completeQuestNoRewards(23046);
-                sm.completeQuestNoRewards(23049);
-                sm.completeQuestNoRewards(23052);
-            }
-        } else {
-            sm.sendSayOkay("#eYou may not advance at the current state.");
-        }
-    }
 
     @Override
     public void handleForceAtomCollision(int faKey, int skillId, int mobObjId, Position position, InPacket inPacket) {

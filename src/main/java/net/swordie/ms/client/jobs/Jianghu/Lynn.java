@@ -360,77 +360,7 @@ public class Lynn extends Job {
         }
     }
 
-    @Override
-    public void handleJobAdvance() {
-        ScriptManagerImpl sm = chr.getScriptManager();
-        short curJob = chr.getJob();
-        if (curJob == JobConstants.JobEnum.LYNN_1.getJobId() || curJob == JobConstants.JobEnum.LYNN.getJobId()) {
-            if (chr.getLevel() < 30) {
-                sm.sendSayOkay("#eThis job requires you to be at least level #r30#k prior to advancement.");
-                return;
-            }
-            if (chr.getLevel() >= 100) {
-                sm.setJob(JobConstants.JobEnum.LYNN_4.getJobId());
-                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_1.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_2.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_3.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_4.getJobId(), 5);
-                sm.giveAndEquip(1352813);
-                chr.maxSkills();
-                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Lynn] Successfully advanced to 4th Job (17212)!");
-            } else if (chr.getLevel() >= 60) {
-                sm.setJob(JobConstants.JobEnum.LYNN_3.getJobId());
-                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_1.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_2.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_3.getJobId(), 3);
-                sm.giveAndEquip(1352812);
-                chr.maxSkills();
-                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Lynn] Successfully advanced to 3rd Job (17211)!");
-            } else {
-                sm.setJob(JobConstants.JobEnum.LYNN_2.getJobId());
-                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_1.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_2.getJobId(), 3);
-                sm.giveAndEquip(1352811);
-                chr.maxSkills();
-                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Lynn] Successfully advanced to 2nd Job (17210)!");
-            }
-        } else if (curJob == JobConstants.JobEnum.LYNN_2.getJobId()) {
-            if (chr.getLevel() < 60) {
-                sm.sendSayOkay("#eThis job requires you to be at least level #r60#k prior to advancement.");
-                return;
-            }
-            if (chr.getLevel() >= 100) {
-                sm.setJob(JobConstants.JobEnum.LYNN_4.getJobId());
-                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_2.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_3.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_4.getJobId(), 5);
-                sm.giveAndEquip(1352813);
-                chr.maxSkills();
-                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Lynn] Successfully advanced to 4th Job (17212)!");
-            } else {
-                sm.setJob(JobConstants.JobEnum.LYNN_3.getJobId());
-                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_2.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.LYNN_3.getJobId(), 3);
-                sm.giveAndEquip(1352812);
-                chr.maxSkills();
-                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Lynn] Successfully advanced to 3rd Job (17211)!");
-            }
-        } else if (curJob == JobConstants.JobEnum.LYNN_3.getJobId()) {
-            if (chr.getLevel() < 100) {
-                sm.sendSayOkay("#eThis job requires you to be at least level #r100#k prior to advancement.");
-                return;
-            }
-            sm.setJob(JobConstants.JobEnum.LYNN_4.getJobId());
-            sm.addSPJobAdv(JobConstants.JobEnum.LYNN_3.getJobId(), 5);
-            sm.addSPJobAdv(JobConstants.JobEnum.LYNN_4.getJobId(), 5);
-            sm.giveAndEquip(1352813);
-            chr.maxSkills();
-            chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Lynn] Successfully advanced to 4th Job (17212)!");
-        } else if (curJob == JobConstants.JobEnum.LYNN_4.getJobId()) {
-            chr.maxSkills();
-            sm.sendSayOkay("#eYou are already at 4th Job (Lynn). All skills have been refreshed and maxed!");
-        }
-    }
+
 
     @Override
     public void handleCancelTimer(Char chr) {

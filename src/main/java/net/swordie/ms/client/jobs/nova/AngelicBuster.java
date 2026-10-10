@@ -656,58 +656,7 @@ public class AngelicBuster extends Job {
         super.handleHit(c, inPacket, hitInfo);
     }
 
-    @Override
-    public void handleJobAdvance() {
-        ScriptManagerImpl sm = chr.getScriptManager();
-        if (chr.getJob() == JobConstants.JobEnum.ANGELIC_BUSTER1.getJobId()) {
-            if (chr.getLevel() < 30) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r30#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                if (sm.getEmptyInventorySlots(1) < 2) {
-                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
-                    return;
-                }
-                sm.jobAdvance(JobConstants.JobEnum.ANGELIC_BUSTER2.getJobId());
-                sm.giveItem(1142496);
-                sm.completeQuestNoRewards(25825);
-                sm.giveAndEquip(1352602);
-            }
-        } else if (chr.getJob() == JobConstants.JobEnum.ANGELIC_BUSTER2.getJobId()) {
-            if (chr.getLevel() < 60) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r60#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                if (sm.getEmptyInventorySlots(1) < 2) {
-                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
-                    return;
-                }
-                sm.jobAdvance(JobConstants.JobEnum.ANGELIC_BUSTER3.getJobId());
-                sm.giveItem(1142497);
-                sm.completeQuestNoRewards(25826);
-                sm.giveAndEquip(1352603);
-            }
-        } else if (chr.getJob() == JobConstants.JobEnum.ANGELIC_BUSTER3.getJobId()) {
-            if (chr.getLevel() < 100) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r100#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                if (sm.getEmptyInventorySlots(1) < 2) {
-                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
-                    return;
-                }
-                sm.jobAdvance(JobConstants.JobEnum.ANGELIC_BUSTER4.getJobId());
-                sm.giveItem(1142498);
-                sm.completeQuestNoRewards(25827);
-                sm.giveAndEquip(1352604);
-            }
-        } else {
-            sm.sendSayOkay("#eYou may not advance at the current state.");
-        }
-    }
+
 
     @Override
     public void handleForceAtomCollision(int faKey, int skillId, int mobObjId, Position position, InPacket inPacket) {

@@ -911,47 +911,5 @@ public class HoYoung extends Job {
         }
     }
 
-    @Override
-    public void handleJobAdvance() {
-        ScriptManagerImpl sm = chr.getScriptManager();
-        if (chr.getJob() == JobConstants.JobEnum.HOYOUNG_1.getJobId()) {
-            if (chr.getLevel() < 30) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r30#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                if (sm.getEmptyInventorySlots(1) < 1) {
-                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
-                    return;
-                }
-                sm.jobAdvance(JobConstants.JobEnum.HOYOUNG_2.getJobId());
-            }
-        } else if (chr.getJob() == JobConstants.JobEnum.HOYOUNG_2.getJobId()) {
-            if (chr.getLevel() < 60) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r60#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                if (sm.getEmptyInventorySlots(1) < 1) {
-                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
-                    return;
-                }
-                sm.jobAdvance(JobConstants.JobEnum.HOYOUNG_3.getJobId());
-            }
-        } else if (chr.getJob() == JobConstants.JobEnum.HOYOUNG_3.getJobId()) {
-            if (chr.getLevel() < 100) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r100#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                if (sm.getEmptyInventorySlots(1) < 1) {
-                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
-                    return;
-                }
-                sm.jobAdvance(JobConstants.JobEnum.HOYOUNG_4.getJobId());
-            }
-        } else {
-            sm.sendSayOkay("#eYou may not advance at the current state.");
-        }
-    }
+
 }

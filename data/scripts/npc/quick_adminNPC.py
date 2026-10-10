@@ -190,11 +190,7 @@ elif selection == 21:
     for qid in range(1460, 1466):
         sm.completeQuest(qid)
     try:
-        from net.swordie.ms.client.character import MatrixSlot
-        from net.swordie.ms.constants import MatrixConstants
-        if chr.getMatrixSlot().size() < MatrixConstants.MAX_NODE_SLOTS:
-            for i in range(chr.getMatrixSlot().size(), MatrixConstants.MAX_NODE_SLOTS):
-                chr.getMatrixSlot().add(MatrixSlot(chr.getId(), i))
+        chr.initMatrixSlots()
         if chr.getJobHandler() != None:
             chr.getJobHandler().GiveVSkills()
     except:
@@ -213,6 +209,11 @@ elif selection == 22:
         outPacket.encodeByte(2)
         outPacket.encodeFT(FileTime.currentTime())
         chr.write(outPacket)
+    except:
+        pass
+    try:
+        if chr.getJobHandler() != None and JobConstants.isSia(chr.getJob()):
+            chr.getJobHandler().unlockErdaLink()
     except:
         pass
     sm.sendSayOkay("6th Job (HEXA Matrix) has been unlocked!")

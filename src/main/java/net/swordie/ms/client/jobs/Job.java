@@ -2920,6 +2920,12 @@ public abstract class Job {
         int level = chr.getLevel();
         int subJob = chr.getSubJob();
 
+        if (JobConstants.isBeginnerJob(curJob) && level < 10) {
+            sm.sendSayOkay("#fs13#You must be at least #rLv. 10#k to advance to your 1st Job.");
+            return;
+        }
+
+        // 5th Job Quest completion (1460 - 1466)
         if (level >= 200 && !chr.hasQuestCompleted(1465)) {
             chr.completeQuest(1465);
             for (int q = 1460; q <= 1466; q++) {
@@ -2928,6 +2934,7 @@ public abstract class Job {
                 } catch (Exception ignored) {}
             }
         }
+        // 6th Job Quest completion (1488)
         if (level >= 260 && !chr.hasQuestCompleted(1488)) {
             chr.completeQuest(1488);
             net.swordie.ms.connection.OutPacket outPacket = new net.swordie.ms.connection.OutPacket(net.swordie.ms.handlers.header.OutHeader.MESSAGE);
@@ -2960,13 +2967,7 @@ public abstract class Job {
                 }
                 short finalTarget = JobConstants.getTargetJobForLevel(chosen, level, subJob);
                 chr.setJob(finalTarget);
-                if (level >= 200) {
-                    chr.initMatrixSlots();
-                    if (chr.getJobHandler() != null) {
-                        chr.getJobHandler().GiveVSkills();
-                    }
-                }
-                chr.maxSkills();
+                postJobAdvanceSetup(finalTarget);
                 sm.sendSayOkay("#fs13##bCongratulations!#k\r\nYou have successfully advanced to #e" + JobConstants.getCleanJobName(finalTarget) + " (" + finalTarget + ")#n!\r\n\r\nAll your skills (1st - 4th Job) have been refreshed and maximized.");
                 return;
             }
@@ -2995,13 +2996,7 @@ public abstract class Job {
                         chr.removeSkill(osid);
                     }
                     chr.setJob(target);
-                    if (level >= 200) {
-                        chr.initMatrixSlots();
-                        if (chr.getJobHandler() != null) {
-                            chr.getJobHandler().GiveVSkills();
-                        }
-                    }
-                    chr.maxSkills();
+                    postJobAdvanceSetup(target);
                     sm.sendSayOkay("#fs13##bCongratulations!#k\r\nYou have successfully switched to #e" + JobConstants.getCleanJobName(target) + " (" + target + ")#n!\r\n\r\nAll your skills (1st - 4th Job) have been refreshed and maximized.");
                     return;
                 }
@@ -3011,17 +3006,71 @@ public abstract class Job {
         short target = JobConstants.getTargetJobForLevel(curJob, level, subJob);
         if (target != curJob) {
             chr.setJob(target);
-            if (level >= 200) {
-                chr.initMatrixSlots();
-                if (chr.getJobHandler() != null) {
-                    chr.getJobHandler().GiveVSkills();
-                }
-            }
-            chr.maxSkills();
+            postJobAdvanceSetup(target);
             sm.sendSayOkay("#fs13##bCongratulations!#k\r\nYou have successfully advanced to #e" + JobConstants.getCleanJobName(target) + " (" + target + ")#n!\r\n\r\nAll your skills (1st - 4th Job) have been refreshed and maximized.");
         } else {
-            chr.maxSkills();
-            sm.sendSayOkay("#fs13#You have already reached the highest job advancement for your current level (" + JobConstants.getCleanJobName(curJob) + ").\r\n\r\nAll your skills (1st - 4th Job) have been refreshed and maximized!");
+            postJobAdvanceSetup(curJob);
+            sm.sendSayOkay("#fs13#Your job is up-to-date for your current level (#e" + JobConstants.getCleanJobName(curJob) + " (" + curJob + ")#n).\r\n\r\nAll skills (1st - 4th Job, Beginner passives, V & HEXA Matrix) have been verified and refreshed!");
+        }
+    }
+
+    private void postJobAdvanceSetup(short targetJob) {
+        int level = chr.getLevel();
+        // 5th Job V Matrix setup
+        if (level >= 200) {
+            chr.initMatrixSlots();
+            if (chr.getJobHandler() != null) {
+                chr.getJobHandler().GiveVSkills();
+            }
+        }
+        // 6th Job HEXA / Erda Link setup
+        if (level >= 260) {
+            if (JobConstants.isSiaAstelle(targetJob) || JobConstants.isSiaAstelle(chr.getJob())) {
+                if (chr.getJobHandler() instanceof net.swordie.ms.client.jobs.shine.SiaAstelle) {
+                    ((net.swordie.ms.client.jobs.shine.SiaAstelle) chr.getJobHandler()).unlockErdaLink();
+                }
+            }
+        }
+        // Ensure secondary weapon for jobs that strictly require it to cast skills:
+        ensureSecondaryWeapon(targetJob);
+
+        // Max all 1st-4th job skills (including beginner skills)
+        chr.maxSkills();
+    }
+
+    private void ensureSecondaryWeapon(short job) {
+        int secondaryId = 0;
+        if (JobConstants.isSiaAstelle(job)) {
+            secondaryId = 1352873; // True Constellation
+        } else if (JobConstants.isLynn(job)) {
+            secondaryId = 1352813; // Beast Bell
+        } else if (JobConstants.isMoXuan(job)) {
+            secondaryId = 1352863; // True Martial Fist
+        } else if (JobConstants.isRen(job)) {
+            secondaryId = 1354043; // Radiant Spirit Heart
+        } else if (JobConstants.isPathFinder(job)) {
+            secondaryId = 1352014; // Relic
+        } else if (JobConstants.isAdele(job)) {
+            secondaryId = 1353804; // Bladebinder
+        } else if (JobConstants.isKhali(job)) {
+            secondaryId = 1354034; // Chakram
+        } else if (JobConstants.isHoYoung(job)) {
+            secondaryId = 1353704; // Fan Tassel
+        } else if (JobConstants.isLara(job)) {
+            secondaryId = 1353904; // Ornamental Knot
+        } else if (JobConstants.isCadena(job)) {
+            secondaryId = 1353303; // Transmitter
+        } else if (JobConstants.isKinesis(job)) {
+            secondaryId = 1353203; // Chess Piece
+        } else if (JobConstants.isXenon(job)) {
+            secondaryId = 1353003; // Controller
+        } else if (JobConstants.isDemonSlayer(job)) {
+            secondaryId = 1352003; // Force Shield
+        } else if (JobConstants.isDemonAvenger(job)) {
+            secondaryId = 1352004; // Demon Shield
+        }
+        if (secondaryId > 0 && !chr.hasItem(secondaryId)) {
+            chr.addItemToInventory(secondaryId, 1);
         }
     }
 

@@ -465,56 +465,7 @@ public class Mercedes extends Job {
         super.handleHit(c, inPacket, hitInfo);
     }
 
-    @Override
-    public void handleJobAdvance() {
-        ScriptManagerImpl sm = chr.getScriptManager();
-        if (chr.getJob() == JobConstants.JobEnum.MERCEDES1.getJobId()) {
-            if (chr.getLevel() < 30) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r30#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                if (sm.getEmptyInventorySlots(1) < 1) {
-                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
-                    return;
-                }
-                sm.jobAdvance(JobConstants.JobEnum.MERCEDES2.getJobId());
-                sm.giveItem(1142337);
-                sm.completeQuestNoRewards(24010);
-                sm.completeQuestNoRewards(24011);
-            }
-        } else if (chr.getJob() == JobConstants.JobEnum.MERCEDES2.getJobId()) {
-            if (chr.getLevel() < 60) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r60#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                if (sm.getEmptyInventorySlots(1) < 1) {
-                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
-                    return;
-                }
-                sm.jobAdvance(JobConstants.JobEnum.MERCEDES3.getJobId());
-                sm.giveItem(1142338);
-                sm.completeQuestNoRewards(24012);
-            }
-        } else if (chr.getJob() == JobConstants.JobEnum.MERCEDES3.getJobId()) {
-            if (chr.getLevel() < 100) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r100#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                if (sm.getEmptyInventorySlots(1) < 1) {
-                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
-                    return;
-                }
-                sm.jobAdvance(JobConstants.JobEnum.MERCEDES4.getJobId());
-                sm.giveItem(1142339);
-                sm.completeQuestNoRewards(24013);
-            }
-        } else {
-            sm.sendSayOkay("#eYou may not advance at the current state.");
-        }
-    }
+
 
     @Override
     public void handleCancelTimer(Char chr) {

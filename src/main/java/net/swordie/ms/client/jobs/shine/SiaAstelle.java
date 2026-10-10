@@ -209,83 +209,7 @@ public class SiaAstelle extends Job {
         }
     }
 
-    @Override
-    public void handleJobAdvance() {
-        ScriptManagerImpl sm = chr.getScriptManager();
-        short curJob = chr.getJob();
-        if (curJob == JobConstants.JobEnum.SIA_1.getJobId() || curJob == JobConstants.JobEnum.SIA.getJobId()) {
-            if (chr.getLevel() < 30) {
-                sm.sendSayOkay("#eThis job requires you to be at least level #r30#k prior to advancement.");
-                return;
-            }
-            if (chr.getLevel() >= 100) {
-                sm.setJob(JobConstants.JobEnum.SIA_4.getJobId());
-                sm.addSPJobAdv(JobConstants.JobEnum.SIA_1.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.SIA_2.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.SIA_3.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.SIA_4.getJobId(), 5);
-                sm.giveAndEquip(1352873);
-                chr.maxSkills();
-                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Sia] Successfully advanced to 4th Job (18212)!");
-            } else if (chr.getLevel() >= 60) {
-                sm.setJob(JobConstants.JobEnum.SIA_3.getJobId());
-                sm.addSPJobAdv(JobConstants.JobEnum.SIA_1.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.SIA_2.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.SIA_3.getJobId(), 3);
-                sm.giveAndEquip(1352872);
-                chr.maxSkills();
-                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Sia] Successfully advanced to 3rd Job (18211)!");
-            } else {
-                sm.setJob(JobConstants.JobEnum.SIA_2.getJobId());
-                sm.addSPJobAdv(JobConstants.JobEnum.SIA_1.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.SIA_2.getJobId(), 3);
-                sm.giveAndEquip(1352871);
-                chr.maxSkills();
-                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Sia] Successfully advanced to 2nd Job (18210)!");
-            }
-        } else if (curJob == JobConstants.JobEnum.SIA_2.getJobId()) {
-            if (chr.getLevel() < 60) {
-                sm.sendSayOkay("#eThis job requires you to be at least level #r60#k prior to advancement.");
-                return;
-            }
-            if (chr.getLevel() >= 100) {
-                sm.setJob(JobConstants.JobEnum.SIA_4.getJobId());
-                sm.addSPJobAdv(JobConstants.JobEnum.SIA_2.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.SIA_3.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.SIA_4.getJobId(), 5);
-                sm.giveAndEquip(1352873);
-                chr.maxSkills();
-                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Sia] Successfully advanced to 4th Job (18212)!");
-            } else {
-                sm.setJob(JobConstants.JobEnum.SIA_3.getJobId());
-                sm.addSPJobAdv(JobConstants.JobEnum.SIA_2.getJobId(), 5);
-                sm.addSPJobAdv(JobConstants.JobEnum.SIA_3.getJobId(), 3);
-                sm.giveAndEquip(1352872);
-                chr.maxSkills();
-                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Sia] Successfully advanced to 3rd Job (18211)!");
-            }
-        } else if (curJob == JobConstants.JobEnum.SIA_3.getJobId()) {
-            if (chr.getLevel() < 100) {
-                sm.sendSayOkay("#eThis job requires you to be at least level #r100#k prior to advancement.");
-                return;
-            }
-            sm.setJob(JobConstants.JobEnum.SIA_4.getJobId());
-            sm.addSPJobAdv(JobConstants.JobEnum.SIA_3.getJobId(), 5);
-            sm.addSPJobAdv(JobConstants.JobEnum.SIA_4.getJobId(), 5);
-            sm.giveAndEquip(1352873);
-            chr.maxSkills();
-            chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Sia] Successfully advanced to 4th Job (18212)!");
-        } else if (curJob == JobConstants.JobEnum.SIA_4.getJobId()) {
-            chr.maxSkills();
-            if (chr.getLevel() >= 260) {
-                unlockErdaLink();
-                chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Sia] 6th Job Erda Link & HEXA Skills unlocked!");
-                sm.sendSayOkay("#e[Erda Link]\nCongratulations! 6th Job Erda Link skills have been unlocked!\n#bCelestial Design (Origin), SHINE Ray, SHINE Antares, Sol Janus, and Erda Link Stats#k are now active.");
-            } else {
-                sm.sendSayOkay("#eYou are already at 4th Job (Sia Astelle). Reach #rLv. 260#k to unlock 6th Job Erda Link!");
-            }
-        }
-    }
+
 
     @Override
     public void handleInitAfterMigrate(Char chr) {
@@ -339,7 +263,7 @@ public class SiaAstelle extends Job {
      * level (from HexaCore.img), so they are never pre-added at Lv.30 here (that desynced the
      * skill level from the core level shown in the Erda Link / HEXA UI).
      */
-    private void unlockErdaLink() {
+    public void unlockErdaLink() {
         boolean changed = false;
         for (int coreId : SIA_ERDA_LINK_CORES) {
             int coreLv = chr.getHexaSkillLevel(coreId);

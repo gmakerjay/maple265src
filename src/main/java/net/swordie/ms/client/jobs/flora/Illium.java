@@ -975,58 +975,7 @@ public class Illium extends Job {
         chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
     }
 
-    @Override
-    public void handleJobAdvance() {
-        ScriptManagerImpl sm = chr.getScriptManager();
-        if (chr.getJob() == JobConstants.JobEnum.ILLIUM_1.getJobId()) {
-            if (chr.getLevel() < 30) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r30#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                if (sm.getEmptyInventorySlots(1) < 1) {
-                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
-                    return;
-                }
-                sm.jobAdvance(JobConstants.JobEnum.ILLIUM_2.getJobId());
-                sm.giveItem(1143079);
-                sm.completeQuestNoRewards(34817);
-            }
-        } else if (chr.getJob() == JobConstants.JobEnum.ILLIUM_2.getJobId()) {
-            if (chr.getLevel() < 60) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r60#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                if (sm.getEmptyInventorySlots(1) < 1) {
-                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
-                    return;
-                }
-                sm.jobAdvance(JobConstants.JobEnum.ILLIUM_3.getJobId());
-                sm.giveItem(1143080);
-                sm.completeQuestNoRewards(34831);
-                sm.completeQuestNoRewards(34832);
-                sm.completeQuestNoRewards(34833);
-                sm.completeQuestNoRewards(34834);
-            }
-        } else if (chr.getJob() == JobConstants.JobEnum.ILLIUM_3.getJobId()) {
-            if (chr.getLevel() < 100) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r100#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                if (sm.getEmptyInventorySlots(1) < 1) {
-                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
-                    return;
-                }
-                sm.jobAdvance(JobConstants.JobEnum.ILLIUM_4.getJobId());
-                sm.giveItem(1143081);
-                sm.completeQuestNoRewards(34842);
-            }
-        } else {
-            sm.sendSayOkay("#eYou may not advance at the current state.");
-        }
-    }
+
 
     @Override
     public void handleRemoveCTS(CharacterTemporaryStat cts,  List<Option> options) {

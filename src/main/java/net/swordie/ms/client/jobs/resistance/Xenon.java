@@ -758,59 +758,6 @@ public class Xenon extends Job {
         super.handleHit(c, inPacket, hitInfo);
     }
 
-    @Override
-    public void handleJobAdvance() {
-        ScriptManagerImpl sm = chr.getScriptManager();
-        if (chr.getJob() == JobConstants.JobEnum.XENON1.getJobId()) {
-            if (chr.getLevel() < 30) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r30#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                if (sm.getEmptyInventorySlots(1) < 1) {
-                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
-                    return;
-                }
-                sm.jobAdvance(JobConstants.JobEnum.XENON2.getJobId());
-                sm.giveItem(1142576);
-                sm.completeQuestNoRewards(23610);
-                sm.completeQuestNoRewards(23611);
-            }
-        } else if (chr.getJob() == JobConstants.JobEnum.XENON2.getJobId()) {
-            if (chr.getLevel() < 60) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r60#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                if (sm.getEmptyInventorySlots(1) < 1) {
-                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
-                    return;
-                }
-                sm.jobAdvance(JobConstants.JobEnum.XENON3.getJobId());
-                sm.giveItem(1142577);
-                sm.completeQuestNoRewards(23612);
-                sm.completeQuestNoRewards(23613);
-                sm.completeQuestNoRewards(23614);
-                sm.completeQuestNoRewards(23615);
-            }
-        } else if (chr.getJob() == JobConstants.JobEnum.XENON3.getJobId()) {
-            if (chr.getLevel() < 100) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r100#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                if (sm.getEmptyInventorySlots(1) < 1) {
-                    sm.sendSayOkay("#ePlease make more space in your EQUIP inventory.");
-                    return;
-                }
-                sm.jobAdvance(JobConstants.JobEnum.XENON4.getJobId());
-                sm.giveItem(1142578);
-                sm.completeQuestNoRewards(23616);
-            }
-        } else {
-            sm.sendSayOkay("#eYou may not advance at the current state.");
-        }
-    }
 
     public void handleOmegaBlaster(boolean start) {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();

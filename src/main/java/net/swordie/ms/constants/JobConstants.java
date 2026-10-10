@@ -1887,6 +1887,46 @@ public class JobConstants {
         }
     }
 
+    public static short getBeginnerJobByJob(short job) {
+        if (isBeginnerJob(job)) {
+            return job;
+        }
+        if (isCygnusKnight(job)) return 1000;
+        if (isMihile(job)) return 5000;
+        if (isResistance(job)) return 3000;
+        if (isDemon(job)) return 3001;
+        if (isXenon(job)) return 3002;
+        if (isAran(job)) return 2000;
+        if (isEvan(job)) return 2001;
+        if (isMercedes(job)) return 2002;
+        if (isPhantom(job)) return 2003;
+        if (isLuminous(job)) return 2004;
+        if (isShade(job)) return 2005;
+        if (isHayato(job)) return 4001;
+        if (isKanna(job)) return 4002;
+        if (isKaiser(job)) return 6000;
+        if (isAngelicBuster(job)) return 6001;
+        if (isCadena(job)) return 6002;
+        if (isKain(job)) return 6003;
+        if (isZero(job)) return 10000;
+        if (isBeastTamer(job)) return 11000;
+        if (isKinesis(job)) return 14000;
+        if (isIllium(job)) return 15000;
+        if (isArk(job)) return 15001;
+        if (isAdele(job)) return 15002;
+        if (isKhali(job)) return 15003;
+        if (isHoYoung(job)) return 16000;
+        if (isLara(job)) return 16001;
+        if (isRen(job)) return 16002;
+        if (isLynn(job)) return 17001;
+        if (isMoXuan(job)) return 17000;
+        if (isSiaAstelle(job)) return 18000;
+        if (isExplorer(job) || job == 301 || (job >= 330 && job <= 332) || (job >= 430 && job <= 434) || job == 501 || (job >= 530 && job <= 532) || job == 508 || (job >= 570 && job <= 572)) {
+            return 0;
+        }
+        return 0;
+    }
+
     public static List<Short> getJobChain(short job) {
         List<Short> jobs = new ArrayList<>();
         if (job == 0) {
@@ -1895,6 +1935,7 @@ public class JobConstants {
         }
         // Dual Blade
         if (job >= 430 && job <= 434) {
+            jobs.add((short) 0);
             jobs.add((short) 400);
             for (short j = 430; j <= job; j++) {
                 jobs.add(j);
@@ -1902,12 +1943,14 @@ public class JobConstants {
             return jobs;
         }
         if (job == 400) {
+            jobs.add((short) 0);
             jobs.add((short) 400);
             return jobs;
         }
 
         // Cannoneer
         if ((job >= 530 && job <= 532) || job == 501) {
+            jobs.add((short) 0);
             jobs.add((short) 501);
             if (job >= 530) jobs.add((short) 530);
             if (job >= 531) jobs.add((short) 531);
@@ -1917,6 +1960,7 @@ public class JobConstants {
 
         // Pathfinder
         if ((job >= 330 && job <= 332) || job == 301) {
+            jobs.add((short) 0);
             jobs.add((short) 301);
             if (job >= 330) jobs.add((short) 330);
             if (job >= 331) jobs.add((short) 331);
@@ -1926,6 +1970,7 @@ public class JobConstants {
 
         // Jett
         if ((job >= 570 && job <= 572) || job == 508) {
+            jobs.add((short) 0);
             jobs.add((short) 508);
             if (job >= 570) jobs.add((short) 570);
             if (job >= 571) jobs.add((short) 571);
@@ -1935,6 +1980,7 @@ public class JobConstants {
 
         // Demon Avenger
         if ((job >= 3120 && job <= 3122) || job == 3101) {
+            jobs.add((short) 3001);
             jobs.add((short) 3101);
             if (job >= 3120) jobs.add((short) 3120);
             if (job >= 3121) jobs.add((short) 3121);
@@ -1944,10 +1990,13 @@ public class JobConstants {
 
         // Evan
         if ((job >= 2200 && job <= 2218) || job == 2001) {
-            short[] evanChain = new short[]{2200, 2210, 2212, 2214, 2217, 2218};
-            for (short ej : evanChain) {
-                if (ej <= job) {
-                    jobs.add(ej);
+            jobs.add((short) 2001);
+            if (job != 2001) {
+                short[] evanChain = new short[]{2200, 2210, 2212, 2214, 2217, 2218};
+                for (short ej : evanChain) {
+                    if (ej <= job) {
+                        jobs.add(ej);
+                    }
                 }
             }
             return jobs;
@@ -1955,6 +2004,7 @@ public class JobConstants {
 
         // Explorer 2nd-4th job
         if ((job >= 110 && job <= 132) || (job >= 210 && job <= 232) || (job >= 310 && job <= 322) || (job >= 410 && job <= 422) || (job >= 510 && job <= 522)) {
+            jobs.add((short) 0);
             short base1st = (short) ((job / 100) * 100);
             short base2nd = (short) ((job / 10) * 10);
             jobs.add(base1st);
@@ -1974,10 +2024,9 @@ public class JobConstants {
         int mod = job % 100;
         if (mod == 10 || mod == 11 || mod == 12) {
             short base = (short) ((job / 100) * 100);
-            if (isCygnusKnight(job)) {
-                jobs.add((short) 1000);
-            } else if (isMihile(job)) {
-                jobs.add((short) 5000);
+            short beg = getBeginnerJobByJob(job);
+            if (beg != base && !jobs.contains(beg)) {
+                jobs.add(beg);
             }
             jobs.add(base);
             jobs.add((short) (base + 10));
@@ -1990,13 +2039,14 @@ public class JobConstants {
             return jobs;
         }
 
-        // 1st job only (e.g. 100, 200, 300, 400, 500, 1100, 15100, etc.)
-        if (isCygnusKnight(job) && job != 1000) {
-            jobs.add((short) 1000);
-        } else if (isMihile(job) && job != 5000) {
-            jobs.add((short) 5000);
+        // 1st job only (e.g. 100, 200, 300, 400, 500, 1100, 15100, etc.) or beginner
+        short beg = getBeginnerJobByJob(job);
+        if (beg != job && !jobs.contains(beg)) {
+            jobs.add(beg);
         }
-        jobs.add(job);
+        if (!jobs.contains(job)) {
+            jobs.add(job);
+        }
         return jobs;
     }
 
@@ -2013,8 +2063,12 @@ public class JobConstants {
                 list.add((short) 100); // Warrior
                 list.add((short) 200); // Magician
                 list.add((short) 300); // Bowman
+                list.add((short) 301); // Pathfinder
                 list.add((short) 400); // Thief
+                list.add((short) 430); // Dual Blade
                 list.add((short) 500); // Pirate
+                list.add((short) 530); // Cannoneer
+                list.add((short) 508); // Jett
             }
         } else if (job == 1000 && level >= 10) { // Noblesse
             list.add((short) 1100); // Dawn Warrior
@@ -2041,21 +2095,42 @@ public class JobConstants {
         } else if (job == 300 && level >= 30) { // Bowman
             list.add((short) 310); // Hunter
             list.add((short) 320); // Crossbowman
+            list.add((short) 330); // Pathfinder (Ancient Archer)
         } else if (job == 400 && level >= 30) { // Thief
-            if (subJob == 1) {
-                list.add((short) 431); // Dual Blade
-            } else {
-                list.add((short) 410); // Assassin (Night Lord path)
-                list.add((short) 420); // Bandit (Shadower path)
-            }
+            list.add((short) 410); // Assassin (Night Lord path)
+            list.add((short) 420); // Bandit (Shadower path)
+            list.add((short) 431); // Dual Blade
         } else if (job == 500 && level >= 30) { // Pirate
             list.add((short) 510); // Brawler
             list.add((short) 520); // Gunslinger
+            list.add((short) 531); // Cannoneer
+            list.add((short) 570); // Jett
         }
         return list;
     }
 
     public static short getTargetJobForLevel(short job, int level, int subJob) {
+        if (job == 0) {
+            if (subJob == 1) {
+                if (level >= 100) return 434;
+                if (level >= 60) return 433;
+                if (level >= 45) return 432;
+                if (level >= 30) return 431;
+                if (level >= 20) return 430;
+                return job;
+            } else if (subJob == 2) {
+                if (level >= 100) return 532;
+                if (level >= 60) return 531;
+                if (level >= 10) return 530;
+                return job;
+            } else if (subJob == 3) {
+                if (level >= 100) return 332;
+                if (level >= 60) return 331;
+                if (level >= 30) return 330;
+                if (level >= 10) return 301;
+                return job;
+            }
+        }
         // Dual Blade
         if (job >= 430 && job <= 434) {
             if (level >= 100) return 434;

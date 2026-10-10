@@ -579,45 +579,6 @@ public class Shade extends Job {
         chr.getAvatarData().getCharacterStat().setPosMap(JobConstants.SHADE_CREATION_MAP);
     }
 
-    @Override
-    public void handleJobAdvance() {
-        ScriptManagerImpl sm = chr.getScriptManager();
-        if (chr.getJob() == JobConstants.JobEnum.SHADE1.getJobId()) {
-            if (chr.getLevel() < 30) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r30#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                sm.jobAdvance(JobConstants.JobEnum.SHADE2.getJobId());
-                sm.completeQuestNoRewards(38028);
-                sm.completeQuestNoRewards(38029);
-                sm.completeQuestNoRewards(38030);
-            }
-        } else if (chr.getJob() == JobConstants.JobEnum.SHADE2.getJobId()) {
-            if (chr.getLevel() < 60) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r60#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                sm.jobAdvance(JobConstants.JobEnum.SHADE3.getJobId());
-                sm.completeQuestNoRewards(38074);
-                sm.completeQuestNoRewards(38075);
-                sm.completeQuestNoRewards(38076);
-            }
-        } else if (chr.getJob() == JobConstants.JobEnum.SHADE3.getJobId()) {
-            if (chr.getLevel() < 100) {
-                sm.sendSayOkay("#eThis jobs require the player to be at least level #r100#k prior to advancement");
-                return;
-            }
-            if (sm.sendAskYesNo("#eWould you like to skip the Job Advanced Quest(s)?")) {
-                sm.jobAdvance(JobConstants.JobEnum.SHADE4.getJobId());
-                sm.completeQuestNoRewards(38072);
-                sm.completeQuestNoRewards(38073);
-            }
-        } else {
-            sm.sendSayOkay("#eYou may not advance at the current state.");
-        }
-    }
 
     @Override
     public int handleSetCoolDownSkill(int skillId) {
