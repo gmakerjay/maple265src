@@ -2980,6 +2980,46 @@ public abstract class Job {
             }
         }
 
+        if (JobConstants.isCygnusKnight(curJob) && curJob != 1000) {
+            String menu = "#fs13##e[Cygnus Knights Job Advancement]#n\r\n\r\n"
+                    + "Current Job: #b" + JobConstants.getCleanJobName(curJob) + " (" + curJob + ")#k\r\n\r\n"
+                    + "#L1##b[1] Advance & Max Skills for current branch#k#l\r\n"
+                    + "#L2##d[2] Switch to another Cygnus Knight branch (Dawn Warrior, Blaze Wizard, Wind Archer, Night Walker, Thunder Breaker)#k#l\r\n";
+            int choice = sm.sendNext(menu);
+            if (choice == 2) {
+                StringBuilder sb = new StringBuilder("#fs13##e[Switch Cygnus Branch]#n\r\n\r\nPlease select your desired Cygnus Knight class:\r\n\r\n");
+                short[] cygnusBases = new short[]{1100, 1200, 1300, 1400, 1500};
+                for (short cb : cygnusBases) {
+                    sb.append("#L").append(cb).append("##b").append(JobConstants.getCleanJobName(cb)).append("#k#l\r\n");
+                }
+                int switchSel = sm.sendNext(sb.toString());
+                if (switchSel > 0) {
+                    short target = JobConstants.getTargetJobForLevel((short) switchSel, level, subJob);
+                    List<Integer> oldSkillIds = chr.getSkills().stream()
+                            .map(Skill::getSkillId)
+                            .filter(sid -> sid >= 11000000 && sid < 16000000)
+                            .toList();
+                    for (int osid : oldSkillIds) {
+                        chr.removeSkill(osid);
+                    }
+                    chr.setJob(target);
+                    if (level >= 200) {
+                        if (chr.getMatrixSlot().size() < MatrixConstants.MAX_NODE_SLOTS) {
+                            for (int i = chr.getMatrixSlot().size(); i < MatrixConstants.MAX_NODE_SLOTS; i++) {
+                                chr.getMatrixSlot().add(new MatrixSlot(chr.getId(), i));
+                            }
+                        }
+                        if (chr.getJobHandler() != null) {
+                            chr.getJobHandler().GiveVSkills();
+                        }
+                    }
+                    chr.maxSkills();
+                    sm.sendSayOkay("#fs13##bCongratulations!#k\r\nYou have successfully switched to #e" + JobConstants.getCleanJobName(target) + " (" + target + ")#n!\r\n\r\nAll your skills (1st - 4th Job) have been refreshed and maximized.");
+                    return;
+                }
+            }
+        }
+
         short target = JobConstants.getTargetJobForLevel(curJob, level, subJob);
         if (target != curJob) {
             chr.setJob(target);

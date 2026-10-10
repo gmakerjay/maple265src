@@ -489,8 +489,22 @@ public class NightWalker extends Noblesse {
         return skill;
     }
 
+    private int getBatSummonSkillId() {
+        if (chr.hasSkill(HEXA_SHADOW_BAT)) {
+            return HEXA_SHADOW_BAT_SUMMON;
+        } else if (chr.getTemporaryStatManager() != null && chr.getTemporaryStatManager().hasStatBySkillId(RAVENOUS_BAT)) {
+            return RAVENOUS_BAT_SUMMON;
+        } else if (chr.hasSkill(BAT_AFFINITY_II)) {
+            return SHADOW_BAT_SUMMON_II;
+        } else {
+            return SHADOW_BAT_DOMINION; // 14000027: WZ base summon entity
+        }
+    }
+
     private void summonBatAndRegister() {
-        Summon summon = Summon.getSummonBy(chr, getBatSkill().getSkillId(), (byte) getBatSkill().getCurrentLevel());
+        Skill batSkill = getBatSkill();
+        byte slv = (byte) (batSkill != null ? batSkill.getCurrentLevel() : 1);
+        Summon summon = Summon.getSummonBy(chr, getBatSummonSkillId(), slv);
         summon.setFlyMob(true);
         summon.setMoveAction((byte) 5);
         summon.setMoveAbility(MoveAbility.Fly);
@@ -502,7 +516,9 @@ public class NightWalker extends Noblesse {
     }
 
     private void summonBatByDarkOmen() {
-        Summon summon = Summon.getSummonBy(chr, getBatSkill().getSkillId(), (byte) getBatSkill().getCurrentLevel());
+        Skill batSkill = getBatSkill();
+        byte slv = (byte) (batSkill != null ? batSkill.getCurrentLevel() : 1);
+        Summon summon = Summon.getSummonBy(chr, getBatSummonSkillId(), slv);
         summon.setFlyMob(true);
         summon.setMoveAbility(MoveAbility.Fly);
         summon.setAttackActive(false);

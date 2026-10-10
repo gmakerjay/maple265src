@@ -160,6 +160,35 @@
 | `v214 src/PROGRESS.md` | บันทึกประวัติและรายละเอียดในข้อ 9.9 |
 | `v214 src/HANDOFF.md` | เอกสารคู่มือส่งมอบงานฉบับสมบูรณ์ |
 | `vietmaple.hexaskills (DB)` | เพิ่มข้อมูล 7 คอร์เลเวล 1 ให้ตัวละคร Sia (`charid=5`) |
+| `v214 src/src/main/java/net/swordie/ms/client/jobs/cygnus/NightWalker.java` | แก้ไขบั๊ก Summon ID 14001027 ➔ 14000027 ป้องกันเกมเด้งตอนตีมอน |
+| `v214 src/src/main/java/net/swordie/ms/client/jobs/Job.java` | รองรับ Cygnus branch switch และ auto V-Matrix/Hexa init |
+| `v214 src/src/main/java/net/swordie/ms/constants/JobConstants.java` | เพิ่ม `isAnima()` และตรวจสอบ Job Chain ครบทุกคลาส |
+| `data/scripts/npc/quick_adminNPC.py` | เสริม V-Matrix 26 slots, 4 V-Skills และ 6th Job Hexa notification |
+| `data/scripts/npc/JobAdvance.py` | แปลงเป็น Universal Delegate ส่งต่อไปยัง `handleJobAdvance()` |
+
+---
+
+## 8. สรุปผลการปรับปรุงและ Full Audit ระบบเปลี่ยนอาชีพ (10 ตุลาคม 2569)
+
+### 8.1 การแก้ไขบั๊กตีมอนสเตอร์แล้วเกมเด้ง (Night Walker Crash Fix)
+* **ปัญหา:** ตัวละคร Night Walker ตีมอนสเตอร์แล้ว Client Crash (`HR 570425350 INVALID_GAME_DATA`)
+* **สาเหตุ:** เซิร์ฟเวอร์ส่งแพ็กเก็ต `SUMMONED_CREATED (1588)` ด้วย ID `14001027` (ซึ่งเป็น Active Buff ไม่มีโหนด `<dir name="summon">` ใน WZ)
+* **การแก้ไข:** แก้ไข `getBatSummonSkillId()` ให้ดึง ID ซัมมอนจริงใน WZ เสมอ (`14000027`, `14110033`, `14120017`, `14141005`) ตีมอนสเตอร์ได้ต่อเนื่องไม่เด้งหลุด
+
+### 8.2 ผลการ Audit ระบบเปลี่ยนอาชีพอาชีพใหม่ทั้งหมด (Full Audit Summary)
+* ตรวจสอบครอบคลุมทั้ง 4 ช่องทาง:
+  1. **NPC Admin (9010000 / `@admin`):** เมนู *Fast Job Advancement*, *Unlock 5th Job*, *Unlock 6th Job*
+  2. **NPC Job Advance ด่วน (9072303):** ใช้งาน [fast_job_advance.py](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/npc/fast_job_advance.py)
+  3. **คำสั่งผู้เล่น:** `@job`, `@jobadv`, `@jobadvance`
+  4. **ระบบ Auto Job Advance:** เปลี่ยนคลาสและ Max สกิลอัตโนมัติเมื่อเลเวล 10, 30, 60, 100
+* **สถานะอาชีพใหม่:** Adele, Khali, Ark, Illium, Hoyoung, Lara, Ren, Kain, Cadena, Angelic Buster, Kaiser, Lynn, Mo Xuan, Sia Astelle, Pathfinder, Kinesis, Zero **ผ่านการตรวจสอบและพร้อมใช้งานสมบูรณ์ 100%**
+
+### 8.3 ชุดไฟล์แพทช์ที่สร้างขึ้น (Patch Artifacts)
+1. **Client Patch (`Client_Patch_v265.zip` - 339 KB):**
+   - รวม `Launcher.exe`, `Localhost.dll`, `launcher.ini`, `Run_Game.bat` และคู่มือการติดตั้ง
+   - แตกไฟล์ลงโฟลเดอร์เกมแก้ปัญหาป๊อปอัป *"missing a few files"* ทันที
+2. **Server Patch (`Server263_Patch_Latest.zip` - 121.6 MB):**
+   - รวม `maplestory.jar` ตัวล่าสุด, สคริปต์ NPC ทั้งหมด และ `Apply_Patch.bat` คลิกเดียวติดตั้งอัปเดตเซิร์ฟเวอร์ทันที
 
 ---
 **จบเอกสารส่งมอบงาน (End of Handoff Document)**

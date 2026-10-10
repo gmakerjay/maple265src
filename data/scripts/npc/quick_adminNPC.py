@@ -189,10 +189,33 @@ elif selection == 20:
 elif selection == 21:
     for qid in range(1460, 1466):
         sm.completeQuest(qid)
-    sm.sendSayOkay("5th Job prequests have been unlocked!")
+    try:
+        from net.swordie.ms.client.character import MatrixSlot
+        from net.swordie.ms.constants import MatrixConstants
+        if chr.getMatrixSlot().size() < MatrixConstants.MAX_NODE_SLOTS:
+            for i in range(chr.getMatrixSlot().size(), MatrixConstants.MAX_NODE_SLOTS):
+                chr.getMatrixSlot().add(MatrixSlot(chr.getId(), i))
+        if chr.getJobHandler() != None:
+            chr.getJobHandler().GiveVSkills()
+    except:
+        pass
+    sm.sendSayOkay("5th Job (V Matrix) has been unlocked and V Skills granted!")
 elif selection == 22:
     chr.completeQuest(1488)
-    sm.sendSayOkay("6th Job prequests have been unlocked!")
+    try:
+        from net.swordie.ms.connection import OutPacket
+        from net.swordie.ms.handlers.header import OutHeader
+        from net.swordie.ms.enums import MessageType
+        from net.swordie.ms.util import FileTime
+        outPacket = OutPacket(OutHeader.MESSAGE)
+        outPacket.encodeByte(MessageType.QUEST_RECORD_MESSAGE.getVal())
+        outPacket.encodeInt(1488)
+        outPacket.encodeByte(2)
+        outPacket.encodeFT(FileTime.currentTime())
+        chr.write(outPacket)
+    except:
+        pass
+    sm.sendSayOkay("6th Job (HEXA Matrix) has been unlocked!")
 elif selection == 3:
     sm.openUI(UIType.UI_EVENT_NAME_TAG)
 elif selection == 4:

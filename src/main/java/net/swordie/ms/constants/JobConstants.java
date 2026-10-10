@@ -1450,6 +1450,10 @@ public class JobConstants {
         return isLynn(id) || isMoXuan(id);
     }
 
+    public static boolean isAnima(short id) {
+        return isHoYoung(id) || isLara(id) || isRen(id);
+    }
+
     public static boolean isCitizen(short id) {
         return id == JobConstants.JobEnum.CITIZEN.getJobId();
     }

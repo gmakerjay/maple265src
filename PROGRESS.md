@@ -997,5 +997,57 @@ MapleStory_Server_Runner/
 - **แพ็กเกจแพตช์อัปเดต:**
   - สร้างไฟล์แพตช์ล่าสุด `Patches\Server263_Patch_20261010_1717.zip` (ขนาด 121.56 MB) พร้อมสคริปต์ 1-Click `Apply_Patch.bat`
 
+---
+
+### 18. บันทึกผลการแก้ไขบั๊กตีมอนเด้ง, Full Audit ระบบ Job Advance ทุกอาชีพ และจัดทำชุดแพทช์ (10 ตุลาคม 2569)
+
+#### 🔍 1. การแก้ไขบั๊กโจมตีมอนสเตอร์แล้วเกมเด้งออก (Night Walker Crash on Hit Fix)
+- **สาเหตุจาก Error Log:**
+  - ตัวละคร Night Walker (Job 1400) ใช้สกิล Lucky Seven (`14001020`) โจมตีมอนสเตอร์ ฟังก์ชัน `shadowBats()` เรียก `summonBatAndRegister()` โดยส่ง ID สกิล `14001027` (ซึ่งเป็น Active Buff)
+  - ใน Client Data (`Skill.wz/1400.img/14001027`) ไม่มีโหนด `<dir name="summon">` ทำให้ตัวเกมเกิด Fatal Exception `HR 570425350 (INVALID_GAME_DATA)` ในแพ็กเก็ต `SUMMONED_CREATED (1588)` ส่งผลให้เกมปิดตัวลงทันที (`throw CTerminateException`)
+- **การแก้ไขในโค้ด (`NightWalker.java`):**
+  - เพิ่มเมธอด `getBatSummonSkillId()` เพื่อส่ง ID สกิลที่เป็น Summon Node แท้จริงใน WZ:
+    - ขั้น 1–2: ID `14000027` (`SHADOW_BAT_DOMINION`)
+    - ขั้น 3: ID `14110033` (`SHADOW_BAT_SUMMON_II`)
+    - Ravenous Mode: ID `14120017` (`RAVENOUS_BAT_SUMMON`)
+    - HEXA Matrix: ID `14141005` (`HEXA_SHADOW_BAT_SUMMON`)
+  - อัปเดตทั้ง `summonBatAndRegister()` และ `summonBatByDarkOmen()` ให้ใช้ ID ซัมมอนที่ถูกต้อง ตีมอนสเตอร์ได้ต่อเนื่องไม่เด้งหลุด
+
+#### ⚔️ 2. ปรับปรุงระบบเปลี่ยนอาชีพ Cygnus Knights ใน Admin NPC
+- ใน `Job.java` ฟังก์ชัน `handleJobAdvance()`:
+  - รองรับ Noblesse (`1000`) เลือกได้ทั้ง 5 สาย (Dawn Warrior, Blaze Wizard, Wind Archer, Night Walker, Thunder Breaker)
+  - รองรับระบบ **"สลับสายอาชีพ Cygnus ได้อิสระ (Switch Cygnus Branch)"**
+  - ล้างสกิลสายเดิม (`11000000..15999999`) อัตโนมัติ โดยไม่ลบสกิล 5th Job V-Matrix และ 6th Job HEXA Matrix
+  - อัปเกรดและ Max สกิลของสายใหม่อัตโนมัติ
+
+#### 📋 3. Full Audit ระบบ Job Advance สำหรับอาชีพใหม่ทั้งหมด (New Jobs Complete Audit)
+- **ตรวจสอบครบทุกอาชีพใหม่:**
+  - **Flora:** Adele (`15002` ➔ `15100`..`15112`), Khali (`15003` ➔ `15400`..`15412`), Ark (`15001` ➔ `15500`..`15512`), Illium (`15000` ➔ `15200`..`15212`)
+  - **Anima:** Hoyoung (`16000` ➔ `16400`..`16412`), Lara (`16001` ➔ `16200`..`16212`), Ren (`16002` ➔ `16100`..`16112`)
+  - **Nova:** Kain (`6003` ➔ `6300`..`6312`), Cadena (`6002` ➔ `6400`..`6412`), Angelic Buster (`6001` ➔ `6500`..`6512`), Kaiser (`6000` ➔ `6100`..`6112`)
+  - **Jianghu & Sengoku:** Lynn (`17001` ➔ `17200`..`17212`), Mo Xuan (`17000` ➔ `17500`..`17512`), Hayato (`4001` ➔ `4100`..`4112`), Kanna (`4002` ➔ `4200`..`4212`)
+  - **Shine & Standalone:** Sia Astelle (`18000` ➔ `18200`..`18212`), Pathfinder (`0` ➔ `301` ➔ `330`..`332`), Kinesis (`14000` ➔ `14200`..`14212`), Zero (`10000` ➔ `10100`..`10112`)
+- **การปรับปรุงที่ทำเพิ่มเติม:**
+  - เสริม Option 21 ใน `quick_adminNPC.py` ให้เปิดสล็อต V-Matrix 26 ช่อง และมอบ V-Skills ประจำอาชีพ 4 สกิลทันที
+  - เสริม Option 22 ใน `quick_adminNPC.py` ให้ส่ง Record Packet ของเควส `1488` เพื่อเปิด HEXA UI ใน Client ทันที
+  - แก้ไข `JobAdvance.py` ให้เป็น Universal Delegate ส่งต่อเข้า `handleJobAdvance()` เสมอ
+  - เพิ่มเมธอด `JobConstants.isAnima()` รวมกลุ่มอาชีพ Anima ให้ครบตามมาตรฐาน
+
+#### 📦 4. จัดทำชุดไฟล์แพทช์ (Client & Server Patch Packaging)
+- **Client Patch (`Client_Patch_v265.zip` - 339 KB):**
+  - รวม `Launcher.exe`, `Localhost.dll`, `launcher.ini`, `Run_Game.bat` และคู่มือการติดตั้ง
+  - แตกไฟล์ลงโฟลเดอร์เกม MapleStory v265 เล่นได้ทันทีโดยไม่ติดปัญหา *"missing a few files"*
+- **Server Patch (`Server263_Patch_Latest.zip` - 121.6 MB):**
+  - รวม `maplestory.jar` ตัวล่าสุด, สคริปต์ NPC ทั้งหมด, ชุด Client Patch และ `Apply_Patch.bat` ติดตั้งทับแบบคลิกเดียว
+
+#### 💎 5. เอกสารคำสั่งเสก NX และแต้มระบบ
+- `!nx <จำนวน>` หรือ `!setnx <จำนวน>`: เสก NX / Cash Points ให้ตัวเอง
+- `!givenx <ชื่อตัวละคร> <จำนวน>`: เสก NX ให้ผู้เล่นอื่น
+- `!dp <จำนวน>`: เสก Donation Points
+- `!vp <จำนวน>`: เสก Vote Points
+- `!mesos <จำนวน>`: เสกเงิน Meso
+- เมนู `[Starter Package]` ใน NPC Admin: รับ 1,000,000 Cash Points + 100,000 DP + Vac Pet ฟรี 1 ครั้งต่อบัญชี
+
+
 
 

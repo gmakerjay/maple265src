@@ -55,3 +55,4 @@ __pycache__/
 Thumbs.db
 .DS_Store
 *.sql
+Patches/
