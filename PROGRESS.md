@@ -938,4 +938,64 @@ MapleStory_Server_Runner/
 - **แพ็กเกจแพตช์อัปเดต:**
   - สร้างไฟล์แพตช์ล่าสุด `Patches\Server263_Patch_20261010_1522.zip` (ขนาด 121.56 MB) พร้อมสคริปต์ 1-Click `Apply_Patch.bat`
 
+---
+
+### 28. แก้ไขข้อผิดพลาดการสร้างตัวละคร Kain (MySQL Foreign Key Constraint Violation 1452) และยกเครื่องระบบ Logging & Error Diagnostics ทั่วทั้งระบบ
+
+#### 🎯 1. ผลการตรวจพบและวิเคราะห์สาเหตุ (Root Cause Analysis)
+1. **Error จาก MariaDB / MySQL:**
+   ```text
+   16:51:11.990 [nioEventLoopGroup-20-7] WARN  o.m.jdbc.message.server.ErrorPacket - Error: 1452-23000: Cannot add or update a child row: a foreign key constraint fails (`vietmaple`.`skills`, CONSTRAINT `skills_ibfk_1` FOREIGN KEY (`charid`) REFERENCES `characters` (`id`) ON DELETE CASCADE)
+   Packet CREATE_NEW_CHARACTER [141] got Exception: 0B 00 4B 41 49 4E 4F 46 46 4C 49 4E 45 ...
+   ```
+2. **สาเหตุของ Foreign Key Violation 1452:**
+   - เมื่อผู้เล่นสร้างตัวละครใหม่ใน `LoginHandler.handleCreateNewCharacter`: อ็อบเจกต์ `Char chr = new Char(...)` ถูกสร้างในหน่วยความจำ RAM ก่อน โดยที่ยังไม่ได้บันทึกลง MySQL (`chr.getId() == 0`)
+   - ต่อมาในบรรทัด 356 มีการเรียก `chr.setJobHandler(JobManager.getCreationJobById(curSelectedRace, chr));` ซึ่งจะเรียก Constructor ของ `Kain(chr)`
+   - ในขณะที่อาชีพอื่นๆ ทั้ง 42 อาชีพมีเงื่อนไข `if (chr.getId() != 0 && isHandlerOfJob(...))` เพื่อป้องกันไม่ให้ยัดสกิลตอนสร้างตัวละคร แต่ใน `Kain.java` (และ `WindArcher.java`) ขาดเงื่อนไข `chr.getId() != 0`
+   - ทำให้ `Kain` เรียก `chr.addSkill(skill)` ทันที ซึ่งไปเรียก `skill.setCharId(chr.getId())` (ค่าเป็น `0`) และเรียก `skill.saveToSQL()`
+   - คำสั่ง `INSERT INTO skills (charid, ...) VALUES (0, ...)` จึงถูกยิงไปที่ MariaDB ทันที แต่เนื่องจากในตาราง `characters` ยังไม่มี ID = 0 (เพราะ `chr.saveToSQL()` อยู่บรรทัด 374 หลังจากนั้น) ฐานข้อมูลจึงปฏิเสธคำสั่งและส่งผลให้แพ็กเก็ตสร้างตัวละครแครช
+3. **สาเหตุที่ระบบเดิมไม่แสดงจุดเกิดเหตุของบั๊ก (Logging Blindspot):**
+   - ใน `ChannelHandler.java`: เมื่อแพ็กเก็ตเกิด Exception ระบบสั่งพิมพ์แค่ `Packet %s [%d] got Exception: %s` (แสดงเฉพาะ Header และ InPacket Hex Dump)
+   - ใน `DataPrinter.java`: เมธอด `send(name, Exception e)` เขียน Stack Trace ลงไฟล์ในฮาร์ดดิสก์อย่างเงียบๆ (`logs/.../ExceptionCaught/All.txt`) โดย **ไม่เคยพิมพ์ Stack Trace หรือระบุไฟล์และบรรทัดออกทางหน้าจอ Console** ทำให้นักพัฒนาไม่สามารถมองเห็นได้ว่าโค้ดบรรทัดไหนพัง
+   - ใน `DatabaseManager.java`: เมื่อคำสั่ง SQL ล้มเหลว มีเพียงการบันทึก Exception ลงไฟล์เงียบๆ โดยไม่พิมพ์ SQL Query หรือระบุว่าเมธอด Java ใดเป็นคนเรียกใช้
+
+#### ⚙️ 2. รายละเอียดการแก้ไขและปรับปรุงเชิงลึก (Deep Fixes & Hardening)
+1. **`Kain.java` & `WindArcher.java` (แก้ Foreign Key Crash):**
+   - เพิ่มการตรวจสอบ `if (chr.getId() != 0 && isHandlerOfJob(chr.getJob()))` ใน Constructor เพื่อไม่ให้เพิ่มสกิลลงฐานข้อมูลก่อนที่ตัวละครจะมี ID จริง
+   - สกิลติดตัวพื้นฐานจะถูกเพิ่มให้อัตโนมัติเมื่อตัวละครโหลดเข้าเกมจริง (Migrate In)
+2. **`Char.java` (ป้องกันระดับ Core):**
+   - ใน `addSkill` และ `removeSkill`: เพิ่มการตรวจสอบ `if (getId() > 0)` ก่อนเรียก `skill.saveToSQL()` หรือ `skill.deleteSkillFromSQL()` เพื่อรับประกันว่าหากมีการเรียกใช้ก่อนตัวละครบันทึกลง DB จะไม่เกิด Foreign Key Error
+   - สกิลที่ถูกเพิ่มเข้ามาระหว่างสร้างตัวละครจะถูกบันทึกลง DB พร้อมกันทั้งหมดใน `Char.insertToSQL()` เมื่อได้รับ ID ใหม่จากฐานข้อมูลเรียบร้อยแล้ว
+3. **`Skill.java` (ป้องกันระดับ Entity):**
+   - เพิ่ม Guard Check `if (getCharId() <= 0) return;` ใน `saveToSQL()`
+   - เพิ่ม Guard Check `if (getId() <= 0) return;` ใน `deleteSkillFromSQL()`
+4. **`ChannelHandler.java` (ระบบวินิจฉัยข้อผิดพลาดของ Packet ระดับมืออาชีพ):**
+   - ดักจับ `Throwable` และพิมพ์กล่องวินิจฉัย `[PACKET EXCEPTION]` ออกทาง `System.err` อย่างชัดเจน:
+     - แสดง Opcode name, Opcode ID, และ Hex
+     - แสดงข้อมูลผู้เล่น: Account name, Character name, Character ID, Job, Level, และ IP Address
+     - แสดง Exception Class และ Message
+     - กรองและแสดง Stack Trace เฉพาะคลาสของ `net.swordie.ms.*` สูงสุด 10 เฟรม เพื่อชี้เป้าไฟล์และเลขบรรทัดที่เกิดปัญหาได้ทันที 100%
+     - แสดง Root Cause Chain (`[Caused By]`) หากมีข้อผิดพลาดซ้อน
+     - แสดง Packet Hex Dump สมบูรณ์
+5. **`DatabaseManager.java` (ระบบแจ้งเตือนข้อผิดพลาดฐานข้อมูล SQL ทันที):**
+   - เพิ่มฟังก์ชัน `logDatabaseError(query, exception)` เชื่อมต่อไปยัง `executeQuery`, `executeStatement`, และ `executeStatementReturnID`
+   - เมื่อคำสั่ง SQL ใดๆ ล้มเหลว จะแสดงกล่อง `[DATABASE ERROR]` พิมพ์ข้อความคำสั่ง SQL, สาเหตุจาก MySQL, และคลาส/บรรทัด Java ที่เป็นคนเรียกคำสั่งนั้นทันที
+6. **`DataPrinter.java` (ปรับปรุงตัวบันทึกกลางให้พิมพ์ออก Console เสมอ):**
+   - รองรับทั้ง `Throwable`, `Exception`, และ `Error`
+   - พิมพ์ข้อผิดพลาดพร้อมไฮไลต์ Stack Trace เฟรมของ `net.swordie.ms` ออกทาง `System.err` ทันทีที่มีการเรียกใช้
+   - ทุกข้อความในหมวด Error (`ExceptionCaught`, `HikariCP_Error`, `Scripts`, `Hack`) จะถูกพิมพ์ออก Console เสมอ
+7. **`ScriptManagerImpl.java` (ระบบแจ้งเตือนสคริปต์ NPC / Quest / Portal):**
+   - เมื่อสคริปต์เกิดข้อผิดพลาดในการรัน (`ScriptException`) จะพิมพ์กล่อง `[SCRIPT ERROR]` ระบุชื่อไฟล์สคริปต์, เลขบรรทัดในสคริปต์, และ Error Message ออกทาง Console ทันที
+8. **`CathingScheduledThreadPoolExecutor.java` (ป้องกัน Timer Task เงียบหาย):**
+   - ปรับการดักจับจาก `Exception` เป็น `Throwable` พร้อมพิมพ์ข้อผิดพลาดออกทาง `System.err`
+
+#### 📦 3. ผลการคอมไพล์และการส่งมอบ (Build & Deployment)
+- **การคอมไพล์:** `BUILD SUCCESS` 100% (Maven 3.9.15 + OpenJDK 21)
+- **การ Deploy ไฟล์ Fat JAR:**
+  - `Server263\maplestory.jar` (ขนาด 138,626,786 ไบต์) อัปเดตและพร้อมใช้งาน
+  - ซิงค์ตรงกับ `v214 src\maplestory.jar` และ Root `maplestory.jar`
+- **แพ็กเกจแพตช์อัปเดต:**
+  - สร้างไฟล์แพตช์ล่าสุด `Patches\Server263_Patch_20261010_1717.zip` (ขนาด 121.56 MB) พร้อมสคริปต์ 1-Click `Apply_Patch.bat`
+
+
 

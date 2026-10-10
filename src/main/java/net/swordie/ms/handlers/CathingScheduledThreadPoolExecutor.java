@@ -53,7 +53,8 @@ public class CathingScheduledThreadPoolExecutor extends ScheduledThreadPoolExecu
         public void run() {
             try {
                 runnable.run();
-            } catch (Exception e) {
+            } catch (Throwable e) {
+                System.err.println("[Timer Task Error] " + e.getClass().getSimpleName() + ": " + e.getMessage());
                 DataPrinter.send("ExceptionCaught/EventManager.txt", e);
             }
         }

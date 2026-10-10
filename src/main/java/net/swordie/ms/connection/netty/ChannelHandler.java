@@ -69,10 +69,46 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
         if (handler == null) return;
         try {
             handler.handle(c, chr, inPacket);
-        } catch (Exception e) {
+        } catch (Throwable t) {
             final var inPacketEx = new InPacket(inPacket.getData().clone());
-            DataPrinter.send(DataPrinter.EXCEPTION_CAUGHT, String.format("Packet %s [%d] got Exception: %s", header, inPacketEx.decodeShort(), inPacketEx));
-            DataPrinter.send(DataPrinter.EXCEPTION_CAUGHT, e);
+            short inOp = inPacketEx.decodeShort();
+            String accName = (c != null && c.getUser() != null) ? c.getUser().getName() : ((c != null && c.getAccount() != null) ? ("AccID:" + c.getAccount().getId()) : "(no acc)");
+            String chrInfo = (chr != null) ? String.format("%s (ID: %d, Job: %d, Lv: %d)", chr.getName(), chr.getId(), chr.getJob(), chr.getLevel()) : "(no chr)";
+            String ip = (c != null) ? c.getIP() : "(no ip)";
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("\n============================== [PACKET EXCEPTION] ==============================\n");
+            sb.append(String.format("[Packet]   Opcode: %s [%d / 0x%04X]\n", header, inOp, inOp));
+            sb.append(String.format("[Client]   Account: %s | Char: %s | IP: %s\n", accName, chrInfo, ip));
+            sb.append(String.format("[Error]    %s: %s\n", t.getClass().getName(), t.getMessage()));
+            sb.append("[Location] Stack Trace:\n");
+            int frames = 0;
+            for (StackTraceElement elem : t.getStackTrace()) {
+                if (elem.getClassName().startsWith("net.swordie.ms")) {
+                    sb.append(String.format("   -> %s.%s(%s:%d)\n", elem.getClassName(), elem.getMethodName(), elem.getFileName(), elem.getLineNumber()));
+                    frames++;
+                    if (frames >= 10) break;
+                }
+            }
+            if (frames == 0) {
+                for (int i = 0; i < Math.min(5, t.getStackTrace().length); i++) {
+                    sb.append(String.format("   -> %s\n", t.getStackTrace()[i]));
+                }
+            }
+            if (t.getCause() != null) {
+                sb.append(String.format("[Caused By] %s: %s\n", t.getCause().getClass().getName(), t.getCause().getMessage()));
+                for (StackTraceElement elem : t.getCause().getStackTrace()) {
+                    if (elem.getClassName().startsWith("net.swordie.ms")) {
+                        sb.append(String.format("      -> %s.%s(%s:%d)\n", elem.getClassName(), elem.getMethodName(), elem.getFileName(), elem.getLineNumber()));
+                    }
+                }
+            }
+            sb.append(String.format("[Dump]     %s\n", inPacketEx));
+            sb.append("================================================================================");
+
+            System.err.println(sb.toString());
+            DataPrinter.send(DataPrinter.EXCEPTION_CAUGHT, sb.toString(), true);
+            DataPrinter.send(DataPrinter.EXCEPTION_CAUGHT, t);
             if (c != null) c.write(WvsContext.exclRequest());
         }
     }

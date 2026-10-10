@@ -43,19 +43,56 @@ public class DataPrinter {
     private static final String FILE_PATH = "logs/" + sdf.format(Calendar.getInstance().getTime()) + "/"; // + sdf.format(Calendar.getInstance().getTime()) + "/"
 
     public static void send(final String name, final Exception e) {
+        send(name, (Throwable) e);
+    }
+
+    public static void send(final String name, final Throwable e) {
+        if (e == null) return;
         final Writer result = new StringWriter();
         final PrintWriter printWriter = new PrintWriter(result);
         e.printStackTrace(printWriter);
-        send(name, result.toString(), true);
+
+        // Print highlighted error to System.err so bugs are immediately visible
+        System.err.println("\n[ERROR LOG] " + name + " -> " + e.getClass().getName() + (e.getMessage() != null ? (": " + e.getMessage()) : ""));
+        int shown = 0;
+        for (StackTraceElement elem : e.getStackTrace()) {
+            if (elem.getClassName().startsWith("net.swordie.ms")) {
+                System.err.printf("   at %s.%s(%s:%d)%n", elem.getClassName(), elem.getMethodName(), elem.getFileName(), elem.getLineNumber());
+                shown++;
+                if (shown >= 8) break;
+            }
+        }
+        if (shown == 0) {
+            for (int i = 0; i < Math.min(4, e.getStackTrace().length); i++) {
+                System.err.printf("   at %s%n", e.getStackTrace()[i]);
+            }
+        }
+        if (e.getCause() != null) {
+            System.err.println("   Caused by: " + e.getCause().getClass().getName() + (e.getCause().getMessage() != null ? (": " + e.getCause().getMessage()) : ""));
+            for (StackTraceElement elem : e.getCause().getStackTrace()) {
+                if (elem.getClassName().startsWith("net.swordie.ms")) {
+                    System.err.printf("      at %s.%s(%s:%d)%n", elem.getClassName(), elem.getMethodName(), elem.getFileName(), elem.getLineNumber());
+                }
+            }
+        }
+
+        writeToFile(name, result.toString(), true);
     }
 
     public static void send(final String name, final String s) {
         //DiscordAPI.send(name, "``` [" + sdf4P.format(Calendar.getInstance().getTime()) + "] " + s + " ```", DiscordAPI.staffGuildServer);
         System.out.println(s);
-        send(name, s, true);
+        writeToFile(name, s, true);
     }
 
     public static void send(String name, final String s, boolean line) {
+        if (name != null && (name.contains("Exception") || name.contains("Error") || name.contains("error") || name.contains("hack.txt") || name.contains("Scripts.txt"))) {
+            System.err.println("[" + name + "] " + s);
+        }
+        writeToFile(name, s, line);
+    }
+
+    private static void writeToFile(String name, final String s, boolean line) {
         FileOutputStream out = null;
         String result = null;
         String file = FILE_PATH + name;
@@ -75,14 +112,14 @@ public class DataPrinter {
                 out.write("\r\n".getBytes());
             }
         } catch (IOException ess) {
-            DataPrinter.send(DataPrinter.EXCEPTION_CAUGHT, ess);
+            System.err.println("[DataPrinter IO Error] " + ess.getMessage());
         } finally {
             try {
                 if (out != null) {
                     out.close();
                 }
             } catch (IOException e) {
-                DataPrinter.send(DataPrinter.EXCEPTION_CAUGHT, e);
+                System.err.println("[DataPrinter Close Error] " + e.getMessage());
             }
         }
     }

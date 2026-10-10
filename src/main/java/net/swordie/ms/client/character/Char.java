@@ -3591,7 +3591,9 @@ public class Char {
         Skill oldSkill = skills.get(skillId);
         if (oldSkill == null) {
             skills.put(skillId, skill);
-            skill.saveToSQL();
+            if (getId() > 0) {
+                skill.saveToSQL();
+            }
             isChanged = true;
         } else {
             isChanged = oldSkill.getCurrentLevel() != skill.getCurrentLevel();
@@ -3600,7 +3602,9 @@ public class Char {
             }
             oldSkill.setCurrentLevel(skill.getCurrentLevel());
             oldSkill.setMasterLevel(skill.getMasterLevel());
-            oldSkill.saveToSQL();
+            if (getId() > 0) {
+                oldSkill.saveToSQL();
+            }
         }
         if (isPassive && isChanged) {
             addToBaseStatCache(skill);
@@ -3651,7 +3655,9 @@ public class Char {
             if (SkillConstants.isPassiveSkill(skillID)) {
                 removeFromBaseStatCache(skill);
             }
-            skill.deleteSkillFromSQL();
+            if (skill.getId() > 0) {
+                skill.deleteSkillFromSQL();
+            }
             skills.remove(skillID);
         }
     }

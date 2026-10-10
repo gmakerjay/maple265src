@@ -90,6 +90,7 @@ public class DatabaseManager {
 
             return cachedRowSet;
         } catch (Exception exception) {
+            logDatabaseError(query, exception);
             DataPrinter.send(DataPrinter.EXCEPTION_CAUGHT, exception);
             DataPrinter.send(DataPrinter.HIKARICP_ERROR, exception);
             return null;
@@ -144,6 +145,7 @@ public class DatabaseManager {
             ps.execute();
             return true;
         } catch (Exception exception) {
+            logDatabaseError(query, exception);
             DataPrinter.send(DataPrinter.HIKARICP_ERROR, exception);
             return false;
         }
@@ -169,10 +171,27 @@ public class DatabaseManager {
                 }
             }
         } catch (Exception exception) {
+            logDatabaseError(query, exception);
             DataPrinter.send(DataPrinter.HIKARICP_ERROR, exception);
         }
 
         return id;
+    }
+
+    private static void logDatabaseError(String query, Exception exception) {
+        String caller = "Unknown";
+        for (StackTraceElement elem : Thread.currentThread().getStackTrace()) {
+            String className = elem.getClassName();
+            if (className.startsWith("net.swordie.ms") && !className.equals(DatabaseManager.class.getName())) {
+                caller = String.format("%s.%s(%s:%d)", className, elem.getMethodName(), elem.getFileName(), elem.getLineNumber());
+                break;
+            }
+        }
+        System.err.println("\n-------------------- [DATABASE ERROR] --------------------");
+        System.err.println("[Query]       " + query);
+        System.err.println("[Error]       " + exception.getClass().getSimpleName() + ": " + exception.getMessage());
+        System.err.println("[Called From] " + caller);
+        System.err.println("----------------------------------------------------------\n");
     }
 
     public static ArrayList<String> getTablesList() {

@@ -54,6 +54,9 @@ public class Skill {
     }
 
     public void saveToSQL() {
+        if (getCharId() <= 0) {
+            return;
+        }
         if (getId() == 0) {
             String query = "INSERT INTO `skills` (" +
                     "`charid`, " +
@@ -85,6 +88,9 @@ public class Skill {
     }
 
     public void deleteSkillFromSQL() {
+        if (getId() <= 0) {
+            return;
+        }
         String query = "DELETE FROM `skills` WHERE " +
                 String.format("`id` = %d", getId());
         DatabaseManager.executeStatement(query);

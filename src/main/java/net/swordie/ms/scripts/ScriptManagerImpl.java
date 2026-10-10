@@ -296,12 +296,16 @@ public class ScriptManagerImpl implements ScriptManager {
             }
         } catch (ScriptException e) {
             if (!isIntendedStop(e)) {
-                DataPrinter.send(DataPrinter.SCRIPTS,
-                        String.format("Không thể chạy script [%s]! Exception [%s] ở dòng %s.",
-                                name, e.getMessage(), e.getLineNumber()), true);
+                String errMsg = String.format("Script [%s] runtime error at line %d: %s", name, e.getLineNumber(), e.getMessage());
+                System.err.println("\n-------------------- [SCRIPT ERROR] --------------------");
+                System.err.println("[Script] " + name);
+                System.err.println("[Line]   " + e.getLineNumber());
+                System.err.println("[Error]  " + e.getMessage());
+                System.err.println("--------------------------------------------------------\n");
+                DataPrinter.send(DataPrinter.SCRIPTS, errMsg, true);
                 unlockUI();
                 progressMessageFont(3, 20, 9, 1000,
-                        "Unknown error! Please type @sualoi or @dispose.");
+                        "Script Error in " + name + " (Line " + e.getLineNumber() + ")! Please type @dispose.");
             }
         } finally {
             stop(scriptType);
