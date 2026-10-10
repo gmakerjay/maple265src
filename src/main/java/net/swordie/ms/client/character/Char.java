@@ -3435,13 +3435,26 @@ public class Char {
         getField().broadcast(UserRemote.effect(getId(), Effect.changeJobEffect()), this);
 
         Map<Stat, Object> stats = new HashMap<>();
-        stats.put(Stat.job, id);
+        stats.put(Stat.job, (short) id);
         sendStatsPacket(stats);
 
-        int subId = (id == 2210) ? 2200 : (id == 2212) ? 2211 : (id == 2218) ? 2217 : 0;
-        List<Skill> newSkills = SkillData.getSkillsByJob((short) (subId > 0 ? subId : id));
-        newSkills.forEach(skill -> addSkill(skill, true));
-        write(WvsContext.changeSkillRecordResult(newSkills, true, false, false));
+        List<Skill> newSkills = new ArrayList<>();
+        List<Short> jobChain = JobConstants.getJobChain((short) id);
+        for (short j : jobChain) {
+            int subId = (j == 2210) ? 2200 : (j == 2212) ? 2211 : (j == 2218) ? 2217 : 0;
+            List<Skill> chainSkills = SkillData.getSkillsByJob((short) (subId > 0 ? subId : j));
+            if (chainSkills != null) {
+                for (Skill skill : chainSkills) {
+                    if (!hasSkill(skill.getSkillId())) {
+                        addSkill(skill, true);
+                        newSkills.add(skill);
+                    }
+                }
+            }
+        }
+        if (!newSkills.isEmpty()) {
+            write(WvsContext.changeSkillRecordResult(newSkills, true, false, false));
+        }
 
         notifyChanges();
     }

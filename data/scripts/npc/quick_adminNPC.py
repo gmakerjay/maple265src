@@ -7,6 +7,10 @@ from net.swordie.ms.client.character.items import EquipAttribute
 from net.swordie.ms.loaders import StringData
 from net.swordie.ms.loaders import ItemData
 from net.swordie.ms.constants import FieldConstants
+import sys
+for p in ["data/scripts/npc", "data/scripts"]:
+    if p not in sys.path:
+        sys.path.append(p)
 
 DAME = 9010106
 NPC = 9010000
@@ -227,8 +231,10 @@ elif selection == 12:
 elif selection == 13:
     sm.upgradeMechanicalHeart()
 elif selection == 14:
-    import fast_job_advance
-    fast_job_advance.open_fast_job_advance(sm, chr)
+    if chr != None and chr.getJobHandler() != None:
+        chr.getJobHandler().handleJobAdvance()
+    else:
+        sm.sendSayOkay("Unable to process Job Advancement at this time.")
 elif selection == 16:
     chr.maxSkills()
     sm.sendSayOkay("All skills (1st - 4th Job) have been maxed!")

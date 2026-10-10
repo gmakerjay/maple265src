@@ -88,7 +88,7 @@ public class WvsContext {
             Object value = entry.getValue();
             switch (stat) {
                 case skin:
-                    outPacket.encodeByte((Byte) value);
+                    outPacket.encodeByte(value instanceof Number n ? n.byteValue() : (Byte) value);
                     outPacket.encodeInt(0);
                     break;
                 case face:
@@ -106,7 +106,7 @@ public class WvsContext {
                 case charmEXP:
                 case eventPoints:
                 case level:
-                    outPacket.encodeInt((Integer) value);
+                    outPacket.encodeInt(value instanceof Number n ? n.intValue() : (Integer) value);
                     break;
                 case str:
                 case dex:
@@ -114,18 +114,18 @@ public class WvsContext {
                 case luk:
                 case ap:
                 case fatigue:
-                    outPacket.encodeShort((Short) value);
+                    outPacket.encodeShort(value instanceof Number n ? n.shortValue() : (Short) value);
                     break;
                 case sp:
                     if (value instanceof ExtendSP) {
                         ((ExtendSP) value).encode(outPacket);
                     } else {
-                        outPacket.encodeShort((Short) value);
+                        outPacket.encodeShort(value instanceof Number n ? n.shortValue() : (Short) value);
                     }
                     break;
                 case exp:
                 case money:
-                    outPacket.encodeLong((Long) value);
+                    outPacket.encodeLong(value instanceof Number n ? n.longValue() : (Long) value);
                     break;
                 case dayLimit:
                     ((NonCombatStatDayLimit) value).encode(outPacket);
@@ -137,12 +137,14 @@ public class WvsContext {
                     //((CharacterCard) value).encode(outPacket);
                     break;
                 case pvp2:
-                    outPacket.encodeByte((Byte) value);
-                    outPacket.encodeByte((Byte) value);
+                    byte pvpVal = value instanceof Number n ? n.byteValue() : (Byte) value;
+                    outPacket.encodeByte(pvpVal);
+                    outPacket.encodeByte(pvpVal);
                     break;
                 case job:
-                    outPacket.encodeShort((Short) value);
+                    outPacket.encodeShort(value instanceof Number n ? n.shortValue() : (Short) value);
                     outPacket.encodeShort(subJob);
+                    break;
             }
         }
         outPacket.encodeByte(charmOld > 0);

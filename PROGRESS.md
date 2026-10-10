@@ -895,3 +895,47 @@ MapleStory_Server_Runner/
 - **แพ็กเกจแพตช์อัปเดต:**
   - สร้างไฟล์แพตช์ล่าสุด `Patches\Server263_Patch_20261010_1447.zip` (ขนาด 121.55 MB) พร้อมสคริปต์ 1-Click `Apply_Patch.bat`
 
+---
+
+### 27. ตรวจสอบ Log เซิร์ฟเวอร์อย่างละเอียด แก้ไข ClassCastException ในการเปลี่ยนอาชีพ และแก้ปัญหาสกิลไม่ปลดล็อค (Deep Log Audit & Complete Skill Unlock Fix)
+
+#### 🎯 1. ผลการออดิตและวิเคราะห์สาเหตุจาก Logs (`Server263/logs/10 October 2026/`)
+1. **สาเหตุที่แท้จริงจาก Log (`Scripts.txt` บรรทัดที่ 11 เวลา 15:10:56):**
+   ```text
+   [10 10 2026 15:10:56] Không thể chạy script [quick_adminNPC]! Exception [java.lang.ClassCastException: java.lang.ClassCastException: class java.lang.Integer cannot be cast to class java.lang.Short (java.lang.Integer and java.lang.Short are in module java.base of loader 'bootstrap') in <script> at line number 235] ở dòng 235.
+   ```
+2. **การวิเคราะห์ข้อสันนิษฐานของผู้ใช้ ("ติดเงื่อนไขเควสต์หรือไม่"):**
+   - **ไม่ใช่ปัญหาเรื่องติดเงื่อนไขเควสต์:** ตัวเกมไม่ได้ติดเควสต์ค้าง แต่เกิดจาก **Type Casting Bug ในระดับ JVM Java Runtime** ในขณะที่ระบบกำลังเปลี่ยนอาชีพ
+   - ใน `Char.java` เมธอด `setJob(int id)` รับพารามิเตอร์ประเภท `int id` และใส่ลงใน `stats.put(Stat.job, id)` (ถูก Auto-box เป็น `java.lang.Integer`)
+   - ในขณะที่ `WvsContext.java` เมธอด `statChanged` บรรทัดที่ 144 ดึงค่ามาแปลงแบบ Unboxing ตรงๆ: `outPacket.encodeShort((Short) value);`
+   - ในภาษา Java อ็อบเจกต์ `java.lang.Integer` **ไม่สามารถ Cast ข้าม Class ไปเป็น `java.lang.Short` ได้** จึงเกิด `ClassCastException` ทันทีที่เซิร์ฟเวอร์เริ่มเตรียมแพ็กเก็ตสเตตัส!
+3. **ผลกระทบที่ทำให้สกิลไม่ยอมปลดล็อคให้ใช้งาน:**
+   - เมื่อ `chr.setJob()` เกิด Exception ล้มเหลวกลางคันตั้งแต่คำสั่งแรก:
+     - ฝั่ง Client **ไม่เคยได้รับแพ็กเก็ตเปลี่ยนอาชีพ (`Stat.job`)** ทำให้ Client ยังเข้าใจว่าตัวละครเป็น Noblesse (Job 1000) หรือ Beginner
+     - คำสั่งส่งสกิลของอาชีพใหม่ใน `setJob()` **ไม่ถูกทำงานเลย**
+     - คำสั่ง `chr.maxSkills()` ใน `handleJobAdvance()` **ไม่ถูกเรียกใช้งานเลย**
+     - หน้าต่าง Skill Book (คีย์ลัด K) ฝั่ง Client จึงล็อกแท็บอาชีพไว้หมด ไม่ยอมเปิดแท็บคลาส 1–4 และไม่มีสกิลปรากฏให้ใช้
+     - เมื่อผู้เล่นพยายามกดอัปสกิล เซิร์ฟเวอร์ตรวจสอบพบว่า Job ในตัวละครไม่ตรงกับสายสกิล (`SkillConstants.isMatching` เป็น false) จึงขึ้นข้อความตัดจบว่า *"Lỗi không xác định."*
+
+#### ⚙️ 2. รายละเอียดการแก้ไขและปรับปรุงเชิงลึก (Deep Fixes & Hardening)
+1. **`WvsContext.java` (แก้ ClassCastException ป้องกันการแครช 100%):**
+   - ปรับการ Decode ตัวเลขใน `statChanged()` ทุกเคสให้ใช้ Java Pattern Matching `value instanceof Number n ? n.xxxValue() : ...` แทนการ Cast แบบ Direct Unboxing
+   - รองรับทั้ง `Integer`, `Short`, `Byte`, `Long` โดยไม่เกิด `ClassCastException` อีกต่อไปอย่างสิ้นเชิง
+2. **`Char.java`:**
+   - ใน `setJob(int id)`: บังคับแคสต์ `stats.put(Stat.job, (short) id);` ให้สอดคล้องตามชนิดข้อมูล
+   - เพิ่มระบบโหลดสกิลครบทั้งสายอาชีพย้อนหลัง (`JobConstants.getJobChain((short) id)`) เพื่อให้แน่ใจว่าเมื่อเปลี่ยนเป็นคลาส 2, 3 หรือ 4 สกิลของคลาสก่อนหน้าทั้งหมดจะถูกเพิ่มเข้าตัวละครและส่งแพ็กเก็ต `changeSkillRecordResult` ให้ Client แสดงแท็บสกิลครบถ้วนทันที
+3. **`Job.java` (`handleJobAdvance`):**
+   - เพิ่มการปลดล็อก V-Matrix (เควสต์ 1465, สล็อต V-Matrix ครบ 60 ช่อง, พร้อมมอบ V-Skills) อัตโนมัติเมื่อเลเวล 200+
+   - เพิ่มการส่งแพ็กเก็ต `QUEST_RECORD_MESSAGE` เควสต์ 1488 แบบสมบูรณ์ เพื่อปลดล็อกแท็บ HEXA Matrix คลาส 6 ในหน้าต่าง UI ของ Client ทันทีเมื่อเลเวล 260+
+4. **`SkillHandler.java` (`handleClientSyncCooltimeRequest`):**
+   - เพิ่มการตรวจสอบขนาด Unread Bytes (`inPacket.getUnreadAmount() < 8`) ป้องกันปัญหา `ArrayIndexOutOfBoundsException` ที่วนลูปบันทึกใน `All.txt` ทุก 30 วินาที
+
+#### 📦 3. ผลการคอมไพล์และการส่งมอบ (Build & Deployment)
+- **การคอมไพล์:** `BUILD SUCCESS` 100% โดยใช้ Portable OpenJDK 21 และ Portable Apache Maven 3.9.15
+- **การ Deploy ไฟล์ Fat JAR:**
+  - `Server263\maplestory.jar` (ขนาด 138,623,994 ไบต์) อัปเดตและพร้อมใช้งาน
+  - ซิงค์ตรงกับ `v214 src\maplestory.jar` และ Root `maplestory.jar`
+- **แพ็กเกจแพตช์อัปเดต:**
+  - สร้างไฟล์แพตช์ล่าสุด `Patches\Server263_Patch_20261010_1522.zip` (ขนาด 121.56 MB) พร้อมสคริปต์ 1-Click `Apply_Patch.bat`
+
+

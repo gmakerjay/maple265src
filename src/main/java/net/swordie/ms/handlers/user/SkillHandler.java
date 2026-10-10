@@ -983,10 +983,16 @@ public class SkillHandler {
 
     @Handler(op = InHeader.CLIENT_SYNC_COOLTIME_REQUEST)
     public static void handleClientSyncCooltimeRequest(Char chr, InPacket inPacket) {
+        if (inPacket.getUnreadAmount() < 8) {
+            return;
+        }
         inPacket.decodeInt(); // tick
         int loopSize = inPacket.decodeInt();
         Map<Integer, Integer> cooltimeMap = new HashMap<>();
         for (int i = 0; i < loopSize; i++) {
+            if (inPacket.getUnreadAmount() < 8) {
+                break;
+            }
             int skillID = inPacket.decodeInt();
             int unk = inPacket.decodeInt(); // Remaining time  Client side
             if (unk <= 0 || chr.getRemainingCoolTime(skillID) <= 0) {

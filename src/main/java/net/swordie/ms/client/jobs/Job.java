@@ -2934,6 +2934,12 @@ public abstract class Job {
         }
         if (level >= 260 && !chr.hasQuestCompleted(1488)) {
             chr.completeQuest(1488);
+            net.swordie.ms.connection.OutPacket outPacket = new net.swordie.ms.connection.OutPacket(net.swordie.ms.handlers.header.OutHeader.MESSAGE);
+            outPacket.encodeByte(net.swordie.ms.enums.MessageType.QUEST_RECORD_MESSAGE.getVal());
+            outPacket.encodeInt(1488);
+            outPacket.encodeByte(2);
+            outPacket.encodeFT(net.swordie.ms.util.FileTime.currentTime());
+            chr.write(outPacket);
         }
 
         List<Short> branches = JobConstants.getBranchOptions(curJob, level, subJob);
@@ -2958,9 +2964,16 @@ public abstract class Job {
                 }
                 short finalTarget = JobConstants.getTargetJobForLevel(chosen, level, subJob);
                 chr.setJob(finalTarget);
-                Map<Stat, Object> stats = new HashMap<>();
-                stats.put(Stat.job, finalTarget);
-                chr.sendStatsPacket(stats);
+                if (level >= 200) {
+                    if (chr.getMatrixSlot().size() < MatrixConstants.MAX_NODE_SLOTS) {
+                        for (int i = chr.getMatrixSlot().size(); i < MatrixConstants.MAX_NODE_SLOTS; i++) {
+                            chr.getMatrixSlot().add(new MatrixSlot(chr.getId(), i));
+                        }
+                    }
+                    if (chr.getJobHandler() != null) {
+                        chr.getJobHandler().GiveVSkills();
+                    }
+                }
                 chr.maxSkills();
                 sm.sendSayOkay("#fs13##bCongratulations!#k\r\nYou have successfully advanced to #e" + JobConstants.getCleanJobName(finalTarget) + " (" + finalTarget + ")#n!\r\n\r\nAll your skills (1st - 4th Job) have been refreshed and maximized.");
                 return;
@@ -2970,9 +2983,16 @@ public abstract class Job {
         short target = JobConstants.getTargetJobForLevel(curJob, level, subJob);
         if (target != curJob) {
             chr.setJob(target);
-            Map<Stat, Object> stats = new HashMap<>();
-            stats.put(Stat.job, target);
-            chr.sendStatsPacket(stats);
+            if (level >= 200) {
+                if (chr.getMatrixSlot().size() < MatrixConstants.MAX_NODE_SLOTS) {
+                    for (int i = chr.getMatrixSlot().size(); i < MatrixConstants.MAX_NODE_SLOTS; i++) {
+                        chr.getMatrixSlot().add(new MatrixSlot(chr.getId(), i));
+                    }
+                }
+                if (chr.getJobHandler() != null) {
+                    chr.getJobHandler().GiveVSkills();
+                }
+            }
             chr.maxSkills();
             sm.sendSayOkay("#fs13##bCongratulations!#k\r\nYou have successfully advanced to #e" + JobConstants.getCleanJobName(target) + " (" + target + ")#n!\r\n\r\nAll your skills (1st - 4th Job) have been refreshed and maximized.");
         } else {
