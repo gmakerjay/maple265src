@@ -136,13 +136,25 @@ public class Kaiser extends Job {
     public static final int HEXA_GIGA_WAVE = 61141000; //Special Attack (Speed Debuff)
     public static final int HEXA_GIGA_WAVE_FINAL_FORM = 61141001;
     public static final int HEXA_BLADE_BURST = 61141002;
+    public static final int HEXA_BLADE_BURST_EXPLOSION = 61141003;
     public static final int HEXA_BLADE_BURST_FINAL_FORM = 61141004;
+    public static final int HEXA_BLADE_BURST_EXPLOSION_FINAL_FORM = 61141005;
     public static final int HEXA_INFERNO_BREATH = 61141009;
     public static final int HEXA_INFERNO_BREATH_FINAL_FORM = 61141010;
     public static final int HEXA_ENHANCED_INFERNO_BREATH = 61141011;
     public static final int HEXA_ENHANCED_INFERNO_BREATH_FINAL_FORM = 61141012;
+    public static final int HEXA_TEMPEST_BLADES = 61141006;
+    public static final int HEXA_TEMPEST_BLADES_FF = 61141007;
+    public static final int HEXA_TEMPEST_BLADES_FINAL_FORM = HEXA_TEMPEST_BLADES_FF;
+    public static final int HEXA_TEMPEST_BLADES_ATOM = 61141008;
     public static final int HEXA_STONE_DRAGON = 61141013; //Summon (Speed Debuff)
     public static final int HEXA_STONE_DRAGON_FINAL_FORM = 61141014; //Summon (Speed Debuff)
+    public static final int HEXA_WING_BEAT = 61141015; //Special Attack (Speed Debuff)
+    public static final int HEXA_WING_BEAT_FINAL_FORM = 61141016;
+
+    public static final int NOVA_TRIUMPHANT = 61141500; // Origin Skill
+    public static final int NOVA_TRIUMPHANT_FINISHER = 61141501;
+    public static final int PYROCLASTIC_INSTINCT = 61141502; // Active Skill
 
     private final int[] addedSkills = new int[]{
             REALIGN_ATTACKER_MODE,
@@ -183,6 +195,12 @@ public class Kaiser extends Job {
         }
         if (chr.hasSkill(TEMPEST_BLADES_FIVE) && tsm.hasStat(Morph)) {
             skill = TEMPEST_BLADES_FIVE_FF;
+        }
+        if (chr.hasSkill(HEXA_TEMPEST_BLADES)) {
+            skill = HEXA_TEMPEST_BLADES;
+        }
+        if (chr.hasSkill(HEXA_TEMPEST_BLADES) && tsm.hasStat(Morph)) {
+            skill = HEXA_TEMPEST_BLADES_FF;
         }
         return skill;
     }
@@ -319,6 +337,7 @@ public class Kaiser extends Job {
                 }
                 break;
             case WING_BEAT:
+            case HEXA_WING_BEAT:
                 if (!mts.hasCurrentMobStatBySkillId(skillID)) {
                     if (Util.succeedProp(si.getValue(prop, slv))) {
                         o1.nOption = 1;
@@ -329,6 +348,7 @@ public class Kaiser extends Job {
                 }
                 break;
             case WING_BEAT_FINAL_FORM:
+            case HEXA_WING_BEAT_FINAL_FORM:
                 if (!mts.hasCurrentMobStatBySkillId(skillID)) {
                     o1.nOption = 1;
                     o1.rOption = skillID;
@@ -471,6 +491,30 @@ public class Kaiser extends Job {
                 tsm.sendStat(EnhanceInfernalBreath, o1);
                 break;
             }
+            case NOVA_TRIUMPHANT:
+            case NOVA_TRIUMPHANT_FINISHER:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob targetMob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (targetMob == null) continue;
+                    MobTemporaryStat mts = targetMob.getTemporaryStat();
+                    Option opt1 = new Option();
+                    opt1.nOption = 1;
+                    opt1.rOption = attackInfo.skillId;
+                    opt1.tOption = 10; // 10s Absolute Freeze
+                    opt1.cOption = chr.getId();
+                    mts.addStatOptions(targetMob, MobStat.Freeze, opt1);
+                    Option opt2 = new Option();
+                    opt2.nOption = 1;
+                    opt2.rOption = attackInfo.skillId;
+                    opt2.tOption = 20; // 20s Origin Debuff
+                    opt2.cOption = chr.getId();
+                    mts.addStatOptions(targetMob, MobStat.OriginDebuff, opt2);
+                }
+                incrementMorphGauge(1000); // Fully charge Morph Gauge
+                break;
+            case PYROCLASTIC_INSTINCT:
+                incrementMorphGauge(100);
+                break;
         }
     }
 
@@ -657,7 +701,8 @@ public class Kaiser extends Job {
                 tsm.sendStat(StopForceAtomInfo, o1);
                 break;
             }
-            case TEMPEST_BLADES_FIVE: {
+            case TEMPEST_BLADES_FIVE:
+            case HEXA_TEMPEST_BLADES: {
                 Item item = chr.getEquippedItemByBodyPart(BodyPart.Weapon);
                 StopForceAtom stopForceAtom = new StopForceAtom();
                 int weaponID = item.getItemId();
@@ -676,6 +721,7 @@ public class Kaiser extends Job {
                 break;
             }
             case TEMPEST_BLADES_FIVE_FF: //Final Form
+            case HEXA_TEMPEST_BLADES_FF:
             {
                 Item item = chr.getEquippedItemByBodyPart(BodyPart.Weapon);
                 StopForceAtom stopForceAtom = new StopForceAtom();
@@ -965,8 +1011,8 @@ public class Kaiser extends Job {
             }
             sm.addSPJobAdv(JobConstants.JobEnum.KAISER1.getJobId(), 5);
             sm.addSPJobAdv(JobConstants.JobEnum.KAISER2.getJobId(), 3);
-            sm.giveAndEquip(1213001);
-            sm.giveAndEquip(1354001);
+            sm.giveAndEquip(1402001);
+            sm.giveAndEquip(1352501);
             sm.warp(FieldConstants.HOME_MAP);
         }
         super.handleInitAfterMigrate(chr);
@@ -995,11 +1041,11 @@ public class Kaiser extends Job {
                 break;
             case 2:
                 fae = skillId < BLADEFALL_ATTACK ? ForceAtomEnum.KAISER_WEAPON_THROW_2 : ForceAtomEnum.KAISER_V_WEAPON_THROW_2;
-                atomSkillId = TEMPEST_BLADES_FIVE;
+                atomSkillId = chr.hasSkill(HEXA_TEMPEST_BLADES) ? HEXA_TEMPEST_BLADES_ATOM : TEMPEST_BLADES_FIVE;
                 break;
             case 4:
                 fae = skillId < BLADEFALL_ATTACK ? ForceAtomEnum.KAISER_WEAPON_THROW_MORPH_2 : ForceAtomEnum.KAISER_V_WEAPON_THROW_MORPH_2;
-                atomSkillId = TEMPEST_BLADES_FIVE_FF;
+                atomSkillId = chr.hasSkill(HEXA_TEMPEST_BLADES) ? HEXA_TEMPEST_BLADES_ATOM : TEMPEST_BLADES_FIVE_FF;
                 break;
         }
 
@@ -1032,7 +1078,11 @@ public class Kaiser extends Job {
         if (skillId == BLADEFALL_ATTACK || skillId == BLADEFALL_ATTACK_FF) {
             chr.setSkillCooldown(BLADEFALL_ATTACK, chr.getSkillLevel(BLADEFALL_ATTACK));
         }
-        chr.setSkillCooldown(TEMPEST_BLADES_CHARGES, chr.getSkillLevel(TEMPEST_BLADES_CHARGES));
+        if (chr.hasSkill(HEXA_TEMPEST_BLADES)) {
+            chr.setSkillCooldown(HEXA_TEMPEST_BLADES, chr.getSkillLevel(HEXA_TEMPEST_BLADES));
+        } else {
+            chr.setSkillCooldown(TEMPEST_BLADES_CHARGES, chr.getSkillLevel(TEMPEST_BLADES_CHARGES));
+        }
     }
 
     @Override
@@ -1071,6 +1121,10 @@ public class Kaiser extends Job {
             }
             case TEMPEST_BLADES_FIVE_FF -> { // Advanced Tempest Blades
                 chr.setSkillCooldown(TEMPEST_BLADES_THREE, chr.getSkillLevel(TEMPEST_BLADES_FIVE));
+                return 1;
+            }
+            case HEXA_TEMPEST_BLADES_FF -> { // HEXA Tempest Blades
+                chr.setSkillCooldown(HEXA_TEMPEST_BLADES, chr.getSkillLevel(HEXA_TEMPEST_BLADES));
                 return 1;
             }
             case DRAGON_BARRAGE_FINAL_FORM -> { // Dragon Barrage

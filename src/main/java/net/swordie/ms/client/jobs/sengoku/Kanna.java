@@ -91,6 +91,7 @@ public class Kanna extends Job {
     public static final int HAKU_PERFECTED = 42120011;
     public static final int OROCHI_UNBOUND = 42121100;
     public static final int OROCHI_UNBOUND2 = 42121101;
+    public static final int VANQUISHERS_CHARM = 42121000;
     public static final int SHIKIGAMI_DOPPLEGANGER = 42121104;
     public static final int SHIKIGAMI_DOPPLEGANGER_ACTIVATED = 42121105;
 
@@ -136,6 +137,14 @@ public class Kanna extends Job {
     public static final int GHOST_YAKSHA_GREAT_ONI_LORD_LEGION = 400021114;
 
     // HEXA skills
+    public static final int HAKUMENKONMOU_JUUBI = 42141500;
+    public static final int HAKUMENKONMOU_JUUBI_1 = 42141501;
+    public static final int HAKUMENKONMOU_JUUBI_2 = 42141502;
+    public static final int HEXA_SHIKIGAMI_HAUNTING = 42141000;
+    public static final int HEXA_SHIKIGAMI_HAUNTING_1 = 42141001;
+    public static final int HEXA_SHIKIGAMI_HAUNTING_2 = 42141002;
+    public static final int HEXA_SHIKIGAMI_HAUNTING_SLOW = 42141003;
+    public static final int HEXA_VANQUISHERS_CHARM = 42141004;
     public static final int HEXA_KISHIN_SHOUKAN = 42141011; //summon
     public static final int HEXA_YOSUZUME = 42141007;
     public static final int HEXA_TENGU_STRIKE_SUMMON_R = 42141014;
@@ -146,7 +155,7 @@ public class Kanna extends Job {
     public static final int HEXA_NINE_TAILED_FURY = 42141009; //Attacking Skill + Buff
     public static final int HEXA_NINE_TAILED_FURY_PASSIVE = 42141010;
     public static final int HEXA_GHOST_YAKSHA_BOSS = 42141015;
-    // 42141008 HEXA Nightghost Guide
+    public static final int HEXA_NIGHTGHOST_GUIDE = 42141008;
 
     // HEXA Boosts
     public static final int HEXA_SPIRITS_DOMAIN = 500061069; // TODO
@@ -304,6 +313,9 @@ public class Kanna extends Job {
             case SHIKIGAMI_HAUNTING_4_1:
             case SHIKIGAMI_HAUNTING_4_2:
             case SHIKIGAMI_HAUNTING_4_3:
+            case HEXA_SHIKIGAMI_HAUNTING:
+            case HEXA_SHIKIGAMI_HAUNTING_1:
+            case HEXA_SHIKIGAMI_HAUNTING_2:
                 si = SkillData.getSkillInfoById(SHIKIGAMI_HAUNTING_2_SLOW);
                 if (si != null) {
                     if (!mts.hasCurrentMobStatBySkillId(SHIKIGAMI_HAUNTING_2_SLOW)) {
@@ -434,6 +446,12 @@ public class Kanna extends Job {
                 break;
             case OROCHI_UNBOUND2:
                 chr.addSkillCooldown(OROCHI_UNBOUND, 90000);
+                break;
+            case HAKUMENKONMOU_JUUBI:
+            case HAKUMENKONMOU_JUUBI_1:
+            case HAKUMENKONMOU_JUUBI_2:
+                chr.healMP(chr.getMaxMP());
+                chr.setSkillCooldown(HAKUMENKONMOU_JUUBI, slv);
                 break;
         }
     }

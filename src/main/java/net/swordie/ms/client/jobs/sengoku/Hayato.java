@@ -89,6 +89,17 @@ public class Hayato extends Job {
     public static final int INSTANT_SLICE = 400011138;
 
     // HEXA skills
+    public static final int JIN_QUICK_DRAW = 41141500;
+    public static final int JIN_QUICK_DRAW_1 = 41141501;
+    public static final int JIN_QUICK_DRAW_2 = 41141502;
+    public static final int JIN_QUICK_DRAW_3 = 41141503;
+    public static final int JIN_QUICK_DRAW_4 = 41141504;
+    public static final int HEXA_RAI_SANRENZAN = 41141000;
+    public static final int HEXA_RAI_SANRENZAN_2 = 41141001;
+    public static final int HEXA_RAI_SANRENZAN_3 = 41141002;
+    public static final int HEXA_RAI_BLADE_FLASH = 41141003;
+    public static final int HEXA_SHINSOKU = 41141004;
+    public static final int HEXA_FALCONS_HONOR = 41141005;
     public static final int HEXA_AKATSUKI_TRACE = 41140006;
     public static final int HEXA_HITOKIRI_STRIKE = 41141007;
     public static final int HEXA_HITOKIRI_STRIKE_ANGLE = 41141008;
@@ -364,6 +375,7 @@ public class Hayato extends Job {
                 normalStanceBonus();
             }
             warriorHeartHealHP();
+            incrementSwordEnergy();
         }
         EnumMap<CharacterTemporaryStat, Option> newStats = new EnumMap<>(CharacterTemporaryStat.class);
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
@@ -413,7 +425,7 @@ public class Hayato extends Job {
                 break;
             case IAIJUTSU_PHANTOM_BLADE:
                 if (getSwordEnergy() < 200) {
-                    chr.chatMessage("Bạn không có đủ ít nhất 200 năng lượng kiếm để sử dụng kỹ năng này.");
+                    chr.chatMessage("You do not have enough Sword Energy to use this skill.");
                 } else {
                     incSwordEnergy(-200);
                     o1.nOption = (tsm.hasStat(SummonProp) ? tsm.getOption(SummonProp).nOption : 0) + 1;
@@ -450,12 +462,20 @@ public class Hayato extends Job {
                 gobSummon.setCount(Math.min(gobSummon.getCount() + 10, 800));
                 break;
             case FALCONS_HONOR:
+            case HEXA_FALCONS_HONOR:
             case BATTOUJUTSU_ZANKOU:
                 if (getSwordEnergy() + si.getValue(x, slv) > 1000) {
                     setSwordEnergy(1000);
                 } else {
                     incSwordEnergy(si.getValue(x, slv));
                 }
+                break;
+            case JIN_QUICK_DRAW:
+            case JIN_QUICK_DRAW_1:
+            case JIN_QUICK_DRAW_2:
+            case JIN_QUICK_DRAW_3:
+            case JIN_QUICK_DRAW_4:
+                setSwordEnergy(1000);
                 break;
         }
         setHayatoStanceBonus();
@@ -569,7 +589,7 @@ public class Hayato extends Job {
                 int cost = si.getValue(z, slv);
                 if (!isInQuickDrawStance()) {
                     if (getSwordEnergy() < cost) {
-                        chr.chatMessage("Bạn có thể cần " + cost + " năng lượng kiếm để chuyển sang thế rút kiếm nhanh.");
+                        chr.chatMessage("You need " + cost + " Sword Energy to switch to Quick Draw stance.");
                     } else {
                         incSwordEnergy(-cost);
                         toggleQuickDraw(tsm);
@@ -653,7 +673,7 @@ public class Hayato extends Job {
                 break;
             case BATTOUJUTSU_ULTIMATE_WILL:
                 if (getSwordEnergy() < si.getValue(s, slv)) {
-                    chr.chatMessage("Bạn không có đủ năng lượng kiếm cho kỹ năng này.");
+                    chr.chatMessage("You do not have enough Sword Energy for this skill.");
                     return;
                 }
                 incSwordEnergy(-si.getValue(s, slv));

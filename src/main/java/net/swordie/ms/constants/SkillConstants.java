@@ -2037,6 +2037,133 @@ public class SkillConstants {
             case 61121221: //Kaiser - Blade Burst (Final Form)
                 return 61121104; //Kaiser - Blade Burst
 
+            // Kaiser 6th Job HEXA Mappings
+            case 61141001: // HEXA Gigas Wave (Final Form)
+                return 61141000; // HEXA Gigas Wave
+
+            case 61141003: // HEXA Blade Burst Explosion
+            case 61141004: // HEXA Blade Burst (Final Form)
+            case 61141005: // HEXA Blade Burst Explosion (Final Form)
+                return 61141002; // HEXA Blade Burst
+
+            case 61141007: // HEXA Tempest Blades (Final Form)
+            case 61141008: // HEXA Tempest Blades Dragon Blow
+                return 61141006; // HEXA Tempest Blades
+
+            case 61141010: // HEXA Inferno Breath (Final Form)
+            case 61141011: // HEXA Enhanced Inferno Breath
+            case 61141012: // HEXA Enhanced Inferno Breath (Final Form)
+                return 61141009; // HEXA Inferno Breath
+
+            case 61141014: // HEXA Stone Dragon (Final Form)
+                return 61141013; // HEXA Stone Dragon
+
+            case 61141016: // HEXA Wing Beat (Final Form)
+            case 61141017: // HEXA Wing Beat Hit
+                return 61141015; // HEXA Wing Beat
+
+            case 61141501: // Nova Triumphant Finisher
+                return 61141500; // Nova Triumphant
+
+            // Kaiser 5th Job V-Matrix Mappings
+            case 400011013: // Nova Guardians 2
+            case 400011014: // Nova Guardians 3
+                return 400011012; // Nova Guardians
+
+            case 400011059: // Bladefall FF
+            case 400011060: // Bladefall Tile
+            case 400011061: // Bladefall Tile FF
+                return 400011058; // Bladefall
+
+            case 400011080: // Draco Surge FF
+            case 400011081: // Draco Surge ShootObj
+            case 400011082: // Draco Surge ShootObj FF
+                return 400011079; // Draco Surge
+
+            case 400011119: // Dragon Blaze Fire Energy
+            case 400011120: // Dragon Blaze Fire Orb
+            case 400011130: // Dragon Blaze Fire Energy Explosion
+                return 400011118; // Dragon Blaze
+
+            // Hayato Sanrenzan Combo & HEXA / Origin Mappings
+            case 41001004:
+            case 41001005:
+            case 41001007:
+            case 41001008:
+                return 41001000; // Sanrenzan 1st Job
+
+            case 41101008:
+            case 41101009:
+                return 41101000; // Jin Sanrenzan 2nd Job
+
+            case 41111011:
+            case 41111012:
+                return 41111000; // Fuu Sanrenzan 3rd Job
+
+            case 41121011:
+            case 41121012:
+                return 41121000; // Rai Sanrenzan 4th Job
+
+            case 41141001: // HEXA Rai Sanrenzan 2nd Hit
+            case 41141002: // HEXA Rai Sanrenzan 3rd Hit
+            case 41141003: // HEXA Rai Blade Flash
+                return 41141000; // HEXA Rai Sanrenzan
+
+            case 41141501: // Jin Quick Draw Sub 1
+            case 41141502: // Jin Quick Draw Sub 2
+            case 41141503: // Jin Quick Draw Sub 3
+            case 41141504: // Jin Quick Draw Sub 4
+                return 41141500; // Jin Quick Draw Origin
+
+            case 41141008: // HEXA Hitokiri Strike (Angle)
+                return 41141007; // HEXA Hitokiri Strike
+
+            // Kanna Shikigami Haunting Combo & HEXA / Origin Mappings
+            case 42001005: // Shikigami Haunting 2nd Hit
+            case 42001006: // Shikigami Haunting 3rd Hit
+                return 42001000; // Shikigami Haunting 1st Job
+
+            case 42101101: // Shikigami Haunting 2 - 2nd Hit
+            case 42101102: // Shikigami Haunting 2 - 3rd Hit
+                return 42101100; // Shikigami Haunting 2nd Job
+
+            case 42111111: // Shikigami Haunting 3 - 2nd Hit
+            case 42111112: // Shikigami Haunting 3 - 3rd Hit
+                return 42111110; // Shikigami Haunting 3rd Job
+
+            case 42120027: // Shikigami Haunting 4 - 2nd Hit
+            case 42120028: // Shikigami Haunting 4 - 3rd Hit
+                return 42120026; // Shikigami Haunting 4th Job
+
+            case 42141001: // HEXA Shikigami Haunting 2nd Hit
+            case 42141002: // HEXA Shikigami Haunting 3rd Hit
+            case 42141003: // HEXA Shikigami Haunting Slow
+                return 42141000; // HEXA Shikigami Haunting
+
+            case 42141501: // Hakumenkonmou Juubi Sub 1
+            case 42141502: // Hakumenkonmou Juubi Sub 2
+                return 42141500; // Hakumenkonmou Juubi Origin
+
+            case 42111101: // Tengu Strike Left
+            case 42111102: // Tengu Strike Right
+                return 42111100; // Tengu Strike
+
+            case 42141013: // HEXA Tengu Strike Left
+            case 42141014: // HEXA Tengu Strike Right
+                return 42141012; // HEXA Tengu Strike
+
+            case 42121105: // Shikigami Doppelganger Activated
+                return 42121104; // Shikigami Doppelganger
+
+            case 42141006: // HEXA Shikigami Doppelganger Activated
+                return 42141005; // HEXA Shikigami Doppelganger
+
+            case 42141010: // HEXA Nine-Tailed Fury Passive
+                return 42141009; // HEXA Nine-Tailed Fury
+
+            case 42121101: // Orochi Unbound Hit
+                return 42121100; // Orochi Unbound
+
             case 14101021: // NW - Triple Throw Finisher
                 return 14101020; // NW - Triple Throw
             case 14101029: // NW - Shadow Spark Explosion
@@ -2114,6 +2241,27 @@ public class SkillConstants {
             case 65121008:
                 return AngelicBuster.TRINITY;
 
+            // Angelic Buster 6th Job HEXA Mappings
+            case 65141003: // HEXA Soul Seeker Atom
+                return 65141001; // HEXA Soul Seeker
+            case 65141004: // HEXA Soul Seeker Expert Atom
+                return 65141002; // HEXA Soul Seeker Expert
+            case 65140007: // Encore Ribbon
+                return 65141006; // HEXA Celestial Roar
+            case 65141501: // Grand Finale Cheer
+            case 65141502: // Grand Finale Attack
+            case 65141503: // Grand Finale Hit
+                return 65141500; // Grand Finale
+            case 65141505: // Surprise Encore Attack
+                return 65141504; // Surprise Encore
+
+            // Angelic Buster 5th Job V-Matrix Mappings
+            case 400051027: // Super Star Spotlight 2
+                return 400051018; // Super Star Spotlight
+            case 400051047: // Mighty Mascot Breath
+            case 400051048: // Mighty Mascot Attack
+                return 400051046; // Mighty Mascot
+
             case Blaster.REVOLVING_CANNON_2:
             case Blaster.REVOLVING_CANNON_3:
                 return Blaster.REVOLVING_CANNON;
@@ -2184,6 +2332,8 @@ public class SkillConstants {
             case Kaiser.FLAME_SURGE:
             case Kaiser.FLAME_SURGE_FINAL_FORM:
             case Kaiser.WING_BEAT:
+            case Kaiser.HEXA_WING_BEAT:
+            case Kaiser.HEXA_WING_BEAT_FINAL_FORM:
                 return 2;
             case Kaiser.DRAGON_SLASH_2:
                 return 3;
@@ -2195,18 +2345,35 @@ public class SkillConstants {
             case Kaiser.DRAGON_BARRAGE:
             case Kaiser.BLADE_BURST:
             case Kaiser.HEXA_BLADE_BURST:
+            case Kaiser.HEXA_BLADE_BURST_FINAL_FORM:
+            case Kaiser.HEXA_BLADE_BURST_EXPLOSION:
+            case Kaiser.HEXA_BLADE_BURST_EXPLOSION_FINAL_FORM:
                 return 6;
             case Kaiser.PRESSURE_CHAIN:
             case Kaiser.GIGA_WAVE:
             case Kaiser.HEXA_GIGA_WAVE:
+            case Kaiser.HEXA_GIGA_WAVE_FINAL_FORM:
+            case Kaiser.DRACO_SURGE_ATTACK:
+            case Kaiser.DRACO_SURGE_ATTACK_FF:
                 return 8;
+            case Kaiser.BLADEFALL_ATTACK:
+            case Kaiser.BLADEFALL_ATTACK_FF:
+                return 10;
             case Kaiser.INFERNO_BREATH:
             case Kaiser.HEXA_INFERNO_BREATH:
+            case Kaiser.HEXA_INFERNO_BREATH_FINAL_FORM:
             case Kaiser.HEXA_ENHANCED_INFERNO_BREATH:
+            case Kaiser.HEXA_ENHANCED_INFERNO_BREATH_FINAL_FORM:
                 return 14;
             case Kaiser.TEMPEST_BLADES_FIVE:
             case Kaiser.TEMPEST_BLADES_THREE:
+            case Kaiser.HEXA_TEMPEST_BLADES:
+            case Kaiser.HEXA_TEMPEST_BLADES_FINAL_FORM:
                 return 15;
+            case Kaiser.NOVA_TRIUMPHANT:
+            case Kaiser.NOVA_TRIUMPHANT_FINISHER:
+            case Kaiser.PYROCLASTIC_INSTINCT:
+                return 20;
             default:
                 return 0;
         }
@@ -3595,6 +3762,7 @@ public class SkillConstants {
             case Blaster.BALLISTIC_HURRICANE:
             case Blaster.BALLISTIC_HURRICANE_1:
             case AngelicBuster.SUPREME_SUPERNOVA:
+            case AngelicBuster.HEXA_SUPREME_SUPERNOVA:
             case Phantom.CARTE_ROSE_FINALE:
             case Phantom.HEXA_ROSE_CARTE_FINALE:
             case DawnWarrior.EQUINOX_SLASH:
@@ -3944,6 +4112,8 @@ public class SkillConstants {
             case SHIKIGAMI_CHARM:
             case EXORCIST_CHARM:
             case FALLING_SAKURA:
+            case 42141002: // HEXA Shikigami Haunting 3rd Hit
+            case 42141004: // HEXA Vanquisher's Charm
                 return true;
 
             default:

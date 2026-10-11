@@ -21,6 +21,8 @@ import net.swordie.ms.client.character.skills.StolenSkill;
 import net.swordie.ms.client.character.skills.info.ForceAtomInfo;
 import net.swordie.ms.client.character.skills.info.SkillInfo;
 import net.swordie.ms.client.character.skills.matrix.MatrixCore;
+import net.swordie.ms.loaders.Etc.VCore.VCore;
+import net.swordie.ms.loaders.Etc.VCore.VCoreData;
 import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
 import net.swordie.ms.client.character.skills.temp.TemporaryStatBase;
 import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
@@ -2578,6 +2580,10 @@ public class AdminCommands {
                 targetJob = (int) JobConstants.JobEnum.KANNA4.getJobId();
             } else if (JobConstants.isXenon(curJob)) {
                 targetJob = (int) JobConstants.JobEnum.XENON4.getJobId();
+            } else if (JobConstants.isKaiser(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.KAISER4.getJobId();
+            } else if (JobConstants.isAngelicBuster(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.ANGELIC_BUSTER4.getJobId();
             } else if (curJob % 100 < 12 && (curJob % 100 == 0 || curJob % 100 == 10 || curJob % 100 == 11)) {
                 targetJob = (curJob / 100) * 100 + 12;
             }
@@ -2644,9 +2650,24 @@ public class AdminCommands {
             chr.chatMessage(SpeakerChannel, "[Endgame] Quest warning: " + e.getMessage());
         }
 
-        // 4.5. Initialize Matrix Slots & V Matrix
+        // 4.5. Initialize Matrix Slots & V Matrix & Grant Class V-Skills
         try {
             chr.initMatrixSlots();
+            List<VCoreData> jobNodes = VCore.getNodesForJob(job);
+            if (jobNodes != null) {
+                Set<Integer> existingCoreIDs = new HashSet<>();
+                for (MatrixCore mc : chr.getMatrixCore()) {
+                    existingCoreIDs.add(mc.getCoreID());
+                }
+                for (VCoreData vd : jobNodes) {
+                    if (vd.getType() == VCore.SKILL && !existingCoreIDs.contains(vd.getCoreID())) {
+                        int s1 = (vd.getConnectSkills() != null && !vd.getConnectSkills().isEmpty()) ? vd.getConnectSkills().get(0) : 0;
+                        MatrixCore mc = new MatrixCore(chr.getId(), vd.getCoreID(), s1, 0, 0);
+                        mc.setSkillLevel(25);
+                        chr.addMatrixCore(mc);
+                    }
+                }
+            }
             chr.write(WvsContext.updateVMatrix(chr, true, MatrixUpdateType.Update.getVal(), 0));
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] Matrix warning: " + e.getMessage());
@@ -2720,12 +2741,12 @@ public class AdminCommands {
         } else if (JobConstants.isHayato(job)) {
             weaponId = 1542117; // Arcane Umbra Katana
             secondaryId = 1352803; // Wakizashi
-            emblemId = 1190551; // Silver Knight's Emblem
+            emblemId = 1191101; // Gold Crescent Emblem (Hayato)
             armors = warriorArmors;
         } else if (JobConstants.isKanna(job)) {
             weaponId = 1552119; // Arcane Umbra Fan
             secondaryId = 1352813; // Haku Fan
-            emblemId = 1190553; // Silver Hitman Emblem
+            emblemId = 1191103; // Gold Blossom Emblem (Kanna)
             armors = mageArmors;
         } else if (JobConstants.isXenon(job)) {
             weaponId = 1242121; // Arcane Umbra Energy Chain
@@ -2787,6 +2808,16 @@ public class AdminCommands {
             secondaryId = 1572007; // Lapis Type 9
             emblemId = 1190555; // Mitra Warrior Emblem
             armors = warriorArmors;
+        } else if (JobConstants.isKaiser(job)) {
+            weaponId = 1402259; // Arcane Umbra Two-handed Sword
+            secondaryId = 1352503; // Nova Truth Essence (4th Job Secondary)
+            emblemId = 1190001; // Dragon Emblem (Gold Emblem)
+            armors = warriorArmors;
+        } else if (JobConstants.isAngelicBuster(job)) {
+            weaponId = 1222113; // Arcane Umbra Soul Shooter
+            secondaryId = 1352604; // Green Soul Ring (4th Job Secondary)
+            emblemId = 1190101; // Angel Emblem (Gold Emblem)
+            armors = pirateArmors;
         } else {
             if (JobConstants.isWarriorEquipJob(job)) {
                 weaponId = 1402259;
@@ -2979,7 +3010,7 @@ public class AdminCommands {
                     targetJob = 3712;
                 } else if (arg.contains("kaiser")) {
                     targetJob = 6112;
-                } else if (arg.contains("angelicbuster") || arg.contains("ab")) {
+                } else if (arg.contains("angelic") || arg.contains("angelicbuster") || arg.contains("ab")) {
                     targetJob = 6512;
                 }
             }

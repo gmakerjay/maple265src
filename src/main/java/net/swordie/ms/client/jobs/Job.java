@@ -3070,6 +3070,10 @@ public abstract class Job {
             secondaryId = 1352003; // Force Shield
         } else if (JobConstants.isDemonAvenger(job)) {
             secondaryId = 1352004; // Demon Shield
+        } else if (JobConstants.isKaiser(job)) {
+            secondaryId = 1352503; // Nova Truth Essence (4th Job)
+        } else if (JobConstants.isAngelicBuster(job)) {
+            secondaryId = 1352604; // Green Soul Ring (4th Job)
         }
         if (secondaryId > 0 && !chr.hasItem(secondaryId)) {
             chr.addItemToInventory(secondaryId, 1);

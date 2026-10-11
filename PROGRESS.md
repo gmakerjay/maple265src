@@ -5,6 +5,47 @@ This file tracks all bug fixes, feature implementations, and system optimization
 
 ---
 
+## 📅 [2026-10-11] Full Audit & Stability Enhancement: Nova (Angelic Buster, Kaiser) & Sengoku (Hayato, Kanna) + !endgame Parity
+
+### 🎯 Scope
+Conduct a comprehensive class audit for Nova branch (**Angelic Buster**, **Kaiser**) and Sengoku branch (**Hayato**, **Kanna**) spanning 1st–4th Job, 5th Job (V-Matrix V 1–4), and 6th Job (HEXA Matrix Origin and Mastery skills). Fix sub-action packet routing, stance mechanics, energy/mana regeneration, freeze/OriginDebuff application, correct secondary and emblem item IDs from WZ data, and implement full `!endgame` command support.
+
+### 📂 Files Modified
+- [`v214 src/.../SkillConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`v214 src/.../JobConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/JobConstants.java)
+- [`v214 src/.../Hayato.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/sengoku/Hayato.java)
+- [`v214 src/.../Kanna.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/sengoku/Kanna.java)
+- [`v214 src/.../Kaiser.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/nova/Kaiser.java)
+- [`v214 src/.../AngelicBuster.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/nova/AngelicBuster.java)
+- [`v214 src/.../JobSkillHandler.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/user/JobSkillHandler.java)
+- [`v214 src/.../Job.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/Job.java)
+- [`v214 src/.../AdminCommands.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+
+### 🛠️ Issues Identified & Fixes Applied
+
+1. **Hayato Skill & Energy Engine Modernization**:
+   - **Sub-Skill Redirection**: Added 1st–4th job combo strikes (`41001004-08` -> `41001000`, `41101008-09` -> `41101000`, `41111011-12` -> `41111000`, `41121011-12` -> `41121000`), HEXA Rai Sanrenzan (`41141001-03` -> `41141000`), Origin Jin Quick Draw (`41141501-04` -> `41141500`), and HEXA Hitokiri Strike Angle (`41141008` -> `41141007`) in `SkillConstants.getActualSkillIDfromSkillID`.
+   - **Sword Energy Generation Fix**: Connected previously orphaned `incrementSwordEnergy()` into `handleAttack` so attacks naturally generate Sword Energy (+5 in Normal Stance, +2 in Quick Draw Stance) upon hitting mobs.
+   - **HEXA Falcon's Honor & Jin Quick Draw**: Added `HEXA_FALCONS_HONOR` (`41141005`) to grant +100 Sword Energy, and Origin `JIN_QUICK_DRAW` (`41141500-04`) to replenish full 1,000 Sword Energy with 10s Absolute Freeze and 20s OriginDebuff.
+   - **Localization Cleanup**: Replaced hardcoded Vietnamese notification strings (`Bạn không có đủ ít nhất 200 năng lượng kiếm...`) with clean English messages.
+
+2. **Kanna Skill & Mana Vein Mechanics Modernization**:
+   - **Sub-Skill Redirection**: Added 1st–4th job Shikigami combo strikes (`42001005-06` -> `42001000`, `42101101-02` -> `42101100`, `42111111-12` -> `42111110`, `42120027-28` -> `42120026`), HEXA Shikigami Haunting (`42141001-03` -> `42141000`), Origin Hakumenkonmou Juubi (`42141501-02` -> `42141500`), HEXA Tengu Strike (`42141013-14` -> `42141012`), and HEXA Doppelganger (`42141006` -> `42141005`).
+   - **HEXA Mana Vein Spawning**: Registered `42141002` (HEXA Shikigami Haunting 3rd strike) in `SkillConstants.isSpiritWalkerSkill` to consistently spawn Mana Veins.
+   - **Origin Hakumenkonmou Juubi**: Implemented instant Mana replenishment (`chr.healMP(chr.getMaxMP())`) and cooldown management with 10s Absolute Freeze and 20s OriginDebuff.
+   - **Debuff Handling**: Linked `HEXA_SHIKIGAMI_HAUNTING` (1st, 2nd, 3rd strikes) to apply the slow debuff and BurnedInfo.
+
+3. **Kaiser & Angelic Buster Enhancements (Previous Turn Parity)**:
+   - Full sub-action mappings for Kaiser 6th Job HEXA Gigas Wave, Blade Burst, Tempest Blades, Inferno Breath, Wing Beat, and Nova Triumphant, as well as Angelic Buster Soul Seeker, Celestial Roar, Grand Finale, and Surprise Encore.
+   - Morph Gauge generation for all Kaiser attacks and Nova Triumphant instant full Morph Gauge.
+
+4. **`!endgame` Command & Gear WZ Parity**:
+   - **Hayato**: Granted Arcane Umbra Katana (`1542117`), Wakizashi (`1352803`), Gold Crescent Emblem (`1191101` - Hayato class emblem, replacing incompatible Adele emblem `1190551`), and Warrior Arcane Umbra set.
+   - **Kanna**: Granted Arcane Umbra Fan (`1552119`), Haku Fan (`1352813`), Gold Blossom Emblem (`1191103` - Kanna class emblem, replacing incompatible Kain emblem `1190553`), and Mage Arcane Umbra set.
+   - **V-Matrix Auto-Population**: Fully automated delivery of 4 job-specific 5th Job V-Skills at Lv. 25 directly into the V-Matrix for both Hayato (`400011026, 400011029, 400011104, 400011138`) and Kanna (`400021017, 400021054, 400021078, 400021114`).
+
+---
+
 ## 📅 [2026-10-11] Multi-Network Architecture, Zero-Install Account System & AuthHook Tooling
 
 ### 🎯 Scope
@@ -565,5 +606,112 @@ Audit class architecture, job advancement (1st - 4th Job), V-Matrix (5th Job), a
      - Kain: Skill Cores `10000035`, `10000087` (Total Annihilation, Churning Malice); Mastery Cores `20000035`, `20000085`, `20000135`, `20000181` (Falling Dust VI, Strike Arrow VI, Dragon Fang VI, Death Blessing VI).
      - Lara: Skill Cores `10000044`, `10000097` (Universe in Bloom, Cornucopia); Mastery Cores `20000044`, `20000094`, `20000144`, `20000190` (Essence Sprinkle VI, Dragon Vein Eruption VI, Dragon Vein Absorption VI, Wakeup Call VI).
 
+---
+
+## 📅 [2026-10-11] Kain & Lara Endgame Command (!endgame) Audit & Deployment
+
+### 🎯 Scope
+Audit the !endgame command (AdminCommands.java) for Kain and Lara. Verify automatic job progression, skill points, quests, matrix initialization, consumables, and ensure zero equipment cross-class errors. Cross-reference all assigned equipment IDs against String.wz/Eqp.img.xml. Compile, push to remote Git, generate distribution patch (Patches/Server263_Patch_Latest/), and deploy to Server263/.
+
+### 📂 Files Modified / Audited
+- [214 src/.../AdminCommands.java](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+- [214 src/.../nova/Kain.java](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/nova/Kain.java)
+- [214 src/.../anima/Lara.java](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/anima/Lara.java)
+- [214 src/.../jobs/Job.java](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/Job.java)
+- [.agents/skills/maplestory-bug-knowledge/SKILL.md](file:///c:/Users/admin/Documents/MapleV265Src/.agents/skills/maplestory-bug-knowledge/SKILL.md)
+- [PROGRESS.md](file:///c:/Users/admin/Documents/MapleV265Src/PROGRESS.md)
+
+### 🛠️ Issues Identified & Fixes Applied
+
+1. **!endgame Command Verification for Kain & Lara**:
+   - Both classes are fully registered in AdminCommands.setupEndgame and EndgameCmd:
+     - Automatic Job Detection: JobConstants.isKain(curJob) -> KAIN_4 (6312), JobConstants.isLara(curJob) -> LARA_4 (16212).
+     - Command Arg Support: Supports !endgame kain and !endgame lara directly.
+     - Progression: Sets Level 260, 1,250 AP, 2B Mesos initial + 10B Mesos test fund (12B Mesos total), Max HP/MP, completes 5th Job (Quests 1460-1466) & 6th Job (Quest 1488), initializes V-Matrix slots, and maxes 1st - 4th job skills.
+     - Consumables: Sol Erda Energy x1,000 (2636421), Sol Erda Fragments x30,000 (4009548), Nodestones x3,000 (2435719), Power Elixirs x5,000 (2000005).
+
+2. **Zero-Guessing Equipment Audit (Verified with String.wz/Eqp.img.xml)**:
+   - **Kain Equipment**:
+     - Weapon: 1214018 $\rightarrow$ Arcane Umbra Whispershot (Bowman DEX)
+     - Secondary: 1354013 $\rightarrow$ D100 Custom Weapon Belt (Kain 4th Job)
+     - Emblem: 1190554 $\rightarrow$ Gold Hitman Emblem (Kain Lv 100)
+     - Armors: rcherArmors (1004810 Hat, 1053065 Suit, 1073160 Shoes, 1082697 Gloves, 1102942 Cape, 1152198 Shoulder)
+   - **Lara Equipment**:
+     - Weapon: 1372228 $\rightarrow$ Arcane Umbra Wand (Magician INT)
+     - Secondary: 1354023 $\rightarrow$ Radiant Four-Jade Ornament (Lara 4th Job)
+     - Emblem: 1190561 $\rightarrow$ Gold Earthseer Emblem (Lara Lv 100)
+     - Armors: mageArmors (1004809 Hat, 1053064 Suit, 1073159 Shoes, 1082696 Gloves, 1102941 Cape, 1152197 Shoulder)
+   - All 18 equipment items precisely match class proficiencies and WZ string entries; no cross-class mixups.
+
+3. **Git Synchronization & Push**:
+   - Confirmed repository 214 src is on main and pushed to https://github.com/gmakerjay/maple265src.git.
+
+4. **Distribution & Patch Generation**:
+   - Executed 	ools/create_patch.py.
+   - Updated Server263/maplestory.jar with compiled Fat JAR.
+   - Generated drop-in patch in MapleStory_Server_Runner_Ready/Patches/Server263_Patch_Latest/ along with Apply_Patch.bat.
+   - Relaunched live server runtime with the updated binary; verified all ports (8483, 8484, 8585-8594) are listening.
+
+---
+
+## 📅 [2026-10-11] Angelic Buster & Kaiser Full Architecture, Skill Audit, and Endgame Command (!endgame)
+
+### 🎯 Scope
+Conduct a full audit for Nova Pirate **Angelic Buster** (`6001`, `6500` - `6512`) and Nova Warrior **Kaiser** (`6000`, `6100` - `6112`).
+Audit skill execution, recharge mechanics, morph gauge, 1st - 4th Job skills, V-Matrix (V 1-4), and HEXA Matrix (Origin, Active, Mastery) skills.
+Cross-reference all skill IDs, sub-skills, equipment IDs, secondary weapons, and emblems against official WZ data (`String.wz/Eqp.img.xml`, `Skill.wz`, `Etc.wz/HexaCore.img.xml`, `Etc.wz/VCore.img.xml`).
+Implement and enhance `!endgame` command support for both classes with auto-detection, equipment delivery, and automatic 5th Job V-Matrix skill granting. Compile, package, improve server stability, and test run.
+
+### 📂 Files Modified / Audited
+- [`v214 src/.../constants/JobConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/JobConstants.java)
+- [`v214 src/.../jobs/Job.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/Job.java)
+- [`v214 src/.../handlers/user/JobSkillHandler.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/user/JobSkillHandler.java)
+- [`v214 src/.../constants/SkillConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`v214 src/.../nova/AngelicBuster.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/nova/AngelicBuster.java)
+- [`v214 src/.../nova/Kaiser.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/nova/Kaiser.java)
+- [`v214 src/.../character/commands/AdminCommands.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+- [`PROGRESS.md`](file:///c:/Users/admin/Documents/MapleV265Src/PROGRESS.md)
+- [`.agents/skills/maplestory-bug-knowledge/SKILL.md`](file:///c:/Users/admin/Documents/MapleV265Src/.agents/skills/maplestory-bug-knowledge/SKILL.md)
+
+### 🛠️ Issues Identified & Fixes Applied
+
+1. **Kaiser Character Migration Item Bug (`Kaiser.java`)**:
+   - In `Kaiser.handleInitAfterMigrate(chr)`: Lines 968-969 previously gave Adele's Bladecaster (`1213001`) and Bladebinder (`1354001`) due to copy-paste legacy code.
+   - **Fix**: Corrected to Kaiser Two-handed Sword (`1402001`) and Nova Dragon Essence (`1352501`).
+
+2. **HEXA Sub-Skill Action Packet Mapping (`SkillConstants.java`)**:
+   - **Kaiser**: Multi-hit animations and Final Form variants sent action sub-skill IDs (`61141001`, `61141003-05`, `61141007-08`, `61141010-12`, `61141014`, `61141016-17`, `61141501`). Without parent mapping in `getActualSkillIDfromSkillID`, skill level evaluated to 0, breaking damage and cooldowns.
+   - **Angelic Buster**: 6th job sub-actions (`65141003-04`, `65140007`, `65141501-03`, `65141505`) and 5th job sub-skills (`400051027`, `400051047-48`) mapped to parent IDs.
+   - **Kaiser Gauge Increments**: Added all Kaiser V-Matrix skills (`400011012-14`, `400011058-61`, `400011079-82`, `400011118-30`) and HEXA skills (`61141000-17`, `61141500-02`) to `getKaiserGaugeIncrementBySkill()`.
+
+3. **Angelic Buster Skill Mechanics (`AngelicBuster.java` & `JobSkillHandler.java`)**:
+   - **Trinity Fusion (`400051072`)**: Added handling to `handleAttack` with `trinityBuff(tsm)` damage boost and 100% affinity recharge.
+   - **Recharge on Trinity Request**: Added `chr.hasSkill(AngelicBuster.HEXA_TRINITY)` to `JobSkillHandler.handleUserRequestSetOffTrinity`.
+   - **Grand Finale Origin (`65141500`)**: Added 10s Freeze (`MobStat.Freeze`), 20s Origin Debuff (`MobStat.OriginDebuff`), and 100% AB skill recharge.
+   - **Soul Seeker & Seeker Expert VI**: Updated `soulSeekerExpert` and `createSoulSeekerForceAtom` to dynamically support `HEXA_SOUL_SEEKER` (`65141001`), `HEXA_SOUL_SEEKER_EXPERT` (`65141002`), and atoms (`65141003`, `65141004`).
+   - Added `HEXA_CELESTIAL_ROAR` (`65141006`) to `handleDebuffOnMob` for Stun.
+
+4. **Kaiser Skill Mechanics (`Kaiser.java`)**:
+   - **Nova Triumphant Origin (`61141500`)**: Added 10s Freeze, 20s Origin Debuff, and full Morph Gauge recharge (`incrementMorphGauge(1000)`).
+   - **Pyroclastic Instinct (`61141502`)**: Added morph gauge increment.
+   - **Tempest Blades VI (`61141006`, `61141007`)**: Supported in `getTempBladeSkill`, `handleSkill`, `createFlyingSwordForceAtom` (spawning `61141008`), and `handleSetCoolDownSkill`.
+   - **Wing Beat VI (`61141015`, `61141016`)**: Added speed debuff in `handleDebuffOnMob`.
+
+5. **Secondary Equipment Safety (`Job.java`)**:
+   - Registered 4th Job secondaries in `Job.ensureSecondaryWeapon`:
+     - Kaiser: `1352503` (Nova Truth Essence).
+     - Angelic Buster: `1352604` (Green Soul Ring).
+
+6. **Endgame Command Integration (`AdminCommands.java`)**:
+   - **Auto-Detection**: `JobConstants.isKaiser(curJob) -> KAISER4 (6112)`, `JobConstants.isAngelicBuster(curJob) -> ANGELIC_BUSTER4 (6512)`.
+   - **Command Arguments**: Supports `!endgame kaiser`, `!endgame angelic`, `!endgame ab`, and `!endgame angelicbuster`.
+   - **Zero-Guessing Equipment Sets**:
+     - Kaiser: Arcane Umbra Two-handed Sword (`1402259`), Nova Truth Essence (`1352503`), Dragon Emblem (`1190001`), Full Warrior Arcane Umbra set.
+     - Angelic Buster: Arcane Umbra Soul Shooter (`1222113`), Green Soul Ring (`1352604`), Angel Emblem (`1190101`), Full Pirate Arcane Umbra set.
+   - **Automatic V-Matrix Population**: Directly queries `VCore.getNodesForJob(job)` and injects all 4 class V-skill nodes at Max Level (Lv. 25) into the character's V-Matrix on executing `!endgame`.
+
+7. **Compilation & Live Server Verification**:
+   - Fat JAR compiled and packaged cleanly with Maven (0 errors).
+   - Server tested and verified live: MariaDB 10.6 on port 33066, Login on 8484, API on 8483, Channels 1-10 on 8585-8594.
 
 

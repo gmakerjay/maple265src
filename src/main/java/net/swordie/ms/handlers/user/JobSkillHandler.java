@@ -549,7 +549,7 @@ public class JobSkillHandler {
 
     @Handler(op = InHeader.USER_REQUEST_SET_OFF_TRINITY)
     public static void handleUserRequestSetOffTrinity(Char chr, InPacket inPacket) {
-        if (JobConstants.isAngelicBuster(chr.getJob()) && chr.hasSkill(AngelicBuster.TRINITY)) {
+        if (JobConstants.isAngelicBuster(chr.getJob()) && (chr.hasSkill(AngelicBuster.TRINITY) || chr.hasSkill(AngelicBuster.HEXA_TRINITY))) {
             ((AngelicBuster) chr.getJobHandler()).rechargeABSkills();
         }
         chr.dispose();

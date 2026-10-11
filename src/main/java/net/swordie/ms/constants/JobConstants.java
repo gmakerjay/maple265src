@@ -963,6 +963,10 @@ public class JobConstants {
                 || id == JobEnum.ANGELIC_BUSTER4.getJobId();
     }
 
+    public static boolean isAngelicBuster(short id) {
+        return isAngelicBuster((int) id);
+    }
+
     public static boolean isDawnWarrior(short id) {
         return id == JobEnum.DAWNWARRIOR1.getJobId()
                 || id == JobEnum.DAWNWARRIOR2.getJobId()

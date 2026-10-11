@@ -98,7 +98,27 @@ public class AngelicBuster extends Job {
     public static final int SUPER_STAR_SPOTLIGHT = 400051018;
     public static final int SUPER_STAR_SPOTLIGHT_2 = 400051027; // number value
     public static final int MIGHTY_MASCOT = 400051046;
+    public static final int MIGHTY_MASCOT_BREATH = 400051047;
+    public static final int MIGHTY_MASCOT_ATTACK = 400051048;
     public static final int TRINITY_FUSION = 400051072;
+
+    // 6th Job HEXA skills
+    public static final int HEXA_TRINITY = 65141000;
+    public static final int HEXA_SOUL_SEEKER = 65141001;
+    public static final int HEXA_SOUL_SEEKER_EXPERT = 65141002;
+    public static final int HEXA_SOUL_SEEKER_ATOM = 65141003;
+    public static final int HEXA_SOUL_SEEKER_EXPERT_ATOM = 65141004;
+    public static final int HEXA_SUPREME_SUPERNOVA = 65141005;
+    public static final int HEXA_CELESTIAL_ROAR = 65141006;
+    public static final int ENCORE_RIBBON = 65140007;
+
+    public static final int GRAND_FINALE = 65141500; // Origin Skill
+    public static final int GRAND_FINALE_CHEER = 65141501;
+    public static final int GRAND_FINALE_ATTACK = 65141502;
+    public static final int GRAND_FINALE_HIT = 65141503;
+
+    public static final int SURPRISE_ENCORE = 65141504; // Active Skill
+    public static final int SURPRISE_ENCORE_ATTACK = 65141505;
 
     private static final short INSTANT_RECHARGE_LEVEL = 140;
 
@@ -202,6 +222,7 @@ public class AngelicBuster extends Job {
                 }
                 break;
             case CELESTIAL_ROAR:    //Stun Debuff
+            case HEXA_CELESTIAL_ROAR:
                 if (!mts.hasCurrentMobStatBySkillId(skillID)) {
                     if (!mob.isBoss()) {
                         if (Util.succeedProp(si.getValue(prop, slv))) {
@@ -268,7 +289,7 @@ public class AngelicBuster extends Job {
             }
             affinityHeartII(attackInfo);
             //Soul Seeker Expert
-            if (attackInfo.skillId != SOUL_SEEKER_ATOM) {
+            if (attackInfo.skillId != SOUL_SEEKER_ATOM && attackInfo.skillId != HEXA_SOUL_SEEKER_ATOM && attackInfo.skillId != HEXA_SOUL_SEEKER_EXPERT_ATOM) {
                 soulSeekerExpert(attackInfo.skillId, attackInfo.slv, attackInfo);
             }
         }
@@ -280,7 +301,36 @@ public class AngelicBuster extends Job {
             case TRINITY:
             case TRINITY_2:
             case TRINITY_3:
+            case TRINITY_FUSION:
+            case HEXA_TRINITY:
                 trinityBuff(tsm);
+                break;
+            case GRAND_FINALE:
+            case GRAND_FINALE_CHEER:
+            case GRAND_FINALE_ATTACK:
+            case GRAND_FINALE_HIT:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob targetMob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (targetMob == null) continue;
+                    MobTemporaryStat mts = targetMob.getTemporaryStat();
+                    Option opt1 = new Option();
+                    opt1.nOption = 1;
+                    opt1.rOption = attackInfo.skillId;
+                    opt1.tOption = 10; // 10s Absolute Freeze
+                    opt1.cOption = chr.getId();
+                    mts.addStatOptions(targetMob, MobStat.Freeze, opt1);
+                    Option opt2 = new Option();
+                    opt2.nOption = 1;
+                    opt2.rOption = attackInfo.skillId;
+                    opt2.tOption = 20; // 20s Origin Debuff
+                    opt2.cOption = chr.getId();
+                    mts.addStatOptions(targetMob, MobStat.OriginDebuff, opt2);
+                }
+                rechargeABSkills();
+                break;
+            case SURPRISE_ENCORE:
+            case SURPRISE_ENCORE_ATTACK:
+                rechargeABSkills();
                 break;
             case HEAVENLY_CRASH:
                 if (chr.hasSkill(SHINING_STAR_BURST)) {
@@ -296,16 +346,24 @@ public class AngelicBuster extends Job {
     private void soulSeekerExpert(int skillID, int slv, AttackInfo attackInfo) {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         if (tsm.hasStat(AngelicBursterSoulSeeker)) {
-            SkillInfo si = SkillData.getSkillInfoById(SOUL_SEEKER_EXPERT);
+            boolean isHexa = chr.hasSkill(HEXA_SOUL_SEEKER_EXPERT);
+            int mainSkillId = isHexa ? HEXA_SOUL_SEEKER_EXPERT : SOUL_SEEKER_EXPERT;
+            int atomSkillId = isHexa ? HEXA_SOUL_SEEKER_EXPERT_ATOM : SOUL_SEEKER_ATOM;
+            SkillInfo si = SkillData.getSkillInfoById(mainSkillId);
+            if (si == null) {
+                si = SkillData.getSkillInfoById(SOUL_SEEKER_EXPERT);
+            }
             int anglenum;
             if (new Random().nextBoolean()) {
                 anglenum = 50;
             } else {
                 anglenum = 130;
             }
-            int TW1prop = si.getValue(prop, slv);
-            if (skillID == CELESTIAL_ROAR) {
-                TW1prop += si.getValue(z, slv);
+            int TW1prop = si != null ? si.getValue(prop, slv) : 35;
+            if (skillID == CELESTIAL_ROAR || skillID == HEXA_CELESTIAL_ROAR) {
+                if (si != null) {
+                    TW1prop += si.getValue(z, slv);
+                }
             }
             if (tsm.getOptByCTSAndSkill(IndieIgnoreMobpdpR, PRETTY_EXALTATION) != null) {
                 TW1prop += 15;
@@ -323,8 +381,8 @@ public class AngelicBuster extends Job {
                     final Position pos = mob.getPosition();
                     int mobID = mai.mobId;
                     chr.createForceAtom(new ForceAtom(false, 0, chr.getId(), fae,
-                            true, mobID, SOUL_SEEKER_ATOM, forceAtomInfo, new Rect(), 0, 300,
-                            pos, SOUL_SEEKER_ATOM, pos, 0));
+                            true, mobID, atomSkillId, forceAtomInfo, new Rect(), 0, 300,
+                            pos, atomSkillId, pos, 0));
                 }
             }
         }
@@ -381,8 +439,18 @@ public class AngelicBuster extends Job {
 
     private void createSoulSeekerForceAtom() {
         Field field = chr.getField();
-        SkillInfo si = SkillData.getSkillInfoById(SOUL_SEEKER);
-        int slv = chr.getSkillLevel(SOUL_SEEKER);
+        boolean isHexa = chr.hasSkill(HEXA_SOUL_SEEKER);
+        int mainSkillId = isHexa ? HEXA_SOUL_SEEKER : SOUL_SEEKER;
+        int atomSkillId = isHexa ? HEXA_SOUL_SEEKER_ATOM : SOUL_SEEKER_ATOM;
+        SkillInfo si = SkillData.getSkillInfoById(mainSkillId);
+        int slv = chr.getSkillLevel(mainSkillId);
+        if (si == null) {
+            si = SkillData.getSkillInfoById(SOUL_SEEKER);
+            slv = chr.getSkillLevel(SOUL_SEEKER);
+        }
+        if (si == null) {
+            return;
+        }
         Rect rect = chr.getPosition().getRectAround(si.getRects().get(0));
         if (!chr.isLeft()) {
             rect = rect.moveRight();
@@ -403,8 +471,8 @@ public class AngelicBuster extends Job {
                 angle, 250, Util.getCurrentTime(), 0, 0,
                 new Position());
         ForceAtom fa = new ForceAtom(false, chr.getId(), chr.getId(), fae,
-                true, mobID, SOUL_SEEKER_ATOM, fai, new Rect(), 0, 0,
-                new Position(), SOUL_SEEKER_ATOM, new Position(), 0);
+                true, mobID, atomSkillId, fai, new Rect(), 0, 0,
+                new Position(), atomSkillId, new Position(), 0);
         fa.setMaxRecreationCount(si.getValue(z, slv));
         fa.setRecreationChance(si.getValue(s, slv));
         chr.createForceAtom(fa);
@@ -593,6 +661,7 @@ public class AngelicBuster extends Job {
                 tsm.sendStat(SharpEyes, o1); //Changed IncCriticalDamMax to SharpEyes
                 break;
             case SOUL_SEEKER_EXPERT:
+            case HEXA_SOUL_SEEKER_EXPERT:
                 o1.nOption = 1;
                 o1.rOption = skillID;
                 tsm.sendStat(AngelicBursterSoulSeeker, o1);
@@ -636,6 +705,7 @@ public class AngelicBuster extends Job {
                 // Spawning a summon for it makes the client crash on SUMMONED_CREATED, so no summon is created here.
                 break;
             case SOUL_SEEKER:
+            case HEXA_SOUL_SEEKER:
                 createSoulSeekerForceAtom();
                 createSoulSeekerForceAtom();
                 break;
