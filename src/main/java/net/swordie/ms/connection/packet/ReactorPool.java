@@ -79,13 +79,6 @@ public class ReactorPool {
     }
 
     public static OutPacket reactorLeaveField(Reactor reactor) {
-        OutPacket outPacket = new OutPacket(OutHeader.REACTOR_LEAVE_FIELD);
-
-        outPacket.encodeInt(reactor.getObjectId());
-        outPacket.encodeByte(false);
-        outPacket.encodeByte(reactor.getState());
-        outPacket.encodePosition(reactor.getPosition());
-
-        return outPacket;
+        return reactorRemove(reactor.getObjectId());
     }
 }

@@ -1,13 +1,10 @@
+# Root Abyss Boss Exit NPC (Alicia / World Tree)
 sm.setSpeakerID(1064002)
-sm.sendAskYesNo
-
-dialog = str()
 
 if sm.hasMobsInField():
-    dialog = "Are you sure you want to leave the battlefield and abandon your party members?"
-
+    dialog = "Are you sure you want to leave the battlefield and abandon the fight?"
 else:
-    dialog = "Are you sure you want to leave the battlefield?"
+    dialog = "The battle is complete. Would you like to return to the Colossal Root?"
 
 if sm.sendAskYesNo(dialog):
-    sm.warpInstanceOut(chr, 105200000)
+    sm.exitBoss()

@@ -2887,7 +2887,7 @@ public class Mob extends Life {
         if (tsm.hasStatBySkillId(Shade.SPIRIT_FLOW)) {
             ignoreCounter = true;
         }
-        if (skillID == 14121003 || skillID == FirePoison.INFERNO_AURA || skillID == FirePoison.HEXA_INFERNO_AURA) {
+        if (skillID == 14121003 || skillID == 14121012 || skillID == 14141017 || skillID == 14141020 || skillID == FirePoison.INFERNO_AURA || skillID == FirePoison.HEXA_INFERNO_AURA) {
             ignoreCounter = true;
         }
         if ((mts.hasCurrentMobStat(MobStat.PCounter) || mts.hasCurrentMobStat(MobStat.MCounter)) && !ignoreCounter) {

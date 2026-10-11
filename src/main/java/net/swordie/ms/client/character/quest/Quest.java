@@ -105,14 +105,8 @@ public class Quest {
                     long qid = q.getId();
                     int charId = q.getCharId();
                     for (QuestProgressRequirement qpr : q.getProgressRequirements()) {
-                        if (qpr instanceof QuestProgressMobRequirement qpmr) {
-                            qpmr.saveToSQL(charId, qid, false);
-                        } else if (qpr instanceof QuestProgressItemRequirement qpir) {
-                            qpir.saveToSQL(charId, qid, false);
-                        } else if (qpr instanceof QuestProgressMoneyRequirement qpmr) {
-                            qpmr.saveToSQL(charId, qid, false);
-                        } else if (qpr instanceof QuestProgressLevelRequirement qplr) {
-                            qplr.saveToSQL(charId, qid, false);
+                        if (qpr != null) {
+                            qpr.saveToSQL(con, charId, qid, false);
                         }
                     }
                 }

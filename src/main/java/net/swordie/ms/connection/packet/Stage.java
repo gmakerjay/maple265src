@@ -111,14 +111,6 @@ public class Stage {
         if (stackEventGauge > 0) {
             outPacket.encodeInt(stackEventGauge);
         }
-        // start new 199
-        if (FieldConstants.isVonbonField(chr.getFieldID())) {
-            int size = 0;
-            outPacket.encodeByte(size);
-            for (int i = 0; i < size; i++) {
-                outPacket.encodeString("");
-            }
-        }
 
         outPacket.encodeInt(0); // CUser::DecodeTextEquipInfo
         chr.getFreezeHotEventInfo().encode(outPacket); // CUser::DecodeFreezeHotEventInfo

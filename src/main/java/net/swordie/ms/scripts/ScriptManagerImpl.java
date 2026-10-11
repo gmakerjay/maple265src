@@ -35,6 +35,7 @@ import net.swordie.ms.connection.OutPacket;
 import net.swordie.ms.connection.packet.*;
 import net.swordie.ms.constants.*;
 import net.swordie.ms.enums.*;
+import net.swordie.ms.world.boss.BossEntry;
 import net.swordie.ms.enums.social.Event.InGameEventType;
 import net.swordie.ms.enums.social.Guild.GuildType;
 import net.swordie.ms.handlers.GlobalTimerManager;
@@ -198,23 +199,36 @@ public class ScriptManagerImpl implements ScriptManager {
     }
 
     public boolean startScript(Char chr, int parentID, String scriptName, ScriptType scriptType) {
-        if (!BossManager.handle(chr, parentID, scriptName)) {
-            if (BossManager.check(parentID, scriptName)) {
-                scriptType = ScriptType.Boss;
-            }
-            return start(chr, parentID, 0, scriptName, scriptType);
-        }
-        return start(chr, parentID, 0, scriptName, scriptType);
+        return startScript(chr, parentID, 0, scriptName, scriptType);
     }
 
     public boolean startScript(Char chr, int parentID, int objID, String scriptName, ScriptType scriptType) {
-        if (!BossManager.handle(chr, parentID, scriptName)) {
-            if (BossManager.check(parentID, scriptName)) {
+        if (BossManager.handle(chr, parentID, scriptName)) {
+            return true;
+        }
+        if (BossManager.check(parentID, scriptName)) {
+            scriptType = ScriptType.Boss;
+        }
+        // Some WZ maps reference "<script>pre" first-enter scripts that don't exist; fall back to "<script>".
+        if (scriptName != null && scriptName.length() > 3 && scriptName.endsWith("pre")
+                && scriptType == ScriptType.FirstEnterField
+                && !scriptExists(scriptName, scriptType)) {
+            String stripped = scriptName.substring(0, scriptName.length() - 3);
+            if (BossManager.handle(chr, parentID, stripped)) {
+                return true;
+            }
+            if (scriptExists(stripped, scriptType)) {
+                scriptName = stripped;
+            } else if (BossManager.check(parentID, stripped) && scriptExists(stripped, ScriptType.Boss)) {
+                scriptName = stripped;
                 scriptType = ScriptType.Boss;
             }
-            return start(chr, parentID, objID, scriptName, scriptType);
         }
-        return false;
+        return start(chr, parentID, objID, scriptName, scriptType);
+    }
+
+    private boolean scriptExists(String scriptName, ScriptType scriptType) {
+        return new File(String.format("%s/%s/%s%s", ServerConstants.SCRIPT_DIR, scriptType.getDir().toLowerCase(), scriptName, SCRIPT_ENGINE_EXTENSION)).exists();
     }
 
     public boolean start(Char chr, int parentID, int objID, String scriptName, ScriptType scriptType) {
@@ -5864,36 +5878,26 @@ public class ScriptManagerImpl implements ScriptManager {
     public void startBoss() {
         var orderId = getQRValueByKey(102401, "order");
         var difficulty = getQRValueByKey(102401, "diff");
-        var mapR = getQRValueByKey(102401, "mapR");
+        if (orderId != null && difficulty != null) {
+            BossPartyType boss = BossPartyType.getByOrderIdAndDifficulty(Integer.parseInt(orderId), Integer.parseInt(difficulty));
+            if (boss != null) {
+                BossEntry.enter(chr, boss, chr.isPracticeMode());
+                return;
+            }
+        }
         setSpeakerID(9010000);
-        if (orderId == null || difficulty == null || mapR == null) {
-            sendSayOkay("Không tìm thấy dữ liệu của Boss này. Vui lòng báo cho GM!");
-            return;
+        sendSayOkay("Không tìm thấy dữ liệu của Boss này. Vui lòng báo cho GM!");
+    }
+
+    public void enterBoss(String enumName) {
+        try {
+            BossPartyType boss = BossPartyType.valueOf(enumName);
+            BossEntry.enter(chr, boss, chr.isPracticeMode());
+        } catch (Exception e) {
+            if (chr != null) {
+                chr.chatMessage("Invalid boss: " + enumName);
+            }
         }
-        BossPartyType boss = BossPartyType.getByOrderIdAndDifficulty(Integer.parseInt(orderId), Integer.parseInt(difficulty));
-        if (boss == null) {
-            sendSayOkay("Không tìm thấy dữ liệu của Boss này. Vui lòng báo cho GM!");
-            return;
-        }
-        if (BossHelper.checkInstance(chr)) {
-            sendSayOkay("Lỗi không xác định, bạn vui lòng ra và vào lại Boss này.");
-            return;
-        }
-        var party = chr.getParty();
-        if (party != null && !party.isLeader(chr)) {
-            chr.chatPopup("Xin hãy để người lãnh đạo nhóm của bạn thực hiện.");
-            return;
-        }
-        int fieldID = BossConstants.getBossFightingFieldId(boss);
-        if (fieldID == 0) {
-            fieldID = chr.getFieldID();
-        }
-        int time = BossConstants.getBossFightingTime(boss);
-        if (time <= 0) {
-            time = 30 * 60;
-        }
-        warpInstanceIn(chr, fieldID, true);
-        setInstanceTime(time, Integer.parseInt(mapR));
     }
 
     public void exitBoss() {
@@ -5902,6 +5906,8 @@ public class ScriptManagerImpl implements ScriptManager {
             var mapR = getQRValueByKey(102401, "mapR");
             if (mapR != null) {
                 warpInstanceOut(chr, Integer.parseInt(mapR));
+            } else if (chr.getInstance() != null && chr.getInstance().getForcedReturn() > 0) {
+                warpInstanceOut(chr, chr.getInstance().getForcedReturn());
             } else {
                 warpInstanceOut(chr, FieldConstants.HOME_MAP);
             }

@@ -91,11 +91,13 @@ public enum BossPartyType {
     CHOSEN_SEREN_EXTREME(28, "Chosen Seren", 260, BossPartyDifficultyType.Extreme, 39921, BossPartyEnterCountType.OnceInSevendays),
 
     SLIME_NORMAL(29, "Guardian Angel Slime", 210, BossPartyDifficultyType.Normal, 36013, BossPartyEnterCountType.OnceInSevendays),
-    SLIME_HARD(29, "Guardian Angel Slime", 210, BossPartyDifficultyType.Hard, 36013, BossPartyEnterCountType.OnceInSevendays),
+    // Client BossParty.img: Slime difficulties are 1 (Normal) and 3 (Chaos)
+    SLIME_CHAOS(29, "Guardian Angel Slime", 210, BossPartyDifficultyType.Chaos, 36013, BossPartyEnterCountType.OnceInSevendays),
 
     KALOS_EASY(30, "Kalos the Guardian", 265, BossPartyDifficultyType.Easy, 38214, BossPartyEnterCountType.OnceInSevendays),
     KALOS_NORMAL(30, "Kalos the Guardian", 265, BossPartyDifficultyType.Normal, 38214, BossPartyEnterCountType.OnceInSevendays),
-    KALOS_HARD(30, "Kalos the Guardian", 265, BossPartyDifficultyType.Hard, 38214, BossPartyEnterCountType.OnceInSevendays),
+    // Client BossParty.img: Kalos difficulties are 0/1/3/4 (Easy/Normal/Chaos/Extreme)
+    KALOS_CHAOS(30, "Kalos the Guardian", 265, BossPartyDifficultyType.Chaos, 38214, BossPartyEnterCountType.OnceInSevendays),
     KALOS_EXTREME(30, "Kalos the Guardian", 265, BossPartyDifficultyType.Extreme, 38214, BossPartyEnterCountType.OnceInSevendays),
 
     KALING_EASY(31, "Kaling", 275, BossPartyDifficultyType.Easy, 38401, BossPartyEnterCountType.OnceInSevendays),

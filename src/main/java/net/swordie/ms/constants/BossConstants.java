@@ -29,25 +29,31 @@ public class BossConstants {
         };
     }
 
+    /**
+     * Battle map used by the Boss UI / content menu entry (see {@link net.swordie.ms.world.boss.BossEntry}).
+     * Verified against data/wz265 Map.wz (onFirstUserEnter scripts, footholds) on 2026-10-11.
+     */
     public static int getBossFightingFieldId(BossPartyType boss) {
         return switch (boss) {
             case BALROG -> BALROG_EASY_BATTLE_MAP;
             case ZAKUM_EASY -> ZAKUM_EASY_ALTAR;
             case ZAKUM_NORMAL -> ZAKUM_NORMAL_ALTAR;
             case ZAKUM_CHAOS -> ZAKUM_CHAOS_ALTAR;
-            case HORNTAIL_EASY -> 240060002;
+            // Cave of Life (final room). Trial chains: 240060000->100->300 (E), 002->102->200 (N), 001->101->201 (C)
+            case HORNTAIL_EASY -> 240060300;
             case HORNTAIL_NORMAL -> 240060200;
             case HORNTAIL_CHAOS -> 240060201;
             case HILLA_NORMAL -> 262030300;
             case HILLA_HARD -> 262031300;
-            case PIERRE_NORMAL -> 105200100;
-            case PIERRE_CHAOS -> 105200500;
-            case VON_BON_NORMAL -> 105200200;
-            case VON_BON_CHAOS -> 105200600;
-            case QUEEN_NORMAL -> 105200300;
-            case QUEEN_CHAOS -> 105200700;
-            case VELLUM_NORMAL -> 105200400;
-            case VELLUM_CHAOS -> 105200800;
+            // Root Abyss real boss rooms (1052001x0 are only the imp corridors)
+            case PIERRE_NORMAL -> 105200210;   // onFirst pierre_Summon
+            case PIERRE_CHAOS -> 105200610;    // onFirst pierre_Summon1
+            case VON_BON_NORMAL -> 105200110;  // banban_Summon
+            case VON_BON_CHAOS -> 105200510;
+            case QUEEN_NORMAL -> 105200310;    // queen_summon0
+            case QUEEN_CHAOS -> 105200710;
+            case VELLUM_NORMAL -> 105200410;   // abysscave_ent
+            case VELLUM_CHAOS -> 105200810;
             case VON_LEON_EASY -> 211070104;
             case VON_LEON_NORMAL -> 211070102;
             case VON_LEON_HARD -> 211070100;
@@ -60,27 +66,48 @@ public class BossConstants {
             case PINK_BEAN_CHAOS -> 270051100;
             case CYGNUS_EASY -> 271041100;
             case CYGNUS_NORMAL -> 271040100;
-            case LOTUS_NORMAL -> 350060400;
-            case LOTUS_HARD, LOTUS_EXTREME -> 350060700;
+            case LOTUS_NORMAL -> 350060700;                 // blackHeavenBoss1n_summon (NORMAL)
+            case LOTUS_HARD, LOTUS_EXTREME -> 350060400;    // blackHeavenBoss1_summon (HARD)
+            case URSUS -> URSUS_FIGHT_MAP;
             case DAMIEN_NORMAL -> 350160200;
             case DAMIEN_HARD -> 350160100;
-            case GOLLUX -> 863010600;
+            case GOLLUX -> GOLLUX_FIRST_MAP;               // Road to Gollux (Gollux.init handles the rest)
             case RANMARU_NORMAL -> 807300110;
             case RANMARU_HARD -> 807300210;
-            case PRINCESS_NO -> 811000008;
+            case PRINCESS_NO -> 811000999;
             case LUCID_EASY, LUCID_NORMAL, LUCID_HARD -> 450004150;
+            case OMNI_CLN_NORMAL -> 221030910;
             case PAPULATUS_EASY, PAPULATUS_NORMAL, PAPULATUS_CHAOS -> 220080001;
             case WILL_EASY, WILL_NORMAL -> 450008750;
             case WILL_HARD -> 450008150;
-            case VERUS_HILLA_NORMAL, VERUS_HILLA_HARD -> 450011990;
+            case VERUS_HILLA_NORMAL -> 450010500;
+            case VERUS_HILLA_HARD -> 450010930;
             case BLACK_MAGE_HARD, BLACK_MAGE_EXTREME -> 450013100;
-            case GLOOM_NORMAL, GLOOM_CHAOS -> 450009301;
-            case DARKNELL_NORMAL, DARKNELL_HARD -> 450012200;
-            case CHOSEN_SEREN_NORMAL, CHOSEN_SEREN_HARD, CHOSEN_SEREN_EXTREME -> 410030000;
-            case SLIME_NORMAL, SLIME_HARD -> 160080000;
-            case KALOS_EASY, KALOS_NORMAL, KALOS_HARD, KALOS_EXTREME -> 410030400;
-            case KALING_EASY, KALING_NORMAL, KALING_HARD, KALING_EXTREME -> 410030800;
-            case LIMBO_NORMAL, LIMBO_HARD -> 410031100;
+            case GLOOM_NORMAL -> 450009400;
+            case GLOOM_CHAOS -> 450009450;
+            case DARKNELL_NORMAL -> 450012210;
+            case DARKNELL_HARD -> 450012600;
+            case CHOSEN_SEREN_NORMAL -> 410002120;
+            case CHOSEN_SEREN_HARD -> 410002020;
+            case CHOSEN_SEREN_EXTREME -> 410002220;
+            case SLIME_NORMAL -> 160040000;
+            case SLIME_CHAOS -> 160020000;
+            case KALOS_EASY -> 410006220;
+            case KALOS_NORMAL -> 410006020;
+            case KALOS_CHAOS -> 410006320;
+            case KALOS_EXTREME -> 410006420;
+            case KALING_EASY -> 410008160;
+            case KALING_NORMAL -> 410007260;
+            case KALING_HARD -> 410008460;
+            case KALING_EXTREME -> 410008760;
+            case LIMBO_NORMAL -> 410009100;
+            case LIMBO_HARD -> 410011100;
+            case BALDRIX_NORMAL -> 410014100;
+            case BALDRIX_HARD -> 410015200;
+            case FIRST_ADVERSARY_EASY -> 410020100;
+            case FIRST_ADVERSARY_NORMAL -> 410021100;
+            case FIRST_ADVERSARY_HARD -> 410022100;
+            case FIRST_ADVERSARY_EXTREME -> 410023100;
             case AKECHI_MITSUHIDE -> AKECHI_BATTLE_MAP;
             default -> 0;
         };
@@ -118,8 +145,8 @@ public class BossConstants {
             case WILL_EASY, WILL_NORMAL, WILL_HARD -> WILL_ENTRACE_MAP;
             case AKECHI_MITSUHIDE -> AKECHI_ENTRANCE_MAP;
             case CHOSEN_SEREN_NORMAL, CHOSEN_SEREN_HARD, CHOSEN_SEREN_EXTREME -> 410000670;
-            case SLIME_NORMAL, SLIME_HARD -> 160080000;
-            case KALOS_EASY, KALOS_NORMAL, KALOS_HARD, KALOS_EXTREME -> 410005000;
+            case SLIME_NORMAL, SLIME_CHAOS -> 160080000;
+            case KALOS_EASY, KALOS_NORMAL, KALOS_CHAOS, KALOS_EXTREME -> 410005000;
             case KALING_EASY, KALING_NORMAL, KALING_HARD, KALING_EXTREME -> 410005000;
             case LIMBO_NORMAL, LIMBO_HARD -> 410031000;
             default -> 0;

@@ -97,6 +97,7 @@ public class Instance {
         }
         if (this.party != null) {
             for (Char chr : this.party.getOnlineChars()) {
+                chr.setInstance(this);
                 this.getChars().put(chr.getId(), chr);
             }
             this.party.setInstance(this);

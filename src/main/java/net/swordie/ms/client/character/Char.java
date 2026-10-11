@@ -1324,7 +1324,7 @@ public class Char {
             deleteDataFromTable(con, "equips", "charid", getId());
             deleteDataFromTable(con, "petitems", "charid", getId());
             deleteDataFromTable(con, "quests", "charid", getId());
-            deleteDataFromTable(con, "questprogressrequirements", "charid", getId());
+            // questprogressrequirements is automatically deleted via FOREIGN KEY (questid) ON DELETE CASCADE
             deleteDataFromTable(con, "keymaps", "charid", getId());
             deleteDataFromTable(con, "funckeymap", "charid", getId());
             deleteDataFromTable(con, "hyperrockfields", "charid", getId());
@@ -3752,6 +3752,12 @@ public class Char {
      */
     public boolean hasSkill(int id) {
         Skill s = skills.get(id);
+        if (s == null) {
+            int actual = SkillConstants.getActualSkillIDfromSkillID(id);
+            if (actual != id) {
+                s = skills.get(actual);
+            }
+        }
         return s != null && s.getCurrentLevel() > 0;
     }
 
@@ -3780,6 +3786,10 @@ public class Char {
         if (s != null) {
             return s;
         }
+        int actual = SkillConstants.getActualSkillIDfromSkillID(id);
+        if (actual != id && skills.containsKey(actual)) {
+            return skills.get(actual);
+        }
         return createIfNull ? createAndReturnSkill(id) : null;
     }
 
@@ -3788,11 +3798,21 @@ public class Char {
         if (s != null) {
             return s;
         }
+        int actual = SkillConstants.getActualSkillIDfromSkillID(id);
+        if (actual != id && skills.containsKey(actual)) {
+            return skills.get(actual);
+        }
         return createAndReturnSkill(id, slv);
     }
 
     public int getSkillLevel(int skillID) {
         Skill s = skills.get(skillID);
+        if (s == null) {
+            int actual = SkillConstants.getActualSkillIDfromSkillID(skillID);
+            if (actual != skillID) {
+                s = skills.get(actual);
+            }
+        }
         return s != null ? s.getCurrentLevel() : 0;
     }
 
@@ -4889,6 +4909,7 @@ public class Char {
         toField.spawnLifesForChar(this);
         handleFieldChangeSummons(tsm, toField);
         notifyChanges();
+        toField.execFirstUserEnterScript(this);
         toField.execUserEnterScript(this);
         if (toField.getTimeLimit() > 0) {
             Field warpTo = getOrCreateFieldByCurrentInstanceType(toField.getReturnMap());
@@ -5126,24 +5147,24 @@ public class Char {
                 toField = getOrCreateFieldByCurrentInstanceType(BossConstants.GOLLUX_ENTRACE_MAP);
             }
         }
-        if (toField.getId() == 105200100
-                || toField.getId() == 105200110
-                || toField.getId() == 105200200
-                || toField.getId() == 105200210
-                || toField.getId() == 105200300
-                || toField.getId() == 105200310
-                || toField.getId() == 105200400
-                || toField.getId() == 105200410
-                || toField.getId() == 105200500
-                || toField.getId() == 105200510
-                || toField.getId() == 105200600
-                || toField.getId() == 105200610
-                || toField.getId() == 105200700
-                || toField.getId() == 105200710
-                || toField.getId() == 105200800
-                || toField.getId() == 105200810) {
+        if (toField.getId() >= 105200100 && toField.getId() <= 105200810) {
             if (getInstance() == null) {
-                toField = getOrCreateFieldByCurrentInstanceType(BossConstants.ROOT_ABYSS_ENTRACE_MAP);
+                Instance inst = (getParty() != null) ? new Instance(getParty()) : new Instance(this);
+                if (getParty() != null) {
+                    getParty().setInstance(inst);
+                    for (Char pm : getParty().getOnlineChars()) {
+                        if (pm != null) {
+                            pm.setInstance(inst);
+                            inst.getChars().put(pm.getId(), pm);
+                        }
+                    }
+                } else {
+                    inst.getChars().put(getId(), this);
+                }
+                setInstance(inst);
+                inst.setEnterFieldId(toField.getId());
+                inst.setForcedReturn(105200000);
+                Server.get().getInstances().add(inst);
             }
         }
         if (toField.getId() == 450008100
@@ -9373,6 +9394,12 @@ public class Char {
 
     public boolean hasBossPartyAttempt(BossPartyType bpt) {
         if (bpt == null) return true;
+        // Offline / LAN mode: unlimited entries anytime without daily/weekly lockouts
+        return false;
+    }
+
+    public boolean hasBossPartyAttemptOriginal(BossPartyType bpt) {
+        if (bpt == null) return true;
         BossPartyEnterCountType enterCount = bpt.getEnterCount();
         VIPGrade vipGrade = VIPGrade.getValByNum(getUser().getVipGrade());
         int count;
@@ -12461,6 +12488,40 @@ public class Char {
                 addSkill(skill);
             }
         }
+        if (JobConstants.isMoXuan(job)) {
+            int[] moxuanSubSkills = new int[]{
+                    175000006, 175001002, 175001003, 175101001,
+                    175111003, 175111011, 175121001, 175121002,
+                    175121004, 175121006, 175121007
+            };
+            for (int subId : moxuanSubSkills) {
+                short subJobId = (short) (subId / 10000);
+                if (!jobs.contains(subJobId)) {
+                    continue;
+                }
+                Skill skill = SkillData.getSkillDeepCopyById(subId);
+                if (skill != null) {
+                    byte maxLevel = (byte) (skill.getMaxLevel() > 0 ? skill.getMaxLevel() : skill.getMasterLevel());
+                    if (maxLevel <= 0) maxLevel = 1;
+                    skill.setCurrentLevel(maxLevel);
+                    skill.setMasterLevel(maxLevel);
+                    list.add(skill);
+                    addSkill(skill);
+                }
+            }
+        }
+        if (JobConstants.isExtendSpJob(job)) {
+            ExtendSP esp = getAvatarData().getCharacterStat().getExtendSP();
+            if (esp != null) {
+                esp.setSpToJobLevel(1, 65);
+                esp.setSpToJobLevel(2, 130);
+                esp.setSpToJobLevel(3, 130);
+                esp.setSpToJobLevel(4, 255);
+                Map<Stat, Object> stats = new HashMap<>();
+                stats.put(Stat.sp, esp);
+                sendStatsPacket(stats);
+            }
+        }
         if (list.size() > 0) {
             write(WvsContext.changeSkillRecordResult(list, true, false, false));
         }
@@ -12956,8 +13017,8 @@ public class Char {
         if (hasQuest(QuestConstants.UNION_ARTIFACT)) {
             UnionArtifact.updateSpecialQuestCompletedMission(this, questID);
         }
-        write(UserPacket.effect(Effect.questCompleteEffect()));
-        getField().broadcast(UserRemote.effect(getId(), Effect.questCompleteEffect()), this);
+        // Do not send legacy/malformed QuestComplete effect (0x0F FF FF FF FF) which causes client crash in v265.
+        // Quest completion fanfare is already handled client-side via WvsContext.questRecordMessage.
     }
 
     private void handleCompleteQuest(QuestInfo qi, int questID) {

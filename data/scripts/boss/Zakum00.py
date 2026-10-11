@@ -1,7 +1,7 @@
 from net.swordie.ms.constants import BossConstants
 
 sm.setSpeakerID(2030008)
-sel = sm.sendNext("Ừm... Được rồi, có vẻ như bạn đáp ứng đủ yêu cầu. Bạn muốn làm gì?\r\n\r\n#b#L0# Khám phá Dead Mine Caves.#l\r\n#b#L1# Khám phá Zakum Dungeon.#l\r\n#b#L2# Nhận lễ vật dâng cho Zakum.#l\r\n#b#L3# Đến El Nath.#l")
+sel = sm.sendNext("Ừm... Được rồi, có vẻ như bạn đáp ứng đủ yêu cầu. Bạn muốn làm gì?\r\n\r\n#b#L4# #e[Challenge Zakum (Boss Menu) / ท้าทายบอส Zakum]#n#l\r\n#b#L0# Khám phá Dead Mine Caves.#l\r\n#b#L1# Khám phá Zakum Dungeon.#l\r\n#b#L2# Nhận lễ vật dâng cho Zakum.#l\r\n#b#L3# Đến El Nath.#l")
 if sel == 0:
     sm.warp(211041500, 0)
 elif sel == 1:
@@ -20,3 +20,5 @@ elif sel == 2:
         sm.sendNext("Vui lòng có đủ ô chứa trong túi ETC để nhận lễ vật cúng dường cho Zakum.")
 elif sel == 3:
     sm.warp(211000000, 0)
+elif sel == 4:
+    sm.startBossUI("Zakum")

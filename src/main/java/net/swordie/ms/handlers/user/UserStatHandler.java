@@ -111,6 +111,7 @@ public class UserStatHandler {
                 esp.setSpToJobLevel(jobLevel, currentSp - amount);
                 chr.addSkill(skill);
                 chr.write(WvsContext.changeSkillRecordResult(skill));
+                syncMoXuanSubSkills(chr, skillID, newLevel);
                 stats = new HashMap<>();
                 stats.put(Stat.sp, esp);
             } else {
@@ -542,5 +543,33 @@ public class UserStatHandler {
             chr.getJobHandler().giveHyperArcaneForceBuff();
         }
         chr.dispose();
+    }
+
+    public static void syncMoXuanSubSkills(Char chr, int mainSkillId, int level) {
+        int[] subIds = switch (mainSkillId) {
+            case 175000001 -> new int[]{175001002};
+            case 175100000 -> new int[]{175101001};
+            case 175111002 -> new int[]{175111003};
+            case 175111004 -> new int[]{175111011};
+            case 175120017 -> new int[]{175121001, 175121006};
+            case 175120018 -> new int[]{175121002, 175121007};
+            case 175121003 -> new int[]{175121004};
+            default -> null;
+        };
+        if (subIds != null) {
+            List<Skill> subSkills = new ArrayList<>();
+            for (int subId : subIds) {
+                Skill subSkill = SkillData.getSkillDeepCopyById(subId);
+                if (subSkill != null) {
+                    subSkill.setCurrentLevel(level);
+                    subSkill.setMasterLevel(Math.max(level, subSkill.getMasterLevel()));
+                    chr.addSkill(subSkill);
+                    subSkills.add(subSkill);
+                }
+            }
+            if (!subSkills.isEmpty()) {
+                chr.write(WvsContext.changeSkillRecordResult(subSkills, true, false, false));
+            }
+        }
     }
 }

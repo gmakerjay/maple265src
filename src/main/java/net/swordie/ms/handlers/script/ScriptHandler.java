@@ -24,6 +24,7 @@ import net.swordie.ms.scripts.ScriptType;
 import net.swordie.ms.util.DataPrinter;
 import net.swordie.ms.util.FileTime;
 import net.swordie.ms.world.field.Field;
+import net.swordie.ms.world.boss.BossEntry;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -277,6 +278,9 @@ public class ScriptHandler {
             chr.chatPopup("Boss này đang hoàn thiện, chưa vào được.");
             return;
         }
+        if (BossEntry.enter(chr, bossPartyType, isPraticeMode)) {
+            return;
+        }
         int fieldID = BossConstants.getBossWaitingFieldId(bossPartyType);
         chr.setPracticeMode(isPraticeMode);
         handleMoveToBossWaitingField(chr, fieldID, bossPartyType, true);
@@ -290,6 +294,9 @@ public class ScriptHandler {
         BossPartyType bossPartyType = BossPartyType.getByOrderIdAndDifficulty(orderId, difficulty);
         if (bossPartyType == null) {
             chr.chatPopup("Boss này đang hoàn thiện, chưa vào được.");
+            return;
+        }
+        if (BossEntry.enter(chr, bossPartyType, false)) {
             return;
         }
         handleMoveToBossWaitingField(chr, fieldID, bossPartyType, false);

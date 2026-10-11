@@ -24,6 +24,10 @@ public class Horntail {
     };
 
     public static void spawn(int mode, Field field) {
+        spawn(mode, field, 868, 230);
+    }
+
+    public static void spawn(int mode, Field field, int spawnX, int spawnY) {
         int controllerId;
         int[] parts;
         switch (mode) {
@@ -42,8 +46,8 @@ public class Horntail {
         }
 
         field.removeMobs();
-        short x = 868;
-        short y = 230;
+        short x = (short) spawnX;
+        short y = (short) spawnY;
 
         // Spawn controller mob
         Mob controller = field.spawnMob(controllerId, x, y, false);

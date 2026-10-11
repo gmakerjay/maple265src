@@ -2037,14 +2037,62 @@ public class SkillConstants {
             case 61121221: //Kaiser - Blade Burst (Final Form)
                 return 61121104; //Kaiser - Blade Burst
 
-            case 14101021: //NW - Quint. Throw Finisher
-                return 14101020; //NW - Quint. Throw
+            case 14101021: // NW - Triple Throw Finisher
+                return 14101020; // NW - Triple Throw
+            case 14101029: // NW - Shadow Spark Explosion
+                return 14101028; // NW - Shadow Spark
 
-            case 14111021: //NW - Quad Throw Finisher
-                return 14111020; //NW - Quad Throw
+            case 14111021: // NW - Quad Star Finisher
+                return 14111020; // NW - Quad Star
 
-            case 14121002: //NW - Triple Throw Finisher
-                return 14121001; //NW - Triple Throw
+            case 14121002: // NW - Quintuple Star Finisher
+                return 14121001; // NW - Quintuple Star
+
+            // 6th Job HEXA Quintuple Star
+            case 14141001: // NW - HEXA Quintuple Star Finisher
+            case 14141002: // NW - HEXA Quintuple Star Sub
+            case 14141003: // NW - HEXA Quintuple Star Giant
+                return 14141000; // NW - HEXA Quintuple Star
+
+            // Shadow Bats Atoms / Sub-skills
+            case 14000028: // Shadow Bat Atom
+            case 14000029: // Shadow Bat From Mob Atom
+                return 14001027; // Shadow Bat
+            case 14110034: // Shadow Bat II Atom
+            case 14110035: // Shadow Bat II From Mob Atom
+            case 14111036: // Shadow Bat Extra Attack
+                return 14001027; // Shadow Bat
+            case 14120018: // Ravenous Bat Atom
+            case 14120020: // Ravenous Bat From Mob Atom
+                return 14121016; // Ravenous Bat
+            case 14141006: // HEXA Shadow Bat Atom
+            case 14141007: // HEXA Shadow Bat From Mob Atom
+            case 14141009: // HEXA Shadow Bat Atom II
+            case 14141010: // HEXA Shadow Bat From Mob Atom II
+            case 14141011: // HEXA Shadow Bat Area Attack
+                return 14141004; // HEXA Shadow Bat
+            case 14141014: // HEXA Ravenous Bat Atom
+            case 14141016: // HEXA Ravenous Bat From Mob Atom
+                return 14141012; // HEXA Ravenous Bat
+
+            // 5th Job V-Matrix Skills
+            case 400040008: // Shadow Spear AA Small
+            case 400041019: // Shadow Spear AA Large
+                return 400041008; // Shadow Spear
+            case 400041060: // Rapid Throw Finisher
+                return 400041059; // Rapid Throw
+
+            // 6th Job Origin Skill
+            case 14141501: // Silence Sub Attack
+                return 14141500; // Silence
+            case 14141504: // Stygian Command Sub Attack
+                return 14141503; // Stygian Command
+
+            // Dark Omen (When Shadow Bat is Active)
+            case 14121012: // NW - Dark Omen (Shadow Bat Active)
+                return 14121003; // NW - Dark Omen
+            case 14141020: // NW - HEXA Dark Omen (Shadow Bat Active)
+                return 14141017; // NW - HEXA Dark Omen
 
             case Mercedes.STAGGERING_STRIKES:
                 return Mercedes.STUNNING_STRIKES;
@@ -2084,6 +2132,44 @@ public class SkillConstants {
             case Buccaneer.HEXA_SEA_SERPENT_RAGE:
             case Buccaneer.HEXA_SEA_SERPENT_BURST:
                 return Buccaneer.HEXA_SEA_SERPENT;
+
+            // MoXuan (1st - 4th Job)
+            case 175001002: // Xuanshan Strike [Tian] Action
+                return 175000001;
+            case 175101001: // Xuanshan Strike [Di] Action
+                return 175100000;
+            case 175111003: // Divine Art: Swirling Tide 2
+                return 175111002;
+            case 175111011: // Secret Art: Qi Projection Atom
+                return 175111004;
+            case 175121001: // Xuanshan Cross [Tian] Action 1
+            case 175121006: // Xuanshan Cross [Tian] Action 2
+                return 175120017;
+            case 175121002: // Xuanshan Cross [Di] Action 1
+            case 175121007: // Xuanshan Cross [Di] Action 2
+                return 175120018;
+            case 175121004: // Divine Art: Howling Storm Action
+                return 175121003;
+
+            // MoXuan HEXA (6th Job)
+            case 175141001:
+            case 175141002:
+            case 175141008:
+                return 175141000;
+            case 175141004:
+            case 175141005:
+            case 175141009:
+                return 175141003;
+            case 175141007:
+                return 175141006;
+            case 175141013:
+                return 175141012;
+            case 175141017:
+            case 175141018:
+                return 175141016;
+            case 175141501:
+            case 175141502:
+                return 175141500;
             default:
                 return skillID;
         }

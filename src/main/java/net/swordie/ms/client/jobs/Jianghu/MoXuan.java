@@ -120,6 +120,10 @@ public class MoXuan extends Job {
     private final int[] addedSkills = new int[]{
             XUANSHAN_SPIRIT, RETURN_TO_XUANSHAN, WILL_OF_THE_ALLIANCE, DIVINE_ART_ERUPTING_FLAME, AWAKEN,
             THE_HOLY_MOUNTAIN, HEIR_OF_THE_DIVINE,
+            XUANSHAN_STRIKE_TIAN, XUANSHAN_STRIKE_DI,
+            DIVINE_ART_SWIRLING_TIDE_2, SECRET_ART_QI_PROJECTION_ATOM,
+            XUANSHAN_CROSS_TIAN, XUANSHAN_CROSS_DI,
+            175121004, 175121006, 175121007
     };
 
     public AtomicInteger godPower = new AtomicInteger(0);
@@ -130,11 +134,19 @@ public class MoXuan extends Job {
     public MoXuan(Char chr) {
         super(chr);
         if (chr.getId() != 0 && isHandlerOfJob(chr.getJob())) {
+            java.util.List<Short> jobChain = JobConstants.getJobChain(chr.getJob());
             for (int id : addedSkills) {
+                short subJobId = (short) (id / 10000);
+                if (id >= 170000000 && !jobChain.contains(subJobId)) {
+                    continue;
+                }
                 if (!chr.hasSkill(id)) {
                     Skill skill = SkillData.getSkillDeepCopyById(id);
                     if (skill != null) {
-                        skill.setCurrentLevel(skill.getMasterLevel());
+                        byte maxLevel = (byte) (skill.getMaxLevel() > 0 ? skill.getMaxLevel() : skill.getMasterLevel());
+                        if (maxLevel <= 0) maxLevel = 1;
+                        skill.setCurrentLevel(maxLevel);
+                        skill.setMasterLevel(maxLevel);
                         chr.addSkill(skill);
                     }
                 }

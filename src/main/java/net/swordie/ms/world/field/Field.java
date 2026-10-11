@@ -766,17 +766,26 @@ public class Field {
                 .findFirst().orElse(null);
     }
 
-    public void addChar(Char chr) {
-        if (!isUserFirstEnter()) {
-            if (hasUserFirstEnterScript()) {
-                chr.getScriptManager().startScript(chr, getId(), getOnFirstUserEnter(), ScriptType.FirstEnterField);
-                setUserFirstEnter(true);
-            } else if (CustomFUEFieldScripts.getByVal(getId()) != null) {
-                String feFieldScript = CustomFUEFieldScripts.getByVal(getId()).toString();
-                chr.getScriptManager().startScript(chr, getId(), feFieldScript, ScriptType.FirstEnterField);
-                setUserFirstEnter(true);
-            }
+    /**
+     * Runs the field's onFirstUserEnter script (once per field instance).
+     * Must be called AFTER chr.setField(this), otherwise scripts/BossManager handlers
+     * operate on the previous field (boss spawned in wrong map / never spawned).
+     */
+    public void execFirstUserEnterScript(Char chr) {
+        if (isUserFirstEnter() || chr == null) {
+            return;
         }
+        if (hasUserFirstEnterScript()) {
+            setUserFirstEnter(true);
+            chr.getScriptManager().startScript(chr, getId(), getOnFirstUserEnter(), ScriptType.FirstEnterField);
+        } else if (CustomFUEFieldScripts.getByVal(getId()) != null) {
+            setUserFirstEnter(true);
+            String feFieldScript = CustomFUEFieldScripts.getByVal(getId()).toString();
+            chr.getScriptManager().startScript(chr, getId(), feFieldScript, ScriptType.FirstEnterField);
+        }
+    }
+
+    public void addChar(Char chr) {
         final OutPacket packet = UserPool.userEnterField(chr);
         broadcast(packet);
         //broadcast(UserRemote.setTemporaryStat(chr, chr.getTemporaryStatManager().getRemoteStats()), chr);

@@ -220,6 +220,8 @@ public class SkillHandler {
         }
         inPacket.decodeInt(); // crc
         int skillID = inPacket.decodeInt();
+        int actualSkillId = SkillConstants.getActualSkillIDfromSkillID(skillID);
+        int effectiveSkillId = (actualSkillId != 0 && !chr.hasSkill(skillID) && chr.hasSkill(actualSkillId)) ? actualSkillId : skillID;
         inPacket.decodeInt(); // 0?
         if (JobConstants.isZero(chr.getJob())) {
             inPacket.decodeByte(); // Why zero has a byte before the skill Level and always 0
@@ -227,10 +229,10 @@ public class SkillHandler {
         int slv = inPacket.decodeInt();
 
         if (slv == 0) {
-            slv = chr.getSkillLevel(skillID);
+            slv = chr.getSkillLevel(effectiveSkillId);
         } else {
-            int curSLV = chr.getSkillLevel(skillID);
-            if (chr.hasSkill(skillID) && slv != curSLV) {
+            int curSLV = chr.getSkillLevel(effectiveSkillId);
+            if (chr.hasSkill(effectiveSkillId) && slv != curSLV) {
                 slv = curSLV;
             }
         }
@@ -286,7 +288,7 @@ public class SkillHandler {
 
         if (chr.applyBulletCon(si, slv)) {
             if (chr.applyMpCon(si, slv, true)) {
-                if (chr.checkAndSetSkillCooltime(skillID, false)) {
+                if (chr.checkAndSetSkillCooltime(effectiveSkillId, false)) {
                     if (skillID != 11121014) {
                         chr.getField().broadcast(UserRemote.effect(chr.getId(), Effect.skillUse(skillID, chr.getLevel(), slv)), chr);
                     }

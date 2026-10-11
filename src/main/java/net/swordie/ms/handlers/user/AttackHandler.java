@@ -72,14 +72,15 @@ public class AttackHandler {
     private static void handleAttack(Char chr, AttackInfo attackInfo) {
         var isBattleRecordOn = chr.isBattleRecordOn();
         var skillID = attackInfo.skillId;
+        int actualSkillId = SkillConstants.getActualSkillIDfromSkillID(skillID);
         if (skillID == 0) {
             attackInfo.slv = 1;
         } else {
             if (attackInfo.slv == 0) {
-                attackInfo.slv = chr.getSkillLevel(skillID);
+                attackInfo.slv = chr.getSkillLevel(actualSkillId);
             } else {
-                int curSLV = chr.getSkillLevel(skillID);
-                if (chr.hasSkill(skillID) && attackInfo.slv != curSLV) {
+                int curSLV = chr.getSkillLevel(actualSkillId);
+                if (chr.hasSkill(actualSkillId) && attackInfo.slv != curSLV) {
                     attackInfo.slv = curSLV;
                 }
             }

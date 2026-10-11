@@ -7,6 +7,7 @@ import net.swordie.ms.client.Account;
 import net.swordie.ms.client.Client;
 import net.swordie.ms.client.User;
 import net.swordie.ms.client.character.Char;
+import net.swordie.ms.client.character.ExtendSP;
 import net.swordie.ms.client.character.PortableChair;
 import net.swordie.ms.client.character.items.Equip;
 import net.swordie.ms.client.character.items.Item;
@@ -2596,16 +2597,25 @@ public class AdminCommands {
 
         short job = chr.getJob();
 
-        // 1. Level to 260
+        // 1. Level to 260 and set AP
         try {
             chr.setStatAndSendPacket(Stat.level, 260);
             chr.getAvatarData().getCharacterStat().setExp(0);
+            int targetAp = (260 - 10) * 5; // 1,250 AP
+            if (chr.getStat(Stat.ap) < targetAp) {
+                chr.setStatAndSendPacket(Stat.ap, targetAp);
+            }
             if (chr.getJobHandler() != null) {
                 chr.getJobHandler().handleLevelUp((short) 260);
             }
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] Level warning: " + e.getMessage());
         }
+
+        // 1.5. Initialize Hyper Stats Presets
+        try {
+            chr.initHyperStats();
+        } catch (Exception ignored) {}
 
         // 2. Max HP and MP
         try {
@@ -2642,8 +2652,20 @@ public class AdminCommands {
             chr.chatMessage(SpeakerChannel, "[Endgame] Matrix warning: " + e.getMessage());
         }
 
-        // 5. Max 1st - 4th Job Skills
+        // 5. Max 1st - 4th Job Skills & Populate ExtendSP
         try {
+            if (JobConstants.isExtendSpJob(job)) {
+                ExtendSP esp = chr.getAvatarData().getCharacterStat().getExtendSP();
+                if (esp != null) {
+                    esp.setSpToJobLevel(1, 65);
+                    esp.setSpToJobLevel(2, 130);
+                    esp.setSpToJobLevel(3, 130);
+                    esp.setSpToJobLevel(4, 255);
+                    Map<Stat, Object> stats = new HashMap<>();
+                    stats.put(Stat.sp, esp);
+                    chr.sendStatsPacket(stats);
+                }
+            }
             chr.maxSkills();
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] MaxSkills warning: " + e.getMessage());

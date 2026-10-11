@@ -30,6 +30,7 @@ import net.swordie.ms.util.Position;
 import net.swordie.ms.util.Util;
 import net.swordie.ms.util.container.Tuple;
 import net.swordie.ms.world.World;
+import net.swordie.ms.world.boss.BossEntry;
 import net.swordie.ms.world.boss.Gollux;
 import net.swordie.ms.world.event.OlaOlaEvent;
 import net.swordie.ms.world.event.PhysicalFitnessEvent;
@@ -156,6 +157,9 @@ public class MigrationHandler {
 
         Char currentChar = chr;
         chr.getTimer().addEvent(currentChar::initialize, 1500, TimeUnit.MILLISECONDS);
+        if (ServerConfig.BOSS_UNLOCK_PREQUESTS && chr.getLevel() >= 100) {
+            chr.getTimer().addEvent(() -> BossEntry.unlockBossPrerequisites(currentChar), 2500, TimeUnit.MILLISECONDS);
+        }
 
         chr.checkAndRemoveExpiredItems(isFirstLogin);
         if (isFirstLogin) {

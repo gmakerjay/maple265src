@@ -27,4 +27,10 @@ public abstract class QuestProgressRequirement implements DatSerializable {
     public void setOrder(int order) {
         this.order = order;
     }
+
+    public void saveToSQL(int ownerid, long questID, boolean isAccount) {
+        saveToSQL(null, ownerid, questID, isAccount);
+    }
+
+    public abstract void saveToSQL(java.sql.Connection con, int ownerid, long questID, boolean isAccount);
 }

@@ -107,7 +107,7 @@ public class Reactor extends Life {
     @Override
     public void broadcastLeavePacket() {
         Field field = getField();
-        field.broadcast(ReactorPool.reactorLeaveField(this));
+        field.broadcast(ReactorPool.reactorRemove(getObjectId()));
         if (field.isChannelField()) {
             Reactor reactor = (Reactor) deepCopy();
             reactor.init();
