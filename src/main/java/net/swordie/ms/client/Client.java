@@ -233,7 +233,7 @@ public class Client extends NettyClient {
         user.saveToSQL(false);
         Channel channel = getChannelInstance();
         channel.addClientInTransfer(getChannel(), chr.getId(), this);
-        chr.getTimer().addEvent(() -> write(ClientSocket.migrateCommand(true, (short) channel.getPort())), 1000);
+        chr.getTimer().addEvent(() -> write(ClientSocket.migrateCommand(true, (short) channel.getPort(), getEffectiveChannelIp())), 1000);
         DataPrinter.send(DataPrinter.LOGIN, String.format("[IP: %s] [Tài khoản: %s] [Nhân vật: %s] đang rời khỏi cashshop %d.", getIP(), user.getName(), chr.getName(), getChannel()));
     }
 
@@ -244,7 +244,7 @@ public class Client extends NettyClient {
         user.saveToSQL(false);
         Channel channel = getChannelInstance();
         channel.addClientInTransfer(getChannel(), chr.getId(), this);
-        chr.getTimer().addEvent(() -> write(ClientSocket.auctionHouseOut((short) channel.getPort())), 1000);
+        chr.getTimer().addEvent(() -> write(ClientSocket.auctionHouseOut((short) channel.getPort(), getEffectiveChannelIp())), 1000);
         DataPrinter.send(DataPrinter.LOGIN, String.format("[IP: %s] [Tài khoản: %s] [Nhân vật: %s] đang rời khỏi auction house %d.", getIP(), user.getName(), chr.getName(), getChannel()));
     }
 

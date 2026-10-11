@@ -425,13 +425,17 @@ public class Login {
     }
 
     public static OutPacket selectCharacterResult(LoginType loginType, byte errorCode, int port, int characterId) {
+        return selectCharacterResult(loginType, errorCode, port, characterId, net.swordie.ms.ServerConstants.CHANNEL_IP);
+    }
+
+    public static OutPacket selectCharacterResult(LoginType loginType, byte errorCode, int port, int characterId, byte[] channelIp) {
         OutPacket outPacket = new OutPacket(OutHeader.SELECT_CHARACTER_RESULT);
 
         outPacket.encodeByte(loginType.getValue());
         outPacket.encodeString("唀㩔ㄭ]䐭ⵁ䍆䌭A");
         outPacket.encodeByte(errorCode);
         if (loginType == LoginType.Success) {
-            outPacket.encodeArr(net.swordie.ms.ServerConstants.CHANNEL_IP);
+            outPacket.encodeArr(channelIp != null ? channelIp : net.swordie.ms.ServerConstants.CHANNEL_IP);
             outPacket.encodeShort(port);
             outPacket.encodeInt(characterId);
             outPacket.encodeInt(1);

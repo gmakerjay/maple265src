@@ -619,7 +619,7 @@ public class LoginHandler {
         }
         channel.addClientInTransfer(channelId, characterId, c);
         c.setNextState(Client.IN_FIELD);
-        c.write(Login.selectCharacterResult(LoginType.Success, (byte) 0, channel.getPort(), characterId));
+        c.write(Login.selectCharacterResult(LoginType.Success, (byte) 0, channel.getPort(), characterId, c.getEffectiveChannelIp()));
     }
 
     @Handler(op = InHeader.CHAR_SELECT_NO_PIC)
@@ -645,7 +645,7 @@ public class LoginHandler {
         c.setAuthorized(true); // Since no pic
         oldClient.setChr(chr);
         c.setNextState(Client.IN_FIELD);
-        c.write(Login.selectCharacterResult(LoginType.Success, (byte) 0, channel.getPort(), characterId));
+        c.write(Login.selectCharacterResult(LoginType.Success, (byte) 0, channel.getPort(), characterId, c.getEffectiveChannelIp()));
         System.out.println(chr.getName() + " is logging in!");
     }
 
@@ -663,7 +663,7 @@ public class LoginHandler {
         if (c.isAuthorized() && c.getAccount().hasCharacter(characterId)) {
             channel.addClientInTransfer(channelId, characterId, c);
             c.setNextState(Client.IN_FIELD);
-            c.write(Login.selectCharacterResult(LoginType.Success, (byte) 0, channel.getPort(), characterId));
+            c.write(Login.selectCharacterResult(LoginType.Success, (byte) 0, channel.getPort(), characterId, c.getEffectiveChannelIp()));
             System.out.println(name + " is logging in!");
         }
     }
@@ -681,7 +681,7 @@ public class LoginHandler {
         if (c.isAuthorized() && c.getAccount().hasCharacter(characterId)) {
             channel.addClientInTransfer(channelId, characterId, c);
             c.setNextState(Client.IN_FIELD);
-            c.write(Login.selectCharacterResult(LoginType.Success, (byte) 0, channel.getPort(), characterId));
+            c.write(Login.selectCharacterResult(LoginType.Success, (byte) 0, channel.getPort(), characterId, c.getEffectiveChannelIp()));
         }
     }
 
@@ -840,7 +840,7 @@ public class LoginHandler {
                     if (c.isAuthorized() && c.getAccount().hasCharacter(charID)) {
                         channel.addClientInTransfer(channelId, charID, c);
                         c.setNextState(Client.IN_FIELD);
-                        c.write(Login.selectCharacterResult(LoginType.Success, (byte) 0, channel.getPort(), charID));
+                        c.write(Login.selectCharacterResult(LoginType.Success, (byte) 0, channel.getPort(), charID, c.getEffectiveChannelIp()));
                     }
                 }
             }

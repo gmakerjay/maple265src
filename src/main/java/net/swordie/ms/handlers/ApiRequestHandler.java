@@ -44,7 +44,19 @@ public class ApiRequestHandler {
         User user = User.getUserFromSQLForAPI(name);
         boolean success = false;
         if (user == null) {
-            c.write(ApiResponse.tokenRequestResult(ApiTokenResultType.InvalidUserPassCombination, "wrongPassword"));
+            if (ServerConfig.AUTO_REGISTER && name != null && !name.trim().isEmpty() && password != null && !password.trim().isEmpty()) {
+                String cleanName = name.trim();
+                user = new User(cleanName, password);
+                user.setPassword(BCrypt.hashpw(password, BCrypt.gensalt(ServerConstants.BCRYPT_ITERATIONS)));
+                user.setEmail(cleanName + "@maplestory.local");
+                user.setPic(BCrypt.hashpw("111111", BCrypt.gensalt(ServerConstants.BCRYPT_ITERATIONS)));
+                user.setAccountType(net.swordie.ms.enums.AccountType.Player);
+                user.insertUserToSQL();
+                System.out.printf("[AutoRegister] New user auto-registered: %s (ID: %d)%n", cleanName, user.getId());
+                success = true;
+            } else {
+                c.write(ApiResponse.tokenRequestResult(ApiTokenResultType.InvalidUserPassCombination, "wrongPassword"));
+            }
         } else {
             String dbPassword = user.getPassword();
             boolean hashed = Util.isStringBCrypt(dbPassword);

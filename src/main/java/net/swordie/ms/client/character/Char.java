@@ -6707,7 +6707,7 @@ public class Char {
         Channel channel = Server.get().getWorld().getChannelById(channelId);
         channel.addClientInTransfer(channelId, getId(), getClient());
         short port = (short) channel.getPort();
-        getTimer().addEvent(() -> write(ClientSocket.migrateCommand(true, port)), 1000);
+        getTimer().addEvent(() -> write(ClientSocket.migrateCommand(true, port, getClient() != null ? getClient().getEffectiveChannelIp() : net.swordie.ms.ServerConstants.CHANNEL_IP)), 1000);
         DataPrinter.send(DataPrinter.LOGIN, String.format("[IP: %s] [Tài khoản: %s] [Nhân vật: %s] đã chuyển sang kênh %d.", client.getIP(), user.getName(), getName(), channelId));
     }
 

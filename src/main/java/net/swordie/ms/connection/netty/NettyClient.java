@@ -101,4 +101,24 @@ public class NettyClient {
     public String getPort() {
         return ch.remoteAddress().toString().split(":")[1];
     }
+
+    public byte[] getEffectiveChannelIp() {
+        try {
+            String remoteIp = getIP();
+            if ("127.0.0.1".equals(remoteIp) || "localhost".equalsIgnoreCase(remoteIp)) {
+                return new byte[] {127, 0, 0, 1};
+            }
+            if (!net.swordie.ms.ServerConstants.LOCAL_HOST_SERVER && net.swordie.ms.ServerConstants.CHANNEL_IP != null) {
+                return net.swordie.ms.ServerConstants.CHANNEL_IP;
+            }
+            if (ch != null && ch.localAddress() instanceof java.net.InetSocketAddress) {
+                java.net.InetSocketAddress local = (java.net.InetSocketAddress) ch.localAddress();
+                byte[] addr = local.getAddress().getAddress();
+                if (addr != null && addr.length == 4 && !(addr[0] == 0 && addr[1] == 0 && addr[2] == 0 && addr[3] == 0)) {
+                    return addr;
+                }
+            }
+        } catch (Exception ignored) {}
+        return net.swordie.ms.ServerConstants.CHANNEL_IP;
+    }
 }

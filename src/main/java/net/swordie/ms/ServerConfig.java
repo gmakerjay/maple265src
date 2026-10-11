@@ -12,6 +12,8 @@ public class ServerConfig {
     public static boolean SQL_DEBUG = false;
     public static boolean ADMIN_LOGIN = false;
     public static boolean AUTO_EVENT = false;
+    // Auto-registration on first login (Zero-Install player onboarding)
+    public static boolean AUTO_REGISTER = true;
     // Offline/LAN: auto-complete boss prerequisite quests so every boss shows as enterable in the Boss UI.
     public static boolean BOSS_UNLOCK_PREQUESTS = true;
 
@@ -37,6 +39,7 @@ public class ServerConfig {
             SQL_DEBUG = Boolean.parseBoolean(props.getProperty("server.sqlDebug", String.valueOf(SQL_DEBUG)).trim());
             ADMIN_LOGIN = Boolean.parseBoolean(props.getProperty("server.adminLoginOnly", String.valueOf(ADMIN_LOGIN)).trim());
             AUTO_EVENT = Boolean.parseBoolean(props.getProperty("server.autoEvent", String.valueOf(AUTO_EVENT)).trim());
+            AUTO_REGISTER = Boolean.parseBoolean(props.getProperty("server.autoRegister", String.valueOf(AUTO_REGISTER)).trim());
             BOSS_UNLOCK_PREQUESTS = Boolean.parseBoolean(props.getProperty("server.bossUnlockPrequests", String.valueOf(BOSS_UNLOCK_PREQUESTS)).trim());
 
             EXP_RATE = Integer.parseInt(props.getProperty("server.expRate", String.valueOf(EXP_RATE)).trim());

@@ -18,10 +18,12 @@ echo   [4] Edit Server Rates & Settings (Adjust DropRate, ExpRate in notepad)
 echo   [5] Port Diagnostic & Change Port (Check and Auto-Fallback)
 echo   [6] Reset / Re-import Database (vietmaple from backup.sql)
 echo   [7] Open Client Patch Files Folder (Launcher and Localhost)
+echo   [8] Account Registration & Manager (สมัครไอดี / ดูไอดี / ตั้งสิทธิ์ GM)
+echo   [9] Configure Server IP (ตั้งค่า IP สำหรับ Localhost / Radmin / LAN)
 echo   [0] Exit
 echo.
 echo ==============================================================================
-set /p "CHOICE=Select an option (0-7): "
+set /p "CHOICE=Select an option (0-9): "
 
 if "!CHOICE!"=="1" goto :action_start
 if "!CHOICE!"=="2" goto :action_restart
@@ -30,6 +32,8 @@ if "!CHOICE!"=="4" goto :action_config
 if "!CHOICE!"=="5" goto :action_port
 if "!CHOICE!"=="6" goto :action_import
 if "!CHOICE!"=="7" goto :action_client
+if "!CHOICE!"=="8" goto :action_account
+if "!CHOICE!"=="9" goto :action_ip
 if "!CHOICE!"=="0" exit /b 0
 
 goto :menu
@@ -221,3 +225,67 @@ goto :menu
 :action_client
 explorer.exe "%~dp0Client_Patch_Files"
 goto :menu
+
+:action_account
+if exist "%~dp0Create_Account.bat" (
+    call "%~dp0Create_Account.bat"
+) else (
+    echo [!] Create_Account.bat not found!
+    pause
+)
+goto :menu
+
+:action_ip
+cls
+echo ==============================================================================
+echo                     Configure Server Network IP
+echo ==============================================================================
+echo.
+set "PROP_FILE=%~dp0server.properties"
+for /f "tokens=1,* delims==" %%a in ('findstr /i "^server.ip=" "!PROP_FILE!" 2^>nul') do set "CURR_SERVER_IP=%%b"
+echo Current Server IP: !CURR_SERVER_IP!
+echo.
+echo Presets:
+echo   [1] Localhost (127.0.0.1) - สำหรับเล่นคนเดียวในเครื่อง
+echo   [2] Detect Network IPs (ค้นหา IP จาก Radmin / LAN อัตโนมัติ)
+echo   [3] Enter Custom IP (พิมพ์ IP เอง)
+echo   [0] Back to Menu
+echo.
+set /p "IP_CHOICE=Choose (0-3): "
+if "!IP_CHOICE!"=="1" (
+    set "NEW_IP=127.0.0.1"
+    goto :save_ip
+)
+if "!IP_CHOICE!"=="2" (
+    echo.
+    echo Detected IPv4 Addresses on this machine:
+    ipconfig | findstr /i "IPv4"
+    echo.
+    set /p "NEW_IP=Enter the IP you wish to use: "
+    if "!NEW_IP!"=="" goto :menu
+    goto :save_ip
+)
+if "!IP_CHOICE!"=="3" (
+    echo.
+    set /p "NEW_IP=Enter Custom IP: "
+    if "!NEW_IP!"=="" goto :menu
+    goto :save_ip
+)
+goto :menu
+
+:save_ip
+powershell -NoProfile -Command "
+    $path = '!PROP_FILE!'
+    $lines = Get-Content $path
+    $lines = $lines | ForEach-Object {
+        if ($_ -match '^\s*server\.ip\s*=') { 'server.ip=!NEW_IP!' }
+        else { $_ }
+    }
+    [System.IO.File]::WriteAllLines($path, $lines)
+"
+echo.
+echo [OK] server.properties updated: server.ip=!NEW_IP!
+echo Remember to restart server if it is currently running.
+pause
+goto :menu
+
