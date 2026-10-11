@@ -314,8 +314,8 @@ public class Kain extends Job {
     @Override
     public void addItemToNewCharacter(Char chr) {
         super.addItemToNewCharacter(chr);
-        // Secondary Weapon: Basic Weapon Belt (1354020)
-        Item secondary = ItemData.getItemDeepCopy(1354020);
+        // Secondary Weapon: Basic Weapon Belt (1354010)
+        Item secondary = ItemData.getItemDeepCopy(1354010);
         if (secondary != null) {
             chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
             secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
@@ -446,6 +446,12 @@ public class Kain extends Job {
                     opt1.tOption = 10; // 10s Absolute Freeze / Bind
                     opt1.cOption = chr.getId();
                     mts.addStatOptions(targetMob, MobStat.Freeze, opt1);
+                    Option opt2 = new Option();
+                    opt2.nOption = 1;
+                    opt2.rOption = skillID;
+                    opt2.tOption = 20; // 20s Origin Debuff
+                    opt2.cOption = chr.getId();
+                    mts.addStatOptions(targetMob, MobStat.OriginDebuff, opt2);
                 }
                 if (chr.getParty() != null) {
                     for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {

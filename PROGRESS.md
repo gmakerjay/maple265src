@@ -538,4 +538,32 @@ Comprehensive asset and source code audit across all 35 official boss orders and
    - Updated bilingual installation instructions `วิธีลงแพทช์_DRAG_AND_DROP.txt`.
    - Strictly preserved database data, accounts, and characters (excluded `mariadb/`, `jdk21/`, and `*.wz`).
 
+## 📅 [2026-10-11] Kain & Lara Comprehensive Class Architecture & Skill Audit
+### 🎯 Scope
+Audit class architecture, job advancement (1st - 4th Job), V-Matrix (5th Job), and HEXA Matrix (6th Job) for Nova Bowman **Kain** (`6003`, `6300` - `6312`) and Anima Magician **Lara** (`16001`, `16200` - `16212`). Zero-guessing cross-reference against `Skill.wz` (`Skill_00002/16200.xml` through `16214.xml`, `Skill_00007/6300.xml` through `6314.xml`), `Etc.wz/HexaCore.img.xml`, `String.wz/Skill.img.xml`, and `String.wz/Eqp.img.xml`.
+
+### 📂 Files Modified
+- [`v214 src/.../nova/Kain.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/nova/Kain.java)
+- [`v214 src/.../anima/Lara.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/anima/Lara.java)
+- [`v214 src/.../jobs/Job.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/Job.java)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **Cross-Class Secondary Weapon Swap Bug**:
+   - In `Kain.java:318`: `addItemToNewCharacter` incorrectly created item `1354020` (Simple Four-Jade Ornament - Lara's secondary).
+   - In `Lara.java:216`: `addItemToNewCharacter` incorrectly created item `1354010` (D Basic Weapon Belt - Kain's secondary).
+   - **Root Cause**: Item IDs were swapped during initial class stubbing.
+   - **Fix**: Reassigned `1354010` (`D Basic Weapon Belt`) to Kain and `1354020` (`Simple Four-Jade Ornament`) to Lara.
+2. **Missing & Broken Secondary Equipment on Job Advancement (`Job.ensureSecondaryWeapon`)**:
+   - `Lara` was configured with non-existent ID `1353904`. Updated to official 4th Job `1354023` (`Radiant Four-Jade Ornament`).
+   - `Kain` was completely omitted from `ensureSecondaryWeapon`. Added `1354013` (`D100 Custom Weapon Belt`).
+3. **Kain Origin Skill Debuff Parity**:
+   - Added `MobStat.OriginDebuff` (20s) to `CHURNING_MALICE` (`63141506`) matching Lara's `UNIVERSE_IN_BLOOM` and all other v265 6th job classes.
+4. **V-Matrix & HEXA Matrix Verification (100% WZ Match)**:
+   - **Kain V-Skills**: `Dragon Burst` (`400031061`), `Fatal Blitz` (`400031065`), `Thanatos Descent` (`400031062`), `Grip of Agony` (`400031066`) validated in `40003.xml` and `MatrixConstants`.
+   - **Lara V-Skills**: `Big Stretch` (`400021122`), `Land's Connection` (`400021123`), `Surging Essence` (`400021129`), `Winding Mountain Ridge` (`400021130`) validated in `40002.xml` and `MatrixConstants`.
+   - **HEXA Matrix**: Verified all 11 Mastery & Skill cores in `Etc.wz/HexaCore.img.xml` for Job `6312` and Job `16212`:
+     - Kain: Skill Cores `10000035`, `10000087` (Total Annihilation, Churning Malice); Mastery Cores `20000035`, `20000085`, `20000135`, `20000181` (Falling Dust VI, Strike Arrow VI, Dragon Fang VI, Death Blessing VI).
+     - Lara: Skill Cores `10000044`, `10000097` (Universe in Bloom, Cornucopia); Mastery Cores `20000044`, `20000094`, `20000144`, `20000190` (Essence Sprinkle VI, Dragon Vein Eruption VI, Dragon Vein Absorption VI, Wakeup Call VI).
+
+
 

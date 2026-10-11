@@ -207,13 +207,14 @@ public class Lara extends Job {
         cs.setMp(800);
         cs.setMaxMp(800);
         cs.getExtendSP().addSpToJobLevel(1, 5);
+        chr.addSpToSpecificJob((short) JobConstants.JobEnum.LARA_1.getJobId(), 5);
     }
 
     @Override
     public void addItemToNewCharacter(Char chr) {
         super.addItemToNewCharacter(chr);
-        // Secondary Weapon: Ornamental Knot (1354010)
-        Item secondary = ItemData.getItemDeepCopy(1354010);
+        // Secondary Weapon: Simple Four-Jade Ornament (1354020)
+        Item secondary = ItemData.getItemDeepCopy(1354020);
         if (secondary != null) {
             chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
             secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());

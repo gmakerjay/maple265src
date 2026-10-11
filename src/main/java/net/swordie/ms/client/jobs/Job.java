@@ -3056,8 +3056,10 @@ public abstract class Job {
             secondaryId = 1354034; // Chakram
         } else if (JobConstants.isHoYoung(job)) {
             secondaryId = 1353704; // Fan Tassel
+        } else if (JobConstants.isKain(job)) {
+            secondaryId = 1354013; // D100 Custom Weapon Belt (4th Job)
         } else if (JobConstants.isLara(job)) {
-            secondaryId = 1353904; // Ornamental Knot
+            secondaryId = 1354023; // Radiant Four-Jade Ornament (4th Job)
         } else if (JobConstants.isCadena(job)) {
             secondaryId = 1353303; // Transmitter
         } else if (JobConstants.isKinesis(job)) {
