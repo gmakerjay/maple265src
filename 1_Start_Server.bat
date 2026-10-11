@@ -31,52 +31,30 @@ if exist "%~dp0server.properties" (
 
 echo [*] Database target port: %DB_PORT% (Far port to prevent collision with system MySQL 3306)
 
-REM ===== 0.1 Check & Port Collision Diagnostic =====
-set "PORT_CONFLICT=0"
-netstat -ano | findstr ":%DB_PORT%" | findstr "LISTENING" >nul 2>&1
-if %ERRORLEVEL% EQU 0 (
+REM ===== 0.1 Check MariaDB Engine Status =====
+set "DB_ACTIVE=0"
+netstat -ano | findstr ":%DB_PORT% " | findstr "LISTENING" >nul 2>&1
+if !ERRORLEVEL! EQU 0 (
     if exist "%~dp0mariadb\bin\mysqladmin.exe" (
         "%~dp0mariadb\bin\mysqladmin.exe" -u root -proot -P %DB_PORT% ping >nul 2>&1
-        if !ERRORLEVEL! EQU 0 (
-            echo [v] Portable MariaDB is already active and responsive on port %DB_PORT%.
-            goto :db_ready_skip_start
-        ) else (
-            set "PORT_CONFLICT=1"
+        if !ERRORLEVEL! EQU 0 set "DB_ACTIVE=1"
+        if "!DB_ACTIVE!"=="0" (
+            "%~dp0mariadb\bin\mysqladmin.exe" -u root -P %DB_PORT% ping >nul 2>&1
+            if !ERRORLEVEL! EQU 0 set "DB_ACTIVE=1"
         )
-    ) else (
-        set "PORT_CONFLICT=1"
     )
+    if "!DB_ACTIVE!"=="1" goto :db_already_active
+    echo [!] WARNING: Port %DB_PORT% is occupied by another process!
 )
+goto :db_start_check
 
-if "!PORT_CONFLICT!"=="1" (
-    echo [!] WARNING: Port %DB_PORT% is occupied by an external application or process!
-    echo [*] Checking backup port %DB_BACKUP_PORT%...
-    netstat -ano | findstr ":%DB_BACKUP_PORT%" | findstr "LISTENING" >nul 2>&1
-    if !ERRORLEVEL! EQU 0 (
-        echo [!] Backup port %DB_BACKUP_PORT% is also occupied.
-        echo [*] Auto-scanning for an available high-range port...
-        set "FOUND_FREE=0"
-        for /L %%P in (33080,1,33099) do (
-            if "!FOUND_FREE!"=="0" (
-                netstat -ano | findstr ":%%P" | findstr "LISTENING" >nul 2>&1
-                if !ERRORLEVEL! NEQ 0 (
-                    set "DB_PORT=%%P"
-                    set "FOUND_FREE=1"
-                    echo [v] Found free alternative port: !DB_PORT!
-                )
-            )
-        )
-    ) else (
-        set "DB_PORT=%DB_BACKUP_PORT%"
-        echo [v] Automatically switched to backup port: %DB_PORT%
-    )
-    
-    REM Auto-sync updated port into server.properties
-    if exist "%~dp0server.properties" (
-        powershell -NoProfile -Command "$f = '%~dp0server.properties'; if (Test-Path $f) { $c = Get-Content $f -Raw; $c = $c -replace '(?m)^db\.port=.*', 'db.port=!DB_PORT!'; $c = $c -replace '(?m)^db\.url=.*', 'db.url=jdbc:mariadb://127.0.0.1:!DB_PORT!/vietmaple?allowMultiQueries=true&useSSL=false&serverTimezone=Asia/Bangkok'; [IO.File]::WriteAllText($f, $c) }"
-        echo [v] Synchronized fallback port into server.properties: %DB_PORT%
-    )
+:db_already_active
+for /f "tokens=5" %%P in ('netstat -ano ^| findstr ":%DB_PORT% " ^| findstr "LISTENING"') do (
+    echo [v] Portable MariaDB is already active and responsive on port %DB_PORT% [PID: %%P]
 )
+goto :db_ready_skip_start
+
+:db_start_check
 
 if not exist "%~dp0mariadb\bin\mysqld.exe" (
     echo [!] Portable MariaDB not found at %~dp0mariadb\bin\mysqld.exe
@@ -84,7 +62,7 @@ if not exist "%~dp0mariadb\bin\mysqld.exe" (
     goto :db_check_done
 )
 
-REM 0.2 Sync my.ini dynamically to current path & port
+REM 0.2 Update my.ini dynamically to current path & port with high stability settings
 if exist "%~dp0mariadb\data\my.ini" del /f /q "%~dp0mariadb\data\my.ini" >nul 2>&1
 set "SAFE_MARIADB=%~dp0mariadb"
 set "SAFE_MARIADB=!SAFE_MARIADB:\=/!"
@@ -105,6 +83,12 @@ set "SAFE_DATA=!SAFE_DATA:\=/!"
     echo collation-server=utf8mb4_unicode_ci
     echo default-storage-engine=InnoDB
     echo max_allowed_packet=1024M
+    echo max_connections=500
+    echo connect_timeout=60
+    echo wait_timeout=28800
+    echo interactive_timeout=28800
+    echo net_read_timeout=120
+    echo net_write_timeout=120
     echo innodb_buffer_pool_size=256M
     echo innodb_log_file_size=64M
     echo sql_mode=NO_ENGINE_SUBSTITUTION
@@ -121,7 +105,7 @@ if not exist "%~dp0mariadb\data\mysql" (
 )
 
 echo [*] Starting Portable MariaDB Engine on port %DB_PORT% (Auto-Save to mariadb\data\)...
-start "Portable MariaDB [SERVERGAMEOFFLINE]" /min /D "%~dp0mariadb" "%~dp0mariadb\bin\mysqld.exe" --defaults-file="%~dp0mariadb\my.ini" --basedir="%~dp0mariadb" --datadir="%~dp0mariadb\data" --console
+start "Portable MariaDB [%DB_PORT%]" /min /D "%~dp0mariadb" "%~dp0mariadb\bin\mysqld.exe" --defaults-file="%~dp0mariadb\my.ini" --basedir="%~dp0mariadb" --datadir="%~dp0mariadb\data" --console
 echo [*] Waiting for MariaDB to initialize on port %DB_PORT%...
 set "DB_READY=0"
 for /L %%i in (1,1,30) do (
@@ -134,7 +118,7 @@ for /L %%i in (1,1,30) do (
                 echo [v] Portable MariaDB is ready and responsive on port %DB_PORT%!
             )
         ) else (
-            netstat -ano | findstr ":%DB_PORT%" | findstr "LISTENING" >nul 2>&1
+            netstat -ano | findstr ":%DB_PORT% " | findstr "LISTENING" >nul 2>&1
             if !ERRORLEVEL! EQU 0 (
                 set "DB_READY=1"
                 echo [v] Portable MariaDB is ready and listening on port %DB_PORT%!
