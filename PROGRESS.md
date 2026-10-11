@@ -532,4 +532,10 @@ Comprehensive asset and source code audit across all 35 official boss orders and
    - Synchronized updated `maplestory.jar` (138MB), `server.properties`, and `data/scripts/` to `MapleStory_Server_Runner_Ready/Server263/`.
    - Updated patch package `MapleStory_Server_Runner_Ready/Patches/Server263_Patch_Latest/`.
    - Started MariaDB engine on port 33066 and launched MapleStory Server (Login: 8484, Channels 1-10: 8585-8594).
+8. **Patch Distribution Package Generated (`Server263_Patch_Latest`)**:
+   - Assembled clean uncompressed drop-in patch in `MapleStory_Server_Runner_Ready/Patches/Server263_Patch_Latest/`.
+   - Generated 1-click installer `Apply_Patch.bat` for instant update onto `Server263/`.
+   - Updated bilingual installation instructions `วิธีลงแพทช์_DRAG_AND_DROP.txt`.
+   - Strictly preserved database data, accounts, and characters (excluded `mariadb/`, `jdk21/`, and `*.wz`).
+
 
