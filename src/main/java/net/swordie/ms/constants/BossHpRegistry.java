@@ -15,9 +15,15 @@ public class BossHpRegistry {
 
     static {
         // --- Zakum ---
-        register(8800022, 2_200_000L, "Easy Zakum Body");
-        register(8800002, 7_000_000L, "Normal Zakum Body");
-        register(8800102, 84_000_000_000L, "Chaos Zakum Body"); // 84B
+        register(8800020, 2_200_000L, "Easy Zakum Body 1");
+        register(8800021, 2_200_000L, "Easy Zakum Body 2");
+        register(8800022, 2_200_000L, "Easy Zakum Body 3");
+        register(8800000, 7_000_000L, "Normal Zakum Body 1");
+        register(8800001, 7_000_000L, "Normal Zakum Body 2");
+        register(8800002, 7_000_000L, "Normal Zakum Body 3");
+        register(8800100, 84_000_000_000L, "Chaos Zakum Body 1");
+        register(8800101, 84_000_000_000L, "Chaos Zakum Body 2");
+        register(8800102, 84_000_000_000L, "Chaos Zakum Body 3"); // 84B
         for (int id = 8800023; id <= 8800030; id++) register(id, 480_000L, "Easy Zakum Arm");
         for (int id = 8800003; id <= 8800010; id++) register(id, 5_600_000L, "Normal Zakum Arm");
         for (int id = 8800103; id <= 8800110; id++) register(id, 10_500_000_000L, "Chaos Zakum Arm");
@@ -95,15 +101,10 @@ public class BossHpRegistry {
         register(8950100, 400_000_000_000L, "Normal Lotus Phase 1");
         register(8950101, 400_000_000_000L, "Normal Lotus Phase 2");
         register(8950102, 710_000_000_000L, "Normal Lotus Phase 3");
-        register(8880110, 400_000_000_000L, "Normal Lotus Core P1");
-        register(8880111, 400_000_000_000L, "Normal Lotus Body P2");
 
         register(8950000, 1_700_000_000_000L, "Hard Lotus Phase 1"); // 1.7T
         register(8950001, 7_000_000_000_000L, "Hard Lotus Phase 2"); // 7.0T
         register(8950002, 24_000_000_000_000L, "Hard Lotus Phase 3"); // 24T
-        register(8880100, 1_700_000_000_000L, "Hard Lotus Core P1");
-        register(8880101, 7_000_000_000_000L, "Hard Lotus Body P2");
-        register(8880153, 24_000_000_000_000L, "Hard Lotus Body P3");
 
         register(8881300, 60_000_000_000_000L, "Extreme Lotus Phase 1");
         register(8881301, 120_000_000_000_000L, "Extreme Lotus Phase 2");
@@ -204,8 +205,11 @@ public class BossHpRegistry {
         // --- Limbo & Baldrix & First Adversary ---
         register(8881304, 200_000_000_000_000L, "Normal Limbo"); // 200T
         register(8881354, 450_000_000_000_000L, "Hard Limbo"); // 450T
-        register(8881800, 300_000_000_000_000L, "Normal First Adversary"); // 300T
-        register(8881820, 700_000_000_000_000L, "Extreme First Adversary"); // 700T
+        register(8881710, 120_000_000_000_000L, "Easy First Adversary"); // 120T
+        register(8881740, 250_000_000_000_000L, "Normal First Adversary"); // 250T
+        register(8881770, 500_000_000_000_000L, "Hard First Adversary"); // 500T
+        register(8881800, 1_000_000_000_000_000L, "Extreme First Adversary P1"); // 1,000T
+        register(8881820, 700_000_000_000_000L, "Extreme First Adversary P2"); // 700T
         register(8881600, 300_000_000_000_000L, "Normal Baldrix"); // 300T
         register(8881650, 600_000_000_000_000L, "Hard Baldrix"); // 600T
 

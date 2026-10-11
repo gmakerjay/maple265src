@@ -1,6 +1,6 @@
 @echo off
 setlocal EnableDelayedExpansion
-title MapleStory v265 Client Configuration & Quick Launcher
+title MapleStory v265 Client Configuration - Quick Launcher
 color 0B
 
 cd /d "%~dp0"
@@ -29,9 +29,9 @@ echo   - Server IP   : !CURR_IP!
 echo   - Username    : !CURR_USER!
 echo.
 echo ================================================================
-echo   [1] Change Server IP (เปลี่ยนไอพี เช่น Radmin VPN / LAN / 127.0.0.1)
-echo   [2] Change Account (เปลี่ยนชื่อไอดีและรหัสผ่านเข้าเกม)
-echo   [3] Launch Game (เริ่มเล่นเกม)
+echo   [1] Change Server IP (Localhost / Radmin VPN / LAN)
+echo   [2] Change Account   (Username and Password)
+echo   [3] Launch Game      (Run Game / Play)
 echo   [0] Exit
 echo ================================================================
 echo.
@@ -52,22 +52,14 @@ echo.
 echo Current IP: !CURR_IP!
 echo.
 echo Examples:
-echo   - Localhost (เล่นคนเดียวในเครื่อง): 127.0.0.1
-echo   - Radmin VPN (เล่นกับเพื่อนผ่าน Radmin): 26.x.x.x
-echo   - LAN (เครื่องในบ้านเดียวกัน): 192.168.1.x
+echo   - 127.0.0.1  : Single Player / Host Machine (Localhost)
+echo   - 26.x.x.x   : Play with Friends via Radmin VPN
+echo   - 192.168.x.x: Play with Friends / Family on Home LAN
 echo.
 set /p "NEW_IP=Enter New Server IP: "
 if "!NEW_IP!"=="" goto :menu
 
-powershell -NoProfile -Command "
-    $path = '!INI_FILE!'
-    $lines = Get-Content $path
-    $lines = $lines | ForEach-Object {
-        if ($_ -match '^\s*IP\s*=') { 'IP=!NEW_IP!' }
-        else { $_ }
-    }
-    [System.IO.File]::WriteAllLines($path, $lines)
-"
+powershell -NoProfile -Command "$path = '!INI_FILE!'; $lines = Get-Content $path; $lines = $lines | ForEach-Object { if ($_ -match '^\s*IP\s*=') { 'IP=!NEW_IP!' } else { $_ } }; [System.IO.File]::WriteAllLines($path, $lines)"
 echo.
 echo [OK] Server IP updated to: !NEW_IP!
 pause
@@ -81,8 +73,8 @@ echo ================================================================
 echo.
 echo Current Username: !CURR_USER!
 echo.
-echo Note: If the server has Auto-Register enabled, entering a new
-echo username and password will automatically register your new account!
+echo Note: If Auto-Register is enabled on the server, entering a new
+echo username and password will automatically create your new account!
 echo.
 set /p "NEW_USER=Enter New Username: "
 if "!NEW_USER!"=="" goto :menu
@@ -90,16 +82,7 @@ if "!NEW_USER!"=="" goto :menu
 set /p "NEW_PASS=Enter New Password: "
 if "!NEW_PASS!"=="" goto :menu
 
-powershell -NoProfile -Command "
-    $path = '!INI_FILE!'
-    $lines = Get-Content $path
-    $lines = $lines | ForEach-Object {
-        if ($_ -match '^\s*Username\s*=') { 'Username=!NEW_USER!' }
-        elseif ($_ -match '^\s*Password\s*=') { 'Password=!NEW_PASS!' }
-        else { $_ }
-    }
-    [System.IO.File]::WriteAllLines($path, $lines)
-"
+powershell -NoProfile -Command "$path = '!INI_FILE!'; $lines = Get-Content $path; $lines = $lines | ForEach-Object { if ($_ -match '^\s*Username\s*=') { 'Username=!NEW_USER!' } elseif ($_ -match '^\s*Password\s*=') { 'Password=!NEW_PASS!' } else { $_ } }; [System.IO.File]::WriteAllLines($path, $lines)"
 echo.
 echo [OK] Account credentials updated to: !NEW_USER!
 pause

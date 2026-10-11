@@ -1,44 +1,84 @@
 ==============================================================================
                     SERVERGAMEOFFLINE-FACEBOOK PAGE
-               MapleStory v265 / v263 Zero-Install Server
+         MapleStory v265 / v263 Zero-Install & 100% Portable Server
 ==============================================================================
 
-[1] HOW TO START THE SERVER:
-    - Double-click '1_Start_Server.bat'
-    - It automatically starts Portable MariaDB (Port 33066) and launches the server.
-    - Wait until the console shows:
+[!] 100% ZERO-INSTALL / FULLY PORTABLE:
+    - ไม่ต้องติดตั้ง MySQL หรือ MariaDB ลงใน Windows
+    - ไม่ต้องติดตั้ง Java หรือ JDK ลงใน Windows
+    - แตกไฟล์ไว้ที่ไหนก็ได้ (Drive C:, D:, E:, หรือ Flash Drive) ดับเบิ้ลคลิกรันได้ทันที
+    - ข้อมูลตัวละคร, ไอดี, เซฟเกมทั้งหมดจะถูกบันทึกอัตโนมัติไว้ในโฟลเดอร์:
+      mariadb\data\
+
+==============================================================================
+[1] วิธีเปิดเซิร์ฟเวอร์ (START SERVER):
+==============================================================================
+    - ดับเบิ้ลคลิก: 1_Start_Server.bat
+    - ระบบจะเปิด Portable MariaDB (Port 33066) และเปิดเซิร์ฟเวอร์ MapleStory ให้อัตโนมัติ
+    - รอจนหน้าต่างเซิร์ฟเวอร์แสดงข้อความ:
       "MapleStory V265 Server is online and ready for connections!"
 
-[2] HOW TO STOP THE SERVER:
-    - Double-click '3_Stop_Server.bat'
-    - This will safely flush database changes and stop all server channels.
+==============================================================================
+[2] วิธีปิดเซิร์ฟเวอร์อย่างปลอดภัย (STOP SERVER):
+==============================================================================
+    - ดับเบิ้ลคลิก: 3_Stop_Server.bat
+    - ระบบจะสั่ง Save ข้อมูลตัวละครทั้งหมด และ Flush ลงฐานข้อมูล MariaDB ก่อนปิดอย่างปลอดภัย
 
-[3] HOW TO ADJUST DROP RATE & EXP RATES:
-    - Open 'server.properties' in Notepad (or use Option [4] in 4_Server_Control_Panel.bat).
-    - Find the line:
-        server.dropRate=20
-      Change '20' to your desired multiplier (e.g., 50 for 50x drop, 100 for 100x drop).
-    - Other rates you can adjust:
-        server.expRate=100          (Base EXP multiplier)
-        server.expRateBelow100=100  (EXP for Level < 100)
-        server.expRate101to210=500  (EXP for Level 101-210)
-        server.mesoRate=100         (Meso drop multiplier)
-    - Save the file and restart the server!
+==============================================================================
+[3] เมนูควบคุมเซิร์ฟเวอร์แบบรวม (CONTROL PANEL):
+==============================================================================
+    - ดับเบิ้ลคลิก: 4_Server_Control_Panel.bat
+    - มีเมนูควบคุมครบวงจร:
+      [1] Start Server
+      [2] Restart Server
+      [3] Stop Server
+      [4] Start ONLY MariaDB (เปิดเฉพาะฐานข้อมูล)
+      [5] Stop ONLY MariaDB (ปิดเฉพาะฐานข้อมูล)
+      [6] Open MariaDB Console (เปิดหน้าต่างพิมพ์คำสั่ง SQL ทันที)
+      [7] Backup Database (สำรองฐานข้อมูลออกมาเป็นไฟล์ .sql อัตโนมัติ)
+      [8] Reset / Re-import Database (ล้างข้อมูลและนำเข้าฐานข้อมูลเริ่มต้น)
+      [9] Account Registration & Manager (สมัครไอดี / ดูรายชื่อ / ให้สิทธิ์ GM / เสกของ)
+      [10] Configure Server IP (ตั้งค่า IP สำหรับเล่นคนเดียว หรือเล่นผ่าน Radmin VPN / วง LAN)
+      [11] Edit Server Rates (ปรับ EXP, Drop, Meso ใน Notepad)
+      [12] Port Diagnostic (ตรวจสอบพอร์ตชนและสลับพอร์ตสำรองอัตโนมัติ)
+      [13] Open Client Patch Files (เปิดโฟลเดอร์ไฟล์สำหรับเครื่องผู้เล่น/ลูกข่าย)
 
-[4] IN-GAME GM COMMANDS:
-    - In game chat, type:
-        !adminnpc   - Opens the All-in-One Admin NPC Menu (Level, Mesos, Items, Buffs)
-        !admin      - Alias for Admin NPC Menu
-        !item <id>  - Gives item directly to your inventory
-        !drop <id>  - Spawns item on the ground
-        !meso <amount> - Gives meso
-        !level <lvl>   - Sets character level
-        !heal       - Fully restores HP and MP
-        !job <id>   - Changes character job
-        !warp <map> - Teleports to specified map ID
+==============================================================================
+[4] ระบบสมัครไอดี & สิทธิ์ GM (ACCOUNT SYSTEM):
+==============================================================================
+    - วิธีที่ 1 (Auto-Register):
+      เมื่อเปิดเซิร์ฟเวอร์แล้ว ให้เปิดเกมและพิมพ์ Username กับ Password ที่ต้องการได้เลย
+      ระบบจะทำการบันทึกและสมัครไอดีให้อัตโนมัติในครั้งแรกทันที!
+    - วิธีที่ 2 (Create_Account.bat):
+      ดับเบิ้ลคลิก Create_Account.bat สามารถสมัครไอดีใหม่, ตั้งสิทธิ์ GM/Admin (เพื่อเสกของ),
+      ดูรายชื่อไอดีทั้งหมดในเครื่อง และรีเซ็ตรหัสผ่านได้ในที่เดียว
 
-[5] HOW TO CONNECT GAME CLIENT:
-    - Copy all files from 'Client_Patch_Files' into your MapleStory v265 game folder.
-    - Run 'Run_Game.bat' (or Launcher.exe) inside your game folder.
+==============================================================================
+[5] การเล่นผ่าน Radmin VPN / วง LAN / อินเทอร์เน็ตเดียวกัน:
+==============================================================================
+    - เซิร์ฟเวอร์รองรับการเล่นพร้อมกัน:
+      * เครื่องโฮสต์เล่นผ่าน 127.0.0.1 ได้ตลอดเวลา
+      * เพื่อนในวง LAN หรือ Radmin VPN เชื่อมต่อผ่าน IP วงแลนเข้ามาเล่นพร้อมกันได้ทันที
+    - การตั้งค่า IP ฝั่งเครื่องโฮสต์ (คนเปิดเซิร์ฟเวอร์):
+      * เข้า 4_Server_Control_Panel.bat เลือกเมนู [10]
+      * หรือแก้ไขใน server.properties บรรทัด `server.ip=IP_เครื่องคุณ`
+    - การตั้งค่า IP ฝั่งเพื่อน (เครื่องลูกข่าย):
+      * ส่งโฟลเดอร์ Client_Patch_Files ให้เพื่อนนำไปวางทับในตัวเกม MapleStory
+      * เพื่อนดับเบิ้ลคลิก Change_IP_or_Account.bat แล้วกรอก IP ของเครื่องโฮสต์ จากนั้นเข้าเล่นได้ทันที!
 
+==============================================================================
+[6] ข้อมูลการเชื่อมต่อฐานข้อมูล PORTABLE MARIADB:
+==============================================================================
+    - Host:      127.0.0.1
+    - Port:      33066
+    - Username:  root
+    - Password:  root
+    - Database:  vietmaple
+    - ใช้โปรแกรมภายนอก เช่น Navicat, HeidiSQL, DBeaver เชื่อมต่อได้ทันที
+
+==============================================================================
+[7] วิธีเชื่อมต่อเกม (CLIENT SETUP):
+==============================================================================
+    - ก๊อปปี้ไฟล์ทั้งหมดในโฟลเดอร์ Client_Patch_Files\ ไปวางทับในตัวเกม MapleStory v265
+    - รันเกมผ่าน Run_Game.bat หรือ Launcher.exe ในโฟลเดอร์ตัวเกม
 ==============================================================================

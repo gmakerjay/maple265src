@@ -5902,7 +5902,7 @@ public class ScriptManagerImpl implements ScriptManager {
 
     public void exitBoss() {
         setSpeakerID(9010000);
-        if (sendAskYesNo("Bạn có muốn rút lui khỏi trận đấu này không?")) {
+        if (sendAskYesNo("Do you want to retreat from this battle? (คุณต้องการออกจากสนามรบนี้หรือไม่?)")) {
             var mapR = getQRValueByKey(102401, "mapR");
             if (mapR != null) {
                 warpInstanceOut(chr, Integer.parseInt(mapR));

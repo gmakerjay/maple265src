@@ -119,29 +119,31 @@ public class BossHelper {
             }
         }
         // Will
-        if (mobID == 8880300 || mobID == 8880301 || mobID == 8880303 || mobID == 8880304) { // Hard
+        if (mobID == 8880300 || mobID == 8880340) { // Will Phase 1 (Hard / Normal)
             field.removeMobs();
+            int currentFieldId = field.getId();
+            int nextFieldId = currentFieldId + 50;
             if (party != null) {
-                for (Char x : party.getPartyMembersInSameFieldWithChr(chr)) {
-                    x.warp(field.getId() + 50);
-                }
+                sm.warpParty(nextFieldId, party);
             } else {
-                chr.warp(field.getId() + 50);
+                chr.warp(nextFieldId);
             }
-        } else if (mobID == 8880340 || mobID == 8880341 || mobID == 8880343 || mobID == 8880344) { // Normal
+        } else if (mobID == 8880301 || mobID == 8880341) { // Will Phase 2 (Hard / Normal)
             field.removeMobs();
+            int currentFieldId = field.getId();
+            int nextFieldId = currentFieldId + 50;
             if (party != null) {
-                for (Char x : party.getPartyMembersInSameFieldWithChr(chr)) {
-                    x.warp(field.getId() + 50);
-                }
+                sm.warpParty(nextFieldId, party);
             } else {
-                chr.warp(field.getId() + 50);
+                chr.warp(nextFieldId);
             }
-        } else if (mobID == 8880302 || mobID == 8880342) {
+        } else if (mobID == 8880302 || mobID == 8880342) { // Will Phase 3 (Hard / Normal)
             field.removeMobs();
             for (SpiderWeb spiderWeb : field.getSpiderWebs()) {
                 field.removeLife(spiderWeb);
             }
+            sm.showFieldEffect("Map/Effect.img/killing/clear");
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
         }
         // Lucid
         if (mobID == 8880140 || mobID == 8880141 || mobID == 8880151 || mobID == 8880153 || mobID == 8880155) {
@@ -250,19 +252,35 @@ public class BossHelper {
                         m.removeWithAnimation();
                     }
                 }
+                int nextFieldID = fieldID + 100;
+                Lotus.LotusMode nextMode = (fieldID == 350060400) ? Lotus.LotusMode.HARD : Lotus.LotusMode.NORMAL;
                 if (party != null) {
-                    chr.getTimer().addEvent(() -> sm.warpParty(fieldID + 100, party), 7360);
+                    chr.getTimer().addEvent(() -> {
+                        sm.warpParty(nextFieldID, party);
+                        Lotus.spawn(chr, Lotus.LotusPhase.SECOND, nextMode);
+                    }, 7360);
                 } else {
-                    chr.getTimer().addEvent(() -> chr.warp(fieldID + 100), 5100);
+                    chr.getTimer().addEvent(() -> {
+                        chr.warp(nextFieldID);
+                        Lotus.spawn(chr, Lotus.LotusPhase.SECOND, nextMode);
+                    }, 5100);
                 }
             }
         } else if (mobID == 8950001 || mobID == 8950101) {
             int fieldID = field.getId();
             if (fieldID == 350060800 || fieldID == 350060500) {
+                int nextFieldID = fieldID + 100;
+                Lotus.LotusMode nextMode = (fieldID == 350060500) ? Lotus.LotusMode.HARD : Lotus.LotusMode.NORMAL;
                 if (party != null) {
-                    chr.getTimer().addEvent(() -> sm.warpParty(fieldID + 100, party), 5100);
+                    chr.getTimer().addEvent(() -> {
+                        sm.warpParty(nextFieldID, party);
+                        Lotus.spawn(chr, Lotus.LotusPhase.LAST, nextMode);
+                    }, 5100);
                 } else {
-                    chr.getTimer().addEvent(() -> chr.warp(fieldID + 100), 5100);
+                    chr.getTimer().addEvent(() -> {
+                        chr.warp(nextFieldID);
+                        Lotus.spawn(chr, Lotus.LotusPhase.LAST, nextMode);
+                    }, 5100);
                 }
             }
         } else if (mobID == 8950002 || mobID == 8950102) {

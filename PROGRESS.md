@@ -1,1122 +1,535 @@
-# รายงานความคืบหน้าโครงการ (Project Progress Report)
-**โครงการ:** MapleStory v265 / v214 Portable Server (SwordieMS Architecture)  
-**วันที่บันทึก:** 9 ตุลาคม 2569 (2026-10-09)  
-**สถานะ:** เข้าเล่นในเกมได้สำเร็จ 100% (In-Game Playable / อยู่ระหว่างทดสอบระบบระยะยาว)
+# 📜 MapleStory v265 Server Development Progress & Change Log
+
+This file tracks all bug fixes, feature implementations, and system optimizations across sessions.
+**Rule (AGENTS.md #4)**: Every agent MUST record new progress here and in `.agents/skills/maplestory-bug-knowledge/SKILL.md` after completing any modification.
 
 ---
 
-## 📌 สรุปภาพรวมความคืบหน้า (Executive Summary)
-ได้ทำการวิเคราะห์โครงสร้างระบบ, ติดตั้งชุดเครื่องมือและ Dependencies ที่จำเป็นทั้งหมดให้พร้อมใช้งานแบบ **Portable (รันได้ทุกที่โดยไม่ต้องลง Java หรือ Maven ในระบบเครื่อง)**, ปรับปรุงระบบคอนฟิกผ่าน `server.properties`, แก้ไขปัญหาการเชื่อมต่อเครือข่าย Localhost, ตรวจสอบและนำเข้าฐานข้อมูลครบสมบูรณ์ทุกตารางจากทั้ง 40 ไฟล์ใน `sql/`, และทดสอบรันเซิร์ฟเวอร์จริงสำเร็จ 100%
+## 📅 [2026-10-11] Multi-Network Architecture, Zero-Install Account System & AuthHook Tooling
+
+### 🎯 Scope
+Analyze and resolve connectivity constraints for multi-networking (Localhost 127.0.0.1, LAN / same subnet, and Radmin VPN / Hamachi), build test scripts for `v263AuthHook`, implement a Zero-Install account registration architecture with auto-registration on first login, and provide simple batch utilities for IP and account management.
+
+### 📂 Files Modified
+- [`v263AuthHook/Client207/SockHook.cpp`](file:///c:/Users/admin/Documents/MapleV265Src/v263AuthHook/Client207/SockHook.cpp)
+- [`v263AuthHook/Build_AuthHook.bat`](file:///c:/Users/admin/Documents/MapleV265Src/v263AuthHook/Build_AuthHook.bat) *(New)*
+- [`v263AuthHook/Test_AuthHook.bat`](file:///c:/Users/admin/Documents/MapleV265Src/v263AuthHook/Test_AuthHook.bat) *(New)*
+- [`v263AuthHook/test_hook.ps1`](file:///c:/Users/admin/Documents/MapleV265Src/v263AuthHook/test_hook.ps1) *(New)*
+- [`v214 src/.../NettyClient.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/connection/netty/NettyClient.java)
+- [`v214 src/.../Login.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/connection/packet/Login.java)
+- [`v214 src/.../ClientSocket.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/ClientSocket.java)
+- [`v214 src/.../LoginHandler.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/LoginHandler.java)
+- [`v214 src/.../Client.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/Client.java)
+- [`v214 src/.../Char.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java)
+- [`v214 src/.../ServerConfig.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/ServerConfig.java)
+- [`v214 src/.../ApiRequestHandler.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/ApiRequestHandler.java)
+- [`v214 src/server.properties`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/server.properties)
+- [`v214 src/Create_Account.bat`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/Create_Account.bat) *(New)*
+- [`v214 src/Client_Patch_Files/Change_IP_or_Account.bat`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/Client_Patch_Files/Change_IP_or_Account.bat) *(New)*
+- [`v214 src/4_Server_Control_Panel.bat`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/4_Server_Control_Panel.bat)
+
+### 🛠️ Issues Identified & Fixes Applied
+
+1. **Client-Side IP Hardcoding in `Localhost.dll` (`v263AuthHook`)**:
+   - **Problem**: `Localhost.dll` hardcoded `#define OPT_ADDR_HOSTNAME "127.0.0.1"`, completely ignoring `IP` configurations in `launcher.ini`. Remote players connecting across LAN or Radmin VPN were forcibly rerouted to `127.0.0.1`, failing to reach the host server.
+   - **Fix**: Updated `v263AuthHook/Client207/SockHook.cpp` to dynamically load `Server.IP` from `launcher.ini` via `GetPrivateProfileStringA` on module attachment, falling back to `127.0.0.1` if not found.
+   - **Verification**: Created `Build_AuthHook.bat` and `Test_AuthHook.bat`. Recompiled `Localhost.dll` using MSVC toolset `v145` (0 errors, 318 KB) and verified 64-bit AMD64 PE headers and dynamic configuration loader strings.
+
+2. **Simultaneous Multi-Network Server-Side Channel Routing**:
+   - **Problem**: Previous channel migration packets encoded static `ServerConstants.CHANNEL_IP`. When host set `server.ip` to a LAN/VPN address, local host playing on `127.0.0.1` disconnected upon character select; conversely, if set to `127.0.0.1`, remote players disconnected.
+   - **Fix**: Implemented `NettyClient.getEffectiveChannelIp()` inspecting the socket connection. Local loopback connections receive `127.0.0.1`, while remote connections receive the host interface/configured VPN IP. Passed `getEffectiveChannelIp()` across `Login.selectCharacterResult`, `ClientSocket.migrateCommand`, and `auctionHouseOut`.
+   - **Outcome**: Host on `127.0.0.1`, friends on LAN `192.168.x.x`, and friends on Radmin VPN `26.x.x.x` can now play concurrently without IP conflicts.
+
+3. **Zero-Install Account Architecture**:
+   - **Tier 1 (Auto-Registration on First Login)**: Enhanced `ApiRequestHandler.java` (`handleTokenX64Request`). When `server.autoRegister=true` in `server.properties`, an unregistered username entering credentials in `launcher.ini` is automatically created with BCrypt hashing and granted a session token immediately.
+   - **Tier 2 (1-Click Batch Tool: `Create_Account.bat`)**: Standalone tool utilizing portable MariaDB CLI to create accounts with custom roles (`Player`, `GameMaster`, `Admin` for `!item` spawning), list existing accounts, reset passwords, and auto-sync into `launcher.ini`.
+   - **Tier 3 (Client Config Tool: `Change_IP_or_Account.bat`)**: User-friendly utility in `Client_Patch_Files` allowing non-technical players to adjust IP and credentials with 1 click.
+   - **Control Panel Integration**: Added options `[8]` (Account Registration & Manager) and `[9]` (Configure Server IP) in `4_Server_Control_Panel.bat`.
 
 ---
 
-## 🛠️ รายละเอียดสิ่งที่ดำเนินการเสร็จสิ้น (Completed Tasks)
+## 📅 [2026-10-11] Root Abyss Boss Group: Von Bon Client Crash Fix & Universal Unlimited Entry
 
-### 1. ติดตั้ง Portable Dependencies ภายในโฟลเดอร์โปรเจกต์
-- **`jdk21\`**: ติดตั้ง OpenJDK 21 (Temurin Adoptium 64-bit) ภายในโฟลเดอร์ ทำให้สามารถเปิดรันหรือคอมไพล์โค้ดบนเครื่องใดก็ได้ทันที
-- **`apache-maven-3.9.15\`**: ติดตั้ง Apache Maven แบบ Portable สำหรับการจัดการ Library และคอมไพล์โปรเจกต์
-- **`maplestory.jar`**: คอมไพล์และประกอบ Fat JAR รวมทุก Dependency (~138 MB) ไว้ที่ Root Directory พร้อมรันได้ทันทีโดยไม่ต้อง Build ซ้ำ
+### 🎯 Scope
+Diagnose and resolve the client crash ("เด้งออก") when entering Von Bon (บอสไก่), and standardize all 4 Root Abyss bosses (Pierre, Von Bon, Crimson Queen, Vellum in both Normal and Chaos difficulties) to allow infinite entries anytime via both the natural in-game Boss UI (Content Guide) and physical door portals/NPCs in Colossal Root, completely removing prequest requirements, daily lockouts, and entrance bouncing.
 
-### 2. ระบบตั้งค่าคอนฟิกแบบไดนามิก (`server.properties`)
-- สร้างไฟล์ **`server.properties`** สำหรับปรับแต่งการตั้งค่าโดยไม่ต้อง Rebuild โค้ดใหม่:
-  - `db.url`: URL เชื่อมต่อฐานข้อมูล MySQL/MariaDB
-  - `db.username` & `db.password`: ชื่อผู้ใช้และรหัสผ่านฐานข้อมูล (ค่าเริ่มต้น: `root` / `root`)
-  - `server.ip`: IP เครือข่าย (ค่าเริ่มต้น: `127.0.0.1` สำหรับ Localhost)
-  - `server.loginPort`: พอร์ต Login (`8484`)
-  - `server.apiPort`: พอร์ต API (`8483`)
-- ปรับแต่งโค้ด Java ให้โหลดค่าจากไฟล์คอนฟิกอัตโนมัติ:
-  - `DatabaseManager.java`: อ่าน URL, User, Password จาก `server.properties`
-  - `ServerConstants.java`: อ่าน IP, Login Port, API Port และสถานะ Localhost จาก `server.properties`
+### 📂 Files Modified
+- [`v214 src/.../Stage.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/connection/packet/Stage.java)
+- [`v214 src/.../Char.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java)
+- [`v214 src/.../Instance.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/world/field/Instance.java)
+- [`v214 src/.../RootAbyss.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/world/boss/RootAbyss.java)
+- [`v214 src/.../BossEntry.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/world/boss/BossEntry.java)
+- [`v214 src/.../ScriptHandler.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/script/ScriptHandler.java)
+- [`v214 src/data/scripts/boss/rootafirstDoor.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/boss/rootafirstDoor.py)
+- [`v214 src/data/scripts/boss/rootasecondDoor.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/boss/rootasecondDoor.py)
+- [`v214 src/data/scripts/boss/rootathirdDoor.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/boss/rootathirdDoor.py)
+- [`v214 src/data/scripts/boss/rootaforthDoor.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/boss/rootaforthDoor.py)
+- [`v214 src/data/scripts/portal/rootafirstDoor.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/portal/rootafirstDoor.py)
+- [`v214 src/data/scripts/portal/rootasecondDoor.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/portal/rootasecondDoor.py)
+- [`v214 src/data/scripts/portal/rootathirdDoor.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/portal/rootathirdDoor.py)
+- [`v214 src/data/scripts/portal/rootaforthDoor.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/portal/rootaforthDoor.py)
+- [`v214 src/data/scripts/portal/rootaNext.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/portal/rootaNext.py)
+- [`v214 src/data/scripts/portal/banbanGoInside.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/portal/banbanGoInside.py)
+- [`v214 src/data/scripts/portal/pt_outrootaBoss.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/portal/pt_outrootaBoss.py)
+- [`v214 src/data/scripts/portal/rootabyssOut.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/portal/rootabyssOut.py)
+- [`v214 src/data/scripts/npc/1064012.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/npc/1064012.py)
+- [`v214 src/data/scripts/npc/1064013.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/npc/1064013.py)
+- [`v214 src/data/scripts/npc/1064014.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/npc/1064014.py)
+- [`v214 src/data/scripts/npc/1064015.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/npc/1064015.py)
+- [`v214 src/data/scripts/npc/rootaBossOut.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/npc/rootaBossOut.py)
+- [`v214 src/data/scripts/reactor/banbanNormal.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/reactor/banbanNormal.py)
+- [`v214 src/data/scripts/reactor/banbanChaos.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/reactor/banbanChaos.py)
+- [`v214 src/data/scripts/reactor/queenNormal.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/reactor/queenNormal.py)
+- [`v214 src/data/scripts/reactor/queenChaos.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/reactor/queenChaos.py)
+- [`v214 src/data/scripts/reactor/bellumNormal.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/reactor/bellumNormal.py)
+- [`v214 src/data/scripts/reactor/bellumChaos.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/reactor/bellumChaos.py)
+- [`v214 src/data/scripts/field/vonbonInsideMob.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/field/vonbonInsideMob.py)
+- [`v214 src/data/scripts/field/rootabyssTakeItem.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/field/rootabyssTakeItem.py)
+- [`.agents/skills/maplestory-bug-knowledge/SKILL.md`](file:///c:/Users/admin/Documents/MapleV265Src/.agents/skills/maplestory-bug-knowledge/SKILL.md)
 
-### 3. แก้ไขข้อผิดพลาดของ IP เครือข่าย (Localhost Fix)
-- ตรวจพบ IP ฮาร์ดโค้ดจากเซิร์ฟเวอร์เดิมของเวียดนามในแพ็กเก็ต:
-  - `ClientSocket.java`: ฮาร์ดโค้ด IP `52.27.135.94` (`34 1B 87 5E`)
-  - `Login.java`: ฮาร์ดโค้ด IP `54.69.121.239` (`-277265098`)
-- ทำการแก้ไขให้ดึงค่าจาก `ServerConstants.CHANNEL_IP` ตามที่กำหนดใน `server.properties` ทำให้การเล่นแบบ Localhost หรือต่อผ่าน LAN/VPN เชื่อมต่อได้ถูกต้อง ไม่หลุดตอนเลือกตัวละคร
+### 🛠️ Issues Identified & Fixes Applied
 
-### 4. ตรวจสอบและรวบรวมฐานข้อมูลครบ 100% (Database Audit & Consolidation)
-- ตรวจสอบเปรียบเทียบทั้ง **40 ไฟล์ SQL** ในโฟลเดอร์ `sql/` กับฐานข้อมูล
-- พบและแก้ไขข้อผิดพลาดในไฟล์ SQL เดิม:
-  - `backup.sql`: แก้ไขคอลัมน์ซ้ำ `maxfriends` ใน `characterstats` และแก้ไข Syntax ข้อความที่ขาดหายในคำสั่ง Table Lock
-  - `InitValue_ArcaneSymbol.sql`: แก้ไขการอ้างอิงชื่อฐานข้อมูล `cool.equips` และตัวคั่นคำสั่ง
-  - `InitTables_CustomCode.sql`: แก้ไข Comment ในรายการ Values
-- นำเข้าตารางและข้อมูลที่เคยตกหล่นทั้งหมด:
-  - `cs_items`: ไอเทม Cash Shop **1,394 รายการ**
-  - `equip_drops`: อัตราดรอปอุปกรณ์ตามสายอาชีพ **887 รายการ**
-  - `monster_collection`: มอนสเตอร์สะสม **675 ตัว** + รางวัลกลุ่ม **135 รายการ**
-  - `customcodes`: โค้ดรับของรางวัล **34 โค้ด**
-  - `mob_drops`: ข้อมูลดรอปมอนสเตอร์ทั้งหมด **13,985 รายการ**
-  - `party` & `partymembers`: ตารางระบบปาร์ตี้
-  - `equip_arcane` & `arcaneid`: ระบบ Arcane Symbol
-  - `equip_flame`: ระบบ Flame Stats
-  - `users`: เพิ่มคอลัมน์ที่จำเป็น (`clientstate`, `vippoints`, `machineid`, `lastcharid`, `freevippointdate`)
-- **ผลลัพธ์:** ปัจจุบันฐานข้อมูล `vietmaple` มีตารางครบสมบูรณ์ **110 ตาราง**
-- **อัปเดตไฟล์ `backup.sql`:** Export ข้อมูลทั้งหมดลงใน `backup.sql` (~1.48 MB) เพื่อให้นำเข้าไฟล์เดียวได้ครบทุกตารางทันที
+1. **Von Bon Client Crash ("เด้งออก") Root Cause**:
+   - **Problem**: Warping into Von Bon Normal (`105200110`) or Chaos (`105200510`) immediately disconnected or crashed the v265 64-bit client.
+   - **Root Cause**: An obsolete legacy v199 conditional in `Stage.java` (`if (FieldConstants.isVonbonField(chr.getFieldID())) outPacket.encodeByte(size);`) injected an unwanted byte into the `SET_FIELD` packet stream. The v265 client's `CStage::SetField` does not decode this byte, leading to an immediate offset misalignment in decoding player avatar/equip info and causing an access violation crash.
+   - **Fix**: Removed the obsolete check entirely from `Stage.java`. Verified via client disassembly (`CMob::Init`) that the 1-byte decode in `Mob.encodeInit` (`is_banban_boss`) is correct for mob spawning and stays intact.
 
-### 5. ป้องกัน Server Crash เมื่อสร้าง Database ใหม่
-- เพิ่มการตรวจสอบ `null` ใน `Server.java` สำหรับฟังก์ชัน `addPhantomBot()` เพื่อป้องกัน NullPointerException ตอนเริ่มเซิร์ฟเวอร์ หากยังไม่มีตัวละครในฐานข้อมูลใหม่
+2. **Root Abyss Entrance Bouncing & Private Instance Isolation**:
+   - **Problem**: Players entering Root Abyss corridors or boss maps without an active instance were forcefully bounced back to Colossal Root (`105200000`).
+   - **Fix**: Modified `handleInstanceNull` in `Char.java`: whenever a player enters any Root Abyss map (`105200100`–`105200810`), the server automatically instantiates `new Instance(party/chr)`, registers all party members, sets the forced return map to `105200000`, and adds the instance to active server instances.
+   - Set `hasBossPartyAttempt` in `Char.java` to unconditionally return `false`, enabling 100% infinite runs without daily/weekly lockouts for offline/LAN play.
 
-### 6. ชุดสคริปต์ควบคุมและรันเซิร์ฟเวอร์แบบคลิกเดียว
-- **`1_Start_Server.bat`**: สคริปต์รันเซิร์ฟเวอร์ MapleStory ด้วย Portable JDK 21 (พร้อมระบบตรวจสอบพอร์ตซ้ำ)
-- **`2_Build_Server.bat`**: สคริปต์คอมไพล์โค้ดใหม่ด้วย Portable Maven และ JDK 21
-- **`3_Stop_Server.bat`**: สคริปต์ค้นหาและปิด Process ทุกตัวที่เปิดพอร์ต 8484, 8483, 8585-8594 พร้อมล้าง Logs ชั่วคราว
-- **`4_Server_Control_Panel.bat`**: เมนูควบคุมรวม (Start, Restart, Stop, Build, Import DB, Config)
-- **`Import_Database.bat`**: เครื่องมือนำเข้าฐานข้อมูล `backup.sql` เข้า MySQL อัตโนมัติ
+3. **Door Portal & NPC Missing Script Resolution**:
+   - **Problem**: In Colossal Root (`105200000`), pressing Up on doors looked for `ScriptType.Portal` in `data/scripts/portal/`, but scripts were stored only in `data/scripts/boss/`, displaying "Cánh cổng chưa được làm...". Clicking the door NPCs (`1064012`–`1064015`) did nothing.
+   - **Fix**: Implemented interactive selection menus (Normal Mode, Chaos Mode, Boss UI) across all 3 script access points:
+     - `portal/` (`rootafirstDoor.py`, `rootasecondDoor.py`, `rootathirdDoor.py`, `rootaforthDoor.py`)
+     - `npc/` (`1064012.py`, `1064013.py`, `1064014.py`, `1064015.py`)
+     - `boss/` (`rootafirstDoor.py`, `rootasecondDoor.py`, `rootathirdDoor.py`, `rootaforthDoor.py`)
 
-### 7. แก้ไขปัญหาเชื่อมต่อหน้าเลือกเซิร์ฟเวอร์ (World Select & Channel Handling)
-- ตรวจพบปัญหาตัวเกมส่ง Opcode ที่เซิร์ฟเวอร์เดิมยังไม่ได้ลงทะเบียน:
-  - `InHeader.java`: อัปเดต `WORLD_STATUS_REQUEST` เป็น `206` (ตรงกับ Opcode 206 ที่ Client v265 ส่งเข้ามาพร้อม Payload World ID 19)
-  - `InHeader.java`: เพิ่ม `LOGIN_INIT_CHECK(212)` และ `CLIENT_HEARTBEAT(1930)` พร้อมเพิ่มเข้าใน `spam` list เพื่อระงับ Log ขยะ
+4. **Boss Altar Reactor Triggers & Automatic Clean-up**:
+   - **Problem**: Altars in boss rooms (`1058016`–`1058021`) had empty 0-byte scripts.
+   - **Fix**: Implemented reactor scripts in `data/scripts/reactor/` calling `RootAbyss.spawn(field, chr, action)` and enhanced `RootAbyss.java` with `cleanReactor()` to automatically remove the altar upon boss emergence.
 
-### 8. วิเคราะห์และแก้ไขปัญหา Crash Error 38 (SERVER_STATUS) & เข้าเกมสำเร็จ 100%
-- **การแก้ไขทั้งหมดทำที่ฝั่งเซิร์ฟเวอร์ 100% (Server-side Only)** โดยไม่มีการแก้ไขหรือดัดแปลงไฟล์ Client (.exe / .dll) ใดๆ
-- **สาเหตุของ Error 38:**
-  - เดิมมีการทดลองส่ง `SERVER_STATUS (24)` กลับไปยัง Client เมื่อได้รับ Opcode 206
-  - ส่งผลให้ Client เกิดข้อผิดพลาด `[OutPacket] Error 38: SERVER_STATUS(24)` (Buffer Underflow: ข้อมูลไม่พอกับที่ฟังก์ชัน Client พยายาม Decode) และปิดตัวเองทันที
-  - ใน MapleStory v265 ข้อมูลสถานะของ World และ Channels ถูกส่งไปครบถ้วนตั้งแต่แพ็กเก็ต `WORLD_INFORMATION (11)` แล้ว ตัวเกมจึงไม่ต้องการแพ็กเก็ตตอบกลับสำหรับ `WORLD_STATUS_REQUEST`
-- **การแก้ไข:**
-  - `LoginHandler.java`: ปิด (Comment out) `c.write(Login.sendServerStatus(worldId));` ใน `handleWorldStatusRequest`
-  - `OutHeader.java`: คืนค่า `SERVER_STATUS(UnkValue)`
-  - Rebuild และอัปเดตไฟล์ `maplestory.jar`
-- **ผลลัพธ์การทดสอบจริง:**
-  - ผู้เล่นล็อกอินเข้าสู่หน้าเลือก World คลิกเลือก World Scania ได้ปกติ ไม่มีอาการเด้งหลุด
-  - ดับเบิลคลิกเลือก Channel แล้ว Client ส่ง `SELECT_WORLD (119)` เข้ามา
-  - เซิร์ฟเวอร์ตอบกลับ `SELECT_WORLD_RESULT (19)` ส่งข้อมูลตัวละครและสล็อตครบถ้วน
-  - เข้าสู่หน้าเลือกตัวละคร (Select Character Screen) และทดสอบระบบตรวจสอบการสร้างตัวละคร `CREATE_NEW_CHARACTER_CHECKER (181)` ได้สมบูรณ์
-  - **ผู้เล่นสามารถเข้าสู่โลกของเกมและเล่นได้สำเร็จ 100%!**
+5. **Corridor Portal Bridges & Exit Flow**:
+   - Updated `data/scripts/portal/rootaNext.py` to seamlessly bridge corridor walks directly into the boss battle instance via `sm.enterBoss()`.
+   - Created missing `pt_outrootaBoss.py` (portal `hid00`) and updated `rootaBossOut.py` calling `sm.exitBoss()`.
+   - Updated `rootabyssOut.py` to allow returning to Sleepywood (`105010000`) directly from Colossal Root.
 
-### 9. ปรับปรุงและทดสอบสคริปต์นำเข้าฐานข้อมูลอัตโนมัติ (`Import_Database.bat`)
-- **แก้ไขข้อผิดพลาด Batch Syntax:** แก้ไขปัญหา `: was unexpected at this time.` ที่เกิดจากการใช้วงเล็บ `()` ภายในบล็อกคำสั่ง `if (...)` ของ Windows CMD
-- **ระบบค้นหา MySQL ครอบคลุม:** รองรับการตรวจจับ Path ของ `mysql.exe` อัตโนมัติทุกรูปแบบ (MySQL Server 8.0/8.4/5.7, MariaDB, XAMPP, Laragon, WAMP หรือ System PATH)
-- **รองรับโหมดอัตโนมัติ:** เพิ่มการรองรับอาร์กิวเมนต์ `-y` / `--auto` สำหรับการรันแบบ Scripted/Non-interactive โดยยังคงการสอบถามค่าแบบ Interactive สำหรับผู้ใช้งานทั่วไป
-- **ทดสอบลบและนำเข้าจริงแบบ Clean Import:**
-  - ทำการลบฐานข้อมูลเดิมทิ้ง (`DROP DATABASE IF EXISTS vietmaple;`)
-  - รัน `Import_Database.bat -y` เพื่อทดสอบสร้างฐานข้อมูลใหม่และนำเข้า `backup.sql`
-  - **ผลการทดสอบ:** นำเข้าสำเร็จสมบูรณ์ 100% ตรวจสอบจำนวนตารางได้ครบทั้ง **110 ตาราง** (`total_tables = 110`)
-  - อัปเดตการซิงค์ค่า Host, Port, User, Password ลงใน `server.properties` อัตโนมัติ
-- **แพ็กรวมลง ZIP:** อัปเดตสคริปต์ที่แก้ไขแล้วลงในไฟล์ ZIP แจกจ่าย (`MapleStory_Server_Runner_Ready.zip` และ `MapleStory_Server_Runner.zip`) เรียบร้อย
-
-### 10. ทดสอบรันเซิร์ฟเวอร์บน Clean Database (Fresh Database Verification)
-- เปิดรันเซิร์ฟเวอร์ด้วย Portable JDK 21 บนฐานข้อมูลที่เพิ่งนำเข้าใหม่สดๆ (ไม่มีตัวละครเดิมค้างอยู่)
-- **HikariCP:** เชื่อมต่อ Database สำเร็จใน 564 ms
-- **ระบบป้องกัน Crash:** ทำงานได้ถูกต้อง (`Phantom bot (ID 5) not found in DB, skipping bot initialization.`) ไม่เกิด Error แม้เป็นเซิร์ฟเวอร์เริ่มใหม่
-- **โหลดข้อมูลครบถ้วน:** WZ Data (33.9s) และ JSON Data (861ms)
-### 11. วิเคราะห์และแก้ไขปัญหา Crash Error 38 ขณะเข้าแมพเกม (SET_FIELD Packet Desync Fix)
-- **ตรวจสอบสภาวะทรัพยากรระบบ (RAM):**
-  - ระบบมี RAM ทั้งหมด 8.34 GB มีหน่วยความจำว่าง **3.5 GB (Free Physical Memory)**
-  - กระบวนการ Java ทำงานปกติใช้หน่วยความจำ ~2.4 GB
-  - **สรุปชัดเจน: ปัญหาไม่ได้เกิดจากแรมเต็มอย่างแน่นอน**
-- **ตรวจสอบ Packet Log และ Client Error:**
-  - ตรวจพบ Client ส่ง `CLIENT_ERROR (171)` ด้วยรหัส `Error 38 (Buffer Underflow)` ทันทีที่เซิร์ฟเวอร์ส่งแพ็กเก็ต `SET_FIELD (719)` สำหรับตัวละคร `FBGamOffline`
-  - เปรียบเทียบไบต์ต่อไบต์ (Binary Byte Diff) ระหว่างตัวละครเดิมและตัวละครใหม่ พบความยาวของ `SET_FIELD` ต่างกัน 80 ไบต์ตรงส่วนการส่งข้อมูลสกิล (`DBChar.SkillRecord`)
-  - ในตัวละครใหม่ ระบบบันทึกสกิลเริ่มต้น 4 สกิลของอาชีพ Ren (`160020000`, `160020001`, `160021074`, `160021075`) ลง Database
-- **สาเหตุที่แท้จริง (Root Cause):**
-  - อาชีพ Ren Beginner (`16002`) ตกหล่นจากรายการ `JobConstants.isBeginnerJob()`
-  - ใน `SkillConstants.java` ฟังก์ชันคำนวณคลาสอาชีพ (`getJobGroupFromSkillRoot`) คำนวณเลขลงท้าย `16002 % 10 = 2` จึงตีความผิดว่าเป็นสกิลคลาส 4 (4th Job)
-  - ส่งผลให้ `SkillConstants.isSkillNeedMasterLevel()` คืนค่า `true` ให้กับสกิลเริ่มต้นทั้งหมดของ Ren และเซิร์ฟเวอร์เข้ารหัสฟิลด์ `masterLevel` (4 ไบต์) เกินไป 4 ครั้ง (รวม 16 ไบต์)
-  - ฝั่ง Client v265 ทราบว่าสกิลเริ่มต้นของ Ren ไม่มี Master Level จึงไม่ได้อ่าน 16 ไบต์นี้ ทำให้ตำแหน่งพอยน์เตอร์อ่านข้อมูลในบัฟเฟอร์เลื่อนหลุด (Desynchronize) ไป 16 ไบต์ ข้อมูลถัดไปทั้งหมด (Hyper Stats, Link Skills, etc.) จึงอ่านผิดตำแหน่งจนบัฟเฟอร์หมดก่อนเวลา เกิด `Error 38` และ Client บังคับปิดตัวเอง
-- **การแก้ไข:**
-  - `JobConstants.java`: เพิ่ม `case 16002:` ลงใน `isBeginnerJob(short jobId)` เพื่อระบุให้ระบบทราบว่า `16002` คือ Beginner Job อย่างถูกต้อง
-  - `SkillConstants.java`:
-    - เพิ่ม Guard Clause ใน `isSkillNeedMasterLevel(int skillID)`: หากเป็นสกิลของ Beginner Job (`JobConstants.isBeginnerJob(skillRoot) || skillRoot == 0 || skillRoot == 16002`) จะคืนค่า `false` ทันที ป้องกันการใส่ Master Level ให้กับสกิลเริ่มต้นของทุกอาชีพ 100%
-    - อัปเดต `isSpecialRoot` และ `getJobGroupFromSkillRoot` ให้ครอบคลุม Job Root `16002` (Ren)
-  - ทำการ Rebuild เซิร์ฟเวอร์ด้วย Portable Maven และประกอบ `maplestory.jar` ใหม่ พร้อมเปิดรันเซิร์ฟเวอร์ทดสอบเรียบร้อย
+### 🧪 Verification
+- Verified compilation via portable Maven 3.9.15 and JDK 21 (`mvn compile`): `[INFO] BUILD SUCCESS` (853 source files compiled, 0 errors).
 
 ---
 
-## 🧪 ผลการทดสอบการรันระบบ (Verification & Test Results)
+## 📅 [2026-10-11] Cygnus Knights: Night Walker Comprehensive Stabilization
 
-```text
-[In v.265]   | VIEW_CHANNEL_REQUEST, 118 | 00 13 00 00 00 00 00 
-[Out v.265]  | SELECT_WORLD_BUTTON, 18   | 00 03 00 E2 9C 80 13 00 00 00 FF FF FF FF 
-[In v.265]   | WORLD_STATUS_REQUEST, 206 | 13 
-[In v.265]   | SELECT_WORLD, 119         | 00 13 00 00 00 ... (เลือก Channel สำเร็จ)
-[Out v.265]  | SELECT_WORLD_RESULT, 19   | 00 00 00 00 ... (ส่งข้อมูลตัวละครสำเร็จ)
-[In v.265]   | CREATE_NEW_CHARACTER_CHECKER, 181
-[Out v.265]  | CREATE_NEW_CHARACTER_CHECKER_RESULT, 2789
---> สถานะ: เข้าสู่เกมและเล่นได้ตามปกติ (In-Game Active)
+### 🎯 Scope
+Analyze and fix all Night Walker skills (1st Job through 6th Job HEXA, Hyper, and 5th Job V-Matrix) to ensure accurate damage calculation, proper buff application, boss bind functionality, and reliable bat mechanics.
 
-[Database Test]
-DROP DATABASE vietmaple -> OK
-Import_Database.bat -y  -> OK
-Total Tables Verified   -> 110 / 110 tables (100% Complete)
-```
+### 📂 Files Modified
+- [`v214 src/.../NightWalker.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/cygnus/NightWalker.java)
+- [`v214 src/.../SkillConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`.agents/skills/maplestory-bug-knowledge/SKILL.md`](file:///c:/Users/admin/Documents/MapleV265Src/.agents/skills/maplestory-bug-knowledge/SKILL.md)
+- [`AGENTS.md`](file:///c:/Users/admin/Documents/MapleV265Src/AGENTS.md)
 
-- **สถานะการทำงาน:** สมบูรณ์ 100% ปราศจาก Error
-- **สถานะปัจจุบัน:** เซิร์ฟเวอร์กำลังเปิดให้บริการ (Active) พร้อมสำหรับการทดสอบเกมเพลย์ระยะยาว (Extended In-Game Testing)
-- **พอร์ตที่เปิดให้บริการ:**
-  - Login Server: `8484` (TCP) - Listening
-  - API Server: `8483` (TCP) - Listening
-  - Game Channels 1 ถึง 10: `8585` ถึง `8594` (TCP) - Listening
+### 🛠️ Issues Identified & Fixes Applied
 
----
+1. **Sub-Skills & Throwing Star Finishers Damage / Mastery Failure**:
+   - **Problem**: Multi-hit star throwing skills fire the initial stars using the main skill ID, but the final explosive hit uses a separate sub-skill ID. The server failed to locate the player's skill level or mastery for the finisher, resulting in 0 or crippled damage.
+   - **Fix**: Added explicit mappings in `SkillConstants.getActualSkillIDfromSkillID(int skillID)`:
+     - `14101021` (Triple Throw Finisher) $\rightarrow$ `14101020`
+     - `14101029` (Shadow Spark Explosion) $\rightarrow$ `14101028`
+     - `14111021` (Quad Star Finisher) $\rightarrow$ `14111020`
+     - `14121002` (Quintuple Star Finisher) $\rightarrow$ `14121001`
+     - `14141001`, `14141002`, `14141003` (HEXA Quintuple Star Finisher / Sub / Giant) $\rightarrow$ `14141000`
+     - `400041060` (Rapid Throw Finisher) $\rightarrow$ `400041059`
+     - `14141501` (Silence Sub), `14141504` (Stygian Command Sub) $\rightarrow$ `14141500`, `14141503`
+     - All bat atoms (1st - 6th Job) $\rightarrow$ respective parent skills.
 
-### 12. ตรวจสอบและแก้ไขบั๊กอาชีพใหม่ (New Jobs Bug Fixing & Implementation Audit)
-- **Lynn (`Lynn.java`):**
-  - แก้ไขบั๊กค่าสเตตัสเริ่มต้นใน `setCharCreationStats`: สลับจากเดิมที่ตั้งผิดเป็น DEX 45, INT 4 ให้ถูกต้องเป็น **INT 45, DEX 4** (อาชีพสายเวท)
-  - เพิ่มเมธอด `addItemToNewCharacter`: แจกอาวุธเริ่มต้น **Memorial Staff (1252002)** และโล่รอง **Beast Bell (1352811)** เข้าช่องสวมใส่อัตโนมัติพร้อมบันทึก SQL
-- **Mo Xuan (`MoXuan.java`):**
-  - แก้ไขบั๊กค่าสเตตัสเริ่มต้นใน `setCharCreationStats`: สลับจากเดิมที่ตั้งผิดเป็น DEX 45, STR 4 ให้ถูกต้องเป็น **STR 45, DEX 4** (อาชีพสายหมัดกำลังภายใน STR)
-  - เพิ่มเมธอด `addItemToNewCharacter`: แจกสนับมือเริ่มต้น **Martial Fist (1403000)** และโล่รอง **Martial Fist Secondary (1354030)**
-  - นำคำสั่ง Debug Chat `chr.chatScriptMessage("powerType : " + ...)` ออกจาก `handleSpecialEffect` เพื่อป้องกันการส่งสแปมข้อความแชททุกครั้งที่ใช้สกิลเสวียนซาน
-- **Kain (`Kain.java`):**
-  - เพิ่มเมธอด `addItemToNewCharacter`: แจกอาวุธเริ่มต้น **Whispershot (1214000)** และโล่รอง **Weapon Belt (1354020)**
-  - เพิ่มเมธอด `handleSkill`: รองรับสกิลบัฟหลัก **Breath Shooter Booster (63101010)**, **Nova Warrior (63121009)**, ล้างสถานะผิดปกติ **Nova Hero's Will (63121010)**, บัฟไฮเปอร์ **Incarnation (63121044)**, บาเรียอมตะ **Dragon Scale (63121008)** และระบบเปิด-ปิดบัฟ **Remain Incense (63111009)**
-  - เพิ่มเมธอด `handleAttack`: รองรับการประมวลผลการโจมตีพื้นฐาน
-- **Lara (`Lara.java`):**
-  - เพิ่มเมธอด `setCharCreationStats`: กำหนดค่าสเตตัสเริ่มต้นของสายเวท **INT 45, LUK 4, STR 4, DEX 4**, เลเวล 10, HP 1000, MP 800, แต้ม SP 5
-  - เพิ่มเมธอด `addItemToNewCharacter`: แจกอาวุธเริ่มต้น **Wand (1372000)** และโล่รอง **Ornamental Knot (1354010)**
-  - เพิ่มระบบเปลี่ยนอาชีพ `handleLevelUp`: เปลี่ยนอาชีพเป็นคลาส 2, 3, 4 อัตโนมัติที่เลเวล 30, 60, 100 พร้อมมอบแต้ม SP และ AP
-  - เพิ่มเมธอด `handleSkill`: รองรับ **Wand Booster (162101013)**, **Anima Warrior (162121023)**, **Anima Hero's Will (162121024)** และสกิลเปิด-ปิด **Peerless Mountain (162001005)**
-- **Server Core (`Server.java`):**
-  - แก้ไข NullPointerException จากตัวแปร `bannedMacs` ที่ไม่มีการกำหนดค่าเริ่มต้นใน `Server.java` ทำให้เมื่อเรียก `LoginHandler.handleSelectWorld()` ไม่เกิดอาการ Crash
+2. **Shadow Stitch (`14121004`) Boss Bind Bug**:
+   - **Problem**: Shadow Stitch failed to bind boss monsters due to `if (mob.getHp() <= 0 || mob.isBoss()) continue;`.
+   - **Fix**: Removed `|| mob.isBoss()` and assigned `o1.cOption = chr.getId()`, bringing it in line with modern boss bind mechanics and resistance timers.
 
----
+3. **Dark Attack Proc Condition for Shadow Bats & Shadow Spear**:
+   - **Problem**: Checked `si.getElemAttr().equalsIgnoreCase("d")`. Normal throwing star attacks in v265 WZ data lack the "d" attribute on initial stars, preventing bats and spears from proccing and risking NullPointerExceptions.
+   - **Fix**: Implemented `isDarkAttackSkill(int skillId, SkillInfo si)` verifying both `elemAttr == "d"` and explicit NW attack IDs.
 
-### 13. ตรวจสอบความครบถ้วนของระบบบอสทั้งหมด (Boss System Completeness Audit)
-จากการตรวจสอบโค้ดในแพ็กเกจ `net.swordie.ms.world.boss.*`, `BossConstants.java`, `BossPartyType.java` และสคริปต์ใน `data/scripts/boss/`, `data/scripts/field/`:
+4. **Bat Management & Mode Switching (Ravenous vs Shadow Bat)**:
+   - **Problem**: Toggling Ravenous Bat when Shadow Bat was active turned the buff off instead of switching modes. In 6th Job, `HEXA_SHADOW_BAT` passive permanently overrode Ravenous Bat summons.
+   - **Fix**:
+     - Check `rOption` on `NightWalkerBat` CTS to distinguish active mode.
+     - Call `clearAllBats()` on toggle change to clear old summons and spawn correct mode immediately.
+     - Support 6th Job summon and atom IDs (`HEXA_RAVENOUS_BAT_SUMMON = 14141013`, `HEXA_RAVENOUS_BAT_ATOM = 14141014`, `HEXA_SHADOW_BAT_SUMMON = 14141005`, `HEXA_SHADOW_BAT_ATOM = 14141006`).
+     - Accurately calculate recreation counts and max bat limits per mode.
 
-| กลุ่มบอส | รายชื่อบอส | สถานะระบบในเซิร์ฟเวอร์ | รายละเอียดกลไก |
-|---|---|:---:|---|
-| **บอสคลาสสิก / ช่วงต้นเกม** | Zakum, Horntail, Pink Bean, Ursus | 🟢 สมบูรณ์ 100% | มีคลาสเฉพาะแยกทุกตัว, คำนวณ HP รวม (SpecialHP), มีแขน/หัว/หินครบทุกชิ้นส่วน |
-| **บอสช่วงกลางเกม (Hero/Grand)** | Von Leon, Cygnus, Arkarium, Magnus, Hilla | 🟢 สมบูรณ์ 100% | ห้องขัง Von Leon, นก Shinsoo & 5 อัศวิน Cygnus, จอแตก Arkarium, อุกกาบาตตก Magnus |
-| **รูทอบิส (Root Abyss)** | Pierre, Von Bon, Crimson Queen, Vellum | 🟢 สมบูรณ์ 100% | หมวกสลับสี Pierre, มิติเวลา Von Bon, หน้ากาก 4 อารมณ์ Queen, หินย้อย/มุดดิน Vellum |
-| **บอสระดับสูง (Arcane River)** | Lotus (Swoo), Damien | 🟢 สมบูรณ์ 100% | Lotus 3 เฟส (เลเซอร์แกนกลาง, ก้อนพลังงาน, หุ่นตก), Damien 2 เฟส (ดาบบิน, แท่นบูชายัญ Stigma) |
-| **บอสระดับสูง (Arcane River)** | Lucid, Will, Verus Hilla | 🟢 สมบูรณ์ 100% | Lucid มังกรพ่นไฟ/กระจกแตก, Will มิติแสง-มืด/ใยแมงมุม/มูนไลท์, Verus Hilla เทียนแดง-เขียว/วิญญาณ |
-| **บอสเนื้อเรื่องหลัก** | Black Mage (검은 마법사) | 🟢 สมบูรณ์ 4 เฟส | มีสคริปต์ `firstenter_bossBlackMage.py` วาร์ปต่อเนื่อง P1 (ยักษ์คู่), P2, P3, P4 สมบูรณ์ |
-| **บอสดันเจี้ยนพิเศษ** | Gollux, Ranmaru, Princess No | 🟢 สมบูรณ์ 100% | ชิ้นส่วนหัว/ไหล่/ท้อง Gollux, ดันเจี้ยน 4 ห้องก่อนพบ Princess No |
-| **Tenebris Bosses** | Gloom (더스크), Darknell (듄켈) | 🟡 มีข้อมูลในระบบ / ขาดสคริปต์สนาม | มี Mob ID, แมพวาร์ป, และ Intense Power Crystal แล้ว แต่ยังไม่มีตัวจัดการเฟสแยก |
-| **Grandis & Newest Bosses** | Chosen Seren, Kalos, Kaling, Limbo, Baldrix, First Adversary | 🔴 มี Enum / Crystal / ยังไม่มีตัวจัดการดันเจี้ยน | มีการลงทะเบียนในระบบ `BossPartyType` และราคาผลึกคริสตัลแล้ว แต่ยังไม่มี AI / Boss Event Controller รองรับ |
+5. **Shadow Spear (`400041008`) AffectedArea Reference Leak**:
+   - **Problem**: `AffectedArea aa` was instantiated once outside the mob hit loop, causing the same Java reference to be modified and inserted multiple times into the field.
+   - **Fix**: Moved instantiation inside the loop per mob foothold, preventing corrupted footholds and memory leaks.
 
----
+6. **Shadow Bite (`400041037` / `500061035`) Final Damage Buff & Bat Procs**:
+   - **Problem**: Handlers for Shadow Bite were missing in `handleAttack`.
+   - **Fix**: Implemented Final Damage (`IndiePMdR`): `(hitBoss ? w : 0) + (normalMobCount * y)` capped at `q%` lasting `time` sec, and spawned bats at enemy positions.
 
-### 14. การทดสอบคอมไพล์และเปิดรันเซิร์ฟเวอร์จริง (Build & Runtime Verification)
-- **คอมไพล์ซอร์สโค้ด:** ผ่านสำเร็จ 100% ปราศจาก Error (`BUILD SUCCESS` ใช้เวลา 22.5 วินาที สำหรับ 851 ไฟล์)
-- **ประกอบ JAR:** ประกอบ Fat JAR รวม Dependencies ทั้งหมดสำเร็จ (`maplestory.jar` ขนาด ~138 MB)
-- **ทดสอบเปิดรันเซิร์ฟเวอร์ (Live Test Run):**
-  - พอร์ตเปิดให้บริการครบทุกพอร์ต:
-    - Login: `8484` (TCP) - Listening
-    - API: `8483` (TCP) - Listening
-    - Game Channels 1 ถึง 10: `8585` - `8594` (TCP) - Listening
-  - โหลดฐานข้อมูล MariaDB และ WZ Data (22.0 วินาที) สำเร็จ 100%
-  - ตรวจสอบ `logs/.../ExceptionCaught/All.txt` ไม่พบ Exception หรือ Error ตกค้าง
+7. **HEXA Dark Omen (`14141017`) & HEXA Dominion (`14141018`)**:
+   - **Fix**: Added summon spawning for HEXA Dark Omen with cooldown reduction on attack. Added HEXA Dominion handling with invincibility, stats, and instant max stacks for Dark Elemental and Vitality Siphon.
+
+8. **Database Transaction Self-Deadlock & Lock Wait Timeout Prevention**:
+   - **Problem**: During character logout/save, InnoDB threw `Lock wait timeout exceeded (50s)` followed by HikariCP connection leaks at `QuestProgressMobRequirement.saveToSQL`.
+   - **Root Cause**: `Quest.saveToSQL` and `AccountQuest.saveToSQL` opened an uncommitted transaction on `con`, batched rows into `quests`, and then called `qpr.saveToSQL`. Subclasses invoked `DatabaseManager.executeStatementReturnID()`, requesting a second HikariCP connection that attempted to insert into `questprogressrequirements`. InnoDB locked connection 2 waiting for connection 1 to commit, creating a circular self-deadlock.
+   - **Fix**: Implemented polymorphic `saveToSQL(Connection con, int ownerid, long questID, boolean isAccount)` across `QuestProgressRequirement` and all its subclasses (`Item`, `Level`, `Mob`, `Money`), reusing the existing active connection and transaction before committing.
+
+### 🧪 Verification & Live Test Run
+- Compiled using portable Maven 3.9.15 and JDK 21 (`mvn compile`): `[INFO] BUILD SUCCESS` (0 errors).
+- Packaged using Maven Assembly (`mvn package -DskipTests`): Generated `bin\maplestory-219.5-jar-with-dependencies.jar` (138MB Fat JAR) and synchronized into `v214 src\maplestory.jar` and `Server263\maplestory.jar`.
+- Live Server Startup Test:
+  - Portable MariaDB started on port `33066`: `mysqld is alive` (HikariCP connected in 340 ms).
+  - MapleStory server loaded successfully with JDK 21 preview options:
+    - Login listening on port `8484`
+    - API listening on port `8483`
+    - World 19 Channels 1–10 listening on ports `8585` – `8594`
+  - Zero crashes, zero database connection leaks, all network ports active.
+- Safe Patch Generation (`Server263_Patch_Latest`):
+  - Created uncompressed patch at `MapleStory_Server_Runner_Ready\Patches\Server263_Patch_Latest\`.
+  - **Database & Character Protection**:
+    - Strictly excluded `mariadb/` (engine and `data/vietmaple`), `backup.sql`, and `Import_Database.bat`.
+    - Only contains updated `maplestory.jar`, batch runner scripts, `data/scripts/`, and `Client_Patch_Files/`.
+    - Included automated `Apply_Patch.bat` which overwrites only binaries and scripts, guaranteeing that user accounts, characters, and MariaDB tables are 100% safe and preserved.
 
 ---
 
-### 15. ทดสอบความ Portable ขั้นสูงสุด: ถอนการติดตั้ง MySQL ออกจากระบบเครื่อง 100% (Zero-Install Audit)
-- **การทดสอบจริงบนเครื่องที่ไม่มี MySQL:**
-  - ทำการตรวจสอบสถานะระบบหลังจากผู้ใช้ถอนการติดตั้งโปรแกรม MySQL ออกจากระบบปฏิบัติการ Windows (Service `MySQL80` อยู่ในสถานะ Stopped / ไม่มีการรัน MySQL ภายนอกใดๆ)
-  - พอร์ต `3306` ปิดสนิท (`TcpTestSucceeded : False`)
-- **ติดตั้งและรวม Portable MariaDB Engine 10.11.8:**
-  - ทำการติดตั้งชุด Engine `mariadb\` แบบ Standalone Portable Binaries ภายในโฟลเดอร์โปรเจกต์
-  - ตั้งค่าระบบ Auto-Initialize ข้อมูลระบบ (`mariadb-install-db.exe`) อัตโนมัติในครั้งแรก
-  - ปรับปรุงการสร้างไฟล์คอนฟิก `mariadb\my.ini` แบบไดนามิกผ่าน Batch Script เพื่อให้ดึงตำแหน่งพาทปัจจุบัน (`%~dp0`) เสมอ ป้องกันข้อผิดพลาด Path Mismatch เมื่อย้ายโฟลเดอร์หรือก๊อปลง Flash Drive
-- **การจัดการ Lifecycle อัตโนมัติ (Start / Stop Orchestration):**
-  - `1_Start_Server.bat`: ตรวจสอบสถานะฐานข้อมูล หากยังไม่เปิดจะสั่งรัน Portable MariaDB ในเบื้องหลัง และรอจนพอร์ต 3306 พร้อมตอบสนอง ก่อนเริ่มสตาร์ท Java Server
-  - `3_Stop_Server.bat`: สั่ง `mysqladmin shutdown` เพื่อ Flush ข้อมูลจากหน่วยความจำ (Buffer Pool) ลงดิสก์อย่างปลอดภัย 100% ป้องกันข้อมูลตัวละคร/ไอเทมเสียหาย ก่อนปิดเกมเซิร์ฟเวอร์
-  - `Import_Database.bat`: ปรับปรุงให้ตรวจพบและใช้งาน Portable MariaDB โดยตรง นำเข้าฐานข้อมูล `vietmaple` (110 ตาราง) ได้อย่างสมบูรณ์
-- **ผลการทดสอบรันเซิร์ฟเวอร์จริงแบบ Zero-Install:**
-  - รัน `1_Start_Server.bat`:
-    - MariaDB เริ่มทำงานอัตโนมัติบนพอร์ต 3306
-    - HikariCP เชื่อมต่อฐานข้อมูล `vietmaple` สำเร็จใน 280 ms
-    - WZ Data โหลดเสร็จสิ้นใน 27.6 วินาที
-    - JSON Data โหลดเสร็จสิ้นใน 577 ms
-    - พอร์ต Login (`8484`), API (`8483`), Game Channels 1 ถึง 10 (`8585`-`8594`) เปิดให้บริการครบสมบูรณ์
-  - ทดสอบส่งแพ็กเก็ต Handshake: เซิร์ฟเวอร์ตอบกลับ `SECURITY_PACKET_CODE` (39) และ `SET_HOT_FIX` (42) ได้ทันที
-  - รัน `3_Stop_Server.bat`: ปิดเซิร์ฟเวอร์และ MariaDB ได้อย่างหมดจด ปราศจาก Process ตกค้าง
+## 📅 [2026-10-10] Database Schema & Quest Progress Persistence Fix
+
+### 🎯 Scope
+Resolve server crash and database lock wait timeouts occurring on player logout, channel swap, or save.
+
+### 📂 Files Modified
+- [`v214 src/.../QuestProgressItemRequirement.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/quest/progress/QuestProgressItemRequirement.java)
+- [`v214 src/.../QuestProgressLevelRequirement.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/quest/progress/QuestProgressLevelRequirement.java)
+- [`v214 src/.../QuestProgressMobRequirement.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/quest/progress/QuestProgressMobRequirement.java)
+- [`v214 src/.../QuestProgressMoneyRequirement.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/quest/progress/QuestProgressMoneyRequirement.java)
+- [`v214 src/.../AccountQuest.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/AccountQuest.java)
+- [`v214 src/.../Char.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **`questprogressrequirements` Unknown Column `charid`**:
+   - The table `questprogressrequirements` schema does not contain `charid` (only `questid`, `orderNum`, `progresstype`, `unitid`, `requiredcount`, `currentcount`).
+   - Trying to insert `charid` caused `SQLSyntaxErrorException`, leaking DB connections and triggering `Lock wait timeout exceeded`.
+   - Fixed SQL statements to omit `charid` for character-level quests.
+2. **Account Quests**:
+   - Explicitly routed account quests (`isAccount == true`) to `questprogressrequirements_acc` which contains `accid`.
 
 ---
 
-## 📂 โครงสร้างไฟล์สำคัญในโฟลเดอร์โปรเจกต์ (Zero-Install Portable)
+## 📅 [2026-10-09] MoXuan (墨玄) Sub-Skills & Combat Architecture
 
-```text
-MapleStory_Server_Runner/
-├── 1_Start_Server.bat             # ดับเบิลคลิกเพื่อเริ่มรัน (เปิด DB + Server อัตโนมัติ)
-├── 3_Stop_Server.bat              # ดับเบิลคลิกเพื่อปิด (เซฟข้อมูล MariaDB ปลอดภัย)
-├── 4_Server_Control_Panel.bat     # หน้าจอเมนูควบคุมหลัก
-├── v214 src/
-│   ├── 1_Start_Server.bat         # ตัวรันเซิร์ฟเวอร์หลัก (Orchestrator)
-│   ├── 2_Build_Server.bat         # ดับเบิลคลิกเพื่อ Rebuild โค้ดใหม่ด้วย Maven
-│   ├── 3_Stop_Server.bat          # ดับเบิลคลิกเพื่อปิดเซิร์ฟเวอร์และเคลียร์พอร์ต
-│   ├── 4_Server_Control_Panel.bat # หน้าจอเมนูควบคุมหลัก
-│   ├── Import_Database.bat        # เครื่องมือนำเข้าฐานข้อมูล backup.sql อัตโนมัติ
-│   ├── server.properties          # ไฟล์ตั้งค่า Database, IP, Ports, Rates
-│   ├── backup.sql                 # ไฟล์ฐานข้อมูลฉบับสมบูรณ์ (110 ตาราง)
-│   ├── maplestory.jar             # ไฟล์ JAR เซิร์ฟเวอร์พร้อมรัน (~138 MB)
-│   ├── Client_Patch_Files/        # ไฟล์ตัวเปิดเกมฝั่งผู้เล่น (Launcher.exe, Localhost.dll)
-│   ├── mariadb/                   # Portable MariaDB 10.11.8 Engine + Data (Zero-Install)
-│   │   ├── bin/ (mysqld.exe, mysql.exe, mysqladmin.exe)
-│   │   ├── data/ (โฟลเดอร์เซฟข้อมูลตัวละครและไอเทมในเกมตลอดเวลา)
-│   │   └── my.ini (คอนฟิกไดนามิก)
-│   ├── jdk21/                     # Portable JDK 21 (Adoptium Temurin)
-│   ├── apache-maven-3.9.15/       # Portable Apache Maven 3.9.15
-│   ├── data/                      # ข้อมูล WZ, DAT, Scripts (Python), Resources
-│   └── src/                       # ซอร์สโค้ด Java ทั้งหมด
-```
+### 🎯 Scope
+Enable full combat chaining, damage calculations, and secondary weapon equipping for MoXuan.
+
+### 📂 Files Modified
+- [`v214 src/.../MoXuan.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/Jianghu/MoXuan.java)
+- [`v214 src/.../SkillConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`v214 src/.../AttackHandler.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/user/AttackHandler.java)
+- [`v214 src/.../UserStatHandler.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/user/UserStatHandler.java)
+- [`v214 src/.../AdminCommands.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **Invisible Combat Action Sub-Skills**:
+   - Mapped all Tian/Di/Cross sub-skills (`175001002`, `175101001`, `175111003`, `175111011`, `175121001`, `175121006`, etc.) back to main leveling skills in `SkillConstants.java`.
+   - Resolved skill level lookups in `Char.java` and `AttackHandler.java`.
+   - Added automatic sub-skill synchronization on skill level up in `UserStatHandler.java`.
+2. **Level Jumping Commands SP/AP Fix**:
+   - Corrected `@endgame` and `@level` commands to assign proper SP per job tier and cumulative AP up to Lv 260.
+3. **Secondary Weapon**:
+   - Ensured `ensureSecondaryWeapon()` issues True Martial Fist (ID: `1352863`).
 
 ---
 
-## 🧹 การตรวจสอบความพร้อมของระบบ (Final Verification Checklist)
-- [x] **Zero-Install Database**: เครื่องผู้ใช้ไม่ต้องติดตั้ง MySQL หรือโปรแกรมใดๆ เพิ่มเติม 100%
-- [x] **Data Persistence**: ข้อมูลเซฟลงโฟลเดอร์ `mariadb\data\` ตลอดเวลา ย้ายเครื่องหรือใส่ Flash Drive ข้อมูลไม่หาย
-- [x] **Database Schema**: ฐานข้อมูล `vietmaple` มีตารางครบทั้ง 110 ตาราง
-- [x] **Server Engine**: Portable JDK 21 และ `maplestory.jar` โหลด WZ + JSON สมบูรณ์ ปราศจาก Crash
-- [x] **Crash Error 38 Fix**: แก้ไข Opcode 206 และ Beginner Ren Master Level ครบถ้วน
-- [x] **New Jobs Bugfix**: Lynn, Mo Xuan, Kain, Lara ปรับแต่งสเตตัสและแจกไอเทมเริ่มต้นเรียบร้อย
-- [x] **Safe Shutdown**: สคริปต์ `3_Stop_Server.bat` สั่ง Flush MariaDB Buffer Pool ก่อนปิด ไม่เสี่ยง DB Corrupt
-- [x] **Client Ready**: ไฟล์ `Client_Patch_Files` พร้อมนำไปวางในโฟลเดอร์เกม MapleStory v265 เพื่อเข้าเล่นได้ทันที
+## 📅 [2026-10-11] Universal Boss Entry Stabilization & Infinite Entry Architecture
 
-- [x] **Khali V & HEXA 6th Job**: อัปเกรดระบบสกิล V Matrix (Astra, Void Burst, Resonate Ultimatum) และ HEXA Matrix (Wake the Void Origin Cutscene, Absolute Freeze Bind, Party Effect, 10 HEXA Mastery Skills) เรียบร้อย 100%
-- [x] **Incremental Patch Package**: จัดทำแพ็กเกจแพตช์ Server263_Patch_20261009_1307.zip พร้อม 1-Click Installer Apply_Patch.bat
+### 🎯 Scope
+Audit, repair, and simplify boss entries across all MapleStory bosses for offline/LAN gameplay:
+- Fix reported issue: Zakum gatekeeper NPC failing to warp into the altar.
+- Enable direct, natural entry via in-game Boss UI (Content Guide match button) into private instances.
+- Enable unlimited, unrestricted entries (anytime, infinite runs, 0 cooldowns, no entry count lockout).
+- Auto-complete prerequisite storyline quests for all 23 bosses on character login.
+- Provide full exit support via exit NPCs and exit portals.
 
----
+### 📂 Files Modified
+- [`v214 src/.../BossEntry.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/world/boss/BossEntry.java) (New Class)
+- [`v214 src/.../BossConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/BossConstants.java)
+- [`v214 src/.../BossPartyType.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/enums/BossPartyType.java)
+- [`v214 src/.../Field.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/world/field/Field.java)
+- [`v214 src/.../Char.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java)
+- [`v214 src/.../ScriptHandler.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/script/ScriptHandler.java)
+- [`v214 src/.../ScriptManagerImpl.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/scripts/ScriptManagerImpl.java)
+- [`v214 src/.../MigrationHandler.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/user/MigrationHandler.java)
+- [`v214 src/.../Horntail.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/world/boss/Horntail.java)
+- [`v214 src/.../RootAbyss.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/world/boss/RootAbyss.java)
+- [`v214 src/.../ServerConfig.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/ServerConfig.java)
+- [`v214 src/server.properties`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/server.properties)
+- [`v214 src/data/scripts/boss/zakum_accept.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/boss/zakum_accept.py)
+- [`v214 src/data/scripts/boss/Zakum00.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/boss/Zakum00.py)
+- [`v214 src/data/scripts/field/firstenter_bossBlackMage.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/field/firstenter_bossBlackMage.py)
+- 18 NPC exit scripts in [`data/scripts/npc/`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/npc/) (out_hillah, magnus_out, Populatus01, kalosOut, slimeOut, bmbossfield_out, etc.)
+- 7 Portal exit scripts in [`data/scripts/portal/`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/portal/) (pt_magnusDoor, ptDemianOut, pt_bh_bossOut, etc.)
+- [`.agents/skills/maplestory-bug-knowledge/SKILL.md`](file:///c:/Users/admin/Documents/MapleV265Src/.agents/skills/maplestory-bug-knowledge/SKILL.md)
 
-## 🚀 9. การพัฒนาระบบ V Matrix และ HEXA Matrix คลาส 6 (9 ตุลาคม 2569)
+### 🛠️ Issues Identified & Fixes Applied
 
-### 9.1 ภาพรวมการ Audit ทั้ง 35 อาชีพในเซิร์ฟเวอร์
-1. **สถานะการปลดล็อก (LoginJob Status)**:
-   - ปลดล็อกเป็น JobFlag.ENABLED ให้ผู้เล่นสร้างเล่นได้ครบทุกอาชีพ (35 อาชีพ)
-   - ปิดเพียง 2 อาชีพตามแพตช์ทางการของ MapleStory v260+ คือ JETT (ลบออกจากเกม) และ CHASE (Beast Tamer ถูกแทนที่ด้วย Lynn)
-2. **ระบบฐานราก HEXA Matrix (Core Engine & UI)**:
-   - สมบูรณ์ 100%: HexaCore.java โหลดข้อมูล Node, Stat, Cost จาก Etc.wz/HexaCore.img.xml โดยตรง
-   - มีระบบหัก Sol Erda / Sol Erda Fragments และบันทึกลง SQL (hexaskills, hexastats) ผ่าน UserHandler.java
-3. **สถานะความพร้อมของสกิลต่อสู้ในระดับคลาส 6 แยกตามสายอาชีพ**:
-   - **กลุ่มที่เขียนโค้ดต่อสู้คลาส 6 แล้ว (Coded)**: Adele, Kanna, Hayato, Xenon, BattleMage, Kaiser, Phantom, Demon Avenger, Wild Hunter
-   - **กลุ่มที่ได้รับการอัปเกรดใหม่ (Newly Upgraded)**: Khali (คาร์ลี) — เขียนระบบ V Matrix และ HEXA ครบ 100%
-   - **กลุ่มที่ยังรอคิวการพัฒนา (Uncoded Roadmap)**: Lara, Illium, Hoyoung (ทำบางส่วน), Explorer บางสาย และ Resistance บางสาย (ซึ่งตัวเกมอาศัยการส่งดาเมจดิบจาก Client)
+1. **Zakum Gatekeeper Waiting Room Loop**:
+   - **Root Cause**: zakum_accept.py literally contained only sm.startBossUI('Zakum'). When players in the waiting room talked to NPC 2030013, it simply reopened the Boss UI instead of warping them into the battle altar.
+   - **Fix**: Updated zakum_accept.py to inspect current field ID and warp directly to the altar (211042402 -> Easy, 211042400 -> Normal, 211042500 -> Chaos) via sm.enterBoss().
 
-### 9.2 รายละเอียดการอัปเกรดอาชีพ Khali (Khali.java)
-- **6th Job Origin Skill (Wake the Void - 154141504 & 154141505)**:
-  - เมื่อกดใช้ มอบสถานะอมตะสมบูรณ์แบบ (CharacterTemporaryStat.IndieNotDamaged) 7 วินาทีตลอดช่วงคัทซีน
-  - รีเซ็ตคูลดาวน์สกิลตระกูล Void Rush ทั้งหมดทันที
-  - ล็อคและสาปมอนสเตอร์/บอสด้วย MobStat.Freeze (10 วินาที) และ MobStat.OriginDebuff (20 วินาที)
-  - กระจายเอฟเฟกต์คัทซีนคลาส 6 ให้เพื่อนในปาร์ตี้ผ่าน UserLocal.showHexaSkillEff(chr)
-  - กระตุ้นการระเบิดจักรา triggerResonate()
-- **6th Job HEXA Mastery Skills (10 สกิล)**:
-  - บรรจุสกิล HEXA เข้าในวงคอมโบ isArtsSkill(), isHexSkill(), isVoidSkill():
-    - Arts Flurry VI (154141000), Crescentum VI (154141001), Triple Bash VI (154141002) -> ลดคูลดาวน์สกิล Hex 1 วินาทีทุกฮิต
-    - Chakram Sweep VI (154141011), Chakram Split VI (154141009), Chakram Fury VI (154141010), Death Blossom VI (154141012) -> ถูกลดคูลดาวน์เมื่อใช้ Arts
-    - Void Blitz VI (154141008) -> จุดระเบิดจักราเมื่อพุ่งผ่าน
-    - Hexa Deceiving Blade (154141014) -> มอบบัฟ PAD 30 หน่วย 180 วินาที
-- **5th Job V Matrix Enhancements**:
-  - Arts: Astra (400041087): มอบสถานะลดดาเมจจากการโจมตี 75% (IndieDamReduceR) ระหว่างร่าย
-  - Void Burst (400041084): มอบสถานะอมตะ 3 วินาที (IndieNotDamaged) พร้อมจุดชนวนจักรา
-  - Resonate: Ultimatum (400041089): ฟังก์ชัน spawnResonateUltimatumVortices() เสกวงจักรา Chakri ทันที 4 จุดรอบตัว และจุดระเบิดจักราทำดาเมจมหาศาลทันที
-  - Hex: Pandemonium (400041082): บรรจุเข้าใน Hex Skills เพื่อรับผลลดคูลดาวน์จาก Arts ได้อย่างถูกต้อง
+2. **First-Enter Script Timing Bug**:
+   - **Root Cause**: Char.warp() called toField.addChar(this) before setField(toField). Field.addChar executed onFirstUserEnter while chr.getField() was still the OLD map. Bosses spawned via scripts (Magnus, Cygnus, Lotus, Damien, Lucid, Will, Black Mage) either failed or spawned in the prior map.
+   - **Fix**: Extracted execFirstUserEnterScript from addChar and placed it in Char.warp right after spawnLifesForChar and setField.
 
-### 9.3 ข้อมูลแพ็กเกจแพตช์อัปเดต (Distribution Package)
-- **โฟลเดอร์แพตช์**: Patches/Server263_Patch_20261009_1307/
-- **ไฟล์ ZIP พร้อมแจกจ่าย**: Patches/Server263_Patch_20261009_1307.zip (ขนาดเพียง 121.50 MB)
-- **วิธีการใช้งาน**: แตกไฟล์แล้วดับเบิลคลิก Apply_Patch.bat เพื่อติดตั้งลงใน Server263 ได้ภายใน 2 วินาที โดยไม่ต้องแปลงหรือบีบอัดไฟล์ WZ ใหม่แม้แต่น้อย
-- [x] **Lara V & HEXA 6th Job**: อัปเกรดระบบสกิล V Matrix (Big Stretch, Land's Connection, Mountain Embrace -60% Damage Reduction, Vine Coil 10s Stun Bind) และ HEXA Matrix (Cornucopia Origin Cutscene 7s Invincibility, Absolute Freeze Bind 10s, Origin Debuff 20s, 10 HEXA Mastery Skills) คอมไพล์ผ่าน 100%
-- [x] **Illium V & HEXA 6th Job**: อัปเกรดระบบสกิล 6th Job Origin Excidium (7s Invincibility, 10s Absolute Freeze Bind, 20s Origin Debuff, Party Cutscene Effect), Mytocrystal Expanse (6s Invincibility, Crystal Expanse Area 20s, Umbral Brand Procs), 10 HEXA Mastery Skills (Radiant Javelin, Winged Javelin, Longinus Spear, Reaction Destruction/Domination, Vortex Wings, Ex, Machina, Deus, Longinus Zone, Umbral Brand III), และ V-Skill Crystal Gate คอมไพล์ผ่าน 100%
-- [x] **Ark V & HEXA 6th Job**: อัปเกรดระบบสกิล 6th Job Origin Whisper of Deepest Abyss (7s Invincibility, 10s Absolute Freeze Bind, 20s Origin Debuff, Party Cutscene Effect), Primordial Abyss (8s Invincibility, 30s Hold Specter Gauge, Specter Mode trigger), 20+ HEXA Mastery Skills (HEXA Basic / Scarlet / Gust / Abyssal Charge Drive + Spell Bullet logic, Grievous Wound, Insatiable Hunger, Unbridled Chaos, Endless Agony, Blissful Restraint, Vengeful Hate Wreckage, Ominous Nightmare / Dream) คอมไพล์ผ่าน 100%
-- [x] **HoYoung V & HEXA 6th Job**: อัปเกรดระบบสกิล 6th Job Origin Millennium Spirit (7s Invincibility, 10s Absolute Freeze Bind, 20s Origin Debuff, Party Cutscene Effect), Sage: Apotheosis (6s Invincibility, Max Talisman/Scroll energy), 20+ HEXA Mastery Skills (เชื่อมโยงระบบธาตุสวรรค์ / ปฐพี / มนุษยโลก Heaven, Earth, Humanity, Talisman, Scroll เข้าสู่วงคอมโบอัตโนมัติ) คอมไพล์ผ่าน 100%
-- [x] **Kain V & HEXA 6th Job**: อัปเกรดระบบสกิล 6th Job Origin Churning Malice (7s Invincibility, 10s Absolute Freeze Bind, 20s Origin Debuff, Party Cutscene Effect), Total Annihilation (6s Invincibility, Death's Blessing), 20+ HEXA Mastery Skills (Falling Dust, Poison Needle, Strike Arrow, Scattering Shot, Tearing Knife, Chain Sickle, Dragon Fang, Death's Blessing, Shaft Break, Lasting Grudge, Phantom Blade, Chasing Shot, Unseen Sniper) พร้อมจัดเข้ากลุ่ม Possession / Execution / WhisperShot ครบถ้วน คอมไพล์ผ่าน 100%
-- [x] **Updated Patch Package**: สร้างแพตช์อัปเดตใหม่ Server263_Patch_20261009_1419.zip (121.51 MB) รวมโค้ด Khali + Lara + Illium + Ark + HoYoung + Kain และระบบคำสั่งทดสอบครบถ้วน
-- [x] **Private Developer Testing Command (!endgame)**: เพิ่มคำสั่งลับเฉพาะผู้พัฒนาที่มีสิทธิ์ Admin (`requiredType = Admin`) ใน `AdminCommands.java` ปลอดภัย ไม่กระทบไฟล์สาธารณะ:
-  - `!endgame` หรือ `!test6`: บูสต์ตัวละครปัจจุบันเป็น Lv.260 + ปลดล็อกเควสต์คลาส 5 (1460-1466) & คลาส 6 (1488) + สกิลคลาส 1-4 เต็ม + สกิล V-Matrix และ HEXA คลาส 6 (Origin Lv.30 + HEXA Mastery Lv.30) + เงิน 2 พันล้าน Mesos + Sol Erda x20 + Sol Erda Fragments x1,000 + อาวุธ Arcane Umbra
-  - รองรับการเปลี่ยนอาชีพและรับสกิลคลาส 6 ทันทีในคำสั่งเดียว: `!endgame khali`, `!endgame lara`, `!endgame illium`, `!endgame ark`, `!endgame hoyoung`, `!endgame kain`
+3. **Universal Direct Boss Entry Architecture (BossEntry.java)**:
+   - **Fix**: Implemented BossEntry.enter(Char, BossPartyType, boolean) routing BOSS_UI_REQUEST and CHECK_BOSS_PARTY_BY_SCRIPT directly into private instances with verified battle maps, auto-party creation, instance timers, and fallback boss spawning.
 
-### 9.4 แก้ไขข้อผิดพลาดและปรับปรุงความเสถียรของคำสั่งลับ (!endgame)
-- **แก้ไข ClassCastException (`Integer cannot be cast to Short`)**: ใน `AdminCommands.setupEndgame` ขณะส่งแพ็กเก็ต `Stat.job` ตัวเกมต้องการข้อมูลประเภท `Short` จึงทำการแปลง `targetJob.shortValue()` ให้ตรงตามสเปกแพ็กเก็ตของ WvsContext
-- **แก้ไขบั๊ก String Format ใน `Char.java`**: แก้ไขข้อผิดพลาดในเมธอด `addSkill` บรรทัดที่ 3537 ที่มี Format specifier `%d` เกิน ซึ่งอาจทำให้เกิด `MissingFormatArgumentException` เมื่อค้นหาไอดีสกิลไม่พบ
-- **เพิ่มระบบ Fault-Tolerance**: ครอบบล็อก `try-catch` อิสระในทุกส่วนของการทำงาน (การเปลี่ยนอาชีพ, ปรับเลเวล, บันทึกเควสต์, แม็กซ์สกิล, มอบสกิลคลาส 6, และแจกไอเทม) เพื่อป้องกันไม่ให้ข้อผิดพลาดจุดใดจุดหนึ่งขัดจังหวะการทำงาน
-- **อัปเดตแพ็กเกจแพตช์**: รัน `tools/create_patch.py` สร้างแพตช์ล่าสุด `Patches/Server263_Patch_20261009_1437.zip` (121.51 MB)
-- **อัปเดตไฟล์เซิร์ฟเวอร์**: คอมไพล์ผ่าน 100% (`BUILD SUCCESS`) และเขียนทับ `Server263/maplestory.jar` เรียบร้อยแล้ว
+4. **Difficulty Alignment (Slime & Kalos)**:
+   - **Root Cause**: Client BossParty.img sends difficulty 3 (Chaos) for Guardian Angel Slime and Kalos. Server had them as Hard (2), returning 'Boss not found'.
+   - **Fix**: Renamed SLIME_HARD -> SLIME_CHAOS and KALOS_HARD -> KALOS_CHAOS with BossPartyDifficultyType.Chaos (3).
 
-### 9.5 การออดิตและแก้ไขระบบคลาส 6 (HEXA Matrix) และชุดไอเทมทดสอบครบวงจร
-- **ผลการออดิต (Audit Findings)**:
-  1. **ไอเทมผิดอาชีพ**: ในเวอร์ชันก่อนหน้านี้ รหัสอาวุธ Arcane Umbra ของ Khali (`1292024` -> เป็นไอดีพัด HoYoung ที่ไม่มีจริง), Lara (`1372230` -> ไม่มีจริง), Illium (`1282024` -> ไม่มีจริง), Ark (`1482223` -> เป็นไอเทมเลเวล 140 Shark Tooth Wild Talon), HoYoung (`1272023` -> โซ่ Cadena) และ Kain (`1214022` -> ไม่มีจริง) ทำให้ตัวละครได้รับอาวุธผิดประเภทหรือไม่ได้รับอาวุธ ส่งผลให้ไม่สามารถร่ายสกิลโจมตีเพื่อทดสอบได้
-  2. **ขาดอาวุธรอง (Secondary Weapon) และตราสัญลักษณ์ (Emblem)**: ตัวละครที่บูสต์ไม่มีอาวุธรองและตราสัญลักษณ์ที่จำเป็นต่อการแสดงผลและใช้งานสกิลบางประเภท
-  3. **ขาดชุดเกราะป้องกัน (Armor Set)**: ตัวละครไม่มีชุดเกราะป้องกัน ทำให้การทดสอบในแมพมอนสเตอร์ระดับสูงทำได้ยาก
-  4. **รหัสสกิล HEXA ไม่ถูกต้อง (Dummy/Non-existent IDs)**: มีการใช้ไอดีจำลองช่วง `xxx40000` (เช่น `154140000`, `162140000` ฯลฯ) ซึ่งไม่มีอยู่ในไฟล์ `.dat` ของ WZ ทำให้เมธอด `SkillData.getSkillDeepCopyById()` คืนค่า `null` และไม่ได้รับสกิล HEXA Mastery จริง
-  5. **Adele 6th Job Origin Skill (Maestro - 151141500)**: เพิ่มระบบสถานะอมตะสมบูรณ์แบบ 7 วินาที (`IndieNotDamaged`), แสดงเอฟเฟกต์คัทซีนปาร์ตี้ (`UserLocal.showHexaSkillEff`), และสถานะหยุดการเคลื่อนไหวสมบูรณ์แบบ 10 วินาที (`MobStat.Freeze`) กับลดต้านทานบอส 20 วินาที (`MobStat.OriginDebuff`) ให้ครบตามมาตรฐาน
-- **การแก้ไขและปรับปรุง (Comprehensive Fixes)**:
-  1. **แก้ไขรหัสอาวุธ Arcane Umbra, อาวุธรอง และตราสัญลักษณ์ตรงสาย 100%**:
-     - **Khali**: อาวุธ `1404018` (Arcane Umbra Chakram) + อาวุธรอง `1354033` (Infinite Hex Seeker) + ตราสัญลักษณ์ `1191113` (Gold Guardian Emblem) + ชุดเกราะ Arcane Umbra Thief ครบ 6 ชิ้น
-     - **Lara**: อาวุธ `1372228` (Arcane Umbra Wand) + อาวุธรอง `1354023` (Radiant Four-Jade Ornament) + ตราสัญลักษณ์ `1190561` (Gold Earthseer Emblem) + ชุดเกราะ Arcane Umbra Mage ครบ 6 ชิ้น
-     - **Illium**: อาวุธ `1282017` (Arcane Umbra Lucent Gauntlet) + อาวุธรอง `1353503` (Glory Lucent Wings) + ตราสัญลักษณ์ `1190532` (Gold Crystal Emblem) + ชุดเกราะ Arcane Umbra Mage ครบ 6 ชิ้น
-     - **Ark**: อาวุธ `1482221` (Arcane Umbra Knuckle) + อาวุธรอง `1353603` (Ultimate Path) + ตราสัญลักษณ์ `1190540` (Gold Abyssal Emblem) + ชุดเกราะ Arcane Umbra Pirate ครบ 6 ชิ้น
-     - **HoYoung**: อาวุธ `1292018` (Arcane Umbra Super Ritual Fan) + อาวุธรอง `1353803` (Moonstone Fan Tassel) + ตราสัญลักษณ์ `1190550` (Gold Three Paths Emblem) + ชุดเกราะ Arcane Umbra Thief ครบ 6 ชิ้น
-     - **Kain**: อาวุธ `1214018` (Arcane Umbra Whispershot) + อาวุธรอง `1354013` (D100 Custom Weapon Belt) + ตราสัญลักษณ์ `1190554` (Gold Hitman Emblem) + ชุดเกราะ Arcane Umbra Archer ครบ 6 ชิ้น
-     - **Adele**: อาวุธ `1213018` (Arcane Umbra Bladecaster) + อาวุธรอง `1354003` (Noble Bladebinder) + ตราสัญลักษณ์ `1190552` (Gold Knight's Emblem) + ชุดเกราะ Arcane Umbra Warrior ครบ 6 ชิ้น
-     - **Hayato, Kanna, Xenon และอาชีพอื่นๆ**: รองรับคำสั่งตรงและมีระบบ Fallback ตรวจจับสายอุปกรณ์ (`isWarriorEquipJob`, `isMageEquipJob`, `isArcherEquipJob`, `isThiefEquipJob`, `isPirateEquipJob`) มอบอาวุธและชุดเกราะตรงสาย 100%
-  2. **แก้ไขรหัสสกิล HEXA Matrix และ V-Matrix ให้ตรงตามดาต้า WZ/DAT 100%**:
-     - นำรหัสสกิลจริงทั้งหมดจาก Job Class มาบันทึกใน `setupEndgame` ทำให้ระบบมอบสกิลคลาส 6 HEXA Mastery และ Origin ทุกสกิลที่ระดับ Lv.30 เต็มได้ครบ 100%
-  3. **มอบไอเทมจำเป็นสำหรับการทดสอบเพิ่มเติม**:
-     - หิน Nodestone x100 (`2435719`)
-     - ยา Power Elixir x1000 (`2000005`)
-     - Sol Erda Energy x20 (`2636421`) และ Sol Erda Fragment x1000 (`4009548`)
-     - ส่งแพ็กเก็ต Add Item พร้อมอัปเดต Client Inventory ในทันที
-  4. **คอมไพล์และอัปเดตแพ็กเกจแจกจ่าย**:
-     - คอมไพล์ผ่าน 100% (`BUILD SUCCESS`)
-     - เขียนทับ `Server263/maplestory.jar`
-     - สร้างแพตช์อัปเดตล่าสุด `Patches/Server263_Patch_20261009_1510.zip` (121.51 MB) พร้อมใช้งานและทดสอบได้ทันที
+5. **Auto-Unlock Prerequisite Quests**:
+   - **Fix**: Added unlockBossPrerequisites(Char) completing all 23 storyline prequests on login migration if server.bossUnlockPrequests=true.
 
+6. **Complete Boss Exit Coverage**:
+   - **Fix**: Created 18 missing exit NPC scripts and 7 missing exit portal scripts invoking sm.exitBoss().
 
 ---
 
-### 9.6 การออดิตและแก้ไขเชิงลึกระบบ HEXA Matrix รายอาชีพ (Batch 1: Lara & Khali) และแก้ไขวิกฤติ Packet Desync
+## 📅 [2026-10-11] Night Walker: Dark Omen & Shadow Bat Dual-Mode Attack Architecture
 
-#### 🔍 1. การวิเคราะห์สาเหตุเชิงลึกของบั๊ก "มอนสเตอร์หยุดเดิน" และ "ใช้หรือลากไอเทมไม่ได้" (Root Cause Analysis)
-- **ปัญหาที่พบ:** ผู้เล่นทดสอบสกิล Origin หรือสกิลบางอย่างแล้วมอนสเตอร์ทั้งหมดหยุดเคลื่อนไหว ไม่ตอบสนอง และไม่สามารถกดใช้ยา หรือคลิกลากไอเทมในช่องเก็บของได้
-- **สาเหตุทางเทคนิค (Technical Root Cause):**
-  1. ในการส่งแพ็กเก็ตสถานะมอนสเตอร์ `MobTemporaryStat.encode` ได้มีการใส่ `MobStat.OriginDebuff (bit 133)` เข้าไปใน Collection ของมอนสเตอร์
-  2. ใน `MobStat.java` นั้น `OriginDebuff` **ไม่ได้อยู่ในรายการ `MobStat.orders`** ทำให้เมธอด `cts.getOrder()` คืนค่า `-1`
-  3. ผลลัพธ์คือ ฝั่งเซิร์ฟเวอร์เข้ารหัส Bitmask โดยประกาศว่ามีสถานะบิต 133 แต่ในลูปการส่งข้อมูลกลับข้ามการเขียนข้อมูล 10 ไบต์ (`nOption`, `rOption`, `tOption`) และดันไปเขียน `encodeShort(xOption)` ที่ส่วนท้าย
-  4. ตัวเกมฝั่ง Client (`MapleStory.exe`) เมื่อถอดรหัสบิต 133 จึงพบ Buffer Underflow เกิด `CXX_EXCEPTION` ขึ้นใน Thread รับส่งแพ็กเก็ต (บันทึกใน `CrashLog.txt`) ทำให้ Client หยุดประมวลผลแพ็กเก็ตทั้งหมดจากเซิร์ฟเวอร์
-  5. เมื่อเครือข่ายหยุดส่ง/รับข้อมูล ผู้เล่นจึงเห็นมอนสเตอร์หยุดเดิน และการกระทำใดๆ ที่ต้องรอการยืนยันสถานะจากเซิร์ฟเวอร์ (`exclRequestSent` เช่น การลากไอเทมหรือกดยา) จะค้างในสถานะ Action Lock ตลอดไป
-- **แนวทางแก้ไขระดับโครงสร้าง (Permanent Fix):**
-  - กำหนดให้ `OriginDebuff` เป็นระบบนับคูลดาวน์ต้านทาน 100 วินาทีแบบ **Server-side Only** ภายใน `mob.getLastDebuffTimes()` เท่านั้น โดยห้ามส่งเข้าแพ็กเก็ตเน็ตเวิร์กไปยัง Client โดยเด็ดขาด
-  - ใน `MobTemporaryStat.java` เพิ่มระบบป้องกันอัตโนมัติ `map.remove(OriginDebuff)` ก่อนประกอบแพ็กเก็ต และตัด `encodeShort` สำหรับ OriginDebuff ออกอย่างถาวร
-  - การหยุดการเคลื่อนไหวของมอนสเตอร์ในสกิล Origin ให้ส่งสถานะ `MobStat.Freeze` ซึ่งเป็นสถานะมาตรฐานที่เสถียรและทำงานได้สมบูรณ์ 100%
+### 🎯 Scope
+Diagnose, analyze, and fix Night Walker's Dark Omen damage failure occurring when the Shadow Bat buff is active.
 
----
+### 📂 Files Modified
+- [`v214 src/.../NightWalker.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/cygnus/NightWalker.java)
+- [`v214 src/.../SkillConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`v214 src/.../SkillHandler.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/user/SkillHandler.java)
+- [`v214 src/.../Mob.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/life/mob/Mob.java)
+- [`.agents/skills/maplestory-bug-knowledge/SKILL.md`](file:///c:/Users/admin/Documents/MapleV265Src/.agents/skills/maplestory-bug-knowledge/SKILL.md)
 
-#### 🌟 2. ผลการออดิตและแก้ไขรายอาชีพ (Job-by-Job Audit: Batch 1)
+### 🛠️ Issues Identified & Fixes Applied
 
-##### 🍃 อาชีพที่ 1: Lara (ลาร่า - Job ID: 16212)
-- [x] **สกิล Origin: Cornucopia (풍년 - 162141502 / 162141503)**:
-  - แก้ไขบล็อก `handleAttack` ให้เรียกใช้ `mts.addStatOptions(mob, MobStat.Freeze, opt1)` โดยตรง ไม่ส่ง `OriginDebuff` ป้องกันบั๊กหลุด/ค้าง 100%
-  - มอบสถานะอมตะสมบูรณ์แบบ 7 วินาที (`IndieNotDamaged`) ในช่วงคัตซีน
-  - เชื่อมต่อระบบคูลดาวน์ต้านทาน 100 วินาทีฝั่งเซิร์ฟเวอร์ผ่าน `Job.isOriginSkill()`
-  - แสดงเอฟเฟกต์คัตซีนสกิลเต็มจอแก่สมาชิกในปาร์ตี้ (`UserLocal.showHexaSkillEff`)
-- [x] **ป้องกัน Action Lock ในสกิล Active & Utility**:
-  - สกิล `Big Stretch (400021122)`, `Unconstrained Dragon Vein (162121042)`, `Dragon Vein Reading (162101000)`, `Dragon Vein Conversion (162121001)` เพิ่มการส่ง `chr.dispose()` คืนสิทธิ์การควบคุมแก่ Client ทันที
-  - เพิ่มบล็อก `default: chr.dispose();` ใน `Lara.handleSkill` เพื่อป้องกันอาการติดสถานะรอ (Pending Request) เมื่อร่ายสกิลที่ไม่มีบัฟ
-- [x] **ตรวจสอบสกิล HEXA Mastery ครบทั้ง 8 สกิล**:
-  - `HEXA Eruption: Heaving River (162141001 / 162141002)`
-  - `HEXA Eruption: Whirlwind (162141005 / 162141006)`
-  - `HEXA Eruption: Sunrise Well (162141008 / 162141009)`
-  - `HEXA Dragon Vein Absorption (162141010)`
-  - `HEXA Absorption: River Puddle Douse (162141012 / 162141013)`
-  - `HEXA Absorption: Fierce Wind (162141015 / 162141016)`
-  - `HEXA Absorption: Sunlit Grain (162141018 / 162141019)`
-  - `HEXA Wakeup Call (162141020)`
+1. **Dark Omen Dual-Mode Skill Structure (Normal vs Shadow Bat Active)**:
+   - **Root Cause**: In MapleStory v265 WZ data, Dark Omen has two distinct summon modes:
+     - **Mode 1 (Shadow Bat OFF)**: Skill ID `14121003` (or HEXA `14141017`). Summons a dense pack of bats for **7 seconds** that attacks every 0.3s (6 lines of high damage).
+     - **Mode 2 (Shadow Bat ON)**: Skill ID `14121012` (or HEXA `14141020`). Summons a weakened pack of bats for **60 seconds** that attacks every 1.5s (2 lines of damage) and periodically spawns Shadow Bats.
+   - **The Bug**:
+     - `NightWalker.java` only defined and handled `14121003` / `14141017`. It had no knowledge of `14121012` or `14141020`.
+     - When the client has `NightWalkerBat` active, client-side logic sends summon attack packets with skill ID `14121012` / `14141020`.
+     - Because `SkillConstants.getActualSkillIDfromSkillID` did not map `14121012` $\rightarrow$ `14121003`, the server queried the player's learned skill level for `14121012` (which is an invisible sub-skill not in the skill book), resolving `slv = 0` and dropping or nullifying the attack damage.
+     - In `NightWalker.handleSkill`, only `DARK_OMEN` (`14121003`) was spawned with a 7-second term. When Shadow Bat was on, the client expected the 60-second summon (`14121012`), leading to summon ID desynchronization between client and server.
+   - **Fix**:
+     - Added constants `DARK_OMEN_BAT_ACTIVE = 14121012` and `HEXA_DARK_OMEN_BAT_ACTIVE = 14141020`.
+     - In `SkillConstants.getActualSkillIDfromSkillID`, mapped `14121012` $\rightarrow$ `14121003` and `14141020` $\rightarrow$ `14141017`.
+     - In `SkillHandler.handleUserSkillUseRequest`, resolved `effectiveSkillId` to parent skills so sub-skills correctly resolve learned `slv` and manage cooldowns.
+     - In `NightWalker.handleSkill`, clear any previous Dark Omen summons, inspect `tsm.hasStat(NightWalkerBat)`, and spawn the appropriate mode: `14121012` / `14141020` (60s term) if active, or `14121003` / `14141017` (7s term) if inactive.
+     - In `NightWalker.handleAttack`, recognized all 4 IDs, excluded all from self-cooldown reduction and shadow spear trigger, and fixed bat spawn count from WZ stat `u`.
+     - In `Mob.handleDamageReflect`, added `14121012` and `14141020` to the reflection immune list.
+     - In `clearAllBats()` and `shadowBats()`, used precise `removeLife(bat.getObjectId(), false)` to avoid inadvertent deletion of other active summons.
 
-##### ⚔️ อาชีพที่ 2: Khali (คาลี - Job ID: 15412)
-- [x] **สกิล Origin: Wake the Void (헤็ก스: 마그눔 - 154141504 / 154141505)**:
-  - แก้ไขบล็อก `handleAttack` ให้เรียกใช้ `mts.addStatOptions(mob, MobStat.Freeze, opt1)` โดยตรง ไม่ส่ง `OriginDebuff` ป้องกันแพ็กเก็ตผิดพลาด 100%
-  - มอบสถานะอมตะสมบูรณ์แบบ 7 วินาที (`IndieNotDamaged`) ในช่วงคัตซีน
-  - รีเซ็ตคูลดาวน์สกิลตระกูล Void Rush ทั้งหมดอัตโนมัติ
-  - กระตุ้นระบบ Resonate ทันทีเพื่อสร้างความเสียหายต่อเนื่องรอบตัว
-  - แสดงเอฟเฟกต์คัตซีนแก่สมาชิกในปาร์ตี้ (`UserLocal.showHexaSkillEff`)
-- [x] **ระบบ Chakri Vortex & Resonate**:
-  - สกิลสาย Arts ลดคูลดาวน์ของสกิล Hex ทั้งหมดลง 1 วินาทีต่อการโจมตีโดนมอนสเตอร์
-  - เสก Chakri Vortex ลงบนตำแหน่งมอนสเตอร์ที่โดนโจมตีด้วยโอกาส 60%
-  - เมื่อพุ่งผ่านด้วย Void Rush หรือกด Origin จะดูดซับ Vortex ฟื้นฟู 5% HP/MP และทำดาเมจ Resonate ทันที
-  - เพิ่ม `chr.dispose()` ใน `Khali.handleSkill` เพื่อป้องกัน Action Lock ทุกกรณี
-- [x] **ตรวจสอบสกิล HEXA Mastery ครบทั้ง 10 สกิล**:
-  - เพิ่มรหัสสกิล `HEXA Resonate (154141013)` เข้าในระบบ `!endgame` ที่เคยตกหล่น
-  - สกิลครบถ้วน: `HEXA Arts: Flurry (154141000)`, `HEXA Arts: Crescentum (154141001)`, `HEXA Arts: Triple Bash (154141002)`, `HEXA Void Blitz (154141008)`, `HEXA Chakram Split (154141009)`, `HEXA Chakram Fury (154141010)`, `HEXA Chakram Sweep (154141011)`, `HEXA Death Blossom (154141012)`, `HEXA Resonate (154141013)`, `HEXA Deceiving Blade (154141014)`
+### 🧪 Verification & Live Test Run
+- Compiled using portable JDK 21 & Maven 3.9.15: `[INFO] BUILD SUCCESS` (853 source files, 0 errors).
+- Built fat jar: `bin/maplestory-219.5-jar-with-dependencies.jar` (138 MB) and synchronized into `v214 src/maplestory.jar`.
+- Verified live server startup:
+  - MariaDB daemon alive on port `33066`
+  - Login listening on port `8484`
+  - API listening on port `8483`
+  - World 19 Channels 1-10 listening on ports `8585` – `8594`
 
 ---
 
-#### 💎 3. ปรับปรุงไอเทมทดสอบระดับมหาศาล (Massive Testing Items Boost)
-- ปรับเปลี่ยนปริมาณไอเทมในคำสั่ง `!endgame` และเพิ่มคำสั่งใหม่ `!hexaitems` / `!solerda`:
-  - **Sol Erda Energy (`2636421`)**: เพิ่มจาก 20 เป็น **500 ก้อน**
-  - **Sol Erda Fragments (`4009548`)**: เพิ่มจาก 1,000 เป็น **20,000 ชิ้น**
-  - **Nodestones (`2435719`)**: เพิ่มจาก 100 เป็น **2,000 ชิ้น**
-  - **Power Elixirs (`2000005`)**: เพิ่มจาก 1,000 เป็น **5,000 ขวด**
-  - **Mesos**: มอบทันที **10,000,000,000 Mesos (1 หมื่นล้าน Mesos)**
-- **คำสั่งใหม่เฉพาะ Admin**: พิมพ์ `!hexaitems` หรือ `!solerda` หรือ `!hexastones` ได้ตลอดเวลาเมื่อไอเทมหินหรือผงอัปสกิลหมด โดยไม่ต้องรีเซ็ตตัวละครใหม่
+## 📅 [2026-10-11] Character Creation & Login Crash Fix (Hoyoung / All Jobs)
+
+### 🎯 Scope
+Diagnose and resolve instant game crash ("เกมส์เด้ง") occurring right after creating and logging into a Hoyoung character (`HoyOFFLINE`), as analyzed from live server logs.
+
+### 📂 Files Modified
+- [`v214 src/.../Char.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java)
+- [`v214 src/.../MigrationHandler.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/user/MigrationHandler.java)
+- [`.agents/skills/maplestory-bug-knowledge/SKILL.md`](file:///c:/Users/admin/Documents/MapleV265Src/.agents/skills/maplestory-bug-knowledge/SKILL.md)
+
+### 🛠️ Issues Identified & Fixes Applied
+
+1. **Root Cause Analysis from Live Console Logs**:
+   - Analyzed character creation & spawn log for `HoyOFFLINE` (Job ID: `HOYOUNG_1 = 16400`).
+   - Character creation, selection, map load (Cheong-un / `explorationPoint`), and initial stat setups all succeeded.
+   - At exactly 2.5 seconds after login:
+     ```
+     [Out v.265] | HoyOFFLINE | EFFECT, 1173/0x495 | 0F FF FF FF FF
+     ... (22 consecutive identical EFFECT packets) ...
+     127.0.0.1 forcibly closed the game.
+     ```
+   - **Mechanism of Failure**:
+     1. In `MigrationHandler.java:161`, `BossEntry.unlockBossPrerequisites(currentChar)` was scheduled 2500ms after login.
+     2. Brand new characters had 0 of the 23 boss prequests completed, triggering `chr.completeQuest(questId, true)` for all 22 uncompleted quests.
+     3. In `Char.java:13020`, `completeQuest` called `write(UserPacket.effect(Effect.questCompleteEffect()))` unconditionally outside `if (!noRewards)`.
+     4. `Effect.questCompleteEffect()` sets `UserEffectType.QuestComplete` (byte `15` / `0x0F`), which has an empty body in `Effect.encode`, and `UserPacket.effect` appends `outPacket.encodeInt(-1)` (`FF FF FF FF`), forming `0F FF FF FF FF`.
+     5. The 64-bit v265 client's `CUserLocal::OnEffect` encountered a fatal Access Violation when bombarded with 22 consecutive malformed `QuestComplete` effect packets, crashing the client instantly.
+
+2. **Fixes Applied**:
+   - **Removed `questCompleteEffect` in `Char.java`**: Removed `write(UserPacket.effect(Effect.questCompleteEffect()))` and remote broadcast from `Char.completeQuest`. Modern MapleStory v265 handles quest completion visual/audio effects natively client-side via `WvsContext.questRecordMessage(quest)`.
+   - **Level Guard on Login Pre-Quest Auto-Unlocker in `MigrationHandler.java`**: Added `chr.getLevel() >= 100` condition before scheduling `unlockBossPrerequisites` on login. Level 1 characters and characters playing tutorial storyline quests are no longer flooded with 23 endgame boss quest completions.
+   - Recompiled all 853 source files, rebuilt `maplestory.jar` (138MB), and restarted the live server.
 
 ---
 
-#### 🚨 4. วิเคราะห์และแก้ไขบั๊กเกมเด้ง (Client Crash on Login / Field Enter Fix)
-- **สาเหตุของอาการเกมเด้ง (Root Cause Analysis)**:
-  1. **Error 38 (Buffer Underflow) ใน Achievement System**: ใน `Char.java:4913` มีการเรียก `AchievementHandler.handleFieldEnter(this, toField.getId());` ซึ่งมีคอมเมนต์เดิมระบุไว้ชัดเจนว่า `// ?? err38` เมื่อสร้างตัวละครใหม่ (เช่น `KahliOFFLINE`) ที่ยังไม่เคยเข้าเมือง Henesys ระบบจะส่งแพ็กเก็ต `MESSAGE (ACHIEVEMENT_INIT / ACHIEVEMENT_DATA_MESSAGE)` ที่โครงสร้างไบต์ไม่ตรงกับ Client v265 ทำให้ไคลเอนต์เกิดบัฟเฟอร์ขาด (`0xE06D7363` C++ exception ใน `CInPacket::Decode`) แล้วส่งรายงาน Error 38 ก่อนพังด้วย Heap Corruption (`0xC0000374`)
-  2. **Mo Xuan Extra System Stack Packets รั่วไหล**: ใน `Char.java:4907-4910` มีการส่ง `sendExtraSystemStack` และ `sendExtraSystemInit` (Opcode 545) ให้กับทุกตัวละครที่วาร์ปเข้าแมพ ทั้งที่ไม่ใช่อาชีพ Mo Xuan
-  3. **Field Script Undefined Chat/Dispose Race**: แผนที่ Henesys มีสคริปต์ `explorationPoint` ใน WZ เมื่อเซิร์ฟเวอร์ไม่มีไฟล์นี้จะตกไปที่ `undefined(ScriptType.Field)` ซึ่งส่งข้อความแชตสีแดงและ `chr.dispose()` แทรกระหว่างการโหลดแมพ
-  4. **Action Lock ในสกิล Origin**: ใน `Lara.java` และ `Khali.java` เมื่อกดร่ายสกิลคัตซีน Origin ขาดการเรียก `chr.dispose()` ทำให้ตัวละครค้างในสถานะ Action Lock ลากไอเทมหรือคลิกใช้ของไม่ได้
-- **การแก้ไขที่ดำเนินการ (Applied Fixes)**:
-  - [x] **ปิดการทำงานของ `AchievementHandler.handleFieldEnter`**: ป้องกันการส่งแพ็กเก็ต Achievement ผิดโครงสร้างที่ทำให้ Client v265 Error 38
-  - [x] **จำกัดเงื่อนไข Mo Xuan Extra System Packets**: ครอบด้วย `if (JobConstants.isMoXuan(getJob()))` ป้องกันแพ็กเก็ตแปลกปลอมรบกวนอาชีพอื่น
-  - [x] **แก้ไข `ScriptManagerImpl.undefined` สำหรับ `Field`**: ให้ `case Field: break;` ข้ามไปอย่างเงียบสงบโดยไม่ส่งแชตเตือนหรือดิสโพสแทรกการเข้าแมพ
-  - [x] **เพิ่ม `chr.dispose()` ใน `CORNUCOPIA` (Lara) และ `WAKE_THE_VOID` (Khali)**: ปลดล็อกการควบคุมตัวละครทันทีหลังร่ายสกิล Origin
-  - [x] **เปิด Packet Logging & ปรับปรุง Client Error Logging**: ตั้ง `server.packetLog=true` และแสดง Hex เต็มของแพ็กเก็ตแจ้งเตือนข้อผิดพลาดจากเกม
-  - [x] คอมไพล์และดีพลอยเซิร์ฟเวอร์ใหม่ พร้อมสตาร์ตระบบเรียบร้อย 100% พอร์ต 8484, 8585, 8483 พร้อมให้เข้าทดสอบ
+## 📅 [2026-10-11] Root Abyss (Von Bon / Chicken Boss) Altar Crash Fix (Opcode 1856 Error 38)
+
+### 🎯 Scope
+Diagnose and resolve client crash ("เกมส์เด้ง") occurring when players hit the altar clock to summon Von Bon (บอสไก่) in Root Abyss (`105200110`), as analyzed from live server logs.
+
+### 📂 Files Modified
+- [`v214 src/.../RootAbyss.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/world/boss/RootAbyss.java)
+- [`v214 src/.../Reactor.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/life/Reactor.java)
+- [`v214 src/.../ReactorPool.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/connection/packet/ReactorPool.java)
+- [`.agents/skills/maplestory-bug-knowledge/SKILL.md`](file:///c:/Users/admin/Documents/MapleV265Src/.agents/skills/maplestory-bug-knowledge/SKILL.md)
+
+### 🛠️ Issues Identified & Fixes Applied
+
+1. **Analysis of Live Server Logs**:
+   - Boss entry, warp, timer, and altar spawning were completely normal.
+   - The crash occurred immediately upon attacking the hourglass clock altar (`1058016`):
+     ```
+     [Out v.265] | HoyOFFLINE | REACTOR_LEAVE_FIELD, 1856/0x740 | 41 42 0F 00 00 00 7D FF C6 01
+     [In v.265]  | HoyOFFLINE | CLIENT_ERROR, 171 | ...
+     [OutPacket] Error 38: REACTOR_LEAVE_FIELD(1856)
+     [Client_Error.txt] [Error 38] (REACTOR_LEAVE_FIELD / 1856) Data: 41 42 0F 00 00 00 7D FF C6 01 40 07
+     [ChannelInactive] Client 127.0.0.1: Current state: IN_FIELD, Next state: NONE.
+     ```
+   - Client sent `[OutPacket] Error 38: REACTOR_LEAVE_FIELD(1856)` before disconnecting. In MapleStory clients, **Error 38** denotes premature end of packet stream / buffer underflow during packet decoding.
+
+2. **Root Causes**:
+   - **Root Abyss WZ Altar Logic**: In Root Abyss (`1058016.img`), the altar is designed to stay in the field. When hit (action 9), it triggers the hit animation and transitions to State 1 (an empty 4x4 canvas). It was never supposed to be forcibly deleted.
+   - **Forcible Removal Trigger**: `RootAbyss.java` contained `cleanReactor(field, REACTOR)` on boss spawn, which called `field.removeLife(reactor.getObjectId(), false)`.
+   - **Broken Opcode 1856 Packet Structure**: `Reactor.broadcastLeavePacket()` sent `ReactorPool.reactorLeaveField(this)` using opcode 1856 with 10 bytes (`[Int, Byte, Byte, Short, Short]`). In v265 64-bit client, opcode 1856 is not a 10-byte reactor removal packet, causing Error 38 buffer underflow crash.
+   - The standard reactor removal packet in v265 is opcode 1851 (`REACTOR_REMOVE`), which encodes only `outPacket.encodeInt(objectId)` (4 bytes).
+
+3. **Fixes Applied**:
+   - In `RootAbyss.java`: Removed `cleanReactor(field, REACTOR)` calls from all Root Abyss boss spawns (`banbanNormal`, `banbanChaos`, `bellumNormal`, `bellumChaos`, `queenNormal`, `queenChaos`). Altars now naturally transition to State 1.
+   - In `Reactor.java`: Updated `broadcastLeavePacket()` to broadcast `ReactorPool.reactorRemove(getObjectId())` (Opcode 1851) instead of opcode 1856.
+   - In `ReactorPool.java`: Redirected `reactorLeaveField` to `reactorRemove` for complete safety across the codebase.
+   - Recompiled all 853 source files, rebuilt `maplestory.jar` (138MB), and restarted live server.
 
 ---
 
-### 9.5 การวิเคราะห์ Logs: แก้ไขบั๊กมอนสเตอร์ไม่ตาย, ปลดล็อก Cooldown สกิล Hexa และปรับโครงสร้างคำสั่งทดสอบ
+## 📅 [2026-10-11] Incremental Patch Release: `Server263_Patch_Latest`
 
-#### 🔍 1. การวิเคราะห์สาเหตุเชิงลึกจาก Logs เซิร์ฟเวอร์จริง (Real Server Logs Analysis)
-1. **การติด Cooldown Lock ของสกิลคลาส 6 (14s Cooldown Freeze)**:
-   - สกิล HEXA Mastery เช่น `HEXA Chakram Split (154141009)` ในไฟล์ WZ มีค่า `cooltime = 14 วินาที`
-   - เมื่อใช้คำสั่งก่อนหน้าที่มีการเสกสกิลคลาส 6 เข้าตัวละครตรงๆ (`chr.addSkill`) ระบบจะบันทึกสกิลลงใน Skill Book ของตัวละคร
-   - เมื่อกดโจมตีครั้งแรก ฟังก์ชัน `Char.checkAndSetSkillCooltime(154141009, true)` จะทำงานและตั้งเวลาคูลดาวน์ 14 วินาทีให้ตัวละครทันที (ตรวจพบแพ็กเก็ต `SKILL_COOLTIME_SET_M` ใน Logs อย่างต่อเนื่อง)
-   - การกดโจมตีระลอกถัดไปทั้งหมดภายใน 14 วินาทีจะถูกตีกลับเป็น `false` ส่งผลให้ [AttackHandler.java](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/user/AttackHandler.java#L113-L116) **ตัดทิ้งการโจมตีทั้งหมด (Silent Drop)** ไม่ส่งดาเมจไปยัง `mob.damage()` มอนสเตอร์จึงไม่ได้รับความเสียหายและไม่ตาย
-2. **สกิลคลาส 5 Multi-wave ถูกคูลดาวน์ตัดคลื่นหลังๆ**:
-   - สกิลคลาส 5 เช่น `400041082` (Void Blitz ของ Khali) มีคูลดาวน์ 30 วินาที เมื่อกดใช้ 1 ครั้ง Client จะส่งแพ็กเก็ตการโจมตีออกมาต่อเนื่อง 10–15 แพ็กเก็ตภายใน 1 วินาที (Logs บรรทัด 6005–6021)
-   - คลื่นแรกทำงานได้ แต่คลื่นที่ 2 ถึง 15 ถูกเซิร์ฟเวอร์ตัดทิ้งทั้งหมดเนื่องจากไม่ได้อยู่ในรายการ `SkillConstants.isNoCoolDownAttack`
-3. **การฟันลม (0 Mobs Hit)**:
-   - Logs บรรทัด 8370–8393 แพ็กเก็ตส่ง `mobCount = 0` (`mask = 0x0A, 0x07, 0x04`) มอนสเตอร์อยู่นอกระยะการโจมตี เซิร์ฟเวอร์จึงข้ามการคำนวณดาเมจ
-4. **มอนสเตอร์หยุดเดิน (Mob Pathfinding Desync)**:
-   - การมีสกิลคลาส 6 แปลกปลอมอยู่ใน Skill Book ปกติของ Client v265 ทำให้เกิดความคลาดเคลื่อนในการส่งข้อมูลสถานะการควบคุมมอนสเตอร์ (Controller Ack) เมื่อไคลเอนต์ติดสถานะไม่สอดคล้องจะระงับการคำนวณ Pathfinding ของมอนสเตอร์ชั่วคราว
+### 🎯 Scope
+Package and deploy a 100% safe incremental update containing all recent architectural updates, crash fixes, and boss system stabilization upon user request.
 
-#### 🛠️ 2. การแก้ไขที่นำไปใช้งาน (Applied Fixes)
-- [x] **ปรับโครงสร้างคำสั่ง `!endgame` ตามข้อสังเกตของผู้ใช้อย่างเคร่งครัด**:
-  - **เสกเฉพาะสกิลคลาส 1–4 ให้เต็ม 100% (`chr.maxSkills()`) เท่านั้น** ป้องกันบั๊กการยัดสกิลคลาส 5/6 เข้า Skill Book โดยตรง
-  - **ระบบทำความสะอาดอัตโนมัติ**: เมื่อพิมพ์ `!endgame` ระบบจะตรวจจับและลบสกิลคลาส 6 ที่เคยยัดเข้า Skill Book ค้างไว้ออกทั้งหมดทันที ป้องกัน Skill Tree ค้าง
-  - **มอบไอเทมอัปเกรดระดับมหาศาลสำหรับ V-Matrix และ Hexa Matrix แท้ของเกม**:
-    - **Sol Erda Energy (`2636421`)**: 1,000 ก้อน
-    - **Sol Erda Fragments (`4009548`)**: 30,000 ชิ้น
-    - **Nodestones (`2435719`)**: 3,000 ชิ้น
-    - **Power Elixirs (`2000005`)**: 5,000 ขวด
-    - **Mesos**: 10,000,000,000 (1 หมื่นล้าน Mesos)
-    - **เซ็ตอุปกรณ์ Arcane Umbra ครบชุด**: อาวุธ, อาวุธรอง, Emblem, ชุดเกราะ
-- [x] **ปลดล็อกคูลดาวน์สกิลคลาส 6 ใน `Char.checkAndSetSkillCooltime`**:
-  - เพิ่มเงื่อนไข `(skillID >= 100000000 && (skillID % 100000 / 10000 == 4))` เพื่อให้การโจมตีด้วยสกิลคลาส 6 / HEXA Mastery ไม่ถูกบล็อกด้วยคูลดาวน์ของตัวสกิล
-- [x] **เพิ่มสกิลต่อเนื่องคลาส 5 ใน `SkillConstants.isNoCoolDownAttack`**:
-  - เพิ่มสกิล Khali (`400041082`, `400041083`, `400041084`, `400041087`, `400041089`)
-  - เพิ่มสกิล Lara (`400021122`, `400021123`, `400021129`, `400021130`)
-- [x] **คอมไพล์ JAR และรีสตาร์ตเซิร์ฟเวอร์เรียบร้อย 100%** พร้อมเข้าทดสอบทันที
+### 📦 Included Fixes & Updates
+1. **Root Abyss Summon Crash Fix**: Resolved `Error 38: REACTOR_LEAVE_FIELD (1856)` by preventing altar destruction and switching removal packets to opcode 1851 (`REACTOR_REMOVE`).
+2. **Character Creation & Login Crash Fix**: Eliminated malformed `Effect 15` packet flood on newly created characters; added Lv. 100 guard on login prequest auto-unlocker.
+3. **Universal Boss Entry Stabilization & Infinite Runs**: Direct instance entries for all 23 bosses via in-game Boss UI, auto-party handling, 0 cooldowns, prequest auto-completion, and 25 exit NPC/portal scripts.
+4. **Night Walker Combat Architecture**: Dual-mode summon management for Dark Omen (Shadow Bat Active vs Normal), damage reflect immunity, and summon lifecycle safety.
+
+### 📂 Patch Deliverables
+- **Patch Folder**: `MapleStory_Server_Runner_Ready\Patches\Server263_Patch_Latest\`
+- **Distribution Synchronized**: `MapleStory_Server_Runner_Ready\Server263\`
+- **Contents**:
+  - `maplestory.jar` (138 MB fat jar)
+  - `server.properties`
+  - `data\scripts\` (NPC, portal, reactor Python scripts)
+  - `Client_Patch_Files\`
+  - Launcher & utility batch scripts
+  - `Apply_Patch.bat` (1-click updater preserving existing database and character records)
 
 ---
 
-### 9.6 การตรวจสอบและแก้ไขอาชีพ Lara (Anima Mage)
+## 📅 [2026-10-11] Zero-Install Account System, Multi-Network Simultaneous Routing & Safe Drop-in Patch
 
-#### 🔍 1. รายการประเด็นที่พบจากการ Audit เชิงลึก
-1. **Mountain Seeds Summon ขาดลอจิกการเสก**: ใน [Lara.java](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/anima/Lara.java) เมื่อกดใช้สกิล `MOUNTAIN_SEEDS (162101012)` โค้ดตกไปที่ `default: chr.dispose();` ไม่มีการสร้างและเสกตัวมอนสเตอร์ซัมมอนของเมล็ดพันธุ์ดินออกมาช่วยโจมตี
-2. **การรีฟิล Stack สกิลของ Lara ไม่ตอบสนอง**: ไคลเอนต์ MapleStory v265 ส่งแพ็กเก็ต `LARA_STACK_OVER_TIME_SKILL_INCREASE_REQUEST` / `STACK_OVER_TIME_SKILL_INCREASE_REQUEST` เพื่อขอสะสม Seed และ Traces แต่ใน [AttackHandler.java](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/user/AttackHandler.java) ไม่มี case รองรับสกิลของ Lara ทำให้ไคลเอนต์ไม่ได้รับแพ็กเก็ตตอบกลับ `STACK_SKILL_REQUEST_RESULT`
-3. **สกิลระลอกสองและคลื่นดาเมจของ Dragon Vein ขาดจาก `isNoCoolDownAttack`**: สกิลการระเบิดมังกร (Eruption), การดูดซับ (Absorption) และคลื่นของสันเขา (Winding Mountain Ridge 2 `400021131`) มีการส่งแพ็กเก็ตการโจมตีหลายระลอก หากไม่ได้ยกเว้นจะถูกคูลดาวน์สกัดกั้น
-4. **Hexa Wakeup Call ในแพ็กเก็ตส่งไปยังผู้เล่นอื่น (UserRemote)**: ไคลเอนต์ v265 มีเงื่อนไขเฉพาะสำหรับ `162111005` (Wakeup Call) ที่ต้อง encode int(0) เพิ่มเติม แต่ยังขาดการรองรับ `HEXA_WAKEUP_CALL (162141020)` ซึ่งอาจทำให้ผู้เล่นคนอื่นในแผนที่เดียวกันหลุดหรือ Desync
+### 🎯 Scope
+Implement simultaneous multi-network play (Host on 127.0.0.1, Friends on Radmin VPN / LAN), dynamic client IP hook without re-compilation, zero-install account registration (Auto-Register on login + standalone Account Manager batch tool), and generate an uncompressed drop-in patch folder ready for manual zipping by the user.
 
-#### 🛠️ 2. การดำเนินการแก้ไข (Applied Fixes)
-- [x] **เพิ่มระบบอัญเชิญ Mountain Seeds ใน `Lara.handleSkill`**:
-  - สร้าง `Summon` อัตโนมัติด้วย `Summon.getSummonByAndSetStat`, กำหนด `MoveAbility.Stop` และ `AssistType.Attack` เพื่อให้เมล็ดพันธุ์งอกและโจมตีมอนสเตอร์รอบตัว
-- [x] **เพิ่มการประมวลผล Stack ของ Lara ใน `AttackHandler.handleStackOverTimeSkillIncreaseRequest`**:
-  - เพิ่มการตรวจสอบสกิล `MOUNTAIN_SEEDS`, `DRAGON_VEIN_TRACES`, `UNCONSTRAINED_DRAGON_VEIN` พร้อมส่ง `WvsContext.updateSkillStackRequestResult` ยืนยันสแต็กกลับไปยังไคลเอนต์
-- [x] **เพิ่มสกิลย่อยทั้งหมดของ Lara ลงใน `SkillConstants.isNoCoolDownAttack`**:
-  - `400021131` (Winding Mountain Ridge 2)
-  - Eruption Sub-Attacks: `162101004`, `162101007`, `162101009`, `162101011`, `162121013`, `162121014`, `162121016`, `162121017`, `162121019`
-  - Absorption Sub-Attacks: `162121004`, `162121007`, `162121010`
-  - Manifestation Sub-Attacks: `162111002`
-- [x] **แก้ไขแพ็กเก็ต `UserRemote.java` สำหรับ Hexa Wakeup Call**:
-  - เพิ่ม `ai.skillId == 162141020` เข้ากับเงื่อนไข `encodeInt(0)` ป้องกันไคลเอนต์ของเพื่อนร่วมแมพ Desync
-- [x] **ทดสอบการคอมไพล์ผ่านสมบูรณ์ 100%**: Maven BUILD SUCCESS (50.2s) และดีพลอย JAR ไปยัง `Server263/maplestory.jar` เรียบร้อย
+### 📂 Files Modified
+- [`v214 src/.../NettyClient.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/connection/netty/NettyClient.java)
+- [`v214 src/.../Login.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/connection/packet/Login.java)
+- [`v214 src/.../ClientSocket.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/ClientSocket.java)
+- [`v214 src/.../LoginHandler.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/LoginHandler.java)
+- [`v214 src/.../ApiRequestHandler.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/ApiRequestHandler.java)
+- [`v214 src/.../ServerConfig.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/ServerConfig.java)
+- [`v214 src/server.properties`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/server.properties)
+- [`v214 src/Create_Account.bat`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/Create_Account.bat) (New File)
+- [`v214 src/4_Server_Control_Panel.bat`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/4_Server_Control_Panel.bat)
+- [`v214 src/Client_Patch_Files/Change_IP_or_Account.bat`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/Client_Patch_Files/Change_IP_or_Account.bat) (New File)
+- [`v214 src/HOW_TO_USE.txt`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/HOW_TO_USE.txt)
+- [`v263AuthHook/Client207/SockHook.cpp`](file:///c:/Users/admin/Documents/MapleV265Src/v263AuthHook/Client207/SockHook.cpp)
+- [`v263AuthHook/Build_AuthHook.bat`](file:///c:/Users/admin/Documents/MapleV265Src/v263AuthHook/Build_AuthHook.bat)
+- [`v263AuthHook/Test_AuthHook.bat`](file:///c:/Users/admin/Documents/MapleV265Src/v263AuthHook/Test_AuthHook.bat)
+- [`tools/create_patch.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/tools/create_patch.py)
+- [`Server263/`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/Server263/) (Synchronized)
+- [`Patches/Server263_Patch_Latest/`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/Patches/Server263_Patch_Latest/) (Active Patch Directory)
 
----
-
-### 9.7 การออดิตและแก้ไขเชิงระบบครบวงจรสำหรับคลาสที่ยังไม่สมบูรณ์เรื่องสกิล / STAT (Comprehensive Audit & Fixes)
-
-#### 🔍 1. รายการบั๊กและข้อบกพร่องที่ค้นพบจากการ Audit ทั่วทั้งระบบ
-1. **Kain (Nova Archer)**:
-   - ตกหล่นจาก `JobConstants.isArcherEquipJob`: ส่งผลให้ `ScriptManagerImpl.resetAP` คำนวณ Stat หลักผิด, `ItemConstants.getJobMaskFromChar` มองเป็น AnyJob (0), และชุดเกราะ `!endgame` ตกไปเป็น Pirate
-   - ขาดสกิลคลาส 5 และ 6 ใน `SkillConstants.isNoCoolDownAttack`: สกิลรัวหลายฮิตอย่าง `Fatal Blitz (400031065)`, `Dragon Burst (400031061)`, `Thanatos Descent (400031062-64)`, `Grip of Agony (400031066)` และท่า Origin `Total Annihilation / Churning Malice` หยุดทำดาเมจหลังฮิตแรกเนื่องจากติดคูลดาวน์สกัดกั้น
-2. **Ren (Anima Warrior)**:
-   - บั๊ก `jobID + 1` ในการเลื่อนขั้นอาชีพ: โค้ดเดิมกำหนด `sm.setJob((short)(jobID + 1))` ซึ่งทำให้ `REN_1 (16100)` กลายเป็น `16101` (ไอดีอาชีพที่ไม่มีอยู่จริง ส่งผลให้คลาสพัง) โดยคลาส 2 ที่ถูกต้องคือ `16110 (REN_2)`
-   - ขาดการเลื่อนขั้นอาชีพที่เลเวล 30: `handleLevelUp` มีเพียงเลเวล 60 และ 100 เท่านั้น
-   - ขาดอาวุธเริ่มต้น (Starter Weapon): `addItemToNewCharacter` แจกเพียงอาวุธรอง `1354040` ทำให้ตัวละครไม่มีอาวุธดาบหลัก
-   - ขาดสกิลคลาส 5 ใน `SkillConstants.isNoCoolDownAttack`: สกิล `400011147`, `400011148`, `400011150`, `400011151`, `400011153`, `400011157`
-   - ตกหล่นจาก `!endgame`: ไม่มีเคสแจกอาวุธ Arcane Umbra Plum Sword (`1215018`) และ Radiant Spirit Heart (`1354043`)
-3. **Lynn (Jianghu Mage)**:
-   - ขาดการเลื่อนขั้นที่เลเวล 30 ใน `handleLevelUp`: เมื่อเก็บเลเวลตามปกติถึง 30 ตัวละครจะไม่เปลี่ยนเป็น `LYNN_2 (17210)`
-   - ขาดสกิลคลาส 5 ใน `SkillConstants.isNoCoolDownAttack`: `400021134`, `400021137`, `400021138`, `400021139`
-   - ตกหล่นจาก `!endgame`: ขาดเคสแจก Arcane Umbra Memorial Staff (`1252098`) และ Beast Bell (`1352813`)
-4. **MoXuan (Jianghu Pirate)**:
-   - ขาด `handleLevelUp` อัตโนมัติ: ตัวละครต้องพึ่งพาบทสนทนา NPC เท่านั้น เมื่อเลเวลถึง 30, 60, 100 ไม่มีการเปลี่ยนอาชีพและแจกแต้ม SP อัตโนมัติ
-   - ใช้อาวุธรองผิดสายใน `addItemToNewCharacter`: แจก `1354030` ซึ่งเป็นอาวุธรอง Thief (rJob=8) แทนที่จะเป็น `1352860` ของ MoXuan (Pirate rJob=16)
-   - ขาดสกิลคลาส 5 ใน `SkillConstants.isNoCoolDownAttack`: `400051084`, `400051086`, `400051087`, `400051088`, `400051089`
-   - การจัดหมวด Stat หลักผิดพลาด: ใน `GameConstants` ถูกจัดเข้า `BaseStat.dex` ทั้งที่ MoXuan เป็น STR Pirate (สนับมือเริ่มต้นต้องการ STR 45)
-5. **Sia Astelle (Shine Mage)**:
-   - โค้ดเดิมเป็นโครงร่างว่างเปล่า (มีเพียง 25 บรรทัด): ขาด `setCharCreationStats`, `addItemToNewCharacter`, `handleLevelUp`, `handleInitAfterMigrate`
-   - ขาดการนิยาม `WeaponType`: อาวุธ Celestial Light (`1253xxx`) ไม่มีประเภทใน `WeaponType.java` ทำให้ `ItemConstants.getWeaponType` คืนค่า `None` ส่งผลให้การคำนวณดาเมจพื้นฐานกลายเป็น 0
-   - ขาดสกิลคลาส 5 ใน `SkillConstants.isNoCoolDownAttack`: `400021142`, `400021143`, `400021147`, `400021149`, `400021152`
-6. **Adele**:
-   - ขาดสกิล V-Matrix หลายฮิตใน `SkillConstants.isNoCoolDownAttack`: `Ruin (400011105)` และ `Storm (400011136)`
-7. **ระบบกลาง (Core Constants & Damage Calculation)**:
-   - `JobConstants.isWarriorEquipJob`: มี `isArk(id)` อยู่ ทั้งที่ Ark เป็น Pirate ส่งผลให้ระบบมอง Ark เป็น Warrior และแจกชุดเกราะ/Scroll ผิดประเภท
-   - `DamageCalc.getMastery()`: ขาดอาวุธ `Bladecaster`, `RenSword`, `Chakram`, `Whispershot`, `MemoryStaff`, `CelestialLight` ทำให้ Base Mastery กลายเป็น 0
-   - `JobEnum.getUsingWeapons()`: สิ้นสุดที่ Kain ขาดอาชีพใหม่ทั้งหมด (Cadena, Illium, Ark, Pathfinder, Hoyoung, Lara, Khali, Ren, Lynn, MoXuan, Sia)
+### 🛠️ Key Achievements
+1. **Dynamic Client AuthHook (`Localhost.dll`)**:
+   - Replaced static `127.0.0.1` hardcode with dynamic `GetPrivateProfileStringA` reading `Server.IP` from `launcher.ini`.
+   - Verified 64-bit AMD64 binary via `Test_AuthHook.bat` and PowerShell validation tests.
+2. **Concurrent Multi-Network Routing**:
+   - `NettyClient.getEffectiveChannelIp()` automatically serves `127.0.0.1` to loopback players and the configured LAN/VPN IP to remote players, enabling friends on Radmin VPN and host on localhost to play concurrently without channel desync.
+3. **Zero-Install Account Architecture**:
+   - **Auto-Register on Login**: First-time username/password automatically registers with BCrypt security when `server.autoRegister=true`.
+   - **Standalone Account Tool (`Create_Account.bat`)**: 1-click account creation, listing, password reset, and GM/Admin role assignment.
+   - **Server Control Panel Integration**: Added Menu [9] Account Manager and Menu [10] Configure Server IP to `4_Server_Control_Panel.bat`.
+   - **Client Helper**: Added `Change_IP_or_Account.bat` to `Client_Patch_Files/` for players to configure connection settings in 1 second.
+4. **Safe Drop-in Patch (`Server263_Patch_Latest`)**:
+   - Clean uncompressed directory structure matching `Server263/` for direct drag-and-drop or manual zipping.
+   - Strictly preserves database data (`mariadb/data/`), existing accounts, and character progress.
+   - Excludes heavy/unnecessary binaries (`mariadb/`, `jdk21/`, `backup.sql`, `*.wz`).
 
 ---
 
-#### 🛠️ 2. การดำเนินการแก้ไขครบทุกจุด (Applied Fixes)
-- [x] **แก้ไข `JobConstants.java`**:
-  - เพิ่ม `isKain(id)` ใน `isArcherEquipJob`
-  - นำ `isArk(id)` ออกจาก `isWarriorEquipJob`
-  - เพิ่มการลงทะเบียนอาวุธของทุกอาชีพใหม่ใน `JobEnum.getUsingWeapons()`
-- [x] **แก้ไข `WeaponType.java` & `DamageCalc.java`**:
-  - เพิ่ม `CelestialLight(1.2f, 253)` สำหรับ Sia Astelle
-  - อัปเดต `DamageCalc.getMastery()` ครอบคลุมอาวุธใหม่ทุกประเภท
-- [x] **แก้ไข `ItemConstants.java`**:
-  - เพิ่ม `MemoryStaff` และ `CelestialLight` ใน `getWeaponTypeVal`
-- [x] **แก้ไข `GameConstants.java` & `ScriptManagerImpl.java`**:
-  - ปรับ MoXuan และ Ren เข้ากลุ่ม `BaseStat.str` ให้ตรงกับสาย STR Warrior/Pirate
-  - เพิ่ม MoXuan และ Ark ในการรีเซ็ตแต้ม AP สาย STR Pirates ใน `ScriptManagerImpl.resetAP`
-  - ปรับปรุง `GameConstants.getItemJobByJob` ให้เรียกตรวจผ่านเมธอด EquipJob กลาง รองรับทุกอาชีพโดยไม่ตกไปที่ `ItemJob.BEGINNER`
-- [x] **แก้ไข `Ren.java`**:
-  - เพิ่มการมอบอาวุธเริ่มต้น `1215000` (Basic Plum Sword)
-  - ปรับระบบ `handleLevelUp` ให้เปลี่ยนอาชีพตรง Job ID (`REN_2 (16110)`, `REN_3 (16111)`, `REN_4 (16112)`) พร้อมแจกแต้ม SP และอาวุธรองตามระดับเลเวล 30, 60, 100
-- [x] **แก้ไข `Lynn.java`**:
-  - เพิ่มการเปลี่ยนอาชีพคลาส 2 อัตโนมัติที่เลเวล 30 พร้อมแจก SP และอาวุธรอง `1352811`
-  - ปรับปรุงเลเวล 60 (`LYNN_3`) และ 100 (`LYNN_4`) ให้แจกอาวุธรองตามระดับ
-- [x] **แก้ไข `MoXuan.java`**:
-  - แก้ไขอาวุธรองเริ่มต้นเป็น `1352860` (Martial Fist สำหรับ Pirate)
-  - เพิ่ม `handleLevelUp` อัตโนมัติที่เลเวล 30, 60, 100 แจก SP และอาวุธรองคลาส 2, 3, 4
-- [x] **สร้างคลาส `SiaAstelle.java` ให้สมบูรณ์แบบ**:
-  - กำหนด Stat ตั้งต้นตอนสร้างตัวละคร (`INT 45`, `HP/MP 1000/500`, `SP +5`)
-  - แจกอาวุธเริ่มต้น Celestial Light `1253000` และ Constellation `1352870`
-  - ระบบเปลี่ยนอาชีพคลาส 2-4 อัตโนมัติที่เลเวล 30, 60, 100
-- [x] **อัปเดต `SkillConstants.isNoCoolDownAttack`**:
-  - เพิ่มสกิลหลายฮิตคลาส 5 & 6 ของ Kain, Ren, Lynn, MoXuan, Sia Astelle และ Adele
-- [x] **อัปเดตคำสั่ง `!endgame` ใน `AdminCommands.java`**:
-  - เพิ่มการแจกอุปกรณ์ Arcane Umbra, อาวุธรองคลาส 4, ตราสัญลักษณ์, และชุดเกราะตรงสาย 100% สำหรับ Ren, Lynn, MoXuan, Sia Astelle, Cadena, Pathfinder, Kinesis
-- [x] **คอมไพล์ผ่านสมบูรณ์ 100% (Maven BUILD SUCCESS)** และรีสตาร์ตเซิร์ฟเวอร์เปิดให้บริการพอร์ต 8484 และ 8585-8594 ครบทุกแชนแนล
-
----
-
-### 9.8 การวิเคราะห์และพัฒนาระบบ Erda Link (SHINE Matrix 6th Job สำหรับ Sia Astelle), กลไก Teleport, ดาเมจซัมมอนจริง และการแก้ไข Packet Cooltime Sync v265.3
-
-**วันที่ดำเนินการ:** 9 ตุลาคม 2569 (2026-10-09)  
-**สถานะ:** อิมพลีเมนต์เสร็จสมบูรณ์ 100%, Build JAR ผ่าน, Deploy สู่เซิร์ฟเวอร์ และ Push สู่ GitHub เรียบร้อย
-
-#### 🌌 1. การวิเคราะห์และเชื่อมต่อระบบ Erda Link (คลาส 6 สำหรับสายอาชีพ SHINE)
-- **โครงสร้างระบบ:** ใน MapleStory v265 Nexon ได้ออกแบบระบบคลาส 6 รูปแบบใหม่เฉพาะของอาชีพสาย SHINE (Sia Astelle `182xx` และ Erel Light `181xx`) ในชื่อ **Erda Link** (`ErdaLinkUI.img.xml`, `ErdaLink.img.xml`, `ShineStone.img.xml`) แทนที่ระบบ HEXA Matrix เดิม
-- **การจัดสรรหิน Shine Stone และสกิลคลาส 6 ของ Sia:**
-  1. **Origin Stone (ID: 10000):** ปลดล็อกสกิล Origin คลาส 6 → `Celestial Design (182141500)` สกิลคัตซีนอลังการสร้างความเสียหายมหาศาลและพันธนาการศัตรู
-  2. **Ultimate Stone (ID: 500):** ปลดล็อกสกิล Mastery คลาส 6 → `SHINE Ray (182141000)` และ `SHINE Antares (182141001)`
-  3. **Skill Stone (ID: 100):** สกิลคลาส 6 ส่วนกลาง → `Sol Janus (400001064)`
-  4. **Boost Stones (ID: 101–107):** บูสต์สกิลเดิม → `Sirius Boost (500004200)`, `Shine Boost (500004201)`, `Sadalsuud Boost (500004202)`, `Savior's Circle Boost (500004203)`
-  5. **Erda Link Stat (Hexa Stat):** สเตตัสเสริมคลาส 6 → (ID: `500081000`)
-- **การปรับปรุงระดับซอร์สโค้ดเซิร์ฟเวอร์:**
-  - `Char.java`: เพิ่ม Job ID `18214` ใน `maxSkills()` เมื่อเลเวล 260+, เพิ่มฟังก์ชัน `getSiaErdaLinkSkills(coreID)` และอัปเดต `setHexaSkill()` รองรับ Erda Link Stone
-  - `SiaAstelle.java`: อัปเดต `handleJobAdvance()` และ `handleInitAfterMigrate()` ให้ปลดล็อกสกิล Erda Link ทั้ง 9 สกิลของคลาส 6 อัตโนมัติเมื่อตัวละครเลเวล 260+
-  - `UserHandler.java`: รองรับรหัสหิน Erda Link ของ Sia ในแพ็กเก็ต `handleHexaMatrixOperationRequest` สำหรับการเปิดใช้งาน (Case 0) และการอัปเลเวล (Case 1)
-  - `Database`: บันทึกสกิลคลาส 6 ทั้งหมดลงในตาราง `skills` ให้ตัวละคร Sia พร้อมใช้งานทันที
-
-#### 🏃‍♂️ 2. กลไกการทำงานของสกิล Teleport (Starry Flow) & Up Jump (Starry Leap)
-- **การตรวจสอบดาต้า:** ตรวจสอบไฟล์ WZ `18200.xml` สกิล `Starry Flow (182001004)` เป็น `Type 41, CasterMove 1` (Directional Teleport)
-- **สาเหตุที่เคยกดไม่ติด:** ตัวเกม MapleStory บังคับให้การกดสกิล Teleport ชนิดนี้ **ต้องกดปุ่มทิศทาง (← ซ้าย, → ขวา, ↑ ขึ้น, ↓ ลง) ค้างไว้พร้อมกับกดปุ่มสกิลเสมอ** หากกดลอยๆ อยู่กับที่จะไม่เกิดการทำงาน
-- **สกิลสนับสนุนการเคลื่อนที่:**
-  - `Starry Leap (182001005)`: พุ่งตัวขึ้นที่สูง (Up Jump) โดยกด **ลูกศรขึ้น (↑) + กระโดด (Jump)**
-  - `Starry Boost (182111008)`: สกิลคลาส 3 แบบ Toggle ช่วยเพิ่มระยะเทเลพอร์ตแนวนอน +65 และแนวตั้ง +25
-
-#### ⚔️ 3. การพิสูจน์ดาเมจจริงของสกิล Summon (Stellar Constellations)
-- ตรวจสอบยืนยันจาก Server Packet & Combat Logs:
-  - สกิลซัมมอนกลุ่มดาว เช่น `Stellar XI - Sirius (400021143)` ส่งแพ็กเก็ต `SUMMONED_ATTACK (730)` เข้าสู่เซิร์ฟเวอร์
-  - เซิร์ฟเวอร์คำนวณดาเมจจริงและหักลด HP มอนสเตอร์จริง (ดาเมจเฉลี่ย 300,000 – 600,000+ ต่อฮิต)
-  - มอนสเตอร์เลือดลดลงจนถึง 0 และดรอป EXP / ไอเทมอย่างถูกต้องสมบูรณ์ ยืนยันว่าไม่ใช่แค่แอนิเมชั่นหลอกตา 100%
-
-#### 📡 4. การแก้ไขปัญหา Network Opcode Desync v265.3
-- **ปัญหา:** Client ส่งแพ็กเก็ต Opcode `1157` ทุกๆ 30 วินาทีเพื่อรายงานคูลดาวน์สกิล (Client Sync Cooltime Request) แต่เซิร์ฟเวอร์แมปไว้เป็น `1015` ทำให้เซิร์ฟเวอร์มองเป็น Unhandled Opcode
-- **การแก้ไข:** แก้ไขค่าใน `InHeader.java` ให้ `CLIENT_SYNC_COOLTIME_REQUEST = 1157` ตามแพ็กเก็ตโครงสร้างจริงของ GMS v265.3
-
-#### 🚀 5. การ Build, Deploy และ Git Version Control
-- คอมไพล์โปรเจกต์ด้วย Portable Maven 3.9.15 และ JDK 21 (`BUILD SUCCESS`)
-- อัปเดต Fat JAR ไปยัง `Server263\maplestory.jar` (~138 MB)
-- รีสตาร์ตเซิร์ฟเวอร์เสร็จสมบูรณ์ พอร์ต Login 8484 และ Channel 8585–8594 พร้อมให้บริการ
-- บันทึกการเปลี่ยนแปลงและ Push ขึ้น GitHub: Commit `8f6f9c8` (Branch: `main`)
-
----
-
-### 9.9 การแก้ไข Bug สกิลเด้งของ Illium (Asset Mismatch Crash Fix), การแก้ไข Erda Link / HEXA Matrix & Teleport ของ Sia Astelle, และแผนงานตรวจสอบอาชีพทั้งหมด (Master Multi-Class Audit & Roadmap Plan)
-
-**วันที่ดำเนินการ:** 10 ตุลาคม 2569 (2026-10-10)  
-**สถานะ:** ดำเนินการแก้ไขเสร็จสมบูรณ์ 100%, ทดสอบคอมไพล์ผ่าน (Maven BUILD SUCCESS), Deploy สู่เซิร์ฟเวอร์ และเปิดระบบพร้อมส่งมอบงาน (Handoff Ready)
-
----
-
-#### 🛠️ 1. แก้ไขบั๊กสกิล Illium เด้ง (Asset Mismatch Crash Fix)
-- **การวินิจฉัยปัญหาจากบันทึก Client Crash และ Server Packet Logs:**
-  - ไฟล์ `CrashLog.txt` ของตัวเกมระบุข้อผิดพลาด `CXX_EXCEPTION` ทันทีเมื่อตัวละครกดสกิล `CRYSTAL_GATE (400021099)`
-  - ตัวเกมส่งแพ็กเก็ต `CLIENT_ERROR (171)` รายงานค่า: `INVALID_GAME_DATA|400021100|1|7|0|0||`
-  - ตรวจสอบโครงสร้างไฟล์ WZ `Skill_00005/40002.xml` พบว่า:
-    1. `CRYSTAL_GATE_PORTAL (400021100)` เป็นสกิลประเภทบัฟ (`type=10`, `indieMad=5+2*x`) **ไม่มีโหนด `summon` ใน WZ** การที่เซิร์ฟเวอร์ส่งคำสั่งสร้างซัมมอน `SUMMONED_CREATED (1588)` รหัส `400021100` ทำให้ตัวเกมไม่พบ Sprite ซัมมอนและเด้งหลุดทันที
-    2. `HEXA_CRYSTAL_SKILL_DEUS (152141012)` และ `HEXA_CRYSTAL_SKILL_DEUS_SUB (152141013)` ไม่มีโหนด `summon` ใน WZ (Asset โมเดลของ Deus อยู่ที่คลาส 4 เดิมคือ `152121005` และ `152121006`)
-    3. `MYTOCRYSTAL_EXPANSE (152141500)`, `LONGINUS_ZONE (152121041)` และ `HEXA_LONGINUS_ZONE (152141015)` ไม่มีโหนด `affectedArea` ใน WZ (เป็นสกิลประเภทกราฟิก tile/action) การเรียก `spawnAffectedArea` จึงเสี่ยงต่อการเด้ง
-- **การแก้ไขในโค้ดเซิร์ฟเวอร์ (`Illium.java`):**
-  - **`CRYSTAL_GATE (400021099)`**: ยกเลิกการเสกซัมมอน `400021100` และเปลี่ยนมามอบบัฟ `CharacterTemporaryStat.IndieMAD` (+Magic ATT ตามเลเวลสกิล) ระยะเวลา 80+ วินาที พร้อมเรียก `chr.dispose()` ปลอดภัย 100% ไม่เกิด Crash
-  - **`HEXA_CRYSTAL_SKILL_DEUS (152141012)`**: แก้ไขให้เสกซัมมอนโมเดลหลัก `CRYSTAL_SKILL_DEUS (152121005)` และบริวาร 5 ตัว `DEUS_SUB (152121006)` ซึ่งมี Asset รองรับสมบูรณ์ในตัวเกม
-  - **`LONGINUS_ZONE`, `HEXA_LONGINUS_ZONE`, `MYTOCRYSTAL_EXPANSE`**: นำคำสั่ง `spawnAffectedArea` ที่ไม่มี Asset ออก คงไว้ซึ่งสถานะอมตะ `IndieNotDamaged` เพื่อป้องกันตัวละครค้างหรือเด้ง
-
----
-
-#### 🌌 2. แก้ไขระบบ Erda Link / HEXA Matrix และสกิล Teleport ของ Sia Astelle
-- **การวินิจฉัยปัญหา Erda Link:**
-  - ตรวจสอบ `Etc.wz/HexaCore.img.xml` พบว่า Nexon บรรจุอาชีพ `18212` (Sia Astelle) ไว้ในระบบ HEXA Core สากล (มาตรฐาน 8 หลัก) แล้ว:
-    - Origin Core: `10000051` (Celestial Design `182141500`)
-    - Mastery Core: `20000204` (SHINE Ray `182141000` & SHINE Antares `182141001`)
-    - Boost Cores: `30000205` (Shine Boost), `30000206` (Sirius Boost), `30000207` (Sadalsuud Boost), `30000208` (Savior's Circle Boost)
-    - Common Core: `40000000` (Sol Janus)
-  - เซิร์ฟเวอร์เดิมใช้รหัสหินจำลอง (`10000`, `500`, `100`–`107`) ทำให้ Client UI ที่อ่านค่าจาก WZ ไม่พบข้อมูลคอร์ที่ตรงกัน
-  - ในตาราง `vietmaple.hexaskills` ของตัวละคร Sia (`charid = 5`) ไม่มีข้อมูลคอร์เลย (0 rows) ทำให้ Client ไม่แสดงผลคอร์ และเมื่อกดอัปเกรดเซิร์ฟเวอร์ปฏิเสธด้วยข้อความ "Dữ liệu nhân vật của bạn không đúng"
-- **การแก้ไข Erda Link ในโค้ดและฐานข้อมูล:**
-  - `Char.java`: ปรับปรุง `getSiaErdaLinkSkills` ให้รองรับ Core ID สากลทั้ง 7 คอร์ (`10000051`, `20000204`, `30000205`–`30000208`, `40000000`)
-  - `SiaAstelle.java`: ปรับปรุง `handleJobAdvance` และ `handleInitAfterMigrate` เมื่อเลเวล 260+ ให้ปลดล็อกคอร์ทั้ง 7 คอร์ด้วย `chr.setHexaSkill(coreId, 1)` และส่งแพ็กเก็ตซิงค์ `WvsContext.hexaSkillsUpdate(chr)`
-  - `MariaDB`: เพิ่มเรคคอร์ดของคอร์ทั้ง 7 คอร์ในตาราง `vietmaple.hexaskills` ให้ตัวละคร Sia (`charid = 5`) ที่เลเวล 1 พร้อมใช้งานทันที
-- **การแก้ไขสกิล Teleport (`Starry Flow` & `Starry Leap`):**
-  - ตรวจสอบ `Skill_00002/18200.xml` สกิล `STARRY_FLOW (182001004)` เป็นสกิล `type = 41, casterMove = 1`
-  - ใน `SkillHandler.java`: เพิ่ม `STARRY_FLOW` และ `STARRY_LEAP` ในการส่งแพ็กเก็ตยืนยัน `UserLocal.skillUseResult((byte) 1, 0)` ทำให้ Client อนุญาตการเคลื่อนที่พุ่งเทเลพอร์ตทันที
-  - ใน `SiaAstelle.java`: เพิ่มเคส `STARRY_FLOW` และ `STARRY_LEAP` ใน `handleSkill` เพื่อปลดล็อกแอกชันตัวละคร (`chr.dispose()`)
-
----
-
-#### 📋 3. แผนงานตรวจสอบความสมบูรณ์ของทุกอาชีพสำหรับ Handoff (Master Multi-Class Audit & Roadmap)
-จากการรันสคริปต์สแกนตรวจสอบความเข้ากันได้ของ Asset (Summon & AffectedArea) ในทุกคลาส (2,906 สกิล) เปรียบเทียบกับ WZ ของ V265 โดยตรง สรุปผลการตรวจสอบและ Roadmap งานได้ดังนี้:
-
-| กลุ่มอาชีพ | อาชีพที่ตรวจสอบ | สถานะการทำงาน | รายละเอียดผลการตรวจสอบ / ข้อควรระวัง |
-|---|---|:---:|---|
-| **Adventurer Warriors** | Hero, Paladin, Dark Knight | 🟢 พร้อมใช้งาน | สกิลคลาส 6 Origin และ Mastery สมบูรณ์, Paladin มี `Sacred Bastion` (Ground Tile Effect) |
-| **Adventurer Magicians** | Bishop, Fire/Poison, Ice/Lightning | 🟢 พร้อมใช้งาน | สกิล `Holy Advent (2341501-2341503)` มีโหนด Summon ใน WZ ถูกต้อง; Ice Age / Bolt Barrage ทำงานปกติ |
-| **Adventurer Bowmen** | Bowmaster, Marksman, Pathfinder | 🟢 พร้อมใช้งาน | Arrow Blaster install, Silhouette Mirage, Split Shot, Cardinal Torrent ทำงานปกติ |
-| **Adventurer Thieves** | Night Lord, Shadower, Dual Blade | 🟢 พร้อมใช้งาน | Shurrikane, Dark Flare, Shadow Partner, Blade Tempest, Blades of Destiny ทำงานปกติ |
-| **Adventurer Pirates** | Buccaneer, Corsair, Cannoneer | 🟢 พร้อมใช้งาน | Lord of the Deep, Broadside summons, Cannon of Mass Destruction, Nuclear Option ทำงานปกติ |
-| **Cygnus Knights** | Dawn Warrior, Blaze Wizard, Wind Archer, Night Walker, Thunder Breaker, Mihile | 🟢 พร้อมใช้งาน | Flashfire Teleport, Howling Gale, Royal Guard timing counter, Shadow Spear ทำงานปกติ |
-| **Heroes** | Aran, Evan, Mercedes, Phantom, Luminous, Shade | 🟢 พร้อมใช้งาน | Adrenaline Boost, Mir Dragon fusion, Spirit Leap, Carte Noir steal, Equilibrium, Fox Trot ทำงานปกติ |
-| **Resistance** | Battle Mage, Wild Hunter, Mechanic, Blaster, Xenon, Demon Slayer, Demon Avenger | 🟢 พร้อมใช้งาน | Auras, Jaguar Ride, Robot Summons, OpenGate pool, Supply gauge, Demonic Frenzy ทำงานปกติ |
-| **Nova** | Kaiser, Angelic Buster, Cadena, Kain | 🟢 พร้อมใช้งาน | Morph gauge, Soul Recharge, Chain Arts 8-weapon combo, Malice possess/execute ทำงานปกติ |
-| **Flora** | Adele, Illium, Ark, Khali | 🟢 สมบูรณ์ 100% | **Illium ได้รับการแก้ไขบั๊ก Crystal Gate & Deus Summon Crash แล้ว**, Adele Aether Forge, Khali Void Rush ปกติ |
-| **Anima** | HoYoung, Lara, Ren | 🟢 พร้อมใช้งาน | Talisman & Scroll energy, Dragon Vein reading/eruption, Plum Sword combo ทำงานปกติ |
-| **Jianghu & Sengoku** | Lynn, MoXuan, Hayato, Kanna | 🟢 พร้อมใช้งาน | Forest Friends summons, Martial arts stances, Sword energy gauge, Mana Vein ทำงานปกติ |
-| **Standalone & Other** | Zero, Kinesis, Beast Tamer, Pink Bean | 🟢 พร้อมใช้งาน | Alpha/Beta tag synchronization, PP Grab/Force/Smash, Bear Assault ทำงานปกติ |
-| **Shine** | Sia Astelle | 🟢 สมบูรณ์ 100% | **Erda Link HEXA Cores ทั้ง 7 คอร์ปลดล็อกและอัปเลเวลได้สมบูรณ์, Teleport Starry Flow ใช้งานได้ปกติ** |
-
----
-
----
-
-### 9.10 การยกระดับระบบสกิลคลาส 6 (HEXA Matrix Mastery & Universal Origin System) สำหรับทุกอาชีพ, การแก้ไข Asset Crash Mismatch และชุดคำสั่งทดสอบ Admin ครอบคลุมทั้งเซิร์ฟเวอร์
-
-**วันที่ดำเนินการ:** 10 ตุลาคม 2569 (2026-10-10)  
-**สถานะ:** อิมพลีเมนต์เสร็จสมบูรณ์ 100%, ทดสอบคอมไพล์ผ่าน (Maven BUILD SUCCESS), Deploy สู่ `Server263\maplestory.jar` เรียบร้อย
-
----
-
-#### 🛡️ 1. การแก้ไข Asset Crash Mismatch จากการออดิตเชิงลึก
-- **Shade (Eunwol)**:
-  - แก้ไข `SPIRITGATE_SUMMONS (400051023)` ใน `Shade.java`: ใน WZ สกิล `400051023` เป็น SecondAtom projectile (ไม่มีโหนด `summon`) ซึ่งเดิมเรียก `spawnAddSummon` เสี่ยงต่อการ Crash
-  - ปรับเปลี่ยนรหัสซัมมอนเป็น `SPIRITGATE_SUMMONS (400051028)` ที่มีโหนด Summon และ Sprite อยู่จริงใน WZ และเพิ่ม `SPIRITGATE_ATOM (400051023)` ลงใน `handleDebuffOnMob` และ `handleAttack` อย่างถูกต้อง
-- **Lara (Anima Mage)**:
-  - นำค่าคงที่ `CORNUCOPIA_SUB (162141503)` ซึ่งเป็นรหัสที่ไม่มีอยู่จริงใน WZ และไฟล์ `.dat` ออก ป้องกัน Client error
-  - ปรับปรุงรหัส Origin สกิลคลาส 6 ให้ตรงกับ WZ 100%: `UNIVERSE_IN_BLOOM (162141500)` สกิลเปิดใช้งานคัตซีน, `UNIVERSE_IN_BLOOM_ATTACK (162141501)` แอนิเมชั่นระเบิดดาเมจ, และ `CORNUCOPIA (162141502)`
-
----
-
-#### ⚔️ 2. การเติมเต็มโครงสร้างสกิลคลาส 6 (HEXA Matrix) ให้กับ 5 อาชีพหลักที่ยังขาดโครงสร้าง Java
-1. **Pathfinder (Bowman)**:
-   - เพิ่มค่าคงที่ Origin Skills: `FORSAKEN_RELIC (3341500)` และ `PIERCING_RELIC (3341505)`
-   - เพิ่มค่าคงที่ HEXA Mastery Skills: `HEXA_CARDINAL_BURST`, `HEXA_CARDINAL_DELUGE`, `HEXA_CARDINAL_TORRENT`, `HEXA_ANCIENT_ASTRA`, ฯลฯ
-   - เพิ่มการมอบสถานะอมตะ `IndieNotDamaged` (7s), คัตซีนปาร์ตี้ `UserLocal.showHexaSkillEff` ใน `handleSkill`, และ Absolute Bind `MobStat.Freeze` (10s) ใน `handleAttack`
-2. **Luminous (Legend Mage)**:
-   - เพิ่มค่าคงที่ Origin Skills: `HARMONIC_PARADOX (27141500)` และ `LUSTROUS_ORB (27141502)`
-   - เพิ่ม HEXA Masteries: `HEXA_ENDER`, `HEXA_APOCALYPSE`, `HEXA_REFLECTION`, `HEXA_MORNING_STAR`
-   - เพิ่มสถานะอมตะ 7 วินาที, คัตซีนปาร์ตี้, Absolute Freeze 10s และเพิ่มการเชื่อมระบบชาร์จเกจ Equilibrium เมื่อใช้ `HEXA_ENDER`
-3. **Demon Slayer (Resistance Warrior)**:
-   - เพิ่มค่าคงที่ Origin Skills: `NIGHTMARE (31141500)` และ `AMETHYSTINE_INCURSION (31141504)`
-   - เพิ่ม HEXA Masteries: `HEXA_DEMON_IMPACT`, `HEXA_DEMON_CRY`, `HEXA_CERBERUS_CHOMP`, `HEXA_DEMON_SLASH`
-   - เพิ่มสถานะอมตะ 7 วินาที, คัตซีนปาร์ตี้, Absolute Freeze 10s และระบบดูด Fury อัตโนมัติเมื่อโจมตีด้วย HEXA skills
-4. **Zero (Transcendent Warrior)**:
-   - เพิ่มค่าคงที่ Origin Skills: `END_TIME (101141500)` และ `BITEMPORIS (101141503)`
-   - เพิ่ม HEXA Masteries: `HEXA_GIGA_CRASH`, `HEXA_WIND_CUTTER`, `HEXA_SPIN_CUTTER`, `HEXA_ROLLING_CROSS`, ฯลฯ
-   - เพิ่มสถานะอมตะ 7 วินาที, คัตซีนปาร์ตี้, และ Absolute Freeze 10s
-5. **Kinesis (Special Mage)**:
-   - เพิ่มค่าคงที่ Origin Skills: `FROM_ANOTHER_REALM (142141500)` และ `FRACTAL_HORIZON (142141502)`
-   - เพิ่ม HEXA Masteries: `HEXA_PSYCHIC_GRAB`, `HEXA_ULTIMATE_METAL_PRESS`, `HEXA_ULTIMATE_BPM`, ฯลฯ
-   - เพิ่มสถานะอมตะ 7 วินาที, คัตซีนปาร์ตี้, และ Absolute Freeze 10s
-
----
-
-#### 🌟 3. การพัฒนากลไก Origin Skill สากลส่วนกลางใน `Job.java` และ `SkillConstants.java`
-- **การวิเคราะห์ WZ HexaCore:** ตรวจสอบพบสกิล Origin คลาส 6 ใน `HexaCore.img.xml` มีทั้งหมด **99 สกิล ครอบคลุม 52 อาชีพ**
-- **การเพิ่มฟังก์ชันตรวจจับ Origin กลาง (`SkillConstants.isOriginSkill`):**
-  - ตรวจจับสกิล Origin ตามฟอร์มูล่า v265: `skillID % 100000 >= 41500 && skillID % 100000 <= 41599`
-  - รองรับเคสพิเศษของ Dual Blade (`4361500`, `4361504`) และ Evan (`22201500`, `22201502`)
-- **การทำงานอัตโนมัติใน `Job.java`:**
-  - ใน `handleSkill()`: เมื่อตัวละครใช้สกิล Origin ใดๆ ในเกม จะได้รับสถานะอมตะ `IndieNotDamaged` 7 วินาที พร้อมส่งแพ็กเก็ตคัตซีน `UserLocal.showHexaSkillEff` ให้ทั้งตนเองและสมาชิกปาร์ตี้ในแมพเห็นพร้อมกันทันที
-  - ใน `handleAttack()`: มอนสเตอร์ทุกตัวที่ถูกโจมตีด้วยสกิล Origin จะติดสถานะ **Absolute Bind (`MobStat.Freeze`) 10 วินาที** และ **Origin Debuff (`MobStat.OriginDebuff`) 20 วินาที** ทันที 100% โดยที่สกิลเฉพาะของแต่ละอาชีพยังคงสามารถ Override หรือต่อยอดฟังก์ชันเพิ่มเติมได้ตามปกติ
-
----
-
-#### 👑 4. การขยายชุดคำสั่งทดสอบ Admin ลับ (`!endgame`) ครบทุกอาชีพ 100%
-- ใน `AdminCommands.java` เพิ่มการแมปไอเทมและอุปกรณ์ Arcane Umbra, อาวุธรอง, Emblem, และชุดเกราะตรงสายสำหรับ:
-  - `Zero` (Lazuli Type 9 `1562007`, Lapis Type 9 `1572007`, Mitra Warrior Emblem `1190555`)
-  - `Kinesis` (Arcane Umbra Psy-limiter `1262039`, Chess Piece `1353203`, Mitra Magician Emblem `1190557`)
-  - `Pathfinder` (Arcane Umbra Ancient Bow `1592020`, Relic `1352014`, Mitra Archer Emblem `1190556`)
-  - `Demon Slayer` (Arcane Umbra 1H Axe `1312204`, Force Shield `1352003`, Mitra Warrior Emblem `1190555`)
-  - `Demon Avenger` (Arcane Umbra Desperado `1232114`, Demon Shield `1352004`, Mitra Warrior Emblem `1190555`)
-  - `Luminous` (Arcane Umbra Shining Rod `1212120`, Orb `1352403`, Mitra Magician Emblem `1190557`)
-- เพิ่มการรองรับอาร์กิวเมนต์ตัวย่อและชื่อเต็มในคำสั่ง `!endgame <job>`:
-  - `!endgame zero`, `!endgame kinesis`, `!endgame pf` / `pathfinder`, `!endgame ds` / `demonslayer`, `!endgame da` / `demonavenger`, `!endgame lumi` / `luminous`, `!endgame hero`, `!endgame paladin`, `!endgame drk`, `!endgame fp`, `!endgame il`, `!endgame bish`, `!endgame bm`, `!endgame mm`, `!endgame nl`, `!endgame shad`, `!endgame db`, `!endgame bucc`, `!endgame sair`, `!endgame cannon`, `!endgame dw`, `!endgame bw`, `!endgame wa`, `!endgame nw`, `!endgame tb`, `!endgame mihile`, `!endgame aran`, `!endgame evan`, `!endgame merc`, `!endgame phantom`, `!endgame shade`, `!endgame bam`, `!endgame wh`, `!endgame mech`, `!endgame blaster`, `!endgame kaiser`, `!endgame ab` ฯลฯ
-
----
-
-#### 📦 5. การ Build, Deploy และยืนยันความสมบูรณ์
-- **การคอมไพล์:** รัน `mvn package -DskipTests` ด้วย OpenJDK 21 สำเร็จสมบูรณ์ 100% (`BUILD SUCCESS` เวลา 01:29 นาที สำหรับ 852 ไฟล์ซอร์สโค้ด)
-- **การ Deploy ไฟล์ Distribution:** คัดลอก `maplestory.jar` ขนาด 138,614,013 ไบต์ ไปยัง:
-  - `Server263\maplestory.jar`
-  - `v214 src\maplestory.jar`
-  - `maplestory.jar` (Root Workspace)
-- **ผลการ Audit ซ้ำ:** ยืนยันว่าคลาสที่มีการจัดการ Hexa Skill ทำงานจริงเพิ่มขึ้นจาก 26 คลาสเป็น **41+ คลาส** และครอบคลุมทั้ง 52 อาชีพผ่านระบบ Universal Origin Handler ใน `Job.java` โดยไม่มีข้อผิดพลาดเรื่อง Asset WZ หรืออาการ Crash ตกค้าง
-
----
-
-### 16. การแก้ไขและพัฒนาระบบ Fast Job Advance & Auto Job Advance ทุกอาชีพ 100% (10 ตุลาคม 2569)
-
-#### 🔍 1. การวิเคราะห์สาเหตุและ Audit ปัญหา (Root Cause Analysis)
-- **สาเหตุที่ Fast Job Advance ไม่ทำงาน (ทดสอบกับ Night Lord):**
-  - ในสคริปต์ `quick_adminNPC.py` (เมนู Option 14) และ NPC `9072303.py` เดิมเรียกใช้คำสั่ง:
-    ```python
-    chr.getJobHandler().handleJobAdvance()
-    ```
-  - เมื่อตรวจสอบเมธอด `handleJobAdvance()` ในคลาสหลัก `Job.java` (Line 2887) พบว่าเป็น **Empty Method `{}`** (เมธอดว่างเปล่า)
-  - มีคลาสอาชีพเพียง 26 คลาสที่ทำการ Override เมธอดนี้ไว้สำหรับเควสต์ข้ามแบบเดิม
-  - **อาชีพทั้งหมดในกลุ่ม Explorer (นักผจญภัย)** ได้แก่ Night Lord (412), Shadower (422), Dual Blade (434), Hero (112), Paladin (122), Dark Knight (132), Bishop (232), Arch Mage F/P (212), Arch Mage I/L (222), Bowmaster (312), Marksman (322), Buccaneer (512), Corsair (522) ตลอดจน Cygnus Knights บางสาย, Kaiser, Adele, Kain, Zero **ไม่มีการ Override เมธอดนี้เลยแม้แต่คลาสเดียว** ทำให้เมื่อผู้เล่นกด Fast Job Advance ระบบจึงไม่แสดงอะไรและไม่มีการเปลี่ยนอาชีพใดๆ เกิดขึ้น
-
-#### ⚙️ 2. สถาปัตยกรรมและสิ่งที่ได้พัฒนาเพิ่ม (Implementation Details)
-
-1. **`JobConstants.java` (โมดูลคำนวณและแมปสายอาชีพสากล):**
-   - เพิ่ม `case 6003:` (Kain Beginner) ใน `isBeginnerJob(short jobId)` ป้องกัน Bug สกิลและ SP
-   - เพิ่มฟังก์ชัน `getCleanJobName(short jobId)`: คืนค่าชื่ออาชีพที่อ่านง่าย สวยงาม ถูกต้อง ครอบคลุมทั้ง 50+ อาชีพ
-   - เพิ่มฟังก์ชัน `getBranchOptions(short job, int level, int subJob)`: จัดการจุดแยกสายอาชีพทั้งหมดอย่างแม่นยำ:
-     - Beginner (0) -> Warrior (100), Magician (200), Bowman (300), Thief (400), Pirate (500)
-     - Noblesse (1000) -> Dawn Warrior, Blaze Wizard, Wind Archer, Night Walker, Thunder Breaker
-     - Citizen (3000) -> Battle Mage, Wild Hunter, Mechanic, Blaster
-     - Demon (3001) -> Demon Slayer, Demon Avenger
-     - Thief (400) -> Assassin (Night Lord path), Bandit (Shadower path), Dual Blade
-     - Warrior (100) -> Fighter, Page, Spearman
-     - Magician (200) -> F/P, I/L, Cleric
-     - Bowman (300) -> Hunter, Crossbowman
-     - Pirate (500) -> Brawler, Gunslinger
-   - เพิ่มฟังก์ชัน `getTargetJobForLevel(short job, int level, int subJob)`: คำนวณ Job ID เป้าหมายสูงสุดตามเลเวลปัจจุบันของตัวละคร (รองรับการทะลวงข้ามขั้นหากเลเวลถึง เช่น เลเวล 100+ จะปรับเป็นคลาส 4 ทันที)
-   - เพิ่มฟังก์ชัน `getNextJob(short job, int level, int subJob)`: คำนวณคลาสถัดไปสำหรับการเลื่อนขั้นอัตโนมัติ (Linear Progression) และคืนค่า `0` หากติดจุดที่ต้องให้ผู้เล่นเลือกสายด้วยตนเอง
-
-2. **`Job.java` (ระบบแกนกลางฝั่งเซิร์ฟเวอร์ Java):**
-   - **Auto Job Advance ใน `handleLevelUp(short level)`:**
-     - เมื่อตัวละครเลเวลอัปถึงเกณฑ์ (เช่น Lv 30, 60, 100) ระบบจะตรวจหาคลาสถัดไปผ่าน `JobConstants.getNextJob()` และ**ทำการเปลี่ยนอาชีพให้โดยอัตโนมัติทันที**
-     - ส่งแพ็กเก็ตแสดงเอฟเฟกต์การเปลี่ยนอาชีพ (`changeJobEffect`), ซิงค์สเตตัส, แม็กซ์สกิลทั้งหมดของคลาสนั้นๆ (`chr.maxSkills()`), และประกาศยินดีในแชท
-     - หากเป็นเลเวลที่ต้องเลือกสาย (เช่น เลเวล 10 หรือ 30 ของ Explorer) จะส่งข้อความแจ้งเตือนแนะนำให้ผู้เล่นไปเลือกสายที่ Quick Admin NPC หรือใช้ Fast Job Advance
-     - เมื่อเลเวลถึง 200+ ปลดล็อกเควสต์ V-Matrix คลาส 5 (1465 และ 1460-1466) ให้อัตโนมัติ
-     - เมื่อเลเวลถึง 260+ ปลดล็อกเควสต์ HEXA Matrix คลาส 6 (1488) ให้อัตโนมัติ
-   - **Universal `handleJobAdvance()`:**
-     - ปรับปรุงให้เป็น Universal Fallback ทำงานได้จริงกับทุกอาชีพ 100%
-     - แสดงเมนูเลือกสายผ่าน `sm.sendNext()` สวยงาม
-     - รองรับการกระโดดข้ามขั้นแบบหลายระดับ (Multi-tier jump) เช่น ผู้เล่นเลเวล 200 ยังเป็น Beginner อยู่ เมื่อเลือก Thief ระบบจะถามต่อทันทีว่าจะเลือก Assassin หรือ Bandit แล้วเลื่อนขั้นเป็น Night Lord (412) คลาส 4 ให้ทันทีในรอบเดียว
-
-3. **สคริปต์ Python สำหรับ NPC (`fast_job_advance.py`, `quick_adminNPC.py`, `9072303.py`):**
-   - สร้างโมดูล `fast_job_advance.py` เชื่อมต่อเข้ากับ `JobConstants` และเมนูของเกม
-   - อัปเดต Option 14 ใน `quick_adminNPC.py` และ NPC `9072303.py` ให้เรียกใช้ `fast_job_advance.open_fast_job_advance(sm, chr)`
-   - ทำการซิงค์ไฟล์ไปยังโฟลเดอร์แจกจ่าย `Server263\data\scripts\npc\` และ `v214 src\data\scripts\npc\` ให้เหมือนกัน 100%
-
-#### 📦 3. การทดสอบและการส่งมอบไฟล์ (Build & Deployment)
-- **การคอมไพล์:** รัน `mvn clean package -DskipTests` ด้วย Portable OpenJDK 21 สำเร็จสมบูรณ์ 100% (`BUILD SUCCESS` เวลา 01:04 นาที)
-- **การ Deploy ไฟล์ Fat JAR:**
-  - คัดลอก `maplestory.jar` (138,623,200 ไบต์) ไปยัง `Server263\maplestory.jar`
-  - คัดลอกไปยัง `v214 src\maplestory.jar` และ Root Workspace
-- **แพ็กเกจแพตช์อัปเดต:**
-  - สร้างไฟล์แพตช์ `Patches\Server263_Patch_20261010_1322.zip` (ขนาด 121.54 MB) พร้อมสคริปต์ 1-Click `Apply_Patch.bat`
-  - นำไปติดตั้งลง `Server263/` ได้ทันทีใน 2 วินาที โดยไม่ต้องบีบอัดไฟล์ WZ ใหม่
-
----
-
-### 25. ปรับปรุงระบบ Job Advance, ปลดล็อกสกิลคลาส 1–4 อัตโนมัติ 100% พร้อมแยกความปลอดภัย V-Matrix และ HEXA Matrix อย่างเด็ดขาด
-
-#### 🎯 1. การวิเคราะห์สาเหตุและปัญหา (Root Cause Analysis)
-1. **สาเหตุที่สกิลไม่ปลดล็อคในหน้า Skill (คีย์ลัด K) หลังเปลี่ยนอาชีพ:**
-   - **Client Desync จาก `Char.setJob()`:** เดิมเซิร์ฟเวอร์เปลี่ยนเฉพาะค่า `this.job = id` ในหน่วยความจำ Java แต่**ไม่ได้ส่งสเตตัส `Stat.job` กลับไปยัง Client ทันที** ส่งผลให้ฝั่ง Client เข้าใจว่าตัวละครยังเป็น Beginner (Job 0) จึงไม่แสดงและล็อกแท็บสกิลคลาส 1–4 เอาไว้
-   - **Skill Level 0 ถูกล็อกในเกมยุคใหม่:** ในสคริปต์เควสต์เปลี่ยนอาชีพ NPC เดิม (`ScriptManagerImpl.jobAdvance`) มีเพียงการเพิ่ม 5 SP และยัดสกิลลง Skill Map ที่เลเวล 0 (`currentLevel = 0`) ซึ่งใน MapleStory v214/v265 สกิลที่เลเวล 0 จะถูกล็อก (Locked) ไม่สามารถลากลง Hotkey หรือกดร่ายสกิลได้
-2. **สาเหตุที่ต้องเดินไปคุยกับ NPC ประจำเมือง (Dances with Balrog, Grendel, Athena Pierce ฯลฯ):**
-   - ผู้เล่นไม่มีคำสั่งลัดในการเปิดหน้าต่างเปลี่ยนอาชีพ
-   - เมื่อคุยกับ NPC ประจำเมืองและทำเควสต์สำเร็จ NPC เรียก `jobAdvance()` แต่ไม่มีการปลดล็อกสกิลให้อย่างครบถ้วน
-
-#### 🛡️ 2. มาตรการความปลอดภัยขั้นสูงสุดต่อ V-Matrix (คลาส 5) และ HEXA Matrix (คลาส 6)
-- **การแยกแยะข้อมูลอย่างเข้มงวด 100% (Strict Isolation):**
-  - V-Matrix (คลาส 5) ทำงานผ่าน Root `40000+` และบันทึกลงฐานข้อมูลผ่านตาราง `MatrixInventory` (Node Records)
-  - HEXA Matrix (คลาส 6) ทำงานผ่าน Root `50000+` / Skill ID 8 หลักขึ้นไป (`100000000+`) และเชื่อมต่อผ่านระบบ `HexaMatrix` ที่ใช้ Sol Erda Energy และ Sol Erda Fragments
-  - ฟังก์ชัน `maxSkills()` ใน `Char.java` ได้รับการติดตั้งตัวกรองความปลอดภัย (Safety Guards) แบบหลายชั้น:
-    ```java
-    // STRICT SAFETY: Do NOT touch V-Matrix (5th Job) or HEXA Matrix (6th Job)
-    if (j >= 40000 || skill.getSkillId() >= 40000000) {
-        continue;
-    }
-    SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
-    if (si != null && (si.isOriginSkill() || si.isAscentSkill() || si.getVSkill() > 0)) {
-        continue;
-    }
-    ```
-  - `JobConstants.getJobChain(job)` ถูกสร้างขึ้นมาเพื่อคำนวณเฉพาะสายงานคลาส 1–4 เท่านั้น (เช่น Explorer 100, 110, 111, 112) จะไม่มีการย้อนไปแตะต้องหรือเขียนทับสกิลคลาส 5 หรือคลาส 6 เป็นอันขาด
-  - รวมการส่งแพ็กเก็ตผลลัพธ์เป็นแพ็กเก็ตเดียว (`changeSkillRecordResult`) ภายนอกลูป เพื่อตัดปัญหา Packet Flood และลดอาการแล็ก
-
-#### ⚙️ 3. รายละเอียดการปรับปรุงโค้ด (Refactoring Details)
-1. **`Char.java`:**
-   - ใน `setJob(int id)`: เพิ่มการส่งแพ็กเก็ตซิงค์สเตตัสอาชีพ `Stat.job` กลับไปยัง Client แบบเรียลไทม์
-   - ใน `maxSkills()`: ใช้ `JobConstants.getJobChain(job)` พร้อม Strict Guards คุ้มครอง V & HEXA Matrix ปลดล็อกสกิล 1st–4th ให้เต็ม Max Level ทันที
-2. **`ScriptManagerImpl.java`:**
-   - ใน `jobAdvance(short jobID)` และ `jobAdvanceForDB(short jobID)`: เพิ่มการเรียก `chr.maxSkills();` ทำให้การเปลี่ยนอาชีพผ่าน NPC ทุกตัวในเกม (รวมถึง NPC เมืองเกิดของทุกสายอาชีพ) ปลดล็อกและแม็กซ์สกิลให้ผู้เล่นทันทีโดยอัตโนมัติ
-3. **`PlayerCommands.java`:**
-   - เพิ่มคำสั่ง `@job` (พร้อมชื่อสำรอง `@jobadv`, `@jobadvance`) ระดับสิทธิ์ `Player` ให้ผู้เล่นสามารถเปิดหน้าต่างเปลี่ยนอาชีพและเลือกสายได้ทันทีจากทุกที่ในเกม
-   - เพิ่มคำอธิบาย `@job` ลงในเมนู `@help`
-4. **`Warrior.java` & `Job.java`:**
-   - เพิ่มการเรียก `chr.maxSkills()` หลังเปลี่ยนคลาส และอัปเดตข้อความแนะนำระบบเมื่อเลเวลอัป ให้พิมพ์ `@job` ได้ทันที
-
-#### 📦 4. ผลลัพธ์การคอมไพล์และการส่งมอบ (Build & Artifacts)
-- **การคอมไพล์:** ผ่านสำเร็จ 100% (`BUILD SUCCESS` โดยใช้ OpenJDK 21 + Portable Maven)
-- **การ Deploy ไฟล์:**
-  - `Server263\maplestory.jar` (ขนาด 138,624,954 ไบต์) อัปเดตเรียบร้อยตามกฎ Rule 1 & 2
-  - Root `maplestory.jar` และ `v214 src\maplestory.jar` ซิงค์ตรงกันสมบูรณ์
-  - `Server263\data\scripts\npc\fast_job_advance.py` และ `v214 src\data\scripts\npc\fast_job_advance.py` ซิงค์ตรงกันสมบูรณ์
-- **แพ็กเกจแพตช์อัปเดต:**
-  - สร้างไฟล์แพตช์ล่าสุด `Patches\Server263_Patch_20261010_1403.zip` (ขนาด 121.56 MB) พร้อมสคริปต์ 1-Click `Apply_Patch.bat`
-
----
-
-### 26. ตรวจสอบและแก้ไขระบบ NPC Job Advance สำหรับกลุ่มอาชีพ Cygnus Knights (แก้ไขบัคสคริปต์ค้างแจ้ง @dispose และปลดล็อกสกิลครบถ้วน 100%)
-
-#### 🎯 1. การวิเคราะห์สาเหตุและปัญหา (Root Cause Analysis)
-1. **สาเหตุของอาการสคริปต์ค้างและแจ้งเตือนให้กด `@dispose`:**
-   - ใน `Server263/data/scripts/npc/quick_adminNPC.py` ตัวเลือกที่ 14 (`Fast Job Advancement`) มีการเรียก `import fast_job_advance` โดยที่ไม่มีการใส่ไดเรกทอรี `data/scripts/npc/` เข้าใน `sys.path` ของ Jython ในขณะที่เรียกสคริปต์ผ่านคำสั่งของผู้เล่น
-   - ทำให้เกิดข้อผิดพลาด `ImportError: No module named fast_job_advance in <script> at line number 230`
-   - ตัวระบบ `ScriptManagerImpl.java` จึงดักจับ `ScriptException` และส่งข้อความสีแดงแจ้งเตือนผู้เล่น: *"Unknown error! Please type @sualoi or @dispose."* และตัดจบการทำงานของสคริปต์ทันที ทำให้กระบวนการเปลี่ยนอาชีพไม่ถูกเรียกใช้งาน
-2. **สาเหตุของอาการสกิลไม่ปลดล็อค (1st - 4th Job) ของกลุ่ม Cygnus:**
-   - เมื่อ Option 14 เกิด ImportError จึงไม่ได้ส่งคำสั่ง `handleJobAdvance()` หรือ `chr.maxSkills()` ทำให้สกิลไม่ถูกรีเฟรช
-   - ใน `JobConstants.java` เมธอด `getJobChain()` ไม่ได้บรรจุ Job ID `1000` (Noblesse) สำหรับ Cygnus Knights และ `5000` สำหรับ Mihile เข้าไปในสายอาชีพ ทำให้เมื่อเรียก `maxSkills()` สกิลคลาสพื้นฐาน (Beginner Skills) ของกลุ่ม Cygnus เช่น `Elemental Shift` (สกิลกระโดดสองจังหวะ/พุ่ง), `Imperial Recall` (วาร์ปกลับ Ereve), `Elemental Slash` ฯลฯ ไม่ถูกรวมเข้ามาในรายการปลดล็อค
-   - ใน `WindArcher.java` และ `Mihile.java` มีการเขียนเมธอด `handleJobAdvance()` ทับเอาไว้แบบเดิม (Legacy) ซึ่งบังคับให้ต้องถามข้ามเควสต์, ตรวจสอบช่องว่างในกระเป๋า และหากเป็นคลาส 4 อยู่แล้วจะแสดงข้อความ *"You may not advance at the current state"* โดยไม่ยอมรีเฟรชหรือปลดล็อคสกิลให้เหมือนอาชีพอื่น
-
-#### ⚙️ 2. รายละเอียดการแก้ไขและ Refactor (Refactoring Details)
-1. **`quick_adminNPC.py` & `fast_job_advance.py`:**
-   - เพิ่มการตั้งค่า `sys.path` ที่ส่วนหัวของ `quick_adminNPC.py` ให้ครอบคลุมพาธ `data/scripts/npc` และ `data/scripts` ป้องกันปัญหา `ImportError` ถาวร
-   - ปรับการทำงานของ Option 14 ใน `quick_adminNPC.py` ให้เรียก `chr.getJobHandler().handleJobAdvance()` โดยตรงอย่างปลอดภัย
-   - ปรับ `fast_job_advance.py` ให้รองรับทั้งการรันตรงผ่านตัวเกมและการเรียกผ่านโมดูล
-2. **`WindArcher.java` & `Mihile.java`:**
-   - ลบเมธอด `handleJobAdvance()` แบบเก่าที่จำกัดการทำงานออก เพื่อให้สืบทอดการทำงานจาก `Job.java` โดยอัตโนมัติ ซึ่งรองรับการเปลี่ยนอาชีพตามระดับเลเวล, ปลดล็อคเควสต์คลาส 5 (1460-1466) และคลาส 6 (1488) ทันที พร้อมเรียก `chr.maxSkills()` รีเฟรชสกิลเต็มทุกคลาส
-3. **`Noblesse.java`:**
-   - เพิ่มการเรียก `chr.maxSkills()` ในเมธอด `handleLevelUp` ช่วงเลเวล 60 และ 100 เพื่อให้สกิลปลดล็อคอัตโนมัติแม้เลเวลอัปตามธรรมชาติ
-4. **`JobConstants.java`:**
-   - อัปเดต `getJobChain(short job)` ให้บรรจุ Job `1000` (Noblesse) สำหรับทุกอาชีพ Cygnus Knights (Dawn Warrior, Blaze Wizard, Wind Archer, Night Walker, Thunder Breaker) และ `5000` สำหรับ Mihile เพื่อให้สกิลติดตัวพื้นฐานถูกปลดล็อคและแม็กซ์เลเวลเต็ม 100%
-
-#### 📦 3. ผลลัพธ์การคอมไพล์และการส่งมอบ (Build & Deployment)
-- **การคอมไพล์:** ผ่านสำเร็จ 100% (`BUILD SUCCESS` โดยใช้ OpenJDK 21 + Portable Maven 3.9.15)
-- **การ Deploy ไฟล์ Fat JAR:**
-  - `Server263\maplestory.jar` (ขนาด 138,623,377 ไบต์) อัปเดตเรียบร้อยตามมาตรฐานความปลอดภัยและ Portable Rule
-  - ซิงค์ตรงกับ `v214 src\bin\maplestory-219.5-jar-with-dependencies.jar`
-- **แพ็กเกจแพตช์อัปเดต:**
-  - สร้างไฟล์แพตช์ล่าสุด `Patches\Server263_Patch_20261010_1447.zip` (ขนาด 121.55 MB) พร้อมสคริปต์ 1-Click `Apply_Patch.bat`
-
----
-
-### 27. ตรวจสอบ Log เซิร์ฟเวอร์อย่างละเอียด แก้ไข ClassCastException ในการเปลี่ยนอาชีพ และแก้ปัญหาสกิลไม่ปลดล็อค (Deep Log Audit & Complete Skill Unlock Fix)
-
-#### 🎯 1. ผลการออดิตและวิเคราะห์สาเหตุจาก Logs (`Server263/logs/10 October 2026/`)
-1. **สาเหตุที่แท้จริงจาก Log (`Scripts.txt` บรรทัดที่ 11 เวลา 15:10:56):**
-   ```text
-   [10 10 2026 15:10:56] Không thể chạy script [quick_adminNPC]! Exception [java.lang.ClassCastException: java.lang.ClassCastException: class java.lang.Integer cannot be cast to class java.lang.Short (java.lang.Integer and java.lang.Short are in module java.base of loader 'bootstrap') in <script> at line number 235] ở dòng 235.
-   ```
-2. **การวิเคราะห์ข้อสันนิษฐานของผู้ใช้ ("ติดเงื่อนไขเควสต์หรือไม่"):**
-   - **ไม่ใช่ปัญหาเรื่องติดเงื่อนไขเควสต์:** ตัวเกมไม่ได้ติดเควสต์ค้าง แต่เกิดจาก **Type Casting Bug ในระดับ JVM Java Runtime** ในขณะที่ระบบกำลังเปลี่ยนอาชีพ
-   - ใน `Char.java` เมธอด `setJob(int id)` รับพารามิเตอร์ประเภท `int id` และใส่ลงใน `stats.put(Stat.job, id)` (ถูก Auto-box เป็น `java.lang.Integer`)
-   - ในขณะที่ `WvsContext.java` เมธอด `statChanged` บรรทัดที่ 144 ดึงค่ามาแปลงแบบ Unboxing ตรงๆ: `outPacket.encodeShort((Short) value);`
-   - ในภาษา Java อ็อบเจกต์ `java.lang.Integer` **ไม่สามารถ Cast ข้าม Class ไปเป็น `java.lang.Short` ได้** จึงเกิด `ClassCastException` ทันทีที่เซิร์ฟเวอร์เริ่มเตรียมแพ็กเก็ตสเตตัส!
-3. **ผลกระทบที่ทำให้สกิลไม่ยอมปลดล็อคให้ใช้งาน:**
-   - เมื่อ `chr.setJob()` เกิด Exception ล้มเหลวกลางคันตั้งแต่คำสั่งแรก:
-     - ฝั่ง Client **ไม่เคยได้รับแพ็กเก็ตเปลี่ยนอาชีพ (`Stat.job`)** ทำให้ Client ยังเข้าใจว่าตัวละครเป็น Noblesse (Job 1000) หรือ Beginner
-     - คำสั่งส่งสกิลของอาชีพใหม่ใน `setJob()` **ไม่ถูกทำงานเลย**
-     - คำสั่ง `chr.maxSkills()` ใน `handleJobAdvance()` **ไม่ถูกเรียกใช้งานเลย**
-     - หน้าต่าง Skill Book (คีย์ลัด K) ฝั่ง Client จึงล็อกแท็บอาชีพไว้หมด ไม่ยอมเปิดแท็บคลาส 1–4 และไม่มีสกิลปรากฏให้ใช้
-     - เมื่อผู้เล่นพยายามกดอัปสกิล เซิร์ฟเวอร์ตรวจสอบพบว่า Job ในตัวละครไม่ตรงกับสายสกิล (`SkillConstants.isMatching` เป็น false) จึงขึ้นข้อความตัดจบว่า *"Lỗi không xác định."*
-
-#### ⚙️ 2. รายละเอียดการแก้ไขและปรับปรุงเชิงลึก (Deep Fixes & Hardening)
-1. **`WvsContext.java` (แก้ ClassCastException ป้องกันการแครช 100%):**
-   - ปรับการ Decode ตัวเลขใน `statChanged()` ทุกเคสให้ใช้ Java Pattern Matching `value instanceof Number n ? n.xxxValue() : ...` แทนการ Cast แบบ Direct Unboxing
-   - รองรับทั้ง `Integer`, `Short`, `Byte`, `Long` โดยไม่เกิด `ClassCastException` อีกต่อไปอย่างสิ้นเชิง
-2. **`Char.java`:**
-   - ใน `setJob(int id)`: บังคับแคสต์ `stats.put(Stat.job, (short) id);` ให้สอดคล้องตามชนิดข้อมูล
-   - เพิ่มระบบโหลดสกิลครบทั้งสายอาชีพย้อนหลัง (`JobConstants.getJobChain((short) id)`) เพื่อให้แน่ใจว่าเมื่อเปลี่ยนเป็นคลาส 2, 3 หรือ 4 สกิลของคลาสก่อนหน้าทั้งหมดจะถูกเพิ่มเข้าตัวละครและส่งแพ็กเก็ต `changeSkillRecordResult` ให้ Client แสดงแท็บสกิลครบถ้วนทันที
-3. **`Job.java` (`handleJobAdvance`):**
-   - เพิ่มการปลดล็อก V-Matrix (เควสต์ 1465, สล็อต V-Matrix ครบ 60 ช่อง, พร้อมมอบ V-Skills) อัตโนมัติเมื่อเลเวล 200+
-   - เพิ่มการส่งแพ็กเก็ต `QUEST_RECORD_MESSAGE` เควสต์ 1488 แบบสมบูรณ์ เพื่อปลดล็อกแท็บ HEXA Matrix คลาส 6 ในหน้าต่าง UI ของ Client ทันทีเมื่อเลเวล 260+
-4. **`SkillHandler.java` (`handleClientSyncCooltimeRequest`):**
-   - เพิ่มการตรวจสอบขนาด Unread Bytes (`inPacket.getUnreadAmount() < 8`) ป้องกันปัญหา `ArrayIndexOutOfBoundsException` ที่วนลูปบันทึกใน `All.txt` ทุก 30 วินาที
-
-#### 📦 3. ผลการคอมไพล์และการส่งมอบ (Build & Deployment)
-- **การคอมไพล์:** `BUILD SUCCESS` 100% โดยใช้ Portable OpenJDK 21 และ Portable Apache Maven 3.9.15
-- **การ Deploy ไฟล์ Fat JAR:**
-  - `Server263\maplestory.jar` (ขนาด 138,623,994 ไบต์) อัปเดตและพร้อมใช้งาน
-  - ซิงค์ตรงกับ `v214 src\maplestory.jar` และ Root `maplestory.jar`
-- **แพ็กเกจแพตช์อัปเดต:**
-  - สร้างไฟล์แพตช์ล่าสุด `Patches\Server263_Patch_20261010_1522.zip` (ขนาด 121.56 MB) พร้อมสคริปต์ 1-Click `Apply_Patch.bat`
-
----
-
-### 28. แก้ไขข้อผิดพลาดการสร้างตัวละคร Kain (MySQL Foreign Key Constraint Violation 1452) และยกเครื่องระบบ Logging & Error Diagnostics ทั่วทั้งระบบ
-
-#### 🎯 1. ผลการตรวจพบและวิเคราะห์สาเหตุ (Root Cause Analysis)
-1. **Error จาก MariaDB / MySQL:**
-   ```text
-   16:51:11.990 [nioEventLoopGroup-20-7] WARN  o.m.jdbc.message.server.ErrorPacket - Error: 1452-23000: Cannot add or update a child row: a foreign key constraint fails (`vietmaple`.`skills`, CONSTRAINT `skills_ibfk_1` FOREIGN KEY (`charid`) REFERENCES `characters` (`id`) ON DELETE CASCADE)
-   Packet CREATE_NEW_CHARACTER [141] got Exception: 0B 00 4B 41 49 4E 4F 46 46 4C 49 4E 45 ...
-   ```
-2. **สาเหตุของ Foreign Key Violation 1452:**
-   - เมื่อผู้เล่นสร้างตัวละครใหม่ใน `LoginHandler.handleCreateNewCharacter`: อ็อบเจกต์ `Char chr = new Char(...)` ถูกสร้างในหน่วยความจำ RAM ก่อน โดยที่ยังไม่ได้บันทึกลง MySQL (`chr.getId() == 0`)
-   - ต่อมาในบรรทัด 356 มีการเรียก `chr.setJobHandler(JobManager.getCreationJobById(curSelectedRace, chr));` ซึ่งจะเรียก Constructor ของ `Kain(chr)`
-   - ในขณะที่อาชีพอื่นๆ ทั้ง 42 อาชีพมีเงื่อนไข `if (chr.getId() != 0 && isHandlerOfJob(...))` เพื่อป้องกันไม่ให้ยัดสกิลตอนสร้างตัวละคร แต่ใน `Kain.java` (และ `WindArcher.java`) ขาดเงื่อนไข `chr.getId() != 0`
-   - ทำให้ `Kain` เรียก `chr.addSkill(skill)` ทันที ซึ่งไปเรียก `skill.setCharId(chr.getId())` (ค่าเป็น `0`) และเรียก `skill.saveToSQL()`
-   - คำสั่ง `INSERT INTO skills (charid, ...) VALUES (0, ...)` จึงถูกยิงไปที่ MariaDB ทันที แต่เนื่องจากในตาราง `characters` ยังไม่มี ID = 0 (เพราะ `chr.saveToSQL()` อยู่บรรทัด 374 หลังจากนั้น) ฐานข้อมูลจึงปฏิเสธคำสั่งและส่งผลให้แพ็กเก็ตสร้างตัวละครแครช
-3. **สาเหตุที่ระบบเดิมไม่แสดงจุดเกิดเหตุของบั๊ก (Logging Blindspot):**
-   - ใน `ChannelHandler.java`: เมื่อแพ็กเก็ตเกิด Exception ระบบสั่งพิมพ์แค่ `Packet %s [%d] got Exception: %s` (แสดงเฉพาะ Header และ InPacket Hex Dump)
-   - ใน `DataPrinter.java`: เมธอด `send(name, Exception e)` เขียน Stack Trace ลงไฟล์ในฮาร์ดดิสก์อย่างเงียบๆ (`logs/.../ExceptionCaught/All.txt`) โดย **ไม่เคยพิมพ์ Stack Trace หรือระบุไฟล์และบรรทัดออกทางหน้าจอ Console** ทำให้นักพัฒนาไม่สามารถมองเห็นได้ว่าโค้ดบรรทัดไหนพัง
-   - ใน `DatabaseManager.java`: เมื่อคำสั่ง SQL ล้มเหลว มีเพียงการบันทึก Exception ลงไฟล์เงียบๆ โดยไม่พิมพ์ SQL Query หรือระบุว่าเมธอด Java ใดเป็นคนเรียกใช้
-
-#### ⚙️ 2. รายละเอียดการแก้ไขและปรับปรุงเชิงลึก (Deep Fixes & Hardening)
-1. **`Kain.java` & `WindArcher.java` (แก้ Foreign Key Crash):**
-   - เพิ่มการตรวจสอบ `if (chr.getId() != 0 && isHandlerOfJob(chr.getJob()))` ใน Constructor เพื่อไม่ให้เพิ่มสกิลลงฐานข้อมูลก่อนที่ตัวละครจะมี ID จริง
-   - สกิลติดตัวพื้นฐานจะถูกเพิ่มให้อัตโนมัติเมื่อตัวละครโหลดเข้าเกมจริง (Migrate In)
-2. **`Char.java` (ป้องกันระดับ Core):**
-   - ใน `addSkill` และ `removeSkill`: เพิ่มการตรวจสอบ `if (getId() > 0)` ก่อนเรียก `skill.saveToSQL()` หรือ `skill.deleteSkillFromSQL()` เพื่อรับประกันว่าหากมีการเรียกใช้ก่อนตัวละครบันทึกลง DB จะไม่เกิด Foreign Key Error
-   - สกิลที่ถูกเพิ่มเข้ามาระหว่างสร้างตัวละครจะถูกบันทึกลง DB พร้อมกันทั้งหมดใน `Char.insertToSQL()` เมื่อได้รับ ID ใหม่จากฐานข้อมูลเรียบร้อยแล้ว
-3. **`Skill.java` (ป้องกันระดับ Entity):**
-   - เพิ่ม Guard Check `if (getCharId() <= 0) return;` ใน `saveToSQL()`
-   - เพิ่ม Guard Check `if (getId() <= 0) return;` ใน `deleteSkillFromSQL()`
-4. **`ChannelHandler.java` (ระบบวินิจฉัยข้อผิดพลาดของ Packet ระดับมืออาชีพ):**
-   - ดักจับ `Throwable` และพิมพ์กล่องวินิจฉัย `[PACKET EXCEPTION]` ออกทาง `System.err` อย่างชัดเจน:
-     - แสดง Opcode name, Opcode ID, และ Hex
-     - แสดงข้อมูลผู้เล่น: Account name, Character name, Character ID, Job, Level, และ IP Address
-     - แสดง Exception Class และ Message
-     - กรองและแสดง Stack Trace เฉพาะคลาสของ `net.swordie.ms.*` สูงสุด 10 เฟรม เพื่อชี้เป้าไฟล์และเลขบรรทัดที่เกิดปัญหาได้ทันที 100%
-     - แสดง Root Cause Chain (`[Caused By]`) หากมีข้อผิดพลาดซ้อน
-     - แสดง Packet Hex Dump สมบูรณ์
-5. **`DatabaseManager.java` (ระบบแจ้งเตือนข้อผิดพลาดฐานข้อมูล SQL ทันที):**
-   - เพิ่มฟังก์ชัน `logDatabaseError(query, exception)` เชื่อมต่อไปยัง `executeQuery`, `executeStatement`, และ `executeStatementReturnID`
-   - เมื่อคำสั่ง SQL ใดๆ ล้มเหลว จะแสดงกล่อง `[DATABASE ERROR]` พิมพ์ข้อความคำสั่ง SQL, สาเหตุจาก MySQL, และคลาส/บรรทัด Java ที่เป็นคนเรียกคำสั่งนั้นทันที
-6. **`DataPrinter.java` (ปรับปรุงตัวบันทึกกลางให้พิมพ์ออก Console เสมอ):**
-   - รองรับทั้ง `Throwable`, `Exception`, และ `Error`
-   - พิมพ์ข้อผิดพลาดพร้อมไฮไลต์ Stack Trace เฟรมของ `net.swordie.ms` ออกทาง `System.err` ทันทีที่มีการเรียกใช้
-   - ทุกข้อความในหมวด Error (`ExceptionCaught`, `HikariCP_Error`, `Scripts`, `Hack`) จะถูกพิมพ์ออก Console เสมอ
-7. **`ScriptManagerImpl.java` (ระบบแจ้งเตือนสคริปต์ NPC / Quest / Portal):**
-   - เมื่อสคริปต์เกิดข้อผิดพลาดในการรัน (`ScriptException`) จะพิมพ์กล่อง `[SCRIPT ERROR]` ระบุชื่อไฟล์สคริปต์, เลขบรรทัดในสคริปต์, และ Error Message ออกทาง Console ทันที
-8. **`CathingScheduledThreadPoolExecutor.java` (ป้องกัน Timer Task เงียบหาย):**
-   - ปรับการดักจับจาก `Exception` เป็น `Throwable` พร้อมพิมพ์ข้อผิดพลาดออกทาง `System.err`
-
-#### 📦 3. ผลการคอมไพล์และการส่งมอบ (Build & Deployment)
-- **การคอมไพล์:** `BUILD SUCCESS` 100% (Maven 3.9.15 + OpenJDK 21)
-- **การ Deploy ไฟล์ Fat JAR:**
-  - `Server263\maplestory.jar` (ขนาด 138,626,786 ไบต์) อัปเดตและพร้อมใช้งาน
-  - ซิงค์ตรงกับ `v214 src\maplestory.jar` และ Root `maplestory.jar`
-- **แพ็กเกจแพตช์อัปเดต:**
-  - สร้างไฟล์แพตช์ล่าสุด `Patches\Server263_Patch_20261010_1717.zip` (ขนาด 121.56 MB) พร้อมสคริปต์ 1-Click `Apply_Patch.bat`
-
----
-
-### 18. บันทึกผลการแก้ไขบั๊กตีมอนเด้ง, Full Audit ระบบ Job Advance ทุกอาชีพ และจัดทำชุดแพทช์ (10 ตุลาคม 2569)
-
-#### 🔍 1. การแก้ไขบั๊กโจมตีมอนสเตอร์แล้วเกมเด้งออก (Night Walker Crash on Hit Fix)
-- **สาเหตุจาก Error Log:**
-  - ตัวละคร Night Walker (Job 1400) ใช้สกิล Lucky Seven (`14001020`) โจมตีมอนสเตอร์ ฟังก์ชัน `shadowBats()` เรียก `summonBatAndRegister()` โดยส่ง ID สกิล `14001027` (ซึ่งเป็น Active Buff)
-  - ใน Client Data (`Skill.wz/1400.img/14001027`) ไม่มีโหนด `<dir name="summon">` ทำให้ตัวเกมเกิด Fatal Exception `HR 570425350 (INVALID_GAME_DATA)` ในแพ็กเก็ต `SUMMONED_CREATED (1588)` ส่งผลให้เกมปิดตัวลงทันที (`throw CTerminateException`)
-- **การแก้ไขในโค้ด (`NightWalker.java`):**
-  - เพิ่มเมธอด `getBatSummonSkillId()` เพื่อส่ง ID สกิลที่เป็น Summon Node แท้จริงใน WZ:
-    - ขั้น 1–2: ID `14000027` (`SHADOW_BAT_DOMINION`)
-    - ขั้น 3: ID `14110033` (`SHADOW_BAT_SUMMON_II`)
-    - Ravenous Mode: ID `14120017` (`RAVENOUS_BAT_SUMMON`)
-    - HEXA Matrix: ID `14141005` (`HEXA_SHADOW_BAT_SUMMON`)
-  - อัปเดตทั้ง `summonBatAndRegister()` และ `summonBatByDarkOmen()` ให้ใช้ ID ซัมมอนที่ถูกต้อง ตีมอนสเตอร์ได้ต่อเนื่องไม่เด้งหลุด
-
-#### ⚔️ 2. ปรับปรุงระบบเปลี่ยนอาชีพ Cygnus Knights ใน Admin NPC
-- ใน `Job.java` ฟังก์ชัน `handleJobAdvance()`:
-  - รองรับ Noblesse (`1000`) เลือกได้ทั้ง 5 สาย (Dawn Warrior, Blaze Wizard, Wind Archer, Night Walker, Thunder Breaker)
-  - รองรับระบบ **"สลับสายอาชีพ Cygnus ได้อิสระ (Switch Cygnus Branch)"**
-  - ล้างสกิลสายเดิม (`11000000..15999999`) อัตโนมัติ โดยไม่ลบสกิล 5th Job V-Matrix และ 6th Job HEXA Matrix
-  - อัปเกรดและ Max สกิลของสายใหม่อัตโนมัติ
-
-#### 📋 3. Full Audit ระบบ Job Advance สำหรับอาชีพใหม่ทั้งหมด (New Jobs Complete Audit)
-- **ตรวจสอบครบทุกอาชีพใหม่:**
-  - **Flora:** Adele (`15002` ➔ `15100`..`15112`), Khali (`15003` ➔ `15400`..`15412`), Ark (`15001` ➔ `15500`..`15512`), Illium (`15000` ➔ `15200`..`15212`)
-  - **Anima:** Hoyoung (`16000` ➔ `16400`..`16412`), Lara (`16001` ➔ `16200`..`16212`), Ren (`16002` ➔ `16100`..`16112`)
-  - **Nova:** Kain (`6003` ➔ `6300`..`6312`), Cadena (`6002` ➔ `6400`..`6412`), Angelic Buster (`6001` ➔ `6500`..`6512`), Kaiser (`6000` ➔ `6100`..`6112`)
-  - **Jianghu & Sengoku:** Lynn (`17001` ➔ `17200`..`17212`), Mo Xuan (`17000` ➔ `17500`..`17512`), Hayato (`4001` ➔ `4100`..`4112`), Kanna (`4002` ➔ `4200`..`4212`)
-  - **Shine & Standalone:** Sia Astelle (`18000` ➔ `18200`..`18212`), Pathfinder (`0` ➔ `301` ➔ `330`..`332`), Kinesis (`14000` ➔ `14200`..`14212`), Zero (`10000` ➔ `10100`..`10112`)
-- **การปรับปรุงที่ทำเพิ่มเติม:**
-  - เสริม Option 21 ใน `quick_adminNPC.py` ให้เปิดสล็อต V-Matrix 26 ช่อง และมอบ V-Skills ประจำอาชีพ 4 สกิลทันที
-  - เสริม Option 22 ใน `quick_adminNPC.py` ให้ส่ง Record Packet ของเควส `1488` เพื่อเปิด HEXA UI ใน Client ทันที
-  - แก้ไข `JobAdvance.py` ให้เป็น Universal Delegate ส่งต่อเข้า `handleJobAdvance()` เสมอ
-  - เพิ่มเมธอด `JobConstants.isAnima()` รวมกลุ่มอาชีพ Anima ให้ครบตามมาตรฐาน
-
-#### 📦 4. จัดทำชุดไฟล์แพทช์ (Client & Server Patch Packaging)
-- **Client Patch (`Client_Patch_v265.zip` - 339 KB):**
-  - รวม `Launcher.exe`, `Localhost.dll`, `launcher.ini`, `Run_Game.bat` และคู่มือการติดตั้ง
-  - แตกไฟล์ลงโฟลเดอร์เกม MapleStory v265 เล่นได้ทันทีโดยไม่ติดปัญหา *"missing a few files"*
-- **Server Patch (`Server263_Patch_Latest.zip` - 121.6 MB):**
-  - รวม `maplestory.jar` ตัวล่าสุด, สคริปต์ NPC ทั้งหมด, ชุด Client Patch และ `Apply_Patch.bat` ติดตั้งทับแบบคลิกเดียว
-
-#### 💎 5. เอกสารคำสั่งเสก NX และแต้มระบบ
-- `!nx <จำนวน>` หรือ `!setnx <จำนวน>`: เสก NX / Cash Points ให้ตัวเอง
-- `!givenx <ชื่อตัวละคร> <จำนวน>`: เสก NX ให้ผู้เล่นอื่น
-- `!dp <จำนวน>`: เสก Donation Points
-- `!vp <จำนวน>`: เสก Vote Points
-- `!mesos <จำนวน>`: เสกเงิน Meso
-- เมนู `[Starter Package]` ใน NPC Admin: รับ 1,000,000 Cash Points + 100,000 DP + Vac Pet ฟรี 1 ครั้งต่อบัญชี
-
----
-
-### 19. Full Audit ระบบ V Matrix (5th Job) และ HEXA Matrix (6th Job) (10 ตุลาคม 2569)
-
-#### ✅ ส่วนที่ตรวจแล้วถูกต้อง (ไม่แก้)
-- ตารางค่า Sol Erda / Fragment ของ HEXA Skill Core (Origin/Mastery/Boost/Common) ใน `HexaMatrixConstants` ตรงกับ GMS
-- โครงสร้าง Loader `VCore.java` / `HexaCore.java` (ยกเว้นบั๊ก maxLevel ด้านล่าง), ฟังก์ชันเปิด Nodestone แบบ Bulk ส่วนใหญ่
-
-#### 🔷 HEXA Matrix
-- `HexaCore.load()`: ค่า `maxLevel` ของ Additional Stat ไปเขียนทับ Main Stat → แก้ให้เขียนลง `getRight()`
-- `UserHandler.handleHexaMatrixOperationRequest`:
-  - Case 0 (เปิด Core): เพิ่มเช็กเลเวล 260 และกันเปิดซ้ำ (เดิมเปิดซ้ำได้ → เลเวลรีเซ็ต + เสีย Erda), Sia legacy core คิดราคาตามประเภทจริง
-  - Case 1 (อัปเกรด): กัน `coreLevel = 0` (AIOOBE), กันเกิน Max Level 30, เช็กอาชีพ, **ปิดช่องโหว่ Sia ที่เชื่อราคาจากไคลเอนต์**
-  - Case 2 (เปิด Stat Node): ใช้ราคาแยกตาม Node I/II/III (5/10, 10/200, 15/350), กันเปิดซ้ำ, ตรวจ Stat Type ต้องไม่ว่างและไม่ซ้ำกัน
-  - Case 3 (Enhance Stat): แก้ลอจิกสุ่มผิด (เดิมใช้ weight ของบรรทัดรอง และดัน Additional เกิน 10 ได้)
-  - Case 7: แก้ `type2` เขียนผิด index 0 → 2, แก้ Packet desync เมื่อข้าม Core, กัน `cost` ติดลบ (เสก Meso)
-  - `handleErdaConversion`: กันจำนวนติดลบ (เสก Sol Erda) และเช็กช่องกระเป๋าก่อนหัก Erda
-- `Char.setHexaSkill`: เลิก `saveToSQL()` บน Deep Copy (สร้างแถวซ้ำใน DB ทุกครั้งที่อัป) และอัปเดตเลเวลสกิลฝั่งเซิร์ฟเวอร์จริงผ่าน `applySkillList()` ใหม่
-- `Char.encodeHexaStats`: กัน NPE เมื่อ Stat Type เป็น null; `Char.addListSkill`: แก้ NPE ใน null-guard
-
-#### 🔶 V Matrix (`MatrixHandler.java` เขียนใหม่ทั้งไฟล์)
-- ทุก Action ตรวจ index/null/state (เดิม IndexOutOfBounds/NPE ได้หลายจุด, `type` null)
-- **ปิดช่องโหว่:** Disassemble ซ้ำได้ Shard ไม่จำกัด, ใช้ Node ตัวเอง/ที่แยกแล้วเป็นวัตถุดิบ (EXP ไม่จำกัด), Craft จำนวนติดลบได้ Shard, Custom Boost ไม่หัก Shard, EnhanceSlot ไม่มีเพดาน
-- Enhance: จำกัด Max Level 25, ใช้ EXP Node เป็นวัตถุดิบได้ (ตาม GMS), Node ที่ล็อก/สวมอยู่ใช้เป็นวัตถุดิบไม่ได้, บันทึก DB ทันที
-- Craft: เช็ก Shard/ช่องเก็บ 500, Boost Node สุ่มสกิลรองแยกแต่ละชิ้น; Custom Boost ราคา 500 (WZ) และตรวจสกิลต้องอยู่ในลิสต์อาชีพ + ไม่ซ้ำ
-- ExpandSlot: แก้ราคา (AIOOBE เมื่อ slot > 18), ใช้ `REQ_LV_BY_MATRIX_SLOT_POS`, จำกัดล่วงหน้า 10 เลเวล, ต้องเปิดตามลำดับ, กันซื้อซ้ำ
-- Activate/Swap: ใช้ตำแหน่งจริงฝั่งเซิร์ฟเวอร์, Boost 2 อันห้ามมีสกิลหลักซ้ำ, Special Node สูงสุด 1 (`SPECIAL_SLOT_MAX`)
-- **ระบบคำนวณเลเวลสกิลใหม่ `recalcMatrixSkills()`**: รวมเลเวล Boost จากหลาย Node (สูงสุด 50 + Slot 10 = 60), V Skill สูงสุด 25 + 5 = 30, Special = 1; ถอด Node หนึ่งไม่ลบสกิลที่ Node อื่นยังให้อยู่
-- `MatrixCore`: `isActive()` ไม่นับ Node ที่แยกแล้ว, Max Level ตามประเภท (Special/EXP = 1); `VCore.isXNode()` กัน NPE
-- `Job.GiveVSkills`: มอบ V Node ฟรีครั้งเดียวต่ออาชีพ (QR custom `333336`) — เดิม @job ซ้ำได้ Node ฟรีไม่จำกัด; การสร้าง Slot ใช้ `initMatrixSlots()` (บันทึก DB)
-- `ScriptManagerImpl` (Nodestone): กัน `nextInt(0)`/parse crash, แก้บั๊ก `openNodeWithCustomValue` ที่สร้าง Node เต็มกระเป๋าจากหินชิ้นเดียว, แก้ลูปไม่สิ้นสุดใน Bulk Boost roll
-
-#### ⚠️ ข้อสังเกตที่ยังไม่แก้ (ไม่กระทบการทำงาน)
-- `HexaMatrixConstants.sixthJob*Core` / `linkedCoreSkill` ไม่ถูกใช้งาน (dead code)
-- ค่า HEXA Stat คำนวณฝั่ง Client ผ่านสกิล `500071000` (เซิร์ฟเวอร์ไม่ได้คำนวณดาเมจจาก Stat เอง)
-
-#### 📦 Build & Deploy
-- `BUILD SUCCESS` (Maven 3.9.15 + JDK 21), Deploy `maplestory.jar` (138,632,846 ไบต์) ไปยัง `v214 src\`, Root และ `Server263\`
-
-### 20. Audit Mo Xuan / Sia Astelle / คลาสใหม่, Erda Link (HEXA) และระบบกันเกมแครชจาก Asset WZ (10 ตุลาคม 2569)
-
-ตรวจทุก Skill ID ที่โค้ดเรียกใช้เทียบกับ `Server263/data/wz265/Skill.wz` (index 13,481 สกิล, 853 สกิลที่มี node `summon`)
-
-#### 🛡️ กันเกมแครชจาก Node WZ ที่ไม่มีอยู่จริง
-- `SkillData` บันทึกว่าแต่ละสกิลมี node `<summon>` หรือไม่ (`SkillInfo.hasSummonNode()`) + `SkillData.canSpawnSummon(id)`
-- `Field.spawnLife`: บล็อก Summon ที่สกิลไม่มี node `summon` ใน Skill.wz (Client โหลด `skill/<id>/summon` ตอน SUMMONED_CREATED → ไม่มี = แครช) พร้อม Log `[SummonGuard]`
-- AngelicBuster: Sparkle Burst (400051011) ไม่มี node summon → เลิกสร้าง Summon
-
-#### 🌀 Mo Xuan
-- เพิ่ม HEXA ทุกตัวเข้า Logic เดิม: Xuanshan Arts Tian/Di (HEXA 1-4), Divine Art (Thunder/Flame/Wind/Tide/Howling Storm), Soul Art Black Wind, Qi Projection (HEXA กับปกติเป็น Toggle เดียวกัน ไม่ซ้อน)
-- Heir of the Divine: แก้ `Math.max` → `Math.min` (เดิมได้ 5 Stack ทันที)
-- Awaken: ฟื้น HP **และ MP** x% ทุก `w` วินาทีตาม WZ (เดิม Hardcode 3 วิ และฟื้นแค่ HP)
-- เช็ก 4th job ใช้ 175121003 (ของจริง) แทน 175121000 ที่ไม่มีใน WZ (เดิม `maxSkills()` ทำงานทุกครั้งที่ล็อกอิน)
-
-#### ✨ Sia Astelle / Erda Link
-- `unlockErdaLink()`: เปิด Core Erda Link ที่ยังล็อกเป็น Lv.1 และซ่อม Core ที่สกิลเชื่อมหาย โดยให้สกิลตามเลเวล Core จริงผ่าน `setHexaSkill` (เดิมแจกสกิล Lv.30 ตรง ๆ → เลเวลสกิลไม่ตรงกับ UI Erda Link)
-- Stellar ทุกดวงใช้เลเวลสกิลจริงแทน Hardcode 30; SHINE Antares ใช้ Summon ของตัวเอง (182141001) แทน 182001001
-
-#### 🧩 คลาสอื่น (HEXA ที่ต้องมี Logic ฝั่งเซิร์ฟเวอร์)
-- Lynn: HEXA [Focus] Heal ทำงานเหมือนสกิลปกติ
-- Khali: แก้ HEXA ID ผิด (`HEXA_ARTS_TRIPLE_BASH` → `HEXA_ARTS_CRESCENTUM_2`), เพิ่ม HEXA Void Rush
-- Mechanic: HEXA Robo Launcher RM7 / Bots 'n Tots + Sub Summon ของ HEXA เอง
-- Pathfinder: HEXA Shadow Raven ทำงานเหมือน Raven ปกติ และตอน Re-summon ใช้ ID/เลเวลของ Raven ตัวที่ถูกเรียกจริง (เดิมบังคับเป็น Raven ปกติ)
-- HoYoung: HEXA Star Vortex (+ follow-up 164141060), Butterfly Dream, Talisman Clone, Seeking Ghost Flame
-- Zero: HEXA Throwing Weapon (101141022) สร้าง Summon เหมือนสกิลปกติ
-
-#### 📦 Build & Deploy
-- `BUILD SUCCESS` (Maven 3.9.15 + JDK 21), Deploy `maplestory.jar` (138,634,273 ไบต์) ไปยัง `v214 src\` และ `Server263\`
-
-
-
+## 📅 [2026-10-11] Comprehensive Boss System Audit, Stabilization & Asset Cross-Reference
+
+### 🎯 Scope
+Comprehensive asset and source code audit across all 35 official boss orders and 80 battle fields in MapleStory v265 / v263 emulator (`Etc.wz/BossParty.img.xml`, `Map.wz`, `Mob.wz`, `data/dat265/`). Fix all missing spawns, broken phase transitions, trapped players in empty rooms, missing exit gates/portals, and boss HP registry desyncs.
+
+### 📂 Files Modified
+- [`v214 src/.../BossEntry.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/world/boss/BossEntry.java)
+- [`v214 src/.../BossHelper.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/world/boss/BossHelper.java)
+- [`v214 src/.../BossHpRegistry.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/BossHpRegistry.java)
+- [`v214 src/.../ScriptManagerImpl.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/scripts/ScriptManagerImpl.java)
+- [`v214 src/data/scripts/field/*.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/field/) (42 Field Scripts)
+- [`v214 src/data/scripts/npc/*.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/npc/) (35 Exit Gate Scripts)
+- [`v214 src/data/scripts/portal/*.py`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/data/scripts/portal/) (52 Portal Scripts)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **Bosses Missing From Direct Spawn Handling (`BossEntry.java`)**:
+   - `Magnus` (Easy, Normal, Hard): Handled in `Magnus.java`, but was omitted from `BossEntry.spawnBossForField`, and map scripts (`magnus_summon_E.py`, `magnus_summon_N.py`, `magnus_summon.py`) were missing. Magnus never spawned.
+   - `Cygnus` (Easy, Normal): Handled in `Cygnus.java`, omitted from `BossEntry`, and map scripts (`cygnus_Summon_Easy.py`, `cygnus_Summon.py`) were missing.
+   - `Lotus` (Normal, Hard, Extreme): Handled in `Lotus.java`, omitted from `BossEntry`, and map scripts (`blackHeavenBoss1_summonpre.py`, `blackHeavenBoss1n_summonpre.py`) were missing.
+   - `Damien` (Normal, Hard): Handled in `Damien.java`, omitted from `BossEntry`, and map scripts (`first_DemianNormal1pre.py`, `first_DemianHard1pre.py`) were missing.
+   - `Lucid` (Easy, Normal, Hard): Handled in `Lucid.java`, omitted from `BossEntry`, and map scripts (`Fenter_450004150pre.py`) were missing.
+   - `Will` (Easy, Normal, Hard): Handled in `Will.java`, omitted from `BossEntry`, and map scripts (`will_phase1pre.py`) were missing.
+   - `Black Mage` (Hard, Extreme): Aeonian Rise (`8880500`) & Tanadian Ruin (`8880501`) were omitted from `BossEntry`.
+   - `Hilla` (Normal, Hard) & `Balrog`: Were omitted from `BossEntry`.
+   - **Fix**: Added explicit cases for all these bosses in `BossEntry.spawnBossForField()`, and created the corresponding map scripts in `data/scripts/field/`.
+2. **Phase Transition Traps in Multi-Phase Bosses (`BossHelper.java`)**:
+   - **Lotus Phase 2 & 3**: When Phase 1 & 2 died, `BossHelper` warped to `350060800` / `350060500` (Phase 2) and `350060900` / `350060600` (Phase 3), but never called `Lotus.spawn()`, and map scripts `blackHeavenBoss2_summonpre.py` and `blackHeavenBoss3_summonpre.py` were missing. Players were warped into empty rooms.
+     - **Fix**: Added automatic `Lotus.spawn()` triggers upon warping to Phase 2 and Phase 3 in `BossHelper.java`, and deployed the field scripts.
+   - **Will Phase Transitions**: When Phase 1 died, `BossHelper` warped to `450008200` / `450008800` (cutscene 2). When Phase 2 died, it warped to `450008300` / `450008900` (cutscene 3). Because `will_direction2.py` and `will_direction3.py` were missing, players were stuck permanently in empty cutscene maps.
+     - **Fix**: Created `will_direction2.py` and `will_direction3.py` to seamlessly warp the party to Phase 2 battle map (`450008250` / `450008850`) and Phase 3 battle map (`450008350` / `450008950`). Added `will_phase2pre.py` and `will_phase3pre.py` to call `Will.spawn(2, chr)` and `Will.spawn(3, chr)`.
+   - **Damien Phase 2**: `DemianStigma.startNextPhase` warped party to `350160240` / `350160140`, where `first_DemianNormal2pre.py` and `first_DemianHard2pre.py` were missing.
+     - **Fix**: Deployed `first_DemianNormal2pre.py` and `first_DemianHard2pre.py` with `Damien.spawn(chr, DamienPhase.LAST)`.
+   - **Lucid Phase 2 & Reward Room**: Phase 1 death warped to `450004200` (cutscene), missing `enter_450004200.py`. Reward room (`450004300`) did not spawn Music Box mob (`8880177` Easy, `8880167` Normal, `8880156` Hard).
+     - **Fix**: Created `enter_450004200.py` and `Fenter_450004250pre.py`. Updated `enter_450004300.py` to spawn the difficulty-appropriate Music Box mob.
+3. **Universal Boss Exit Trap (Trapped in Boss Rooms)**:
+   - All 23 exit gate NPCs (`9091002` through `9091048`, `3003561`, `9130100`, `9401197`, etc.) had no scripts in `data/scripts/npc/`.
+   - All exit portals (`pt_BM1_bossOut`, `pt_GC_out`, `pt_jinHillah_out`, `ptKalosOut`, `ptKaringOut`, `ptLimboOut`, `ptBaldrixOut`, `ptAdversaryOut`, `ext00`, `lioncastleout`) had no scripts in `data/scripts/portal/`.
+   - **Fix**: Deployed `sm.exitBoss()` scripts for all 35 exit gate NPCs and 10 exit portals. Updated `ScriptManagerImpl.exitBoss()` confirmation dialog to bilingual English/Thai.
+4. **Boss HP Registry Desync & Misassignment Fix (`BossHpRegistry.java`)**:
+   - `First Adversary`: IDs `8881710` (Easy 120T), `8881740` (Normal 250T), `8881770` (Hard 500T), `8881800` (Extreme P1 1,000T), `8881820` (Extreme P2 700T) were registered.
+   - `Zakum Bodies`: Added missing Bodies 1 and 2 (`8800000`, `8800001`, `8800020`, `8800021`, `8800100`, `8800101`).
+   - Cleaned up duplicate/erroneous entries for Lotus (`8880110`, `8880111`, `8880100`, `8880101`, `8880153`).
+5. **Exact Platform Foothold Snapping**:
+   - Extracted exact ground coordinates from `Map.wz` footholds for newer bosses: Gloom `(0, -157)`, Darknell `(0, 29)`, Verus Hilla `(0, 266)`, Seren `(0, 275)`, Slime `(715, -1382)`, Kalos `(-300, 398)`, Kaling `(900, 106)`, Limbo `(0, 3)`, Baldrix `(0, 18)`, First Adversary `(0, 55)`.
+6. **Automated Verification**:
+   - Ran `verify_all_bosses.py` auditing all 80 boss battle maps, waiting rooms, return portals, and entrance gates: 0 missing field scripts, 0 missing portal scripts.
+7. **Deployment & Live Server Launch**:
+   - Compiled fat JAR via Maven (`maplestory-219.5-jar-with-dependencies.jar`).
+   - Synchronized updated `maplestory.jar` (138MB), `server.properties`, and `data/scripts/` to `MapleStory_Server_Runner_Ready/Server263/`.
+   - Updated patch package `MapleStory_Server_Runner_Ready/Patches/Server263_Patch_Latest/`.
+   - Started MariaDB engine on port 33066 and launched MapleStory Server (Login: 8484, Channels 1-10: 8585-8594).
 
