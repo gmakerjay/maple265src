@@ -626,14 +626,14 @@ public class BossHelper {
             String count = chr.getQRValueByKey(37164, "count");
             if (count == null) {
                 chr.createQuestWithQRValue(37164, "count=1");
-                chr.chatScriptMessage("Quái vật bị tiêu diệt (1/50)");
+                chr.chatScriptMessage("Monsters defeated (1/50)");
             } else if (!count.equalsIgnoreCase("50")) {
                 int inc = Integer.parseInt(count) + 1;
                 if (inc == 10 || inc == 30 || inc == 50) {
                     chr.consumeItem(4036502, 1);
                 }
                 chr.setQRValueByKey(37164, "count", String.valueOf(inc));
-                chr.chatScriptMessage(String.format("Quái vật bị tiêu diệt (%d/50)", inc));
+                chr.chatScriptMessage(String.format("Monsters defeated (%d/50)", inc));
             }
         }
         // Daily Quest Theme Dungeon
@@ -839,7 +839,7 @@ public class BossHelper {
             int bossGuildContribution = GameConstants.getBossGuildContribution(mobID);
             long bossRewardPrice = GameConstants.getBossRewardPrice(GameConstants.getBossRewardID(mobID));
             if (bossRewardPrice != 1) {
-                Server.get().broadcastForWorld(UserLocal.chatMsg(ChatType.Expedition, "[Thông báo] Nhân vật " + chr.getName() + " đã thành công tiêu diệt " + StringData.getMobStringById(mobID) + "!"));
+                Server.get().broadcastForWorld(UserLocal.chatMsg(ChatType.Expedition, "[Notice] Character " + chr.getName() + " has successfully defeated " + StringData.getMobStringById(mobID) + "!"));
             }
             java.util.Collection<Char> winners = (chr.getParty() != null) ? chr.getParty().getOnlineChars() : java.util.List.of(chr);
             for (Char pmChr : winners) {
@@ -1002,7 +1002,7 @@ public class BossHelper {
                     }
                 } else {
                     sm.removeBlowWeather();
-                    sm.blowWeather(5120243, "Elite Mob đã bị đánh bại! Hãy nói chuyện với Spiegelmann và tiếp tục nhiệm vụ!", 4);
+                    sm.blowWeather(5120243, "Elite Mob has been defeated! Talk to Spiegelmann to continue!", 4);
                     sm.createQuestWithQRValue(102444, "step=2;eliteMob=1");
                 }
             } else if (chr.hasQuest(102447)) {
@@ -1014,7 +1014,7 @@ public class BossHelper {
                     }
                 } else {
                     sm.removeBlowWeather();
-                    sm.blowWeather(5120243, "Elite Boss đã bị đánh bại! Hãy nói chuyện với Spiegelmann và tiếp tục nhiệm vụ!", 4);
+                    sm.blowWeather(5120243, "Elite Boss has been defeated! Talk to Spiegelmann to continue!", 4);
                     sm.createQuestWithQRValue(102447, "eliteBoss=1;step=done;crEqp=1");
                     field.drop(new Drop(-1, GameConstants.RARE_TREASURE_CHEST), mob.getPosition());
                 }

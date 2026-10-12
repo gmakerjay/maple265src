@@ -3,6 +3,42 @@
 This file tracks all bug fixes, feature implementations, and system optimizations across sessions.
 **Rule (AGENTS.md #4)**: Every agent MUST record new progress here and in `.agents/skills/maplestory-bug-knowledge/SKILL.md` after completing any modification.
 
+## 📅 [2026-10-12 16:38 น.] Massive Fashion Mall Grand Emporium, 100% Crash-Proof Direct-Unpack Set Bundles, and Server-Wide Vietnamese Translation to Clean English
+
+### 🎯 Scope
+1. **ยกระดับ Fashion Mall สู่ Grand Emporium ใน [`point_shop.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/point_shop.py) (Lucid)**:
+   - รวบรวมชุดเซ็ตระดับแรร์และแพ็กเกจยอดนิยม 20 คอลเลกชันใหญ่ (BLACKPINK BORN PINK Stage Collection, BTS Black Swan & Army Bomb Collection, รางวัลชนะเลิศ Golden Hand 12 เซ็ต อาทิ Starry Night Punisher, Revenant Hunter, Ink Drawing, Night Sky Ink, Romance Fantasy, Killer Crescent, Garden Sage, Cyber Planet, Retro Magic, Teddy Bear Ribbon, Rock Spirit, และคอลเลกชัน Master Label Grand Checkmate, Alliance Commander, Master Time, Mythic Death's Scythe, Succubus Queen, Nine-Tailed Fox, Superstar Pink Bean)
+   - **ระบบแกะกล่องเซ็ตอัตโนมัติป้องกันเกมเด้ง 100% (Direct-Unpack Crash-Proof Architecture)**: ตรวจสอบจำนวนช่องว่างในช่อง CASH และส่งมอบชิ้นส่วนไอเทมแฟชั่นแท้เข้าสู่กระเป๋าช่อง CASH ของผู้เล่นโดยตรงด้วย `chr.addItemToInventory(item_id, 1)` ป้องกันปัญหา Client Desync / Crash ที่เกิดจากการกดดับเบิ้ลคลิกเปิดกล่องแพ็กเกจในช่องเก็บของอย่างเด็ดขาด
+   - เพิ่มหมวดอาวุธแฟชั่นคลุมได้ทุกอาวุธ (Universal Weapon Covers) กว่า 35 รายการ
+   - เพิ่มปีกและออร่าด้านหลัง (Wings, Capes & Back Auras) กว่า 21 รายการ
+   - เพิ่มหมวก มงกุฎ หูสัตว์ และริบบิ้น (Hats & Headwear) กว่า 25 รายการ
+   - เพิ่มชุดสูทชาย (Male-only Suits & Shoes) กว่า 21 รายการ
+   - เพิ่มชุดเดรสหญิง (Female-only Dresses & Heels) กว่า 22 รายการ
+   - เพิ่มชุดคอสตูมและชุดหมี (Unisex Costumes & Onesies) กว่า 7 รายการ
+   - เพิ่มประดับใบหน้า ตา และแหวนแชท/ป้ายชื่อ (Face, Eye & Rings) กว่า 11 รายการ
+2. **แปลภาษาเวียดนามที่พบระหว่างทางเป็นภาษาอังกฤษ 100% (Clean English Translation)**:
+   - แปลข้อความระบบและแจ้งเตือนใน [`ItemHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemHandler.java) กว่า 52 จุด (ใบวาป, ถุงเงิน, อัปเกรดไอเทม, Beauty Salon, ย้ายแมพ, กรรไกร Karma, Arcane Symbol)
+   - แปลข้อความใน [`ScriptHandlers.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/scripts/ScriptHandlers.java) (การได้รับ Honor EXP)
+   - แปลข้อความในไฟล์บอส [`BossHelper.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/boss/BossHelper.java), [`Arkarium.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/boss/Arkarium.java), [`PinkBean.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/boss/PinkBean.java), [`VonLeon.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/boss/VonLeon.java)
+   - แปลข้อความ Party Quest ใน [`world/partyquest/`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest) ทั้ง 11 ไฟล์ (AlienVisitor, DefenseEvent, DimensionInvasion, DragonRider, FirstTimeTogether, HungryMuto, Juliet, KentaInDanger, LordPirate, MoonBunny, Romeo, XerxesInChryse)
+   - แปลข้อความแจ้งเตือนภาษาเวียดนามในสคริปต์ Quest & Reactor กว่า 391 ไฟล์
+3. **การคอมไพล์และจัดส่ง (Build & Deployment)**:
+   - คอมไพล์ด้วย OpenJDK 21 + Apache Maven 3.9.15 สำเร็จ (`BUILD SUCCESS`)
+   - ส่งมอบ Fat JAR ไปยัง `Server263/maplestory.jar` (138 MB) ตามกฎ Section 1 & 2 ของ `AGENTS.md`
+   - ซิงค์ไฟล์สคริปต์ทั้งหมดไปยัง `Server263/data/scripts/`
+   - สร้างไฟล์แพตช์อัปเดตล่าสุด [`Patches/Server263_Patch_20261012_1636.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/Patches/Server263_Patch_20261012_1636.zip) (121.61 MB)
+
+### 📂 Files Modified
+- [`point_shop.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/point_shop.py) (และใน `Server263/data/scripts/npc/point_shop.py`)
+- [`ItemHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemHandler.java)
+- [`ScriptHandlers.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/scripts/ScriptHandlers.java)
+- [`BossHelper.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/boss/BossHelper.java)
+- [`Arkarium.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/boss/Arkarium.java), [`PinkBean.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/boss/PinkBean.java), [`VonLeon.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/boss/VonLeon.java)
+- 11 PQ files in `net/swordie/ms/world/partyquest/`
+- 391 Python script files in `data/scripts/quest/` and `data/scripts/reactor/`
+- [`Server263/maplestory.jar`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/maplestory.jar)
+- [`Patches/Server263_Patch_20261012_1636.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/Patches/Server263_Patch_20261012_1636.zip)
+
 ## 📅 [2026-10-12 16:26 น.] Fix getMaplePoints Runtime Exception, Massive Fashion & Pet Expansion, and Pure White Font Styling
 
 ### 🎯 Scope

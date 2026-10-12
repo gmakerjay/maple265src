@@ -70,7 +70,7 @@ public class FirstTimeTogether implements PartyQuest {
                 if (chr.hasQuest(entryQuest)) {
                     count = 5 - Integer.parseInt(chr.getQRValueByKey(entryQuest, "count"));
                 }
-                sm.sendSayOkay("B¢n có thº th÷ thách thêm " + count + " l®n nøa.");
+                sm.sendSayOkay("You can challenge this " + count + " more time(s) today.");
                 break;
         }
 
@@ -228,7 +228,7 @@ public class FirstTimeTogether implements PartyQuest {
                         break;
                     }
                 } else {
-                    chr.chatScriptMessage("Vi½c này ch¿ có trïäng nhóm mÜi thûc hi½n «ïæc.");
+                    chr.chatScriptMessage("Only the party leader can perform this action.");
                 }
                 break;
         }

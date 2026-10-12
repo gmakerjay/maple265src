@@ -12,13 +12,13 @@ public class ScriptHandlers {
         int fieldID = chr.getFieldID();
         switch (itemID) {
             case 2431174:
-                sm.chat("Bạn nhận được 100 Kinh Nghiệm Danh Dự.");
+                sm.chat("You received 100 Honor EXP.");
                 chr.addHonorExp(100);
                 sm.consumeItem(itemID);
                 sm.playExclSoundWithDownBGM("FarmSE.img/levelUp", 100);
                 return true;
             case 2433103:
-                sm.chat("Bạn nhận được 1,000 Kinh Nghiệm Danh Dự.");
+                sm.chat("You received 1,000 Honor EXP.");
                 chr.addHonorExp(1000);
                 sm.consumeItem(itemID);
                 sm.playExclSoundWithDownBGM("FarmSE.img/levelUp", 100);
@@ -129,7 +129,7 @@ public class ScriptHandlers {
             }
             case "consume_2432493": {
                 int amount = Util.getRandom(10, 50);
-                sm.chat(String.format("Bạn nhận được %d Kinh Nghiệm Danh Dự.", amount));
+                sm.chat(String.format("You received %d Honor EXP.", amount));
                 chr.addHonorExp(amount);
                 sm.consumeItem(itemID);
                 sm.playExclSoundWithDownBGM("FarmSE.img/levelUp", 100);
@@ -137,28 +137,28 @@ public class ScriptHandlers {
             }
             case "consume_2432494": {
                 int amount = Util.getRandom(50, 300);
-                sm.chat(String.format("Bạn nhận được %d Kinh Nghiệm Danh Dự.", amount));
+                sm.chat(String.format("You received %d Honor EXP.", amount));
                 chr.addHonorExp(amount);
                 sm.consumeItem(itemID);
                 sm.playExclSoundWithDownBGM("FarmSE.img/levelUp", 100);
                 return true;
             }
             case "consume_2630389": {
-                sm.chat("Bạn nhận được 10 Kinh Nghiệm Danh Dự.");
+                sm.chat("You received 10 Honor EXP.");
                 chr.addHonorExp(10);
                 sm.consumeItem(itemID);
                 sm.playExclSoundWithDownBGM("FarmSE.img/levelUp", 100);
                 return true;
             }
             case "consume_2431174": {
-                sm.chat("Bạn nhận được 100 Kinh Nghiệm Danh Dự.");
+                sm.chat("You received 100 Honor EXP.");
                 chr.addHonorExp(100);
                 sm.consumeItem(itemID);
                 sm.playExclSoundWithDownBGM("FarmSE.img/levelUp", 100);
                 return true;
             }
             case "consume_2434637": {
-                sm.chat("Bạn nhận được 500 Kinh Nghiệm Danh Dự.");
+                sm.chat("You received 500 Honor EXP.");
                 chr.addHonorExp(500);
                 sm.consumeItem(itemID);
                 sm.playExclSoundWithDownBGM("FarmSE.img/levelUp", 100);
@@ -166,7 +166,7 @@ public class ScriptHandlers {
             }
             case "consume_2433103":
             case "consume_2434638": {
-                sm.chat("Bạn nhận được 1,000 Kinh Nghiệm Danh Dự.");
+                sm.chat("You received 1,000 Honor EXP.");
                 chr.addHonorExp(1000);
                 sm.consumeItem(itemID);
                 sm.playExclSoundWithDownBGM("FarmSE.img/levelUp", 100);
@@ -174,7 +174,7 @@ public class ScriptHandlers {
             }
             case "consume_2432495":
             case "consume_2434639": {
-                sm.chat("Bạn nhận được 2,000 Kinh Nghiệm Danh Dự.");
+                sm.chat("You received 2,000 Honor EXP.");
                 chr.addHonorExp(2000);
                 sm.consumeItem(itemID);
                 sm.playExclSoundWithDownBGM("FarmSE.img/levelUp", 100);
@@ -186,7 +186,7 @@ public class ScriptHandlers {
             case "consume_2434288":
             case "consume_2434290":
             {
-                sm.chat("Bạn nhận được 10,000 Kinh Nghiệm Danh Dự.");
+                sm.chat("You received 10,000 Honor EXP.");
                 chr.addHonorExp(10000);
                 sm.consumeItem(itemID);
                 sm.playExclSoundWithDownBGM("FarmSE.img/levelUp", 100);

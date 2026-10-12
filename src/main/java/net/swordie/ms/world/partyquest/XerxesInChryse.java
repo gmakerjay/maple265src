@@ -98,7 +98,7 @@ public class XerxesInChryse implements PartyQuest {
                 if (chr.hasQuest(entryQuest)) {
                     count = 5 - Integer.parseInt(chr.getQRValueByKey(entryQuest, "count"));
                 }
-                sm.sendSayOkay("B¢n có thº th÷ thách thêm " + count + " l®n nøa.");
+                sm.sendSayOkay("You can challenge this " + count + " more time(s) today.");
                 break;
         }
     }

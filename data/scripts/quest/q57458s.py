@@ -33,6 +33,6 @@ else:
     sm.jobAdvance(4210)
     sm.giveItem(MEDAL)
     sm.completeQuest(parentID)
-    sm.chatScript("Bạn đã nhận được một huy chương mới.")
+    sm.chatScript("You received a new medal.")
     sm.showEffect("Effect/BasicEff.img/JobChangedKanna", 0, 0, 0, -2, -2, False, 0)
     #sm.dispose()

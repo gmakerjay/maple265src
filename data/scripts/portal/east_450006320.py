@@ -3,4 +3,4 @@ if sm.hasQuestCompleted(34265) and not sm.hasQuestCompleted(34561):
 elif sm.hasQuestCompleted(34561) and not sm.hasQuest(34562):
     sm.warp(940204303)
 else:
-    sm.chat("Cánh cổng này đã bị khoá.")
+    sm.chat("This gate is locked.")

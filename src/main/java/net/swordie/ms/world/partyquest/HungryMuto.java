@@ -619,7 +619,7 @@ public class HungryMuto implements PartyQuest {
     public void check(Char chr) {
         Party party = chr.getParty();
         if (party == null || party.getInstance() == null) {
-            chr.chatMessage("Có g¾ «ó không Ön? Vui lÆng th÷ l¢i.");
+            chr.chatMessage("Something went wrong. Please try again.");
             chr.dispose();
             return;
         }

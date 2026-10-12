@@ -2,4 +2,4 @@
 if sm.hasQuest(2975):
     sm.warp(120041900, 2)
 else:
-    sm.chat("Cánh cổng này đã bị khoá.")
+    sm.chat("This gate is locked.")

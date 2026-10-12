@@ -6,7 +6,7 @@ mightyHaku = 80001180
 echo = 40021005
 
 if sm.canHold(medal):
-    sm.chatScript("Bạn đã nhận được một huy chương mới.")
+    sm.chatScript("You received a new medal.")
     sm.removeSkill(spiritHaku)
     sm.giveSkill(mightyHaku)
     sm.giveSkill(echo)

@@ -6,7 +6,7 @@ sacredOnikageh = 80001179
 echo = 40011005
 
 if sm.canHold(medal):
-    sm.chatScript("Bạn đã nhận được một huy chương mới.")
+    sm.chatScript("You received a new medal.")
     sm.removeSkill(onikageh)
     sm.giveSkill(sacredOnikageh)
     sm.giveSkill(echo)

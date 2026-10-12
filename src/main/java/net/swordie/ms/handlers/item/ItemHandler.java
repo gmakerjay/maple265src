@@ -70,7 +70,7 @@ public class ItemHandler {
         Item item = chr.getConsumeInventory().getItemBySlot(slot);
 
         if (item == null || item.getItemId() != itemID || item.getQuantity() < 1) {
-            chr.chatMessage("Hiện tại bạn không thể sử dụng cuộn dịch chuyển này.");
+            chr.chatMessage("You cannot use this return scroll right now.");
             chr.dispose();
             return;
         }
@@ -160,12 +160,12 @@ public class ItemHandler {
         } else if (ItemConstants.isChangeMapEffectItem(itemID)) {
 
             if (Arrays.stream(FieldConstants.BLOCKED_RUNE_MAPS).anyMatch(m -> chr.getField() != null && m == chr.getField().getId())) {
-                chr.chatMessage("Bạn không thể sử dụng trong bản đồ này.");
+                chr.chatMessage("You cannot use this item in this map.");
                 chr.dispose();
                 return;
             }
             if (chr.getField().getBw() != null) {
-                chr.chatMessage(SystemNotice, "Không thể sử dụng do có hiệu ứng bản đồ đang chạy trong bản đồ này.");
+                chr.chatMessage(SystemNotice, "Cannot use while another map effect is currently active.");
                 chr.dispose();
                 return;
             }
@@ -187,7 +187,7 @@ public class ItemHandler {
             if (itemInfo != null) {
                 chr.addMoney(itemInfo.getMeso());
                 chr.consumeItem(itemID, 1);
-                chr.chatMessage("Bạn đã nhận được " + itemInfo.getMeso() + " mesos từ một bao Mesos.");
+                chr.chatMessage("You received " + itemInfo.getMeso() + " mesos from a meso pouch.");
             }
 
         } else if (ItemConstants.isRandomMesoBagItem(itemID)) {
@@ -207,7 +207,7 @@ public class ItemHandler {
             int moneyReceived = Util.getRandom(fromRand, toRand);
             chr.addMoney(moneyReceived);
             chr.consumeItem(itemID, 1);
-            chr.chatMessage("Bạn đã nhận được " + moneyReceived + " mesos từ túi meso.");
+            chr.chatMessage("You received " + moneyReceived + " mesos from the meso pouch.");
 
         } else if (ItemConstants.isChalkboardtem(itemID)) {
 
@@ -249,12 +249,12 @@ public class ItemHandler {
                 return;
             }
             if (newName.getBytes().length > 13) {
-                chr.chatMessage("Tên thú cưng không được dài quá 13 ký tự.");
+                chr.chatMessage("Pet name cannot exceed 13 characters.");
                 chr.dispose();
                 return;
             }
             if (newName.matches(".*\\s.*")) {
-                chr.chatMessage("Tên thú cưng không hợp lệ.");
+                chr.chatMessage("Invalid pet name.");
                 chr.dispose();
                 return;
             }
@@ -319,7 +319,7 @@ public class ItemHandler {
             short ePos = inPacket.decodeShort();
             Equip equip = (Equip) chr.getEquippedInventory().getItemBySlot(ePos);
             if (equip == null) {
-                chr.chatMessage(SystemNotice, "Đã xảy ra lỗi không xác định.");
+                chr.chatMessage(SystemNotice, "An unknown error has occurred.");
                 chr.dispose();
                 return;
             }
@@ -334,12 +334,12 @@ public class ItemHandler {
             int ePos = inPacket.decodeInt();
             Equip eq = (Equip) equipInv.getItemBySlot(ePos);
             if (eq == null) {
-                chr.chatMessage(SystemNotice, "Vật phẩm này chỉ hoạt động khi trang bị hoặc Không tìm thấy trang bị.");
+                chr.chatMessage(SystemNotice, "This item only works on equipped gear, or equipment not found.");
                 chr.dispose();
                 return;
             }
             if (eq.getDateExpire().isExpired()) {
-                chr.chatMessage(SystemNotice, "Vật phẩm này chỉ hoạt động trên thiết bị chưa hết hạn.");
+                chr.chatMessage(SystemNotice, "This item only works on non-expired equipment.");
                 chr.dispose();
                 return;
             }
@@ -382,7 +382,7 @@ public class ItemHandler {
             InvType invType = ePos < 0 ? EQUIPPED : EQUIP;
             Equip equip = (Equip) chr.getInventoryByType(invType).getItemBySlot(ePos);
             if (item == null || equip == null) {
-                chr.chatMessage(SystemNotice, "Đã xảy ra lỗi không xác định.");
+                chr.chatMessage(SystemNotice, "An unknown error has occurred.");
                 chr.dispose();
                 return;
             }
@@ -393,12 +393,12 @@ public class ItemHandler {
                     if (equip.getCuc() < 7) {
                         equip.addAttribute(EquipAttribute.ProtectionScroll);
                     } else {
-                        chr.chatMessage(SystemNotice, "Không thể sử dụng trên các vật phẩm đã được cường hóa 7 lần trở lên.");
+                        chr.chatMessage(SystemNotice, "Cannot be used on items that have been enhanced 7 or more times.");
                         chr.dispose();
                         return;
                     }
                 } else {
-                    chr.chatMessage(SystemNotice, "Chỉ có thể sử dụng cho các vật phẩm cao cấp.");
+                    chr.chatMessage(SystemNotice, "Can only be used on Superior equipment.");
                     chr.dispose();
                     return;
                 }
@@ -406,7 +406,7 @@ public class ItemHandler {
             else if ((scrollID >= 5064000 && scrollID <= 5064004 && scrollID != 5064003) || scrollID == 5068100) {
                 if (scrollID == 5064002) {
                     if (equip.getRequiredLevel() > 105) {
-                        chr.chatMessage(SystemNotice, "Vui lòng sử dụng tính năng này trên trang bị có yêu cầu cấp độ 105 trở xuống.");
+                        chr.chatMessage(SystemNotice, "Please use this on equipment with a level requirement of 105 or lower.");
                         chr.dispose();
                         return;
                     }
@@ -417,7 +417,7 @@ public class ItemHandler {
                 if (scrollID == 5064201) { 
                     // Resets all stats to their original values (Potential excluded)
                     if (equip.getRequiredLevel() > 105) {
-                        chr.chatMessage(SystemNotice, "Vui lòng sử dụng tính năng này trên trang bị có yêu cầu cấp độ 105 trở xuống.");
+                        chr.chatMessage(SystemNotice, "Please use this on equipment with a level requirement of 105 or lower.");
                         chr.dispose();
                         return;
                     }
@@ -429,7 +429,7 @@ public class ItemHandler {
             else if (scrollID == 5064100 || scrollID == 5064101) {
                 if (scrollID == 5064101) {
                     if (equip.getRequiredLevel() > 105) {
-                        chr.chatMessage(SystemNotice, "Vui lòng sử dụng tính năng này trên trang bị có yêu cầu cấp độ 105 trở xuống.");
+                        chr.chatMessage(SystemNotice, "Please use this on equipment with a level requirement of 105 or lower.");
                         chr.dispose();
                         return;
                     }
@@ -439,7 +439,7 @@ public class ItemHandler {
             else if (scrollID == 5064300 || scrollID == 5064301 || scrollID == 5068200) { // Guardian
                 if (scrollID == 5064301) {
                     if (equip.getRequiredLevel() > 105) {
-                        chr.chatMessage(SystemNotice, "Vui lòng sử dụng tính năng này trên trang bị có yêu cầu cấp độ 105 trở xuống.");
+                        chr.chatMessage(SystemNotice, "Please use this on equipment with a level requirement of 105 or lower.");
                         chr.dispose();
                         return;
                     }
@@ -486,7 +486,7 @@ public class ItemHandler {
                 } else if (itemID == ItemConstants.BRIGHT_CUBE) {
                     CubeHandler.handleBrightCube(chr, item, inPacket, ItemGrade.Legendary, true, true);
                 } else {
-                    chr.chatMessage("Vật phẩm này đã bị xoá khỏi trò chơi, GM sẽ thu hồi vật phẩm này.");
+                    chr.chatMessage("This item has been removed from the game.");
                     chr.consumeItem(item);
                 }
             }
@@ -496,7 +496,7 @@ public class ItemHandler {
             // 5062100 : 8th Anniversary Miracle Cube
             // 5062103 : Octacular Miracle Cube
             // 5062101 : Tot's Trial Miracle Cube
-            chr.chatMessage("Vật phẩm này đã bị xoá khỏi trò chơi, GM sẽ thu hồi vật phẩm này.");
+            chr.chatMessage("This item has been removed from the game.");
             chr.consumeItem(item);
 
         } else if (ItemConstants.isBonusCube(itemID)) {
@@ -508,13 +508,13 @@ public class ItemHandler {
             } else {
                 // 5062500 : Bonus Potential Cube
                 // 5062501 : [Special] Bonus Potential Cube
-                chr.chatMessage("Vật phẩm này đã bị xoá khỏi trò chơi, GM sẽ thu hồi vật phẩm này.");
+                chr.chatMessage("This item has been removed from the game.");
                 chr.consumeItem(item);
             }
 
         } else if (ItemConstants.isNebuliteDiffuser(itemID)) {
 
-            chr.chatMessage("Vật phẩm này đã bị xoá khỏi trò chơi, GM sẽ thu hồi vật phẩm này.");
+            chr.chatMessage("This item has been removed from the game.");
             chr.consumeItem(item);
 
         } else if (itemID == ItemConstants.HYPER_TELEPORT_ROCK) {
@@ -526,12 +526,12 @@ public class ItemHandler {
                 int portalId = inPacket.decodeInt();
                 Field field = chr.getOrCreateFieldByCurrentInstanceType(fieldId);
                 if (field == null || (field.getFieldLimit() & FieldOption.TeleportItemLimit.getVal()) > 0 || !FieldData.getWorldMapFields().contains(fieldId)) {
-                    chr.chatMessage("Bạn không thể dịch chuyển tức thời đến bản đồ đó.");
+                    chr.chatMessage("You cannot teleport to that map.");
                     chr.dispose();
                     return;
                 }
                 if (chr.getLevel() < field.getLvLimit()) {
-                    chr.chatMessage("Bạn không đủ cấp độ để dịch chuyển đến bản đồ này.");
+                    chr.chatMessage("Your level is not high enough to teleport to this map.");
                     chr.dispose();
                     return;
                 }
@@ -541,12 +541,12 @@ public class ItemHandler {
                     int fieldId = inPacket.decodeInt();
                     Field field = chr.getOrCreateFieldByCurrentInstanceType(fieldId);
                     if (field == null || (field.getFieldLimit() & FieldOption.TeleportItemLimit.getVal()) > 0 || !FieldData.getWorldMapFields().contains(fieldId)) {
-                        chr.chatMessage("Bạn không thể dịch chuyển tức thời đến bản đồ đó.");
+                        chr.chatMessage("You cannot teleport to that map.");
                         chr.dispose();
                         return;
                     }
                     if (chr.getLevel() < field.getLvLimit()) {
-                        chr.chatMessage("Bạn không đủ cấp độ để dịch chuyển đến bản đồ này.");
+                        chr.chatMessage("Your level is not high enough to teleport to this map.");
                         chr.dispose();
                         return;
                     }
@@ -555,7 +555,7 @@ public class ItemHandler {
                     String targetName = inPacket.decodeString();
                     Char targetChr = Server.get().getWorld().getCharByName(targetName);
                     if (targetChr == null) {
-                        chr.chatMessage(String.format("%s đang ngoại tuyến hoặc không tồn tại.", targetName));
+                        chr.chatMessage(String.format("%s is currently offline or does not exist.", targetName));
                         chr.dispose();
                         return;
                     }
@@ -564,18 +564,18 @@ public class ItemHandler {
 
                     Field targetField = targetChr.getField();
                     if (targetField == null || (targetField.getFieldLimit() & FieldOption.TeleportItemLimit.getVal()) > 0) {
-                        chr.chatMessage("Bạn không thể dịch chuyển tức thời đến bản đồ đó.");
+                        chr.chatMessage("You cannot teleport to that map.");
                         chr.dispose();
                         return;
                     }
                     if (chr.getLevel() < targetField.getLvLimit()) {
-                        chr.chatMessage("Bạn không đủ cấp độ để dịch chuyển đến bản đồ này.");
+                        chr.chatMessage("Your level is not high enough to teleport to this map.");
                         chr.dispose();
                         return;
                     }
                     // Target is in an instanced Map
                     if (targetChr.getFieldInstanceType() != FieldInstanceType.CHANNEL) {
-                        chr.chatMessage(String.format("Nhân vật %s hiện đang trong bản đồ ẩn.", targetName));
+                        chr.chatMessage(String.format("Character %s is currently in a hidden or restricted map.", targetName));
                         // Change channels & warp & teleport
                     } else if (targetChr.getClient().getChannel() != chr.getClient().getChannel()) {
                         int fieldId = targetChr.getFieldID();
@@ -594,7 +594,7 @@ public class ItemHandler {
         } else if (ItemConstants.isMegaphoneItem(itemID)) {
 
             if (itemID == 5071000 && chr.getLevel() < 10) {
-                chr.chatMessage(SystemNotice, "Chỉ dành cho nhân vật có cấp độ từ 10 trở lên.");
+                chr.chatMessage(SystemNotice, "Only available for characters level 10 and above.");
                 chr.dispose();
                 return;
             }
@@ -613,7 +613,7 @@ public class ItemHandler {
             String medalString = (medalInt == 0 ? "" : String.format("<%s> ", StringData.getItemStringById(medalInt)));
             if (itemID == 5072000 || itemID == 5072001) { // Super Megaphone
                 if (chr.getLevel() < 10) {
-                    chr.chatMessage(SystemNotice, "Chỉ dành cho nhân vật có cấp độ từ 10 trở lên.");
+                    chr.chatMessage(SystemNotice, "Only available for characters level 10 and above.");
                     chr.dispose();
                     return;
                 }
@@ -657,7 +657,7 @@ public class ItemHandler {
         } else if (ItemConstants.isSpecialConsumeEffectItem(itemID)) {
 
             if (Arrays.stream(FieldConstants.BLOCKED_RUNE_MAPS).anyMatch(m -> chr.getField() != null && m == chr.getField().getId())) {
-                chr.chatMessage("Bạn không thể sử dụng trong bản đồ này.");
+                chr.chatMessage("You cannot use this item in this map.");
                 chr.dispose();
                 return;
             }
@@ -714,7 +714,7 @@ public class ItemHandler {
             BeautySalon beautySalon = chr.getBeautySalon();
             int currentSize = beautySalon.getFaceSize();
             if (currentSize == 100) {
-                chr.chatPopup("Bạn đã đạt đến số ô khuôn mặt tối đa trong Beauty Salon (100/100)");
+                chr.chatPopup("You have reached the maximum number of face slots in the Salon (100/100).");
             } else {
                 int newSlots = currentSize + 1;
                 beautySalon.setFaceSize(newSlots);
@@ -728,7 +728,7 @@ public class ItemHandler {
             BeautySalon beautySalon = chr.getBeautySalon();
             int currentSize = beautySalon.getHairSize();
             if (currentSize == 100) {
-                chr.chatPopup("Bạn đã đạt đến số lượng ô tóc tối đa tại Beauty Salon (100/100)");
+                chr.chatPopup("You have reached the maximum number of hair slots in the Salon (100/100).");
             } else {
                 int newSlots = currentSize + 1;
                 beautySalon.setHairSize(newSlots);
@@ -742,7 +742,7 @@ public class ItemHandler {
             BeautySalon beautySalon = chr.getBeautySalon();
             int currentSize = beautySalon.getHairSize();
             if (currentSize == 100) {
-                chr.chatPopup("Bạn đã đạt đến số lượng ô da tối đa tại Beauty Salon (100/100)");
+                chr.chatPopup("You have reached the maximum number of skin slots in the Salon (100/100).");
             } else {
                 int newSlots = currentSize + 1;
                 beautySalon.setSkinSize(newSlots);
@@ -754,7 +754,7 @@ public class ItemHandler {
         } else {
             if (!ItemConstants.isLockedCashConsumeItem(itemID)) {
                 System.out.printf("Cash item %d is not implemented.%n", itemID);
-                chr.chatMessage(SystemNotice, String.format("Vật phẩm %d chưa hoạt động, vui lòng báo cho developer.", itemID));
+                chr.chatMessage(SystemNotice, String.format("Item %d is not yet implemented. Please report to developer.", itemID));
             }
 
         }
@@ -769,7 +769,7 @@ public class ItemHandler {
             return;
         }
         if (Arrays.stream(FieldConstants.BLOCKED_RUNE_MAPS).anyMatch(m -> chr.getField() != null && m == chr.getField().getId())) {
-            chr.chatMessage("Bạn không thể sử dụng trong bản đồ này.");
+            chr.chatMessage("You cannot use this item in this map.");
             chr.dispose();
             return;
         }
@@ -888,8 +888,8 @@ public class ItemHandler {
                 ScrollUpgradeInfo sui = suis.get(scrollID);
                 if (sui.getType() == SpellTraceScrollType.CleanSlate) {
                     if (!equip.isLastScrollFail()) {
-                        chr.chatMessage(SystemNotice, "Chỉ được sử dụng cho trang bị đã được nâng cấp.");
-                        chr.write(FieldPacket.showScrollUpgradeResult(feverTime, 0, "Chỉ được sử dụng cho trang bị đã được nâng cấp.", prevEquip, equip));
+                        chr.chatMessage(SystemNotice, "Can only be used on upgraded equipment.");
+                        chr.write(FieldPacket.showScrollUpgradeResult(feverTime, 0, "Can only be used on upgraded equipment.", prevEquip, equip));
                         chr.dispose();
                         return;
                     }
@@ -907,7 +907,7 @@ public class ItemHandler {
                     zeroWeapon.recalcEnchantmentStats();
                     zeroWeapon.updateToChar(chr);
                 }
-                String desc = success ? "Vật phẩm của bạn đã được nâng cấp." : "Nâng cấp của bạn đã thất bại.";
+                String desc = success ? "Your item has been upgraded." : "Your upgrade has failed.";
                 chr.write(FieldPacket.showScrollUpgradeResult(feverTime, success ? 1 : 0, desc, prevEquip, equip));
                 equip.updateToChar(chr);
                 if (equip.getBaseStat(tuc) > 0) {
@@ -950,7 +950,7 @@ public class ItemHandler {
                         || chr.getEquipInventory().getEmptySlots() == 0
                         || equip.getChuc() >= GameConstants.getMaxStars(equip)
                         || equip.hasSpecialAttribute(EquipSpecialAttribute.Vestige)) {
-                    chr.chatPopup("Không thể nâng cấp trang bị này.");
+                    chr.chatPopup("This equipment cannot be upgraded.");
                     chr.write(FieldPacket.showUnknownEnchantFailResult((byte) 0));
                     return;
                 }
@@ -961,7 +961,7 @@ public class ItemHandler {
                 }
                 cost *= safeGuardFromUI ? 3 : 1;
                 if (chr.getMoney() < cost) {
-                    chr.chatPopup("Bạn cần đủ " + Util.getNumberFormat(cost) + " mesos để nâng cấp.");
+                    chr.chatPopup("You need " + Util.getNumberFormat(cost) + " mesos to upgrade.");
                     chr.write(FieldPacket.showUnknownEnchantFailResult((byte) 0));
                     return;
                 }
@@ -998,9 +998,9 @@ public class ItemHandler {
                         SkillInfo skillInfo = SkillData.getSkillInfoById(GuildConstants.ITEM_SALVATION);
                         if (guildSkill != null && skillInfo != null) {
                             int chanceNoBoom = skillInfo.getValue(SkillStat.itemCursedProtectR, guildSkill.getLevel());
-                            chr.chatMessage("[Kỹ năng bang hội] Bạn sẽ nhận được " + chanceNoBoom + "% giảm tỉ lệ nổ đồ khi nâng cấp.");
+                            chr.chatMessage("[Guild Skill] Boom chance reduced by " + chanceNoBoom + "%.");
                             if (Util.succeedProp(chanceNoBoom)) {
-                                chr.sendPopupSay("[Kỹ năng bang hội] Trang bị của bạn đã không nổ nhờ vào kỹ năng Item Salvation.");
+                                chr.sendPopupSay("[Guild Skill] Your equipment was saved from destruction by Item Salvation!");
                                 boom = false;
                             }
                         }
@@ -1234,7 +1234,7 @@ public class ItemHandler {
             return;
         }
         if (skillid == 0 || (skill.getMasterLevel() >= masterLevel) || skill.getCurrentLevel() < reqSkillLv) {
-            chr.chatMessage(SystemNotice, "Bạn không thể sử dụng Sách thành thạo này.");
+            chr.chatMessage(SystemNotice, "You cannot use this Mastery Book.");
             chr.dispose();
             return;
         }
@@ -1284,12 +1284,12 @@ public class ItemHandler {
             return;
         }
         if (!ii.getReqItemIds().contains(equip.getItemId()) && ii.getReqItemIds().size() > 0) {
-            chr.chatMessage(SystemNotice, "Không thể sử dụng vật phẩm này trên thiết bị này.");
+            chr.chatMessage(SystemNotice, "Cannot use this item on this equipment.");
             chr.dispose();
             return;
         }
         if (!ItemConstants.isWeapon(equip.getItemId()) || equip.getrLevel() + equip.getiIncReq() < ItemConstants.MIN_LEVEL_FOR_SOUL_SOCKET) {
-            chr.chatMessage(SystemNotice, "Không thể lắp ổ cắm linh hồn vào thiết bị này.");
+            chr.chatMessage(SystemNotice, "Cannot attach a soul socket to this equipment.");
             chr.dispose();
             return;
         }
@@ -1332,7 +1332,7 @@ public class ItemHandler {
             return;
         }
         if (!ItemConstants.isWeapon(equip.getItemId()) || equip.getSoulSocketId() == 0) {
-            chr.chatMessage(SystemNotice, "Không thể đưa linh hồn vào thiết bị này.");
+            chr.chatMessage(SystemNotice, "Cannot infuse a soul into this equipment.");
             chr.dispose();
             return;
         }
@@ -1427,7 +1427,7 @@ public class ItemHandler {
             chr.createQuestWithQRValue(questID, "EndDateTime=00/01/01/00/00;RegisterDateTime="+RegisterDateTime+";Remain=" + remain);
             chr.createQuestWithQRValue(questID, "EndDateTime="+EndDateTime+";RegisterDateTime="+RegisterDateTime+";Remain=" + remain);
             chr.createQuestWithQRValue(68430, "rMap="+chr.getFieldID()+";rent_type="+questID+";lastPlayWeek=12;debug=0");
-            sm.chat("Trang bị đã được thuê! Kiểm tra mục trang bị của bạn.");
+            sm.chat("Equipment rented! Check your Equip inventory.");
             sm.gainQuestItem(itemID, 1);
             chr.write(WvsContext.receiveEquipRentalResult(0));
             if (itemID == 1012902 || itemID == 1022375 || itemID == 1032361 || itemID == 1122453 || itemID == 1132336) {
@@ -1467,7 +1467,7 @@ public class ItemHandler {
                 chr.addItemToInventory(itemID, 1, "day", 1);
             }
         } else {
-            sm.chat("Hãy kiểm tra túi đồ của bạn xem còn chỗ trống trong tab EQUIP hay có đủ tiền không?");
+            sm.chat("Please check if you have enough Equip slots or enough mesos.");
         }
     }
 
@@ -1796,7 +1796,7 @@ public class ItemHandler {
     @Handler(op = InHeader.USER_LOTTERY_ITEM_USE_REQUEST)
     public static void handleUserLotteryItemUseRequest(Char chr, InPacket inPacket) {
         if (chr.getHP() <= 0) {
-            chr.chatMessage(SystemNotice, "Không thể sử dụng vật phẩm này vì bạn đang chết.");
+            chr.chatMessage(SystemNotice, "You cannot use this item while dead.");
             chr.dispose();
             return;
         }
@@ -1873,13 +1873,13 @@ public class ItemHandler {
             int rewardID = Util.getRandomFromCollection(rewards);
             if (rewardID == 1) {
                 chr.setPartyboss(new HashSet<>());
-                chr.chatMessage("Bạn đã nhận được [Vé mời Boss] x 1. Tất cả lượt tính của các Boss của bạn đều đã được xoá bỏ.");
+                chr.chatMessage("You received [Boss Reset Ticket] x1. All boss entry counts have been reset.");
                 chr.consumeItem(itemID, 1);
             } else if (chr.canHold(rewardID)) {
                 chr.addItemToInventory(rewardID, quantity);
                 chr.consumeItem(itemID, 1);
             } else {
-                chr.chatMessage("Bạn không có ô trống nào trong kho đồ của mình.");
+                chr.chatMessage("You do not have enough inventory space.");
             }
         } else if (itemID == 2028197) { // New Year's Challenge Box
             int rewardID = ItemConstants.getNewYearBox();
@@ -1890,25 +1890,25 @@ public class ItemHandler {
                 chr.write(WvsContext.inventoryOperation(true, false, Add, (short) equip.getBagIndex(), (byte) -1, 0, equip));
                 chr.consumeItem(2028197, 1);
             } else {
-                chr.chatMessage("Bạn không có ô trống nào trong kho đồ của mình.");
+                chr.chatMessage("You do not have enough inventory space.");
             }
         } else {
             ItemInfo ii = ItemData.getItemInfoByID(itemID);
             if (!ii.getItemRewardInfos().isEmpty()) {
                 if (ItemConstants.isMesoPouch(itemID)) {
                     int mesoReward = ii.getRandomMesoReward();
-                    chr.chatScriptMessage(String.format("Bạn đã nhận được %d mesos từ %s.", mesoReward, StringData.getItemStringById(itemID)));
+                    chr.chatScriptMessage(String.format("You received %d mesos from %s.", mesoReward, StringData.getItemStringById(itemID)));
                     chr.addMoney(mesoReward);
                     chr.consumeItem(itemID, 1);
                 } else {
                     Item reward = ii.getRandomReward();
                     if (reward != null) {
                         if (chr.canHold(reward.getItemId())) {
-                            chr.chatScriptMessage(String.format("Bạn đã nhận được %s từ %s.", StringData.getItemStringById(reward.getItemId()), StringData.getItemStringById(itemID)));
+                            chr.chatScriptMessage(String.format("You received %s from %s.", StringData.getItemStringById(reward.getItemId()), StringData.getItemStringById(itemID)));
                             chr.addItemToInventory(reward);
                             chr.consumeItem(itemID, 1);
                         } else {
-                            chr.chatMessage("Bạn không có ô trống nào trong kho đồ của mình.");
+                            chr.chatMessage("You do not have enough inventory space.");
                         }
                     }
                 }
@@ -1943,7 +1943,7 @@ public class ItemHandler {
 
     private static void resetAbilityItemUseRequest(Char chr, short slot, int itemID, boolean isCash) {
         if (chr.getHP() <= 0) {
-            chr.chatMessage(SystemNotice, "Không thể sử dụng vật phẩm này vì bạn đang chết.");
+            chr.chatMessage(SystemNotice, "You cannot use this item while dead.");
             chr.dispose();
             return;
         }
@@ -1967,7 +1967,7 @@ public class ItemHandler {
         }
         if (chr.getLevel() <= 10) {
             if (JobConstants.isBeginnerJob(chr.getJob()) || JobConstants.isDemonAvenger(chr.getJob())) {
-                chr.chatMessage(SystemNotice, "Bạn không thể sử dụng vật phẩm này.");
+                chr.chatMessage(SystemNotice, "You cannot use this item.");
                 chr.dispose();
                 return;
             }
@@ -1989,7 +1989,7 @@ public class ItemHandler {
         }
 
         if ((newAdditionalAP - 1) > 19979) {
-            chr.chatMessage(SystemNotice, "Bạn không thể sử dụng vật phẩm này.");
+            chr.chatMessage(SystemNotice, "You cannot use this item.");
             stats.clear();
             newStats.clear();
             chr.dispose();
@@ -2011,7 +2011,7 @@ public class ItemHandler {
 
     private static void changeAbility(Char chr, InPacket inPacket, short slot, int itemID, boolean isCash) {
         if (chr.getHP() <= 0) {
-            chr.chatMessage(SystemNotice, "Không thể sử dụng vật phẩm này vì bạn đang chết.");
+            chr.chatMessage(SystemNotice, "You cannot use this item while dead.");
             chr.dispose();
             return;
         }
@@ -2043,7 +2043,7 @@ public class ItemHandler {
         int currentFromStat = chr.getStat(fromStat);
         boolean isAbleFromStat = fromStat == Stat.str || fromStat == Stat.dex || fromStat == Stat.inte || fromStat == Stat.luk;
         if (toStat == fromStat && currentFromStat <= 4 && !isAbleFromStat) {
-            chr.chatMessage(SystemNotice, "Thông số này không thể thay đổi.");
+            chr.chatMessage(SystemNotice, "This stat cannot be modified.");
             chr.dispose();
             return;
         }
@@ -2078,7 +2078,7 @@ public class ItemHandler {
 
     private static void resetSkills(Char chr, short slot, int itemID, boolean isCash) {
         if (chr.getHP() <= 0) {
-            chr.chatMessage(SystemNotice, "Không thể sử dụng vật phẩm này vì bạn đang chết.");
+            chr.chatMessage(SystemNotice, "You cannot use this item while dead.");
             chr.dispose();
             return;
         }
@@ -2102,7 +2102,7 @@ public class ItemHandler {
         }
         if (chr.getLevel() <= 10) {
             if (JobConstants.isBeginnerJob(chr.getJob())) {
-                chr.chatMessage(SystemNotice, "Bạn không thể sử dụng vật phẩm này.");
+                chr.chatMessage(SystemNotice, "You cannot use this item.");
                 chr.dispose();
                 return;
             }
@@ -2272,14 +2272,14 @@ public class ItemHandler {
         }
         CharacterPotentialMan cpm = chr.getPotentialMan();
         if (chr.getPotentials().size() != 3) {
-            chr.chatMessage(SystemNotice, "Bạn phải có ít nhất 3 dòng tiềm năng.");
+            chr.chatMessage(SystemNotice, "Equipment must have at least 3 potential lines.");
             chr.dispose();
             return;
         }
         byte grade = cpm.getGrade(preset);
         if (itemID == 5062800 || itemID == 5062801) {
             if (grade < CharPotGrade.Epic.ordinal()) {
-                chr.chatMessage(SystemNotice, "Bạn chỉ có thể sử dụng vật phẩm này cho tiềm năng trên mức Sử thi.");
+                chr.chatMessage(SystemNotice, "This item can only be used on potential tiers above Epic.");
                 chr.dispose();
                 return;
             }
@@ -2311,7 +2311,7 @@ public class ItemHandler {
             }
         } else if (itemID / 1000 == 2702) {
             if (grade == CharPotGrade.Legendary.ordinal()) {
-                chr.chatMessage(SystemNotice, "Bạn không thể sử dụng vật phẩm này cho tiềm năng Huyền thoại.");
+                chr.chatMessage(SystemNotice, "Cannot be used on Legendary potential.");
                 chr.dispose();
                 return;
             }
@@ -2395,12 +2395,12 @@ public class ItemHandler {
             return;
         }
         if (equip.isCash()) {
-            chr.chatMessage(SystemNotice, "Không thể sử dụng Scissors of Karma trên thiết bị tiền mặt.");
+            chr.chatMessage(SystemNotice, "Cannot use Scissors of Karma on Cash items.");
             chr.dispose();
             return;
         }
         if (itemID == 5520000 && equip.getItemLevel() > 130) {
-            chr.chatMessage(SystemNotice, "Không thể sử dụng Scissors of Karma này trên cấp độ trang bị trên 130.");
+            chr.chatMessage(SystemNotice, "Cannot use this Scissors of Karma on equipment over Lv. 130.");
             chr.dispose();
             return;
         }
@@ -2463,19 +2463,19 @@ public class ItemHandler {
         Item item = chr.getConsumeInventory().getItemBySlot(POS);
         User user = chr.getUser();
         if (item == null || item.getItemId() != itemID) {
-            chr.chatMessage("Không thể sử dụng vật phẩm này.");
+            chr.chatMessage("Cannot use this item.");
             chr.dispose();
             return;
         }
         if (user.getCharacterSlots() == GameConstants.MAX_CHARACTER_SLOTS) {
-            chr.chatMessage("Tài khoản của bạn không thể mở thêm ô nhân vật nào nữa.");
+            chr.chatMessage("Your account cannot expand any more character slots.");
             chr.dispose();
             return;
         }
         user.addCharacterSlots(1);
         user.updateUserCharacterSlotToSQL();
         chr.consumeItem(itemID, 1);
-        chr.chatMessage("Bạn đã nhận thêm 01 ô nhân vật trong tài khoản.");
+        chr.chatMessage("Successfully unlocked +1 character slot.");
         chr.dispose();
     }
 
@@ -2519,7 +2519,7 @@ public class ItemHandler {
                 long arcCost = (long) curLvl * curLvl + 11;
                 long cost = 10_000L * (long) Math.floor(arcCost * (8 + 0.1 * curLvl));
                 if (chr.getMoney() < cost) {
-                    chr.chatMessage(SystemNotice, "Không có đủ tiền meso để nâng cấp Arcane Symbol này.");
+                    chr.chatMessage(SystemNotice, "Not enough mesos to upgrade this Arcane Symbol.");
                     chr.dispose();
                     return;
                 }
@@ -2613,7 +2613,7 @@ public class ItemHandler {
                 long autCost = 9L * curLvl * curLvl + 20L * curLvl;
                 long cost = 100_000L * (long) Math.floor(autCost * (13.2 - 0.6 * curLvl));
                 if (chr.getMoney() < cost) {
-                    chr.chatMessage(SystemNotice, "Không có đủ tiền meso để nâng cấp Sacred Symbol này.");
+                    chr.chatMessage(SystemNotice, "Not enough mesos to upgrade this Sacred Symbol.");
                     chr.dispose();
                     return;
                 }
@@ -2717,7 +2717,7 @@ public class ItemHandler {
                         chr.addItemToInventory(bridle.getCreateID(), 1);//gives the bridle reward
                         mob.remove(false);
                     } else {
-                        chr.chatMessage("Bạn không có ô trống nào trong kho đồ của mình.");
+                        chr.chatMessage("You do not have enough inventory space.");
                     }
                 } else {
                     // do fail handler
@@ -2774,6 +2774,6 @@ public class ItemHandler {
             }
         }
         chr.returnEffectInfo.equip = null;
-        chr.chatMessage("Hiệu ứng bảo vệ của Cuộn Giấy Return đã biến mất.");
+        chr.chatMessage("The Return Scroll protection effect has expired.");
     }
 }

@@ -4,6 +4,6 @@ if sm.getInstance() is not None:
         sm.getInstance().addProperty("juliet4door2", 926110202)
         sm.increaseReactorState(reactor.getTemplateId(), 0)
     else:
-        sm.chat("Cánh cổng này đã bị khoá.")
+        sm.chat("This gate is locked.")
 else:
     sm.warp(261000021)

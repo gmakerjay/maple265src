@@ -25,7 +25,7 @@ public class PinkBean {
 
     public static void exit(Char chr, ScriptManagerImpl sm) {
         sm.setPlayerBoxChat();
-        if (sm.sendAskYesNo("Bạn có muốn rút lui không?")) {
+        if (sm.sendAskYesNo("Would you like to withdraw from the battle?")) {
             sm.warpInstanceOut(chr, BossConstants.PINK_BEAN_ENTRACE_MAP);
         }
     }
@@ -41,7 +41,7 @@ public class PinkBean {
         sm.setPlayerBoxChat();
         boolean isLeader = (party == null || party.isLeader(chr));
         if (!isLeader) {
-            sm.sendSayOkay("Xin hãy để người lãnh đạo nhóm của bạn nói chuyện với tôi!");
+            sm.sendSayOkay("Please have your party leader speak with me!");
             return;
         }
         if (field.getId() == PINK_BEAN_MAP && !field.isBossSpawned()) {

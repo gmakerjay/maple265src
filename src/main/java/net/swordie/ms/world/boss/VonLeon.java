@@ -20,7 +20,7 @@ public class VonLeon {
         sm.setPlayerBoxChat();
         boolean isLeader = (party == null || party.isLeader(chr));
         if (!isLeader) {
-            sm.sendSayOkay("Xin hãy để người lãnh đạo nhóm của bạn nói chuyện với tôi!");
+            sm.sendSayOkay("Please have your party leader speak with me!");
             return;
         }
         if (field.getId() == 211070104 && !field.isBossSpawned()) {
