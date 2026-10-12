@@ -2859,6 +2859,11 @@ public class AdminCommands {
             secondaryId = 1352276; // Princess No's Iron Arrow
             emblemId = 1190556; // Mitra Bowman Emblem
             armors = archerArmors;
+        } else if (JobConstants.isNightLord(job)) {
+            weaponId = 1472265; // Arcane Umbra Guards
+            secondaryId = 1352296; // Princess No's Charm
+            emblemId = 1190558; // Mitra Thief Emblem
+            armors = thiefArmors;
         } else {
             if (JobConstants.isWarriorEquipJob(job)) {
                 weaponId = 1402259;
@@ -2984,6 +2989,16 @@ public class AdminCommands {
                 chr.addSkill(3341502, 30, 30); // Forsaken Relic Sub 2
                 chr.addSkill(3341503, 30, 30); // Forsaken Relic Sub 3
                 chr.addSkill(3341504, 30, 30); // Forsaken Relic Sub 4
+            } else if (JobConstants.isNightLord(job)) {
+                chr.addSkill(4140011, 30, 30); // Darkness Shuriken
+                chr.addSkill(4141001, 30, 30); // HEXA Enhanced Quad Star
+                chr.addSkill(4141003, 30, 30); // HEXA Assassin's Mark Sub 1
+                chr.addSkill(4141004, 30, 30); // HEXA Assassin's Mark Sub 2
+                chr.addSkill(4141006, 30, 30); // HEXA Showdown Atom
+                chr.addSkill(4141010, 30, 30); // HEXA Death Star Rampant
+                chr.addSkill(4141501, 30, 30); // Life and Death Attack 1
+                chr.addSkill(4141502, 30, 30); // Life and Death Attack 2
+                chr.addSkill(4141504, 30, 30); // Deep Strike Attack
             }
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] Hexa warning: " + e.getMessage());

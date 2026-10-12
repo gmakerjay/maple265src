@@ -3,6 +3,40 @@
 This file tracks all bug fixes, feature implementations, and system optimizations across sessions.
 **Rule (AGENTS.md #4)**: Every agent MUST record new progress here and in `.agents/skills/maplestory-bug-knowledge/SKILL.md` after completing any modification.
 
+## 📅 [2026-10-12 12:35 น.] Phase 2: Explorer Class 10 (Night Lord - 412) สมบูรณ์แบบ 100% — เปิดกลุ่ม Thief Trio เชื่อมต่อ Life and Death, Deep Strike และคำสั่ง !endgame
+
+### 🎯 Scope
+ลงทะเบียนและตรวจสอบสกิลคลาส 6 สาย Explorer อาชีพที่ 10: **Night Lord (ไนท์ลอร์ด / ดาวกระจายพิฆาต - Job ID 412)** อาชีพแรกของกลุ่ม Thief Trio บรรจุสกิล Origin (Life and Death & Ascent Skill: Deep Strike) และ HEXA Masteries ครบชุด (HEXA Quad Star, HEXA Assassin's Mark, HEXA Showdown, HEXA Dark Flare, HEXA Sudden Raid, HEXA Death Star, Darkness Shuriken) เชื่อมต่อระบบ Origin Absolute Bind/Debuff, Shuriken Auto-Gain, Shadow Partner, และคำสั่งทดสอบ `!endgame nightlord` หรือ `!endgame nl` ให้มอบอาวุธ BiS Arcane Umbra Guards, Princess No's Charm, และ HEXA Cores ระดับ 30 เต็มระบบ
+
+### 📂 Files Modified
+- [`v214 src/.../NightLord.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/thief/NightLord.java)
+- [`v214 src/.../SkillConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`v214 src/.../AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **Life and Death Origin & Deep Strike Ascent Integration**:
+   - ปัญหา: ใน `NightLord.java` เดิม ยังขาดการประกาศ Constants และการประมวลผลสำหรับ `LIFE_AND_DEATH` (`4141500`), `DEEP_STRIKE` (`4141503`), และ Attack Sub-skills (`4141501`, `4141502`, `4141504`) ส่งผลให้การกดร่ายไม่เกิดผลอมตะและคัตซีน
+   - วิธีแก้: ใน `NightLord.handleSkill()`, เพิ่ม `case LIFE_AND_DEATH:` มอบสถานะอมตะ `IndieNotDamaged` (7 วินาที) และบรอดคาสต์แพ็กเก็ตเอฟเฟกต์คัตซีน `UserLocal.showHexaSkillEff(chr)` ทั่วแมพ
+2. **Origin Absolute Bind & Origin Debuff Handling**:
+   - ปัญหา: ใน `handleAttack()`, การโจมตีด้วยสกิล Origin ยังไม่มอบสถานะดีบัฟพิเศษของคลาส 6
+   - วิธีแก้: เพิ่มเงื่อนไขตรวจสอบ `LIFE_AND_DEATH`, `LIFE_AND_DEATH_ATTACK_1`, และ `LIFE_AND_DEATH_ATTACK_2` เพื่อมอบสถานะ `MobStat.Freeze` (10 วินาที Absolute Bind) และ `MobStat.OriginDebuff` (20 วินาที) ให้กับศัตรูทุกตัวที่ถูกโจมตีด้วย `EnumMap<MobStat, Option>`
+3. **Sub-Skill Redirection in SkillConstants**:
+   - ปัญหา: สกิลลูกและเอฟเฟกต์โจมตีต่อเนื่อง เช่น `HEXA Enhanced Quad Star` (`4141001`), `HEXA Assassin's Mark Subs` (`4141003`, `4141004`), `HEXA Showdown Atom` (`4141006`), `HEXA Death Star Rampant` (`4141010`), และ `Deep Strike Sub` (`4141504`) เป็น invisible skills ใน WZ
+   - วิธีแก้: เพิ่มการ Redirect สกิลลูกเหล่านี้กลับไปยัง Parent Skills ใน `SkillConstants.getSkillBySubSkill()` เพื่อให้เซิร์ฟเวอร์ดึงค่า stat/damage ได้ถูกต้อง 100%
+4. **Full Testing Automation in `!endgame nightlord`**:
+   - ใน `AdminCommands.setupEndgame()`:
+     - มอบอาวุธระดับเทพ: Arcane Umbra Guards (`1472265`)
+     - มอบไอเทม Secondary BiS: Princess No's Charm (`1352296`)
+     - มอบ Mitra Thief Emblem (`1190558`) และชุดเกราะ Arcane Umbra Thief ครบ 6 ชิ้น
+     - ปลดล็อกและอัปเกรด HEXA Cores คลาส 6 ทุกคอร์ (Core 10000009, 10000061, 20000009, 20000059, 20000109, 20000155, 30000036-30000039, 40000000 Sol Janus) เลเวล 30 เต็ม พร้อมมอบสกิลเสริม (`4140011`, `4141001`, `4141003`, `4141004`, `4141006`, `4141010`, `4141501`, `4141502`, `4141504`)
+
+### 🧪 Verification & Deployment
+- คอมไพล์ผ่าน Maven OpenJDK 21: `BUILD SUCCESS` (0 errors, total time: 1m 52s)
+- ดีพลอย Fat JAR: `Server263/maplestory.jar` (~138.64 MB)
+- หมายเหตุ Patch: รวบรวมทำไฟล์แพตช์ ZIP ครั้งเดียวเมื่อครบ 15 อาชีพตามความประสงค์ของผู้ใช้
+
+---
+
 ## 📅 [2026-10-12 12:28 น.] Phase 2: Explorer Class 9 (Pathfinder - 332) สมบูรณ์แบบ 100% — สิ้นสุดกลุ่ม Bowman Trio อย่างสมบูรณ์แบบ เชื่อมต่อ Forsaken Relic, Piercing Relic และคำสั่ง !endgame
 
 ### 🎯 Scope

@@ -2404,6 +2404,18 @@ public class SkillConstants {
             case 3341022:
             case 3341023:
                 return 3341016; // HEXA Combo Assault Subs
+            // Night Lord 6th Job Sub-Skills
+            case 4141001:
+                return 4141000; // HEXA Enhanced Quad Star
+            case 4141003:
+            case 4141004:
+                return 4141002; // HEXA Assassin's Mark Subs
+            case 4141006:
+                return 4141005; // HEXA Showdown Atom
+            case 4141010:
+                return 4141009; // HEXA Death Star Rampant
+            case 4141504:
+                return 4141503; // Deep Strike Sub
             default:
                 // Universal 6th Job Origin Sub-Skill Redirection (xxx41501-xxx41599 -> xxx41500)
                 int subOrigin = skillID % 100000;

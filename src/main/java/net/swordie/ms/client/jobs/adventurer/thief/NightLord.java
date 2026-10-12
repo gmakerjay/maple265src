@@ -94,6 +94,13 @@ public class NightLord extends Thief {
     public static final int HEXA_DEATH_STAR = 4141009;
     public static final int HEXA_DEATH_STAR_RAMPANT = 4141010;
 
+    // Origin & Ascent (6th Job)
+    public static final int LIFE_AND_DEATH = 4141500;
+    public static final int LIFE_AND_DEATH_ATTACK_1 = 4141501;
+    public static final int LIFE_AND_DEATH_ATTACK_2 = 4141502;
+    public static final int DEEP_STRIKE = 4141503;
+    public static final int DEEP_STRIKE_ATTACK = 4141504;
+
     ShootObjectSkillInfo sosi = null;
     private long darkShurikenNextGainAt = 0; // gate 5s trong thời gian cooldown
     private int  darkShurikenExtraSec = 0;   // extra cộng cho lần proc kế tiếp (0..cap-base)
@@ -185,6 +192,26 @@ public class NightLord extends Thief {
         EnumMap<CharacterTemporaryStat, Option> newStats = new EnumMap<>(CharacterTemporaryStat.class);
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         if (hasHitMobs) {
+            if (skillID == LIFE_AND_DEATH || skillID == LIFE_AND_DEATH_ATTACK_1 || skillID == LIFE_AND_DEATH_ATTACK_2) {
+                Option oOrigin1 = new Option();
+                Option oOrigin2 = new Option();
+                oOrigin1.nOption = 1;
+                oOrigin1.rOption = skillID;
+                oOrigin1.tOption = 10;
+                oOrigin2.nOption = 1;
+                oOrigin2.rOption = skillID;
+                oOrigin2.tOption = 20;
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob == null || mob.getHp() <= 0) {
+                        continue;
+                    }
+                    EnumMap<MobStat, Option> originStats = new EnumMap<>(MobStat.class);
+                    originStats.put(MobStat.Freeze, oOrigin1);
+                    originStats.put(MobStat.OriginDebuff, oOrigin2);
+                    mob.getTemporaryStat().addStatOptions(mob, originStats);
+                }
+            }
             if (tsm.hasStat(DarkSight)) {
                 tsm.removeStat(DarkSight);
             }
@@ -710,6 +737,15 @@ public class NightLord extends Thief {
                 o1.sOption = si.getValue(s, slv); // min blasts
                 o1.wOption = si.getValue(w, slv); // max blasts
                 tsm.sendStat(ThrowBlasting, o1);
+                break;
+            case LIFE_AND_DEATH:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
+                tsm.sendStat(IndieNotDamaged, o1);
+                chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
+                break;
+            case DEEP_STRIKE:
                 break;
         }
     }
