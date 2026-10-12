@@ -5,6 +5,7 @@ import net.swordie.ms.client.character.Char;
 import net.swordie.ms.client.character.skills.Option;
 import net.swordie.ms.client.character.skills.Skill;
 import net.swordie.ms.client.character.skills.info.AttackInfo;
+import net.swordie.ms.client.character.skills.info.MobAttackInfo;
 import net.swordie.ms.client.character.skills.info.SkillInfo;
 import net.swordie.ms.client.character.skills.info.SkillUseInfo;
 import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
@@ -88,6 +89,12 @@ public class Marksman extends Archer {
     public static final int ULTIMATE_SNIPE = 3241003;
     public static final int HEXA_BOLT_BURST = 3241013;
     public static final int HEXA_HIGH_SPEED_SHOT = 3241015;
+
+    // Origin & Ascent (6th Job)
+    public static final int FINAL_AIM = 3241500;
+    public static final int FINAL_AIM_ATTACK = 3241501;
+    public static final int FATAL_TRIGGER = 3241502;
+    public static final int FATAL_TRIGGER_ATTACK = 3241503;
 
     public Marksman(Char chr) {
         super(chr);
@@ -174,6 +181,26 @@ public class Marksman extends Archer {
         boolean hasHitMobs = !attackInfo.mobAttackInfo.isEmpty();
         int slv = attackInfo.slv;
         if (hasHitMobs) {
+            if (skillID == FINAL_AIM || skillID == FINAL_AIM_ATTACK) {
+                Option oOrigin1 = new Option();
+                Option oOrigin2 = new Option();
+                oOrigin1.nOption = 1;
+                oOrigin1.rOption = skillID;
+                oOrigin1.tOption = 10;
+                oOrigin2.nOption = 1;
+                oOrigin2.rOption = skillID;
+                oOrigin2.tOption = 20;
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob == null || mob.getHp() <= 0) {
+                        continue;
+                    }
+                    EnumMap<MobStat, Option> originStats = new EnumMap<>(MobStat.class);
+                    originStats.put(MobStat.Freeze, oOrigin1);
+                    originStats.put(MobStat.OriginDebuff, oOrigin2);
+                    mob.getTemporaryStat().addStatOptions(mob, originStats);
+                }
+            }
             if (chr.hasSkill(MARKSMANSHIP)) {
                 handleMarksmanship();
             }
@@ -417,6 +444,15 @@ public class Marksman extends Archer {
                 o1.rOption = skillID;
                 o1.tOption = si.getValue(time, slv);
                 tsm.sendStat(RepeatinCartrige, o1);
+                break;
+            case FINAL_AIM:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
+                tsm.sendStat(IndieNotDamaged, o1);
+                chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
+                break;
+            case FATAL_TRIGGER:
                 break;
             case HEROS_WILL:
                 tsm.removeAllDebuffs();

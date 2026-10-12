@@ -2854,6 +2854,11 @@ public class AdminCommands {
             secondaryId = 1352266; // Princess No's Feather
             emblemId = 1190556; // Mitra Bowman Emblem
             armors = archerArmors;
+        } else if (JobConstants.isMarksman(job)) {
+            weaponId = 1462243; // Arcane Umbra Crossbow
+            secondaryId = 1352276; // Princess No's Iron Arrow
+            emblemId = 1190556; // Mitra Bowman Emblem
+            armors = archerArmors;
         } else {
             if (JobConstants.isWarriorEquipJob(job)) {
                 weaponId = 1402259;
@@ -2950,6 +2955,19 @@ public class AdminCommands {
                 chr.addSkill(3141501, 30, 30); // Ascendant Shadow Sub 1
                 chr.addSkill(3141502, 30, 30); // Ascendant Shadow Sub 2
                 chr.addSkill(3141504, 30, 30); // Flashpoint Sub
+            } else if (JobConstants.isMarksman(job)) {
+                chr.addSkill(3241001, 30, 30); // HEXA Empowered Snipe
+                chr.addSkill(3241002, 30, 30); // HEXA Snipe Extra
+                chr.addSkill(3241003, 30, 30); // Ultimate Snipe
+                chr.addSkill(3241004, 30, 30); // Snipe Sub
+                chr.addSkill(3241006, 30, 30); // HEXA Empowered Piercing
+                chr.addSkill(3241007, 30, 30); // HEXA Ultimate Piercing
+                chr.addSkill(3241008, 30, 30); // Piercing Sub 3
+                chr.addSkill(3241009, 30, 30); // Piercing Sub 4
+                chr.addSkill(3241010, 30, 30); // Piercing Sub 5
+                chr.addSkill(3241011, 30, 30); // Piercing Sub 6
+                chr.addSkill(3241501, 30, 30); // Final Aim Sub
+                chr.addSkill(3241503, 30, 30); // Fatal Trigger Sub
             }
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] Hexa warning: " + e.getMessage());

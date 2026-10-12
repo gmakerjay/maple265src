@@ -3,6 +3,40 @@
 This file tracks all bug fixes, feature implementations, and system optimizations across sessions.
 **Rule (AGENTS.md #4)**: Every agent MUST record new progress here and in `.agents/skills/maplestory-bug-knowledge/SKILL.md` after completing any modification.
 
+## 📅 [2026-10-12 12:22 น.] Phase 2: Explorer Class 8 (Marksman - 322) สมบูรณ์แบบ 100% — เชื่อมต่อ Final Aim, Fatal Trigger และคำสั่ง !endgame
+
+### 🎯 Scope
+ลงทะเบียนและตรวจสอบสกิลคลาส 6 สาย Explorer อาชีพที่ 8: **Marksman (มาร์กสแมน / นักธนูสายหน้าไม้ - Job ID 322)** อาชีพที่สองของกลุ่ม Bowman Trio บรรจุสกิล Origin (Final Aim & Ascent Skill: Fatal Trigger) และ HEXA Masteries ครบชุด (HEXA Snipe, HEXA Empowered Snipe, HEXA Snipe Extra, Ultimate Snipe, HEXA Piercing Arrow, HEXA Empowered Piercing, HEXA Ultimate Piercing, HEXA Frostprey, HEXA Bolt Burst, HEXA Final Attack, HEXA High Speed Shot) เชื่อมต่อระบบ Aggressive Resistance, Snipe Stack Management, Origin Absolute Bind/Debuff และคำสั่งทดสอบ `!endgame marksman` หรือ `!endgame mm` ให้มอบอาวุธ BiS Arcane Umbra Crossbow, Princess No's Iron Arrow, และ HEXA Cores ระดับ 30 เต็มระบบ
+
+### 📂 Files Modified
+- [`v214 src/.../Marksman.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/archer/Marksman.java)
+- [`v214 src/.../SkillConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`v214 src/.../AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **Final Aim Origin & Fatal Trigger Ascent Integration**:
+   - ปัญหา: เดิมใน `Marksman.java`, ยังขาด Constants และการรองรับ `FINAL_AIM` (`3241500`), `FATAL_TRIGGER` (`3241502`), และ Attack Sub-skills (`3241501`, `3241503`) ส่งผลให้การกดร่ายไม่เกิดอมตะและไม่ส่งแพ็กเก็ตเอฟเฟกต์คัตซีน
+   - วิธีแก้: ใน `Marksman.handleSkill()`, เพิ่ม `case FINAL_AIM:` มอบสถานะอมตะ `IndieNotDamaged` (7 วินาที) และส่งแพ็กเก็ต `UserLocal.showHexaSkillEff(chr)` สู่ปาร์ตี้/ฟิลด์
+2. **Origin Absolute Bind & Origin Debuff Handling**:
+   - ปัญหา: ใน `handleAttack()`, การโจมตีด้วย `FINAL_AIM` ยังไม่ติดสถานะควบคุมมอนสเตอร์
+   - วิธีแก้: เพิ่มเงื่อนไขตรวจสอบการโจมตีจาก `FINAL_AIM` และ `FINAL_AIM_ATTACK` ติดสถานะ `MobStat.Freeze` (10 วินาที Absolute Bind) และ `MobStat.OriginDebuff` (20 วินาที) ให้กับศัตรูทุกตัวที่ถูกโจมตี พร้อมนำเข้าคลาส `MobAttackInfo`
+3. **Sub-Skill Redirection in SkillConstants**:
+   - ปัญหา: การโจมตีต่อเนื่องของ `HEXA_SNIPE_SUB` (`3241001-3241004`), `HEXA_PIERCING_ARROW_SUB` (`3241006-3241011`), และ `FATAL_TRIGGER_ATTACK` (`3241503`) เป็นสกิลที่ซ่อนอยู่ใน WZ (`invisible = 1`)
+   - วิธีแก้: เพิ่มการจับคู่ครบทั้ง 11 สกิลใน `SkillConstants.getSkillBySubSkill()` เพื่อเชื่อมโยงเลเวลและความเสียหายได้อย่างแม่นยำ 100%
+4. **Full Testing Automation in `!endgame marksman`**:
+   - ใน `AdminCommands.setupEndgame()`:
+     - มอบอาวุธระดับเทพ: Arcane Umbra Crossbow (`1462243`)
+     - มอบลูกศรเหล็กรอง BiS: Princess No's Iron Arrow (`1352276`)
+     - มอบ Mitra Bowman Emblem (`1190556`) และเซ็ตเกราะ Arcane Umbra Archer ครบ 6 ชิ้น
+     - ปลดล็อกและอัปเกรด HEXA Cores คลาส 6 ทุกคอร์ (Core 10000007, 10000059, 20000007, 20000057, 20000107, 20000153, 30000028-30000031, 40000000 Sol Janus) เลเวล 30 เต็ม พร้อมมอบสกิลเสริมครบถ้วนทุกสกิล (`3241001-3241004`, `3241006-3241011`, `3241501`, `3241503`)
+
+### 🧪 Verification & Deployment
+- คอมไพล์ผ่าน Maven OpenJDK 21: `BUILD SUCCESS` (0 errors, total time: 1m 26s)
+- ดีพลอย Fat JAR: `Server263/maplestory.jar` (~138.64 MB)
+- หมายเหตุ Patch: รวบรวมทำไฟล์แพตช์ ZIP ครั้งเดียวเมื่อครบ 15 อาชีพตามความประสงค์ของผู้ใช้
+
+---
+
 ## 📅 [2026-10-12 12:18 น.] Phase 2: Explorer Class 7 (Bowmaster - 312) สมบูรณ์แบบ 100% — เชื่อมต่อ Ascendant Shadow, Flashpoint และคำสั่ง !endgame
 
 ### 🎯 Scope

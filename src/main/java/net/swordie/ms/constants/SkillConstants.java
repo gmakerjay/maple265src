@@ -2364,6 +2364,21 @@ public class SkillConstants {
                 return 3141013; // HEXA Speed Mirage Sub
             case 3141504:
                 return 3141503; // Flashpoint Sub
+            // Marksman 6th Job Sub-Skills
+            case 3241001:
+            case 3241002:
+            case 3241003:
+            case 3241004:
+                return 3241000; // HEXA Snipe Sub
+            case 3241006:
+            case 3241007:
+            case 3241008:
+            case 3241009:
+            case 3241010:
+            case 3241011:
+                return 3241005; // HEXA Piercing Arrow Sub
+            case 3241503:
+                return 3241502; // Fatal Trigger Sub
             default:
                 // Universal 6th Job Origin Sub-Skill Redirection (xxx41501-xxx41599 -> xxx41500)
                 int subOrigin = skillID % 100000;
