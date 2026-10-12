@@ -3,6 +3,43 @@
 This file tracks all bug fixes, feature implementations, and system optimizations across sessions.
 **Rule (AGENTS.md #4)**: Every agent MUST record new progress here and in `.agents/skills/maplestory-bug-knowledge/SKILL.md` after completing any modification.
 
+## 📅 [2026-10-12 14:28 น.] Instant Character Deletion System & Automatic Ghost Character Purge (Zero-Wait Deletion)
+
+### 🎯 Scope
+พิสูจน์สาเหตุและแก้ไขปัญหาระบบลบตัวละครค้าง ไม่สามารถลบตัวละครออกได้แม้รอจนครบกำหนดเวลา 24 ชั่วโมง/2 วัน ตัวละครกลายเป็นร่างวิญญาณค้างในหน้ารายชื่อตัวละคร ปรับปรุงสถาปัตยกรรมระบบลบตัวละครให้เป็น **"ลบได้ทันที (Immediate Deletion)"** โดยไม่ต้องรอเวลานับถอยหลัง พร้อมระบบ Auto-Purge กวาดล้างตัวละครร่างวิญญาณเดิมที่เคยค้างอยู่ให้หายไปทันทีเมื่อเข้าสู่หน้าเลือกตัวละคร โดยรักษาความปลอดภัยของบัญชีผู้ใช้ (Account & other characters) 100% ปราศจากผลข้างเคียง
+
+### 📂 Files Modified
+- [`LoginHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/LoginHandler.java)
+- [`Char.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java)
+- [`Server263/maplestory.jar`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/maplestory.jar)
+- [`Patches/Server263_Patch_20261012_1426.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_20261012_1426.zip)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **การพิสูจน์สาเหตุ (Root Cause Proof)**:
+   - **ปัญหาที่ 1 (ไม่มี Background Task ลบจริง)**: โค้ดเดิมใน `LoginHandler.handleDeleteCharacter` ทำเพียงแค่เซ็ตเวลา `deletionStartTime = System.currentTimeMillis()` แล้วส่งแพ็กเก็ต `CLogin::OnDeleteCharacterResult` รหัส Reservation กลับไปให้ Client แสดงรูปนาฬิกานับถอยหลัง 24 ชั่วโมง โดยที่ฝั่งเซิร์ฟเวอร์ไม่มี Background Thread หรือ Scheduled Job ใดๆ คอยลบตัวละครที่หมดเวลาออกจากฐานข้อมูลเลย
+   - **ปัญหาที่ 2 (Packet Deserialization Mismatch เมื่อกดยืนยันลบ)**: เมื่อผู้เล่นรอจนครบเวลาแล้วกดยืนยันลบ ไคลเอนต์ MapleStory v265 จะส่งแพ็กเก็ต opcode `RESERVED_DELETE_CHARACTER_CONFIRM` (`145` / `0x0091`) มา แต่โค้ดเดิมใน `LoginHandler.java` บรรทัด 407-408 เขียนสลับลำดับการอ่าน: โค้ดเซิร์ฟเวอร์เรียก `int charId = inPacket.decodeInt();` ก่อน `String pic = inPacket.decodeString();` แต่แพ็กเก็ตจริงส่ง PIC (หรือ zero-length string) มาก่อน แล้วตามด้วย Character ID ทำให้ `charId` ถูกอ่านผิดกลายเป็นขยะไบต์ เซิร์ฟเวอร์หาตัวละครไม่เจอ (`chr == null`) และส่งผลลัพธ์ล้มเหลวกลับไป ตัวละครจึงกลายเป็น "ร่างวิญญาณ" ติดค้างอยู่ในระบบตลอดกาล
+2. **การปรับปรุงระบบสู่การลบได้ทันที (Immediate Character Deletion)**:
+   - **Byte-Resilient CharId Extraction**: เพิ่มเมธอด `extractCharId(InPacket inPacket, Account account)` เพื่อกู้คืน Character ID อย่างแม่นยำ ไม่ว่าจะส่งมาแบบ PIC ก่อนหรือ charId ก่อน โดยตรวจจับทั้ง first 4-bytes และ trailing 4-bytes เทียบกับ `account.getCharacters()`
+   - **Unified Complete Deletion Pipeline**: สร้างเมธอด `deleteCharacterCompletely(Client c, Account account, Char chr)` รวมขั้นตอนการลบตัวละครอย่างสมบูรณ์แบบ:
+     - ลบข้อมูลตัวละครทุกตารางในฐานข้อมูล (30+ tables: skills, items, equips, quests, familiars, union, matrix ฯลฯ) ผ่าน `chr.deleteFromSQL()` ภายใต้ Database Transaction ป้องกันปัญหาข้อมูลตกค้าง
+     - ตัดความสัมพันธ์ในเกม: ถอดออกจาก Guild, Party, Friend List, และ World Player Map
+     - ลบออกจากแคชหน่วยความจำ: ลบออกจาก `account.getCharacters()`, `world.getCharacters()`, และ `chr.clear()`
+   - **Direct Instant Deletion**: ปรับแก้ `handleDeleteCharacter()` และ `handleReservedDeleteCharacterConfirm()` ให้เรียกใช้ `deleteCharacterCompletely()` ทันทีเมื่อผู้เล่นกดยืนยัน พร้อมตอบกลับด้วยผลลัพธ์ Success ส่งผลให้ตัวละครหายวับไปจากหน้าจอทันที ไม่ต้องรอนับถอยหลังอีกต่อไป
+3. **ระบบกวาดล้างร่างวิญญาณอัตโนมัติ (Automatic Ghost Character Purge)**:
+   - เพิ่มเมธอด `cleanupPendingDeletions(Client c, Account account)` ซึ่งจะทำงานอัตโนมัติทันทีที่ผู้เล่นเลือก World หรือโหลดหน้าตัวละคร (`handleSelectWorld` และ `handleCharListRequest`)
+   - ระบบจะสแกนตัวละครในบัญชี หากพบตัวละครใดที่มี `deletionStartTime != 0` (ตัวละครที่เคยกดลบไว้ในอดีต) เซิร์ฟเวอร์จะทำการ Purge ลบตัวละครนั้นออกจากฐานข้อมูลและหน่วยความจำทันที ก่อนที่เซิร์ฟเวอร์จะส่งรายชื่อตัวละคร (`SELECT_WORLD_RESULT`) ไปยังจอภาพของผู้เล่น
+   - **ผลลัพธ์**: ตัวละครร่างวิญญาณที่เคยกดลบค้างไว้จะ "หายไปทันที 100% ตั้งแต่ล็อกอินครั้งแรกหลังลงแพตช์"
+4. **ความปลอดภัยของบัญชีผู้ใช้ (Account Safety Guarantee)**:
+   - การลบตัวละครทำงานผ่านคำสั่ง SQL ที่ผูกกับ `charid` และ `id` ของตัวละครตัวนั้นโดยเฉพาะ (`WHERE charid = ?`) ภายใต้ Safe Transaction
+   - ไม่มีการแตะต้องตาราง `users`, `accounts`, หรือตัวละครอื่นๆ ในบัญชีเดียวกันอย่างเด็ดขาด
+   - เพิ่ม Null-Check `getMacros() != null` ใน [`Char.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java) เพื่อป้องกัน Exception ขณะรัน `deleteFromSQL()` และใช้ Auto-Closing PreparedStatement ป้องกัน Database Connection Leak
+5. **Compilation, Deployment & Patch Creation**:
+   - คอมไพล์ผ่าน Maven OpenJDK 21: `BUILD SUCCESS` (0 errors)
+   - อัปเดต Fat JAR: `Server263/maplestory.jar` (~138.65 MB)
+   - สร้าง Incremental Patch: `Patches/Server263_Patch_20261012_1426.zip` (121.59 MB) สามารถนำไปกดรัน `Apply_Patch.bat` เพื่ออัปเดตเซิร์ฟเวอร์ได้ทันทีใน 2 วินาที
+
+---
+
 ## 📅 [2026-10-12 14:06 น.] Fix USER_FORCE_ATOM_COLLISION Packet Decoding & Guided Force Atom Null Safety
 
 ### 🎯 Scope

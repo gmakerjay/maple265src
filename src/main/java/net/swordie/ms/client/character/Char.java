@@ -1317,8 +1317,10 @@ public class Char {
             if (getMonsterBookInfo() != null) {
                 getMonsterBookInfo().deleteFromSQL(con);
             }
-            for (Macro macro : getMacros()) {
-                macro.deleteFromSQL(con);
+            if (getMacros() != null) {
+                for (Macro macro : getMacros()) {
+                    macro.deleteFromSQL(con);
+                }
             }
             deleteDataFromTable(con, "items", "charid", getId());
             deleteDataFromTable(con, "equips", "charid", getId());
@@ -1381,9 +1383,10 @@ public class Char {
 
     private void deleteDataFromTable(Connection conn, String tableName, String whereColumn, long id) throws SQLException {
         String query = "DELETE FROM `" + tableName + "` WHERE `" + whereColumn + "` = ?";
-        PreparedStatement ps = conn.prepareStatement(query);
-        ps.setLong(1, id);
-        ps.executeUpdate();
+        try (PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setLong(1, id);
+            ps.executeUpdate();
+        }
     }
 
     public void updateCharacterPartyIDToSQL() {

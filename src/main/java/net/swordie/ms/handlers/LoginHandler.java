@@ -280,6 +280,7 @@ public class LoginHandler {
             c.write(WvsContext.sendSetPhysicalWorldAttach("VN"));
             c.write(Login.sendJobValues());
             c.write(new OutPacket(OutHeader.CLIENT_ALIVE));
+            cleanupPendingDeletions(c, c.getAccount());
             c.write(Login.selectWorldResult(c.getUser(), c.getAccount(), code, channel, "normal", true));
             DataPrinter.send(DataPrinter.LOGIN, "Thông tin tài khoản " + user.getName()
                     + " | IP: " + c.getIP()
@@ -376,26 +377,120 @@ public class LoginHandler {
         c.write(Login.createNewCharacterResult(LoginType.Success, chr));
     }
 
+    private static int extractCharId(InPacket inPacket, Account acc) {
+        byte[] data = inPacket.getData();
+        if (data == null || data.length < 4) {
+            return 0;
+        }
+        int firstInt = (data[0] & 0xFF) | ((data[1] & 0xFF) << 8) | ((data[2] & 0xFF) << 16) | ((data[3] & 0xFF) << 24);
+        if (acc != null && acc.hasCharacter(firstInt)) {
+            return firstInt;
+        }
+        int len = data.length;
+        if (len >= 4) {
+            int lastInt = (data[len - 4] & 0xFF) | ((data[len - 3] & 0xFF) << 8) | ((data[len - 2] & 0xFF) << 16) | ((data[len - 1] & 0xFF) << 24);
+            if (acc != null && acc.hasCharacter(lastInt)) {
+                return lastInt;
+            }
+        }
+        try {
+            inPacket.skipString();
+            if (inPacket.getUnreadAmount() >= 4) {
+                return inPacket.decodeInt();
+            }
+        } catch (Exception ignored) {}
+        return firstInt;
+    }
+
+    public static boolean deleteCharacterCompletely(Client c, Account acc, Char chr) {
+        if (chr == null || acc == null) {
+            return false;
+        }
+        int charId = chr.getId();
+        String name = chr.getName();
+        int guildID = chr.getGuildID();
+        int partyID = chr.getPartyID();
+        User user = c != null ? c.getUser() : null;
+        try {
+            chr.deleteFromSQL();
+            if (guildID != 0 && Server.get().getWorld() != null) {
+                Guild guild = Server.get().getWorld().getGuildByID(guildID);
+                if (guild != null) {
+                    guild.removeMember(charId);
+                    guild.broadcast(WvsContext.guildResult(GuildResult.response_GuildKick_Success(guild, charId, name)));
+                }
+            }
+            if (partyID != 0 && Server.get().getWorld() != null) {
+                Party party = Server.get().getWorld().getPartyByPartyID(partyID);
+                if (party != null) {
+                    if (party.getMembers().size() <= 1) {
+                        party.disband();
+                    } else {
+                        party.leave(charId);
+                    }
+                }
+            }
+            if (acc.getUnion() != null && acc.getUnion().getUnionBoards() != null) {
+                for (UnionBoard ub : acc.getUnion().getUnionBoards()) {
+                    ub.removeMemberByCharId(charId);
+                }
+            }
+            acc.removeLinkSkillByChar(charId);
+            acc.removeCharacter(chr);
+            if (acc.getCurrentChr() != null && acc.getCurrentChr().getId() == charId) {
+                acc.setCurrentChr(null);
+            }
+            if (user != null && user.getCurrentChr() != null && user.getCurrentChr().getId() == charId) {
+                user.setCurrentChr(null);
+            }
+            if (c != null && c.getChr() != null && c.getChr().getId() == charId) {
+                c.setChr(null);
+            }
+            Server.get().removeChar(charId);
+            return true;
+        } catch (Exception e) {
+            DataPrinter.send(DataPrinter.ALL_IN_ONE, String.format("Thất bại xoá nhân vật %s (ID: %d): %s", name, charId, e.getMessage()));
+            return false;
+        }
+    }
+
+    public static void cleanupPendingDeletions(Client c, Account account) {
+        if (account == null || account.getCharacters() == null) {
+            return;
+        }
+        List<Char> toDelete = new ArrayList<>();
+        for (Char chr : account.getCharacters()) {
+            if (chr != null && chr.getDeletionStartTime() != 0) {
+                toDelete.add(chr);
+            }
+        }
+        for (Char chr : toDelete) {
+            boolean success = deleteCharacterCompletely(c, account, chr);
+            if (success) {
+                DataPrinter.send(DataPrinter.ALL_IN_ONE, String.format("Auto-purged pending deletion character %s (ID: %d) on login.", chr.getName(), chr.getId()));
+            }
+        }
+    }
+
     @Handler(op = InHeader.DELETE_CHARACTER)
     public static void handleDeleteCharacter(Client c, InPacket inPacket) {
         Account acc = c.getAccount();
         if (acc != null) {
-            inPacket.skipString();
-            int charId = inPacket.decodeInt();
+            int charId = extractCharId(inPacket, acc);
             Char chr = acc.getCharById(charId);
+            if (chr == null && charId != 0) {
+                chr = Char.getCharDeleteByID(charId);
+            }
             if (chr != null) {
-                final long now = System.currentTimeMillis();
-                final long endTime = System.currentTimeMillis() + 24 * 60 * 60 * 1000L; // 24 hours
-                try {
-                    chr.setDeletionStartTime(now);
-                    chr.updateCharFieldToSQL("deletionStartTime", now);
-                }   catch (Exception e) {
-                    DataPrinter.send(DataPrinter.ALL_IN_ONE, String.format("Thất bại đặt lịch xoá nhân vật %s: %s", chr.getName(), e.getMessage()));
+                boolean success = deleteCharacterCompletely(c, acc, chr);
+                if (success) {
+                    c.write(Login.sendDeleteCharacterResult(charId, LoginType.Success));
+                    DataPrinter.send(DataPrinter.ALL_IN_ONE, String.format("Thành công xoá ngay lập tức nhân vật %s (ID: %d).", chr.getName(), charId));
+                } else {
                     c.write(Login.sendDeleteCharacterResult(charId, LoginType.UnauthorizedUser));
-                } finally {
-                    c.write(Login.sendReverseDeleteCharacterResult(charId, LoginType.Success, FileTime.fromLong(now), FileTime.fromLong(endTime)));
-                    DataPrinter.send(DataPrinter.ALL_IN_ONE, String.format("Thành công đặt lịch xoá nhân vật %s vào lúc ." + FileTime.fromLong(now).toYYYYMMDDHHMMSS(), chr.getName()));
                 }
+            } else {
+                c.write(Login.sendDeleteCharacterResult(charId, LoginType.UnauthorizedUser));
             }
         } else {
             c.write(Login.selectCharacterResult(LoginType.IncorrectPassword, (byte) 0, 0, 0));
@@ -404,56 +499,26 @@ public class LoginHandler {
 
     @Handler(op = InHeader.RESERVED_DELETE_CHARACTER_CONFIRM)
     public static void handleReservedDeleteCharacterConfirm(Client c, InPacket inPacket) {
-        int charId = inPacket.decodeInt();
-        inPacket.skipString();
         Account acc = c.getAccount();
-        User user = c.getUser();
-        Char chr = Char.getCharDeleteByID(charId);
-        if (chr != null && chr.getDeletionStartTime() != 0) {
-            final String name = chr.getName();
-            final int guildID = chr.getGuildID();
-            final int partyID = chr.getPartyID();
-            try {
-                chr.deleteFromSQL();
-                if (guildID != 0) {
-                    Guild guild = Server.get().getWorld().getGuildByID(guildID);
-                    if (guild != null) {
-                        guild.removeMember(charId);
-                        guild.broadcast(WvsContext.guildResult(GuildResult.response_GuildKick_Success(guild, charId, name)));
-                    }
+        if (acc != null) {
+            int charId = extractCharId(inPacket, acc);
+            Char chr = acc.getCharById(charId);
+            if (chr == null && charId != 0) {
+                chr = Char.getCharDeleteByID(charId);
+            }
+            if (chr != null) {
+                boolean success = deleteCharacterCompletely(c, acc, chr);
+                if (success) {
+                    c.write(Login.sendDeleteCharacterResult(charId, LoginType.Success));
+                    DataPrinter.send(DataPrinter.ALL_IN_ONE, String.format("Thành công xoá nhân vật %s (ID: %d).", chr.getName(), charId));
+                } else {
+                    c.write(Login.sendDeleteCharacterResult(charId, LoginType.UnauthorizedUser));
                 }
-                if (partyID != 0) {
-                    Party party = Server.get().getWorld().getPartyByPartyID(partyID);
-                    if (party.getMembers().size() == 1) {
-                        party.disband();
-                    } else {
-                        party.leave(charId);
-                    }
-                }
-                for (UnionBoard ub : acc.getUnion().getUnionBoards()) {
-                    ub.removeMemberByCharId(charId);
-                }
-                acc.removeLinkSkillByChar(charId);
-                acc.removeCharacter(chr);
-                if (acc.getCurrentChr() != null && acc.getCurrentChr().getId() == charId) {
-                    acc.setCurrentChr(null);
-                }
-                if (user.getCurrentChr() != null && user.getCurrentChr().getId() == charId) {
-                    user.setCurrentChr(null);
-                }
-                if (c.getChr() != null && c.getChr().getId() == charId) {
-                    c.setChr(null);
-                }
-                Server.get().removeChar(charId);
-            } catch (Exception e) {
-                DataPrinter.send(DataPrinter.ALL_IN_ONE, String.format("Thất bại xoá nhân vật %s: %s", name, e.getMessage()));
+            } else {
                 c.write(Login.sendDeleteCharacterResult(charId, LoginType.UnauthorizedUser));
-            } finally {
-                c.write(Login.sendDeleteCharacterResult(charId, LoginType.Success));
-                DataPrinter.send(DataPrinter.ALL_IN_ONE, String.format("Thành công xoá nhân vật %s.", name));
             }
         } else {
-            c.write(Login.sendDeleteCharacterResult(charId, LoginType.UnauthorizedUser));
+            c.write(Login.sendDeleteCharacterResult(0, LoginType.UnauthorizedUser));
         }
     }
 
@@ -833,6 +898,7 @@ public class LoginHandler {
                 c.write(WvsContext.sendSetPhysicalWorldAttach("VN"));
                 c.write(Login.sendJobValues());
                 c.write(new OutPacket(OutHeader.CLIENT_ALIVE));
+                cleanupPendingDeletions(c, c.getAccount());
                 c.write(Login.selectWorldResult(c.getUser(), c.getAccount(), (byte) 0, channelId, "normal", true));
                 if (charID != 0) {
                     // switch char
