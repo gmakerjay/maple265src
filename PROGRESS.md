@@ -3,6 +3,178 @@
 This file tracks all bug fixes, feature implementations, and system optimizations across sessions.
 **Rule (AGENTS.md #4)**: Every agent MUST record new progress here and in `.agents/skills/maplestory-bug-knowledge/SKILL.md` after completing any modification.
 
+## 📅 [2026-10-12 22:55 น.] Evan Complete HEXA Matrix Overhaul: HEXA Enhanced Magic Debris (22201015), HEXA Dragon Spark (22200016), Lv. 260 Auto-Evolution & No-Cooldown Attack Handlers
+
+### 🎯 Scope & Technical Details
+1. **เพิ่มและเชื่อมโยง HEXA Enhanced Magic Debris (`22201015`) ในระบบสกิลทั้งหมด**:
+   - เชื่อมโยงใน [`Evan.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Evan.java):
+     - `getDebrisSkill()` และ `getMaxDebris()`: รองรับการดึง Skill Info และคำนวณจำนวนชิ้นส่วน Wreckage สูงสุดของสกิลคลาส 6
+     - `createMagicDebrisForceAtom()`: ปล่อย ForceAtom รูปแบบ `ADV_WRECKAGE`
+     - `createWreckage()`: ตรวจสอบและสร้างเศษ Debris จาก Fusion Skill
+     - `handleSkill()`: จัดการ Packet ร่ายสกิลระเบิดชิ้นส่วน Debris
+   - เชื่อมโยงใน [`SkillConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java):
+     - `isForceAtomSkill()`: ลงทะเบียน `Evan.HEXA_MAGIC_DEBRIS`
+2. **ลงทะเบียนสกิลมังกรคลาส 6 ใน `isNoCoolDownAttack()`**:
+   - เพิ่ม `22201011` (HEXA Dragon Breath), `22201007` (HEXA Dragon Dive), `22201003` (HEXA Dragon Flash) ป้องกันการหัก MP ซ้ำซ้อนและหลีกเลี่ยงการติด Cooldown ผิดปกติ
+3. **ระบบเลื่อนขั้นมังกรอัตโนมัติเมื่อเลเวล 260 (`handleLevelUp`)**:
+   - เพิ่ม `case 260: spawnDragon();` ให้มังกร Mir อัปเกรดเป็น Stage 9 ทันทีเมื่อผู้เล่นเลเวลอัปถึง 260 โดยไม่ต้องรอเปลี่ยนแผนที่
+4. **อัปเกรดคำสั่ง `!endgame` มอบสกิล HEXA คลาส 6 เต็มสูบ**:
+   - มอบสกิล `22201015` (HEXA Magic Debris) และ `22200016` (HEXA Dragon Spark) ระดับ Master Level 30 ทันที
+
+### 📂 Files Modified
+- [`Evan.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Evan.java)
+- [`SkillConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`AdminCommands.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+- [`SKILL.md`](file:///c:/Users/admin/Documents/MapleV265Src/.agents/skills/maplestory-bug-knowledge/SKILL.md)
+- [`PROGRESS.md`](file:///c:/Users/admin/Documents/MapleV265Src/PROGRESS.md)
+
+### 🧪 Verification & Deployment
+- **Maven Compile**: `BUILD SUCCESS` (853 files, 0 errors, 23.6s)
+- **Maven Package**: `BUILD SUCCESS` (Fat JAR 138MB created in 30.9s)
+- **Rule #1 Verification**: โฟลเดอร์ `Server263/` ปราศจากไฟล์ Source Code / pom.xml (0 violations)
+- **Rule #2 Verification**: แพตช์อัปเดตเดี่ยวใน `Patches/Server263_Patch_Latest/` พร้อม `Apply_Patch.bat`
+- **Server Live Check**: รันเซิร์ฟเวอร์เรียบร้อย พอร์ต 8484 และ 8585-8594 กำลังเปิดรับการเชื่อมต่อพร้อมใช้งาน 100%
+
+## 📅 [2026-10-12 22:45 น.] Evan 6th Job Crash Root Cause Fix: Mir Stage 9 (2220) Evolution, HEXA Skills & Fusion Redirection, Companion Life Spawn Guard
+
+### 🎯 Scope & Root Cause Analysis
+1. **วิเคราะห์เจาะลึกและกำจัดต้นตออาการ Client เด้งเมื่อ Evan ใช้สกิล (Crash Log & Disassembly)**:
+   - **การถอดรหัส Crash Log**: ไคลเอนต์ MapleStory v265 เกิด C++ Exception `0xE06D7363` (`CTerminateException`) พร้อมแสดงไดอะล็อกเตือน *"You appear to be missing a few files needed to run the game. Please visit maplestory.nexon.net and download the latest version of the client."* และส่งแพ็กเก็ต `InHeader.CLIENT_ERROR (171)` สู่เซิร์ฟเวอร์ด้วยรหัส `570425350` (`0x22000006` = `INVALID_GAME_DATA`)
+   - **ถอดรหัส Asm จุดเกิดเหตุ (`0x2DAEB60` - `0x2DAF407`)**:
+     - เมื่อ Evan ร่ายสกิลคลาส 6 (`2220xxxx`), ฟังก์ชัน `CDragon::DoAttack` (`0x4FFFB3A`) เรียก `CDragon::SetAction` (`0x2DA0D0D`) สู่ `vfunc_48` ของ Dragon
+     - ไคลเอนต์จะค้นหา Animation Node ของท่าทางมังกรประจำคลาส 6 (`6thDragonSwift`, `6thDragonDive`, `6thDragonBreath` ฯลฯ) ใน WZ Data ของมังกรตาม Job ปัจจุบัน
+     - ใน `Skill.wz/Skill_00007/Dragon/`:
+       - `2217.xml` (Stage 8) มีเพียง 17 actions ไม่มีโหนดตระกูล `6thDragon*` อยู่เลย
+       - `2220.xml` (Stage 9) มีครบทั้ง 26 actions รวมถึง 9 โหนดของคลาส 6 ทั้งหมด (`6thDragonSwift`, `6thDragonSwiftWind`, `6thDragonSwiftThunder`, `6thDragonDive`, `6thDragonDiveEarth`, `6thDragonDiveThunder`, `6thDragonBreath`, `6thDragonBreathEarth`, `6thDragonBreathWind`)
+     - เดิมเซิร์ฟเวอร์สร้างมังกรด้วย `short job = chr.getJob();` (`2217`) เสมอ ทำให้ไคลเอนต์มองหาท่าใน `2217.img` แล้วได้ Pointer ว่าง (`[rsi + 4] == 0`) จึงกระโดดเข้าสู่ Error `0x22000006` (`INVALID_GAME_DATA`) และสั่งปิดเกมทันที
+2. **แก้ไขการเสกและการเปลี่ยนร่างของ Mir สู่ Stage 9 (`2220`) อย่างสมบูรณ์**:
+   - ใน [`Dragon.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/life/Dragon.java): ปรับ Constructor ให้ตรวจสอบ `if (JobConstants.isEvan(chrJob) && (chr.getLevel() >= 260 || chr.hasSkill(22201000) || chr.hasSkill(22201500) || (chr.getHexaSkills() != null && !chr.getHexaSkills().isEmpty())))` ให้กำหนด `this.job = 2220` ทันที
+   - ใน [`Evan.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Evan.java):
+     - `spawnDragon()`: อัปเดต `dragon.setJob(dragonJob)` เป็น `2220` หากตัวละครเป็นคลาส 6 และหากมังกรเกิดอยู่ในฟิลด์แล้วแต่ Job มีการเปลี่ยนร่าง ให้ Despawn มังกรตัวเดิมและ Respawn ใหม่เป็นร่าง Stage 9 อย่างปลอดภัย
+     - `getDragon()`: ซิงค์ Job ของมังกรที่แคชไว้ให้กลายเป็น `2220` เมื่อมีสกิลคลาส 6 หรือเลเวล 260+
+     - `getEvanSkill(int skillID)`: เพิ่มการดักจับ `22201000` (HEXA Mana Burst), `22201001`, `22201010` (HEXA Wind Circle), `22201002` (HEXA Thunder Circle), `22201006` (HEXA Earth Circle)
+     - `handleDragonSkillEffect()`: เพิ่มการแมปสกิลคลาส 6 ของมังกรเข้าสู่ `attackActionType` ให้ตรงตามกลไกแอนิเมชันของ WZ: `22201003` (Type 3), `22201005` (Type 4), `22201007` (Type 5), `22200009` (Type 6), `22200008` (Type 7), `22200014` (Type 8), `22201011` (Type 9), `22201004` (Type 10), `22200012`/`22200013` (Type 11)
+     - `handleSetCoolDownSkill()`: เพิ่มคูลดาวน์ให้ `22201007` (HEXA Dragon Dive) และ `22201003` (HEXA Dragon Flash)
+3. **เชื่อมโยงสกิล HEXA Matrix ใน [`SkillConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)**:
+   - `isEvanForceSkill()`: เพิ่มสกิลคลาส 6 ทั้งหมดของ Evan เพื่อให้ Packet Decoding ข้าม Extra Byte ตามสเปกของไคลเอนต์ ป้องกันปัญหา Packet Desync
+   - `getActualSkillIDfromSkillID()`: เชื่อมโยงรหัส Sub-Skills ของ Evan คลาส 6 สู่รหัสสกิลหลัก (`22201001` -> `22201000`, `22201004`/`05` -> `22201003`, `22200008`/`09` -> `22201007`, `22200012`/`13`/`14` -> `22201011`, `22201501`/`02`/`03` -> `22201500`) เพื่อให้อ่านค่าดาเมจและเลเวลสกิลได้แม่นยำ 100%
+   - `isEvanFusionSkill()`: เพิ่มรหัส Fusion Skills คลาส 6 (`22201004`, `22201005`, `22200008`, `22200009`, `22200012`, `22200013`, `22200014`) สำหรับสร้าง Magic Debris Wreckage
+4. **ปลดบล็อกการเสกมังกรใน [`Char.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java)**:
+   - นำเงื่อนไข `if (!isGM)` ที่เคยกั้น `evan.spawnDragon()`, `kanna.spawnHaku()`, และ `getAndroid()` ออกอย่างถาวร ทำให้ตัวละครแอดมินหรือผู้เล่นที่วาร์ปเข้าสู่แมพสามารถเสกสัตว์เลี้ยงคู่หูได้ 100% โดยไม่มีข้อจำกัด
+5. **อัปเกรดคำสั่ง `!endgame` ใน [`AdminCommands.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)**:
+   - มอบสกิลย่อยของ Origin Zodiac Burst (`22201501`, `22201502`, `22201503`) เต็มเลเวล 30 และสั่งเสกมังกร Stage 9 (`2220`) ทันที
+
+### 📂 Files Modified
+- [`SkillConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`Dragon.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/life/Dragon.java)
+- [`Evan.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Evan.java)
+- [`Char.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java)
+- [`AdminCommands.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+- [`PROGRESS.md`](file:///c:/Users/admin/Documents/MapleV265Src/PROGRESS.md)
+
+### 🧪 Verification & Deployment
+- **Maven Compile**: `BUILD SUCCESS` (853 files, 0 errors, 22.9s)
+- **Maven Package**: `BUILD SUCCESS` (`maplestory-219.5-jar-with-dependencies.jar` 138MB Fat JAR)
+- **Rule #1 (Server263)**: ตรวจสอบไม่พบไฟล์ `.java` หรือ `pom.xml` ใน `Server263/` (0 files)
+- **Rule #2 (Patches)**: อัปเดตแพทช์ล่าสุดใน `Patches/Server263_Patch_Latest/` พร้อม `Apply_Patch.bat`
+- **Server Runtime Test**: ปิดโปรเซสเดิมและเริ่มการทำงานของเซิร์ฟเวอร์ใหม่บน Portable JDK 21 และ MariaDB พอร์ต 33066 สำเร็จสมบูรณ์ (Login Port 8484 และ Channels 1-10 พอร์ต 8585-8594 เปิดรับ Client ปกติ)
+
+## 📅 [2026-10-12 19:40 น.] Ultimate Root Cause Elimination: Removed Erroneous Henesys lockUI() in Job.java, Added Full Kanna Starter Lifecycle & Buff Handlers, Recompiled & Deployed Live
+
+### 🎯 Scope & Root Cause Analysis
+1. **การค้นพบและกำจัดต้นตอหลักที่ทำให้ตัวละครกดสกิล/กดยาไม่ได้ใน Henesys (lockUI Bug)**:
+   - **ต้นตอหลัก (The Smoking Gun)**: ใน [Job.java](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/Job.java) บรรทัดที่ 3258-3260 ในเมธอด handleInitAfterField() มีโค้ดคำสั่ง:
+     `java
+     if (chr.getFieldID() == FieldConstants.START_MAP) {
+         sm.lockUI();
+     }
+     `
+   - เนื่องจาก FieldConstants.START_MAP = 100000000; (Henesys) ทุกครั้งที่ตัวละครเกิดใหม่หรือวาร์ปเข้าสู่ Henesys เซิร์ฟเวอร์จะสั่ง sm.lockUI() ทันที ซึ่งส่งแพ็กเก็ตล็อกการควบคุมในเกม (lockInGameUI(true, false)) ทำให้ Client ปิดการทำงานของปุ่มคีย์ลัด, การกดสกิล, และการคลิกไอเทม/ยาในกระเป๋าทั้งหมด!
+   - **การแก้ไข**: ลบโค้ดคำสั่งบล็อก UI บน START_MAP ออกจาก Job.java อย่างถาวร
+2. **ขยายผลการตรวจสอบคลาส Sengoku คู่หูอย่างสมบูรณ์ ([Kanna.java](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/sengoku/Kanna.java))**:
+   - เพิ่ม 3-Step Starter Lifecycle:
+     - setCharCreationStats(Char chr): เริ่มต้นที่ Lv. 10 อาชีพ Kanna 1st Job (4200), HP 1,000, MP 100, SP 5 แต้ม
+     - ddItemToNewCharacter(Char chr): สวมใส่อาวุธ Starter Fan (1552000) และอาวุธรอง Starter Haku Fan (1352810)
+     - handleInitAfterMigrate(Char chr): เคลียร์เควสต์เริ่มต้น, เลื่อนระดับเป็น Lv. 30, เปลี่ยนอาชีพเป็น Kanna 2nd Job (4210), แจก SP คลาส 1 (+5) และคลาส 2 (+3), สวมใส่พัด Lv. 30 (1552001) และ Haku Fan Lv. 30 (1352811), วาร์ปสู่ Henesys อย่างปลอดภัย
+   - เพิ่ม Null Safety ใน spawnHaku() ป้องกัน Server Crash เมื่อ oxMan หรือ ield เป็น null
+   - เพิ่มการจัดการสกิลบัฟ AKATUSKI_HERO_KANNA (42121006) ใน handleSkill() ให้ส่งบัฟ BasicStatUp อย่างถูกต้อง
+3. **การคอมไพล์และแจกจ่ายแพตช์ (Build & Distribution)**:
+   - คอมไพล์ผ่าน Maven ด้วย JDK 21: BUILD SUCCESS (853 source files, 0 errors)
+   - คัดลอก Fat JAR ลงใน 214 src/maplestory.jar และ Server263/maplestory.jar
+   - ตรวจสอบ Server263/: ไม่มีไฟล์ .java, src/, หรือ pom.xml หลงเหลืออยู่ 100%
+   - สร้าง Incremental Patch ใน Patches/Server263_Patch_Latest/ พร้อม Apply_Patch.bat
+   - รีสตาร์ตเซิร์ฟเวอร์รันสดบน Portable JDK 21 และ MariaDB พอร์ต 33066 พร้อมพอร์ต 8484 และแชนแนล 1–10 (8585–8594)
+
+### 📂 Files Modified
+- [Job.java](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/Job.java)
+- [Kanna.java](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/sengoku/Kanna.java)
+- [PROGRESS.md](file:///c:/Users/admin/Documents/MapleV265Src/PROGRESS.md)
+
+## 📅 [2026-10-12 19:30 น.] Comprehensive Audit & System Overhaul for Legend (Heroes) Group (Aran, Evan, Mercedes, Phantom, Luminous, Shade) + Sengoku (Hayato) & Cygnus (Mihile) Starter Lifecycle, Skill Buffs, and Henesys Spawn Fix
+
+### 🎯 Scope & Root Cause Analysis
+1. **วิเคราะห์และแก้ไขปัญหาตัวละครกลุ่ม Legend (Heroes) สกิลกดไม่ได้และยากดไม่ได้เมื่อบังคับเกิดที่ Henesys**:
+   - **สาเหตุที่สกิลกดไม่ได้**:
+     - `LoginHandler.java` กำหนดให้ตัวละครสร้างใหม่ทุกตัวเกิดที่เมือง Henesys (`100000000`) ส่งผลให้ข้าม Tutorial Map ทั้งหมด
+     - คลาสกลุ่ม Legend เดิมไม่มีการตั้งค่า `setCharCreationStats` และ `addItemToNewCharacter` ทำให้เริ่มเกมที่ Level 1 ด้วย Beginner Job (`2000-2005`) มีค่า HP 50 / MP 5 ไม่มีอาวุธเริ่มต้นและอาวุธรอง (Secondary Weapon) และไม่มีสกิลโจมตีคลาส 1
+     - คลาส `Aran`: ใน `JobConstants.isAran` ขาด Job `2000 (LEGEND)` และใน `JobManager.java` มีการแมป `Legend::new` ดักหน้า ทำให้ตัวละคร Aran ที่มี Job 2000 ถูกควบคุมโดยคลาส `Legend.java` ซึ่งเป็น Stub ว่างเปล่า 18 บรรทัด ไม่มีระบบจัดการสกิลใดๆ
+     - คลาส `Evan`: สัตว์เลี้ยงมังกร Mir ไม่ถูกเสก หรือเสกก่อนที่แผนที่ (`Field`) จะพร้อม ทำให้เกิด NullPointerException ใน `spawnDragon()`
+     - ขาดการ Handle สกิล Booster และ Maple Warrior พื้นฐานใน `handleSkill` สำหรับหลายคลาส
+   - **สาเหตุที่ยากดไม่ได้**:
+     - ตัวละครเกิดมามี HP 50/50 และ MP 5/5 ซึ่งเป็นค่าพลังชีวิต 100% ตัว Client ของเกม MapleStory v265 จะส่งเสียงเตือนและปฏิเสธการกดใช้ขวดยาฟื้นฟู (Potions) หากหลอดพลังเต็มอยู่แล้ว
+2. **การปรับปรุงสถาปัตยกรรมตัวละครเริ่มต้น (Starter Lifecycle Pattern)**:
+   - นำรูปแบบการสร้างตัวละครมาตรฐานสมัยใหม่ (เช่นเดียวกับ Adele, Lara, Lynn, Khali, Ren, MoXuan, Sia) มาประยุกต์ใช้กับ Legend ทั้ง 6 คลาส + Hayato + Mihile:
+     - **`setCharCreationStats(Char chr)`**:
+       - ปรับ Level เป็น 10
+       - ปรับ Job เป็น 1st Job ID (Aran 2100, Evan 2210, Mercedes 2300, Phantom 2400, Luminous 2700, Shade 2500, Hayato 4100, Mihile 5100)
+       - ตั้งค่า Stat พื้นฐานให้เหมาะสมกับสายอาชีพ (STR/DEX/INT/LUK)
+       - ตั้งค่า MaxHP/HP เป็น 1,000 และ MaxMP/MP เป็น 500 (Luminous 1,000 MP)
+       - มอบค่า SP คลาส 1 จำนวน 5 แต้ม ใน `ExtendSP`
+       - ซิงค์ Job ID เข้ากับ `AvatarLook`
+     - **`addItemToNewCharacter(Char chr)`**:
+       - สวมใส่อาวุธเริ่มต้นตรงสายอาชีพในช่อง `BodyPart.Weapon`
+       - สวมใส่อาวุธรอง (Secondary Weapon) ตรงสายอาชีพในช่อง `BodyPart.Shield` และบันทึกลง SQL
+     - **`handleInitAfterMigrate(Char chr)`**:
+       - เมื่อตัวละครล็อกอินเข้าสู่เกม หากเลเวลต่ำกว่า 30 จะทำการเคลวส์เบื้องต้นอัตโนมัติ เลื่อนระดับเป็น Level 30 (`sm.levelUntil(30)`), ปรับ Job เป็น 2nd Job (Aran 2110, Evan 2212, Mercedes 2310, Phantom 2410, Luminous 2710, Shade 2510, Hayato 4110, Mihile 5110), แจก SP คลาส 1 (+5) และคลาส 2 (+3), สวมใส่อุปกรณ์และอาวุธรองเลเวล 30, และวาร์ปมายัง Henesys อย่างปลอดภัย
+3. **การแก้ไขสกิลบัฟที่ขาดหายใน `handleSkill`**:
+   - **Aran**: เพิ่ม `POLEARM_BOOSTER` (`21001003`) และ `MAPLE_WARRIOR_ARAN` (`21121000`)
+   - **Mercedes**: เพิ่ม `DUAL_BOWGUN_BOOSTER` (`23101002`) และ `MAPLE_WARRIOR_MERC` (`23121005`)
+   - **Phantom**: เพิ่ม `CANE_BOOSTER` (`24101005`) และ `MAPLE_WARRIOR_PH` (`24121008`)
+   - **Luminous**: เพิ่ม `MAGIC_BOOSTER` (`27101004`) และ `MAPLE_WARRIOR_LUMI` (`27121009`)
+   - **Shade**: เพิ่ม `MAPLE_WARRIOR_SH` (`25121108`)
+4. **แก้ไขการค้างของ NPC และ Dialog Popup ใน Henesys**:
+   - เพิ่มไฟล์สคริปต์ `relocateWorld_challengers.py` สำหรับ NPC 9201661 ใน Henesys
+   - ปรับปรุง `ScriptManagerImpl.undefined()` ในกรณีที่กดคุยกับ NPC หรือ Reactor ที่ยังไม่มีสคริปต์ ให้แจ้งเตือนทางช่องแชท (`chat(...)`) และเรียก `chr.dispose()` ทันที ป้องกันการเกิด Modal Popup ค้างหรือล็อกการควบคุมของผู้เล่น
+5. **การปรับปรุงคำสั่ง `!endgame` ใน [`AdminCommands.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)**:
+   - เพิ่มการแจกอุปกรณ์ BiS สำหรับ Mihile: Arcane Umbra Saber 1H Sword (`1302343`), Justice Soul Shield (`1098007`), Mitra Warrior Emblem (`1190555`)
+
+### 📂 Files Modified
+- [`JobConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/JobConstants.java)
+- [`Char.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java)
+- [`ScriptManagerImpl.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/scripts/ScriptManagerImpl.java)
+- [`JobManager.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/JobManager.java)
+- [`Evan.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Evan.java)
+- [`Aran.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Aran.java)
+- [`Mercedes.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Mercedes.java)
+- [`Phantom.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Phantom.java)
+- [`Luminous.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Luminous.java)
+- [`Shade.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Shade.java)
+- [`Hayato.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/sengoku/Hayato.java)
+- [`Mihile.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/cygnus/Mihile.java)
+- [`AdminCommands.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+- `relocateWorld_challengers.py` (ทั้งใน `v214 src/data/scripts/npc/` และ `Server263/data/scripts/npc/`)
+- [`PROGRESS.md`](file:///c:/Users/admin/Documents/MapleV265Src/PROGRESS.md)
+- [`.agents/skills/maplestory-bug-knowledge/SKILL.md`](file:///c:/Users/admin/Documents/MapleV265Src/.agents/skills/maplestory-bug-knowledge/SKILL.md)
+
+### 🧪 Verification & Deployment
+- **Maven Compile**: `BUILD SUCCESS` (853 files, 0 errors, 27.8s)
+- **Maven Package**: `BUILD SUCCESS` (`maplestory-219.5-jar-with-dependencies.jar` 138MB)
+- **Rule #1 (Server263)**: ตรวจสอบไม่พบไฟล์ `.java` ใน `Server263/` (0 files)
+- **Rule #2 (Patches)**: สร้างแพทช์ล่าสุดใน `Patches/Server263_Patch_Latest/` ผ่าน `tools/create_patch.py` พร้อม `Apply_Patch.bat`
+- **Server Runtime Test**: เริ่มการทำงานของเซิร์ฟเวอร์สำเร็จสมบูรณ์ (HikariCP เชื่อมต่อ MariaDB 33066, Timer ทั้งหมดโหลดพร้อม, โหลด WZ Strings/Hairs/Faces เสร็จสิ้น, ทั้ง 10 Channels และ Login Port 8484 เปิดรับ Client ปกติ)
+
+---
+
 ## 📅 [2026-10-12 18:45 น.] Hyper Burning Max NPC 9010000 Localization to Standard English
 
 ### 🎯 Scope

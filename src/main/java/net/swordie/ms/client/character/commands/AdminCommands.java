@@ -2861,6 +2861,11 @@ public class AdminCommands {
             secondaryId = 1353105; // Princess No's Fox Marble (Shade BiS Secondary)
             emblemId = 1190559; // Mitra's Rage: Pirate
             armors = pirateArmors;
+        } else if (JobConstants.isMihile(job)) {
+            weaponId = 1302343; // Arcane Umbra Saber (1H Sword)
+            secondaryId = 1098007; // Justice Soul Shield (Mihile Secondary)
+            emblemId = 1190555; // Mitra Warrior Emblem
+            armors = warriorArmors;
         } else if (JobConstants.isDemonSlayer(job)) {
             weaponId = 1312204; // Arcane Umbra One-Handed Axe
             secondaryId = 1352003; // Force Shield
@@ -3119,6 +3124,15 @@ public class AdminCommands {
                 chr.addSkill(5341501, 30, 30); // Super Cannon Explosion Attack
                 chr.addSkill(5341502, 30, 30); // Barrel of Monkeys Attack 1
                 chr.addSkill(5341503, 30, 30); // Barrel of Monkeys Ascent
+            } else if (JobConstants.isEvan(job)) {
+                chr.addSkill(22201501, 30, 30); // Zodiac Burst Attack
+                chr.addSkill(22201502, 30, 30); // United Horizons
+                chr.addSkill(22201503, 30, 30); // United Horizons
+                chr.addSkill(22201015, 30, 30); // HEXA Enhanced Magic Debris
+                chr.addSkill(22200016, 30, 30); // HEXA Dragon Spark
+                if (chr.getJobHandler() instanceof net.swordie.ms.client.jobs.legend.Evan evan) {
+                    evan.spawnDragon();
+                }
             }
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] Hexa warning: " + e.getMessage());

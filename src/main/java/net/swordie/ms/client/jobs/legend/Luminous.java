@@ -5,6 +5,11 @@ import net.swordie.ms.client.Client;
 import net.swordie.ms.client.character.Char;
 import net.swordie.ms.client.character.CharacterStat;
 import net.swordie.ms.client.character.info.HitInfo;
+import net.swordie.ms.client.character.items.BodyPart;
+import net.swordie.ms.client.character.items.Equip;
+import net.swordie.ms.client.character.items.Item;
+import net.swordie.ms.loaders.ItemData;
+import static net.swordie.ms.enums.InvType.EQUIPPED;
 import net.swordie.ms.client.character.skills.LarknessManager;
 import net.swordie.ms.client.character.skills.Option;
 import net.swordie.ms.client.character.skills.Skill;
@@ -428,6 +433,18 @@ public class Luminous extends Job {
         LarknessManager lm = tsm.getLarknessManager();
         Option o1 = new Option();
         switch (skillID) {
+            case MAGIC_BOOSTER:
+                o1.nOption = si.getValue(x, slv);
+                o1.rOption = skillID;
+                o1.tOption = si.getValue(time, slv);
+                tsm.sendStat(Booster, o1);
+                break;
+            case MAPLE_WARRIOR_LUMI:
+                o1.nReason = skillID;
+                o1.nValue = si.getValue(x, slv);
+                o1.tTerm = si.getValue(time, slv);
+                tsm.sendStat(IndieStatR, o1);
+                break;
             case SHADOW_SHELL:
                 o1.nOption = 3;
                 o1.rOption = skillID;
@@ -639,6 +656,61 @@ public class Luminous extends Job {
         super.setCharCreationStats(chr);
         CharacterStat cs = chr.getAvatarData().getCharacterStat();
         cs.setPosMap(FieldConstants.START_MAP);
+        cs.setLevel(10);
+        cs.setJob(JobConstants.JobEnum.LUMINOUS1.getJobId());
+        cs.setStr(4);
+        cs.setDex(4);
+        cs.setInt(45);
+        cs.setLuk(4);
+        cs.setHp(1000);
+        cs.setMaxHp(1000);
+        cs.setMp(1000);
+        cs.setMaxMp(1000);
+        cs.getExtendSP().addSpToJobLevel(1, 5);
+        chr.getAvatarData().getAvatarLook().setJob(JobConstants.JobEnum.LUMINOUS1.getJobId());
+    }
+
+    @Override
+    public void addItemToNewCharacter(Char chr) {
+        super.addItemToNewCharacter(chr);
+        Equip weapon = ItemData.getEquipDeepCopyFromID(1212000, false); // Starter Shining Rod
+        if (weapon != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, weapon, true);
+            weapon.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            weapon.setCharID(chr.getId());
+            weapon.setInvType(EQUIPPED);
+            weapon.setBagIndex(BodyPart.Weapon.getVal());
+            weapon.saveToSQL();
+        }
+        Item secondary = ItemData.getItemDeepCopy(1352400); // Orb
+        if (secondary != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
+            secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            secondary.setCharID(chr.getId());
+            secondary.setInvType(EQUIPPED);
+            secondary.setBagIndex(BodyPart.Shield.getVal());
+            secondary.saveToSQL();
+            chr.getAvatarData().getAvatarLook().getHairEquips().add(secondary.getItemId());
+            chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+        }
+    }
+
+    @Override
+    public void handleInitAfterMigrate(Char chr) {
+        if (chr.getLevel() < 30) {
+            ScriptManagerImpl sm = chr.getScriptManager();
+            for (int qid = 25000; qid <= 25015; qid++) {
+                sm.completeQuestNoRewards(qid);
+            }
+            sm.levelUntil(30);
+            sm.setJob(JobConstants.JobEnum.LUMINOUS2.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.LUMINOUS1.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.LUMINOUS2.getJobId(), 3);
+            sm.giveAndEquip(1212001); // Lv 30 Shining Rod
+            sm.giveAndEquip(1352401); // Lv 30 Orb
+            sm.warp(FieldConstants.HOME_MAP);
+        }
+        super.handleInitAfterMigrate(chr);
     }
 
     @Override

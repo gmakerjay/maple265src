@@ -23,6 +23,11 @@ import net.swordie.ms.life.*;
 import net.swordie.ms.life.mob.Mob;
 import net.swordie.ms.life.mob.MobStat;
 import net.swordie.ms.life.mob.MobTemporaryStat;
+import net.swordie.ms.client.character.items.BodyPart;
+import net.swordie.ms.client.character.items.Equip;
+import net.swordie.ms.client.character.items.Item;
+import net.swordie.ms.constants.FieldConstants;
+import net.swordie.ms.loaders.ItemData;
 import net.swordie.ms.loaders.SkillData;
 import net.swordie.ms.scripts.ScriptManagerImpl;
 import net.swordie.ms.util.Position;
@@ -32,6 +37,8 @@ import net.swordie.ms.world.field.Field;
 
 import java.util.EnumMap;
 import java.util.List;
+
+import static net.swordie.ms.enums.InvType.EQUIPPED;
 
 import static net.swordie.ms.client.character.skills.SkillStat.*;
 import static net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat.*;
@@ -97,6 +104,7 @@ public class Evan extends Job {
 
     // HEXA Skills
     public static final int HEXA_DRAGON_SPARK = 22200016;
+    public static final int HEXA_MAGIC_DEBRIS = 22201015;
     public static final int ZODIAC_BURST = 22201500;
     public static final int ZODIAC_BURST_ATTACK = 22201501;
     public static final int ZODIAC_BURST_FINISHER = 22201502;
@@ -125,12 +133,23 @@ public class Evan extends Job {
 
     public void spawnDragon() {
         Dragon dragon = getDragon();
-        if (dragon == null) {
+        if (dragon == null || chr == null || chr.getField() == null) {
             return;
         }
+        short dragonJob = chr.getJob();
+        if (JobConstants.isEvan(dragonJob) && (chr.getLevel() >= 260 || chr.hasSkill(22201000) || chr.hasSkill(22201500) || (chr.getHexaSkills() != null && !chr.getHexaSkills().isEmpty()))) {
+            dragonJob = 2220;
+        }
+        boolean jobChanged = (dragon.getJob() != dragonJob);
+        dragon.setJob(dragonJob);
         dragon.resetToPlayer(chr.getPosition());
-        if (getDragon() != null) {
-            chr.getField().spawnLife(getDragon(), null);
+        if (chr.getField().getLifeByObjectID(dragon.getObjectId()) != null) {
+            if (jobChanged) {
+                chr.getField().removeLife(dragon.getObjectId(), false, true);
+                chr.getField().spawnLife(dragon, null);
+            }
+        } else {
+            chr.getField().spawnLife(dragon, null);
         }
     }
 
@@ -141,9 +160,14 @@ public class Evan extends Job {
             case MANA_BURST_III:
             case MANA_BURST_IV_1:
             case MANA_BURST_IV_2:
+            case 22201000: // HEXA Mana Burst
+            case 22201001:
             case WIND_CIRCLE:
+            case 22201010: // HEXA Wind Circle
             case THUNDER_CIRCLE:
+            case 22201002: // HEXA Thunder Circle
             case EARTH_CIRCLE:
+            case 22201006: // HEXA Earth Circle
             case DARK_FOG:
                 return 1;
 
@@ -197,7 +221,7 @@ public class Evan extends Job {
             if (getEvanSkill(skillID) != 1) {
                 givePartnersBuff(skillID);
             }
-            if (chr.hasSkill(MAGIC_DEBRIS)) {
+            if (chr.hasSkill(MAGIC_DEBRIS) || chr.hasSkill(ENHANCED_MAGIC_DEBRIS) || chr.hasSkill(HEXA_MAGIC_DEBRIS)) {
                 createWreckage(attackInfo, skillID);
             }
             if (skillID == ELEMENTAL_BARRAGE || skillID >= 400021013 && skillID <= 400021015) {
@@ -233,12 +257,18 @@ public class Evan extends Job {
     }
 
     public void givePartnersBuff(int skillID) {
+        if (!chr.hasSkill(PARTNERS)) {
+            return;
+        }
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         SkillInfo si = SkillData.getSkillInfoById(PARTNERS);
-        Option o1 = new Option();
-        Option o2 = new Option();
+        if (si == null) {
+            return;
+        }
         if (tsm.getOptByCTSAndSkill(Stance, PARTNERS) == null) {
             EnumMap<CharacterTemporaryStat, Option> newStats = new EnumMap<>(CharacterTemporaryStat.class);
+            Option o1 = new Option();
+            Option o2 = new Option();
             prevSkill = skillID;
             o1.nReason = PARTNERS;
             o1.nValue = si.getValue(indieDamR, 1);
@@ -273,7 +303,7 @@ public class Evan extends Job {
             Life life = Util.getRandomFromCollection(lifes);
             int mobID = (life).getObjectId();
             ForceAtomEnum fae = ForceAtomEnum.WRECKAGE;
-            if (chr.hasSkill(ENHANCED_MAGIC_DEBRIS)) {
+            if (chr.hasSkill(ENHANCED_MAGIC_DEBRIS) || chr.hasSkill(HEXA_MAGIC_DEBRIS)) {
                 fae = ForceAtomEnum.ADV_WRECKAGE;
             }
             ForceAtomInfo forceAtomInfo = new ForceAtomInfo(chr.getNewForceAtomKey(), fae.getInc(), 15, 10,
@@ -287,7 +317,7 @@ public class Evan extends Job {
     }
 
     private void createWreckage(AttackInfo attackInfo, int skillID) {
-        if (SkillConstants.isEvanFusionSkill(skillID) && (skillID != MAGIC_DEBRIS && skillID != ENHANCED_MAGIC_DEBRIS)) {
+        if (SkillConstants.isEvanFusionSkill(skillID) && (skillID != MAGIC_DEBRIS && skillID != ENHANCED_MAGIC_DEBRIS && skillID != HEXA_MAGIC_DEBRIS)) {
             if (chr.getField().getWreckage().size() < getMaxDebris()) {
                 for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
                     Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
@@ -310,6 +340,9 @@ public class Evan extends Job {
         if (chr.hasSkill(ENHANCED_MAGIC_DEBRIS)) {
             skill = chr.getSkill(ENHANCED_MAGIC_DEBRIS);
         }
+        if (chr.hasSkill(HEXA_MAGIC_DEBRIS)) {
+            skill = chr.getSkill(HEXA_MAGIC_DEBRIS);
+        }
         if (skill == null) {
             return 0;
         }
@@ -326,6 +359,9 @@ public class Evan extends Job {
         if (chr.hasSkill(ENHANCED_MAGIC_DEBRIS)) {
             skill = ENHANCED_MAGIC_DEBRIS;
         }
+        if (chr.hasSkill(HEXA_MAGIC_DEBRIS)) {
+            skill = HEXA_MAGIC_DEBRIS;
+        }
         return skill;
     }
 
@@ -336,24 +372,40 @@ public class Evan extends Job {
                 attackInfo.attackActionType = 2;
                 break;
             case 22110023:
+            case 22201003: // HEXA Dragon Flash
                 attackInfo.attackActionType = 3;
                 break;
             case 22110025:
+            case 22201005: // HEXA Wind Flash
                 attackInfo.attackActionType = 4;
                 break;
             case 22140023:
+            case 22201007: // HEXA Dragon Dive
                 attackInfo.attackActionType = 5;
                 break;
             case 22140022:
+            case 22200009: // HEXA Thunder Dive
                 attackInfo.attackActionType = 6;
                 break;
+            case 22140015:
+            case 22200008: // HEXA Earth Dive
+                attackInfo.attackActionType = 7;
+                break;
             case 22170067:
+            case 22200014: // HEXA Wind Breath
                 attackInfo.attackActionType = 8;
                 break;
             case 22171063:
+            case 22201011: // HEXA Dragon Breath
                 attackInfo.attackActionType = 9;
                 break;
+            case 22110014:
+            case 22201004: // HEXA Thunder Flash
+                attackInfo.attackActionType = 10;
+                break;
             case 22170066:
+            case 22200012: // HEXA Earth Breath
+            case 22200013:
                 attackInfo.attackActionType = 11;
                 break;
         }
@@ -371,6 +423,13 @@ public class Evan extends Job {
     public Dragon getDragon() {
         if (dragon == null && chr.getJob() != JobConstants.JobEnum.EVAN_NOOB.getJobId()) {
             dragon = new Dragon(chr);
+        }
+        if (dragon != null) {
+            short dragonJob = chr.getJob();
+            if (JobConstants.isEvan(dragonJob) && (chr.getLevel() >= 260 || chr.hasSkill(22201000) || chr.hasSkill(22201500) || (chr.getHexaSkills() != null && !chr.getHexaSkills().isEmpty()))) {
+                dragonJob = 2220;
+            }
+            dragon.setJob(dragonJob);
         }
         return dragon;
     }
@@ -392,6 +451,18 @@ public class Evan extends Job {
                 o1.nOption = si.getValue(x, slv);
                 o1.rOption = skillID;
                 tsm.sendStat(MagicGuard, o1);
+                break;
+            case MAGIC_BOOSTER:
+                o1.nOption = si.getValue(x, slv);
+                o1.rOption = skillID;
+                o1.tOption = si.getValue(time, slv);
+                tsm.sendStat(Booster, o1);
+                break;
+            case MAPLE_WARRIOR_EVAN:
+                o1.nReason = skillID;
+                o1.nValue = si.getValue(x, slv);
+                o1.tTerm = si.getValue(time, slv);
+                tsm.sendStat(BasicStatUp, o1);
                 break;
             case RETURN_DIVE:
                 o1.nReason = skillID;
@@ -482,6 +553,7 @@ public class Evan extends Job {
                 break;
             case MAGIC_DEBRIS:
             case ENHANCED_MAGIC_DEBRIS:
+            case HEXA_MAGIC_DEBRIS:
                 createMagicDebrisForceAtom();
                 break;
             case ZODIAC_BURST:
@@ -518,7 +590,63 @@ public class Evan extends Job {
     public void setCharCreationStats(Char chr) {
         super.setCharCreationStats(chr);
         CharacterStat cs = chr.getAvatarData().getCharacterStat();
-        cs.setPosMap(JobConstants.EVAN_CREATION_MAP);
+        cs.setPosMap(FieldConstants.HENESYS_ID);
+        cs.setJob(JobConstants.JobEnum.EVAN1.getJobId()); // 2210
+        cs.setLevel(10);
+        cs.setStr(4);
+        cs.setDex(4);
+        cs.setInt(45);
+        cs.setLuk(4);
+        cs.setHp(1000);
+        cs.setMaxHp(1000);
+        cs.setMp(500);
+        cs.setMaxMp(500);
+        cs.getExtendSP().addSpToJobLevel(1, 5);
+        chr.getAvatarData().getAvatarLook().setJob(JobConstants.JobEnum.EVAN1.getJobId());
+    }
+
+    @Override
+    public void addItemToNewCharacter(Char chr) {
+        super.addItemToNewCharacter(chr);
+        Equip weapon = ItemData.getEquipDeepCopyFromID(1382000, false); // Staff
+        if (weapon != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, weapon, true);
+            weapon.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            weapon.setCharID(chr.getId());
+            weapon.setInvType(EQUIPPED);
+            weapon.setBagIndex(BodyPart.Weapon.getVal());
+            weapon.saveToSQL();
+        }
+        Item secondary = ItemData.getItemDeepCopy(1352940); // Dragon Master's Document
+        if (secondary != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
+            secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            secondary.setCharID(chr.getId());
+            secondary.setInvType(EQUIPPED);
+            secondary.setBagIndex(BodyPart.Shield.getVal());
+            secondary.saveToSQL();
+            chr.getAvatarData().getAvatarLook().getHairEquips().add(secondary.getItemId());
+            chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+        }
+    }
+
+    @Override
+    public void handleInitAfterMigrate(Char chr) {
+        if (chr.getLevel() < 30) {
+            ScriptManagerImpl sm = chr.getScriptManager();
+            for (int qid = 22000; qid <= 22015; qid++) {
+                sm.completeQuestNoRewards(qid);
+            }
+            sm.levelUntil(30);
+            sm.setJob(JobConstants.JobEnum.EVAN2.getJobId()); // 2212
+            sm.addSPJobAdv(JobConstants.JobEnum.EVAN1.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.EVAN2.getJobId(), 3);
+            sm.giveAndEquip(1382000); // Staff
+            sm.giveAndEquip(1352940); // Dragon Document
+            sm.warp(FieldConstants.HOME_MAP);
+        }
+        spawnDragon();
+        super.handleInitAfterMigrate(chr);
     }
 
     @Override
@@ -591,6 +719,9 @@ public class Evan extends Job {
                 chr.write(UserLocal.addPopupSay(1013208, 6000, message, "FarmSE.img/boxResult"));
                 break;
             }
+            case 260:
+                spawnDragon();
+                break;
         }
     }
 
@@ -610,12 +741,20 @@ public class Evan extends Job {
                 chr.setSkillCooldown(22140022, chr.getSkillLevel(22141012));
                 return 1;
             }
+            case 22201007 -> { // HEXA Dragon Dive
+                chr.setSkillCooldown(22201007, chr.getSkillLevel(22201007));
+                return 1;
+            }
             case 22110023 -> { // Dragon Flash
                 chr.setSkillCooldown(22110023, chr.getSkillLevel(22111012));
                 return 1;
             }
             case 22110022 -> { // Dragon Flash
                 chr.setSkillCooldown(22110022, chr.getSkillLevel(22111012));
+                return 1;
+            }
+            case 22201003 -> { // HEXA Dragon Flash
+                chr.setSkillCooldown(22201003, chr.getSkillLevel(22201003));
                 return 1;
             }
             case ZODIAC_BURST -> {

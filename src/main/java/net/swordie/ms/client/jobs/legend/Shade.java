@@ -3,7 +3,14 @@ package net.swordie.ms.client.jobs.legend;
 import it.unimi.dsi.fastutil.ints.Int2LongMap;
 import net.swordie.ms.client.Client;
 import net.swordie.ms.client.character.Char;
+import net.swordie.ms.client.character.CharacterStat;
 import net.swordie.ms.client.character.info.HitInfo;
+import net.swordie.ms.client.character.items.BodyPart;
+import net.swordie.ms.client.character.items.Equip;
+import net.swordie.ms.client.character.items.Item;
+import net.swordie.ms.constants.FieldConstants;
+import net.swordie.ms.loaders.ItemData;
+import static net.swordie.ms.enums.InvType.EQUIPPED;
 import net.swordie.ms.client.character.skills.ForceAtom;
 import net.swordie.ms.client.character.skills.Option;
 import net.swordie.ms.client.character.skills.Skill;
@@ -412,6 +419,12 @@ public class Shade extends Job {
         Option o4 = new Option();
         Option o5 = new Option();
         switch (skillID) {
+            case MAPLE_WARRIOR_SH:
+                o1.nReason = skillID;
+                o1.nValue = si.getValue(x, slv);
+                o1.tTerm = si.getValue(time, slv);
+                tsm.sendStat(IndieStatR, o1);
+                break;
             case FOX_SPIRITS:
                 o1.nOption = 1;
                 o1.rOption = skillID;
@@ -616,7 +629,63 @@ public class Shade extends Job {
     @Override
     public void setCharCreationStats(Char chr) {
         super.setCharCreationStats(chr);
-        chr.getAvatarData().getCharacterStat().setPosMap(JobConstants.SHADE_CREATION_MAP);
+        CharacterStat cs = chr.getAvatarData().getCharacterStat();
+        cs.setPosMap(JobConstants.SHADE_CREATION_MAP);
+        cs.setLevel(10);
+        cs.setJob(JobConstants.JobEnum.SHADE1.getJobId());
+        cs.setStr(45);
+        cs.setDex(4);
+        cs.setInt(4);
+        cs.setLuk(4);
+        cs.setHp(1000);
+        cs.setMaxHp(1000);
+        cs.setMp(500);
+        cs.setMaxMp(500);
+        cs.getExtendSP().addSpToJobLevel(1, 5);
+        chr.getAvatarData().getAvatarLook().setJob(JobConstants.JobEnum.SHADE1.getJobId());
+    }
+
+    @Override
+    public void addItemToNewCharacter(Char chr) {
+        super.addItemToNewCharacter(chr);
+        Equip weapon = ItemData.getEquipDeepCopyFromID(1482000, false); // Starter Knuckle
+        if (weapon != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, weapon, true);
+            weapon.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            weapon.setCharID(chr.getId());
+            weapon.setInvType(EQUIPPED);
+            weapon.setBagIndex(BodyPart.Weapon.getVal());
+            weapon.saveToSQL();
+        }
+        Item secondary = ItemData.getItemDeepCopy(1353100); // Fox Marble
+        if (secondary != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
+            secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            secondary.setCharID(chr.getId());
+            secondary.setInvType(EQUIPPED);
+            secondary.setBagIndex(BodyPart.Shield.getVal());
+            secondary.saveToSQL();
+            chr.getAvatarData().getAvatarLook().getHairEquips().add(secondary.getItemId());
+            chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+        }
+    }
+
+    @Override
+    public void handleInitAfterMigrate(Char chr) {
+        if (chr.getLevel() < 30) {
+            ScriptManagerImpl sm = chr.getScriptManager();
+            for (int qid = 38000; qid <= 38012; qid++) {
+                sm.completeQuestNoRewards(qid);
+            }
+            sm.levelUntil(30);
+            sm.setJob(JobConstants.JobEnum.SHADE2.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.SHADE1.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.SHADE2.getJobId(), 3);
+            sm.giveAndEquip(1482001); // Lv 30 Knuckle
+            sm.giveAndEquip(1353101); // Lv 30 Fox Marble
+            sm.warp(FieldConstants.HOME_MAP);
+        }
+        super.handleInitAfterMigrate(chr);
     }
 
 

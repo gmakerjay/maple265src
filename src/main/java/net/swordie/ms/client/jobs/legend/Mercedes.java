@@ -5,7 +5,9 @@ import net.swordie.ms.client.character.Char;
 import net.swordie.ms.client.character.CharacterStat;
 import net.swordie.ms.client.character.info.HitInfo;
 import net.swordie.ms.client.character.items.BodyPart;
+import net.swordie.ms.client.character.items.Equip;
 import net.swordie.ms.client.character.items.Item;
+import net.swordie.ms.constants.FieldConstants;
 import net.swordie.ms.client.character.skills.Option;
 import net.swordie.ms.client.character.skills.Skill;
 import net.swordie.ms.client.character.skills.info.AttackInfo;
@@ -134,25 +136,61 @@ public class Mercedes extends Job {
         CharacterStat cs = chr.getAvatarData().getCharacterStat();
         cs.setPosMap(JobConstants.MERCEDES_CREATION_MAP);
         cs.setLevel(10);
+        cs.setJob(JobConstants.JobEnum.MERCEDES1.getJobId());
         cs.setStr(4);
         cs.setDex(58);
-        cs.setMaxHp(300);
-        cs.setMaxMp(200);
+        cs.setInt(4);
+        cs.setLuk(4);
+        cs.setHp(1000);
+        cs.setMaxHp(1000);
+        cs.setMp(500);
+        cs.setMaxMp(500);
+        cs.getExtendSP().addSpToJobLevel(1, 5);
+        chr.getAvatarData().getAvatarLook().setJob(JobConstants.JobEnum.MERCEDES1.getJobId());
     }
 
     @Override
     public void addItemToNewCharacter(Char chr) {
         super.addItemToNewCharacter(chr);
-        Item secondary = ItemData.getItemDeepCopy(1352000);
-        chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
-        secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
-        secondary.setCharID(chr.getId());
-        secondary.setInvType(EQUIPPED);
-        secondary.setBagIndex(BodyPart.Shield.getVal());
-        secondary.saveToSQL();
-        chr.getAvatarData().getAvatarLook().getHairEquips().add(secondary.getItemId());
-        chr.getAvatarData().getAvatarLook().setDrawElfEar(true);
-        chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+        Equip weapon = ItemData.getEquipDeepCopyFromID(1522000, false); // Starter Dual Bowguns
+        if (weapon != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, weapon, true);
+            weapon.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            weapon.setCharID(chr.getId());
+            weapon.setInvType(EQUIPPED);
+            weapon.setBagIndex(BodyPart.Weapon.getVal());
+            weapon.saveToSQL();
+        }
+        Item secondary = ItemData.getItemDeepCopy(1352000); // Magic Arrow
+        if (secondary != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
+            secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            secondary.setCharID(chr.getId());
+            secondary.setInvType(EQUIPPED);
+            secondary.setBagIndex(BodyPart.Shield.getVal());
+            secondary.saveToSQL();
+            chr.getAvatarData().getAvatarLook().getHairEquips().add(secondary.getItemId());
+            chr.getAvatarData().getAvatarLook().setDrawElfEar(true);
+            chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+        }
+    }
+
+    @Override
+    public void handleInitAfterMigrate(Char chr) {
+        if (chr.getLevel() < 30) {
+            ScriptManagerImpl sm = chr.getScriptManager();
+            for (int qid = 24000; qid <= 24014; qid++) {
+                sm.completeQuestNoRewards(qid);
+            }
+            sm.levelUntil(30);
+            sm.setJob(JobConstants.JobEnum.MERCEDES2.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.MERCEDES1.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.MERCEDES2.getJobId(), 3);
+            sm.giveAndEquip(1522001); // Lv 30 Dual Bowguns
+            sm.giveAndEquip(1352001); // Lv 30 Magic Arrows
+            sm.warp(FieldConstants.HOME_MAP);
+        }
+        super.handleInitAfterMigrate(chr);
     }
 
     private void summonEleKnights() {
@@ -395,6 +433,18 @@ public class Mercedes extends Job {
         Option o2 = new Option();
         Option o3 = new Option();
         switch (skillID) {
+            case DUAL_BOWGUN_BOOSTER:
+                o1.nOption = si.getValue(x, slv);
+                o1.rOption = skillID;
+                o1.tOption = si.getValue(time, slv);
+                tsm.sendStat(Booster, o1);
+                break;
+            case MAPLE_WARRIOR_MERC:
+                o1.nReason = skillID;
+                o1.nValue = si.getValue(x, slv);
+                o1.tTerm = si.getValue(time, slv);
+                tsm.sendStat(IndieStatR, o1);
+                break;
             case WATER_SHIELD:
                 o1.nOption = si.getValue(asrR, slv);
                 o1.rOption = skillID;

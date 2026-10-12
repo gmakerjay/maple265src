@@ -2,8 +2,15 @@ package net.swordie.ms.client.jobs.cygnus;
 
 import net.swordie.ms.client.Client;
 import net.swordie.ms.client.character.Char;
+import net.swordie.ms.client.character.CharacterStat;
 import net.swordie.ms.client.character.ExtendSP;
 import net.swordie.ms.client.character.info.HitInfo;
+import net.swordie.ms.client.character.items.BodyPart;
+import net.swordie.ms.client.character.items.Equip;
+import net.swordie.ms.client.character.items.Item;
+import net.swordie.ms.constants.FieldConstants;
+import net.swordie.ms.loaders.ItemData;
+import static net.swordie.ms.enums.InvType.EQUIPPED;
 import net.swordie.ms.client.character.skills.Option;
 import net.swordie.ms.client.character.skills.Skill;
 import net.swordie.ms.client.character.skills.info.AttackInfo;
@@ -810,7 +817,63 @@ public class Mihile extends Job {
     @Override
     public void setCharCreationStats(Char chr) {
         super.setCharCreationStats(chr);
-        chr.getAvatarData().getCharacterStat().setPosMap(JobConstants.MIHILE_CREATION_MAP);
+        CharacterStat cs = chr.getAvatarData().getCharacterStat();
+        cs.setPosMap(JobConstants.MIHILE_CREATION_MAP);
+        cs.setLevel(10);
+        cs.setJob(JobConstants.JobEnum.MIHILE1.getJobId());
+        cs.setStr(45);
+        cs.setDex(4);
+        cs.setInt(4);
+        cs.setLuk(4);
+        cs.setHp(1000);
+        cs.setMaxHp(1000);
+        cs.setMp(500);
+        cs.setMaxMp(500);
+        cs.getExtendSP().addSpToJobLevel(1, 5);
+        chr.getAvatarData().getAvatarLook().setJob(JobConstants.JobEnum.MIHILE1.getJobId());
+    }
+
+    @Override
+    public void addItemToNewCharacter(Char chr) {
+        super.addItemToNewCharacter(chr);
+        Equip weapon = ItemData.getEquipDeepCopyFromID(1302000, false); // Starter Sword
+        if (weapon != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, weapon, true);
+            weapon.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            weapon.setCharID(chr.getId());
+            weapon.setInvType(EQUIPPED);
+            weapon.setBagIndex(BodyPart.Weapon.getVal());
+            weapon.saveToSQL();
+        }
+        Item secondary = ItemData.getItemDeepCopy(1098000); // Soul Shield
+        if (secondary != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
+            secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            secondary.setCharID(chr.getId());
+            secondary.setInvType(EQUIPPED);
+            secondary.setBagIndex(BodyPart.Shield.getVal());
+            secondary.saveToSQL();
+            chr.getAvatarData().getAvatarLook().getHairEquips().add(secondary.getItemId());
+            chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+        }
+    }
+
+    @Override
+    public void handleInitAfterMigrate(Char chr) {
+        if (chr.getLevel() < 30) {
+            ScriptManagerImpl sm = chr.getScriptManager();
+            for (int qid = 20000; qid <= 20015; qid++) {
+                sm.completeQuestNoRewards(qid);
+            }
+            sm.levelUntil(30);
+            sm.setJob(JobConstants.JobEnum.MIHILE2.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.MIHILE1.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.MIHILE2.getJobId(), 3);
+            sm.giveAndEquip(1302001); // Lv 30 Sword
+            sm.giveAndEquip(1098001); // Lv 30 Soul Shield
+            sm.warp(FieldConstants.HOME_MAP);
+        }
+        super.handleInitAfterMigrate(chr);
     }
 
     @Override

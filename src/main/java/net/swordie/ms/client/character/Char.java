@@ -3438,7 +3438,9 @@ public class Char {
         getAvatarData().getCharacterStat().setJob(id);
         getAvatarData().getAvatarLook().setJob(id);
         setJobHandler(JobManager.getJobById((short) id, this));
-        getField().broadcast(UserRemote.effect(getId(), Effect.changeJobEffect()), this);
+        if (getField() != null) {
+            getField().broadcast(UserRemote.effect(getId(), Effect.changeJobEffect()), this);
+        }
 
         Map<Stat, Object> stats = new HashMap<>();
         stats.put(Stat.job, (short) id);
@@ -4947,15 +4949,17 @@ public class Char {
             showBurningLevel();
             startBurningFieldTimer(toField);
         }
+        if (JobConstants.isEvan(getJob()) || getJob() == 2001) {
+            if (getJob() == 2001 || getJob() == 2200) setJob(2210);
+            if (job instanceof Evan evan) evan.spawnDragon();
+        }
+        if (getFoxMan() != null && getSkillPet() != null && job instanceof Kanna kanna) kanna.spawnHaku();
+        if (getAndroid() != null) toField.spawnLife(getAndroid(), null);
         if (!isGM) {
-            if (JobConstants.isEvan(getJob()) || getJob() == 2001) {
-                if (getJob() == 2001 || getJob() == 2200) setJob(2210);
-                if (job instanceof Evan evan) evan.spawnDragon();
-            }
             if (toField.getEliteState() == EliteState.EliteBoss) write(FieldPacket.eliteState(EliteState.EliteBoss, true, GameConstants.ELITE_BOSS_BGM, null, null));
-            if (getFoxMan() != null && getSkillPet() != null && job instanceof Kanna kanna) kanna.spawnHaku();
-            if (getActiveFamiliar() != null && !Arrays.stream(FieldConstants.BLOCKED_RUNE_MAPS).anyMatch(m -> m == getFieldID())) //toField.broadcastPacket(CFamiliar.familiarEnterField(getId(), true, getActiveFamiliar(), true, false));
-            if (getAndroid() != null) toField.spawnLife(getAndroid(), null);
+            if (getActiveFamiliar() != null && !Arrays.stream(FieldConstants.BLOCKED_RUNE_MAPS).anyMatch(m -> m == getFieldID())) {
+                //toField.broadcastPacket(CFamiliar.familiarEnterField(getId(), true, getActiveFamiliar(), true, false));
+            }
         }
         sendPacketRewards();
         job.handleInitAfterField();

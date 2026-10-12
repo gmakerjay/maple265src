@@ -22,6 +22,12 @@ import net.swordie.ms.life.mob.Mob;
 import net.swordie.ms.life.mob.MobStat;
 import net.swordie.ms.life.mob.MobTemporaryStat;
 import net.swordie.ms.life.mob.skill.BurnedInfo;
+import static net.swordie.ms.enums.InvType.EQUIPPED;
+import net.swordie.ms.client.character.items.BodyPart;
+import net.swordie.ms.client.character.items.Equip;
+import net.swordie.ms.client.character.items.Item;
+import net.swordie.ms.constants.FieldConstants;
+import net.swordie.ms.loaders.ItemData;
 import net.swordie.ms.loaders.SkillData;
 import net.swordie.ms.scripts.ScriptManagerImpl;
 import net.swordie.ms.util.DataPrinter;
@@ -270,6 +276,9 @@ public class Kanna extends Job {
     }
 
     public void spawnHaku() {
+        if (chr == null || chr.getField() == null || chr.getFoxMan() == null || chr.getSkillPet() == null) {
+            return;
+        }
         if (chr.getFoxMan().isTranformed()) {
             chr.getField().removeLife(chr.getSkillPet());
             chr.getFoxMan().setOwnerChar(chr);
@@ -501,6 +510,12 @@ public class Kanna extends Job {
                 o1.rOption = skillID;
                 o1.tOption = si.getValue(time, slv);
                 tsm.sendStat(Booster, o1);
+                break;
+            case AKATUSKI_HERO_KANNA:
+                o1.nOption = si.getValue(x, slv);
+                o1.rOption = skillID;
+                o1.tOption = si.getValue(time, slv);
+                tsm.sendStat(BasicStatUp, o1);
                 break;
             case TENGU_STRIKE:
                 if (hasTenguStrikeActive()) {
@@ -1028,8 +1043,39 @@ public class Kanna extends Job {
         super.setCharCreationStats(chr);
         CharacterStat cs = chr.getAvatarData().getCharacterStat();
         cs.setPosMap(JobConstants.KANNA_CREATION_MAP);
+        cs.setLevel(10);
+        cs.setJob(JobConstants.JobEnum.KANNA1.getJobId());
+        cs.setHp(1000);
+        cs.setMaxHp(1000);
         cs.setMp(100);
         cs.setMaxMp(100);
+        cs.getExtendSP().addSpToJobLevel(1, 5);
+        chr.getAvatarData().getAvatarLook().setJob(JobConstants.JobEnum.KANNA1.getJobId());
+    }
+
+    @Override
+    public void addItemToNewCharacter(Char chr) {
+        super.addItemToNewCharacter(chr);
+        Equip weapon = ItemData.getEquipDeepCopyFromID(1552000, false); // Starter Fan
+        if (weapon != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, weapon, true);
+            weapon.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            weapon.setCharID(chr.getId());
+            weapon.setInvType(EQUIPPED);
+            weapon.setBagIndex(BodyPart.Weapon.getVal());
+            weapon.saveToSQL();
+        }
+        Item secondary = ItemData.getItemDeepCopy(1352810); // Starter Haku Fan
+        if (secondary != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
+            secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            secondary.setCharID(chr.getId());
+            secondary.setInvType(EQUIPPED);
+            secondary.setBagIndex(BodyPart.Shield.getVal());
+            secondary.saveToSQL();
+            chr.getAvatarData().getAvatarLook().getHairEquips().add(secondary.getItemId());
+            chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+        }
     }
 
     @Override
@@ -1070,6 +1116,19 @@ public class Kanna extends Job {
 
     @Override
     public void handleInitAfterMigrate(Char chr) {
+        if (chr.getLevel() < 30) {
+            ScriptManagerImpl sm = chr.getScriptManager();
+            for (int qid = 57400; qid <= 57415; qid++) {
+                sm.completeQuestNoRewards(qid);
+            }
+            sm.levelUntil(30);
+            sm.setJob(JobConstants.JobEnum.KANNA2.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.KANNA1.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.KANNA2.getJobId(), 3);
+            sm.giveAndEquip(1552000); // Fan
+            sm.giveAndEquip(1352811); // Lv 30 Haku Fan
+            sm.warp(FieldConstants.HOME_MAP);
+        }
         if (chr.hasSkill(MANA_FLOW)) {
             if (this.manaFlowTimer == null || this.manaFlowTimer.isCancelled()) {
                 this.manaFlowTimer = chr.getTimer().addFixedRateEvent(() -> {

@@ -7,6 +7,7 @@ import net.swordie.ms.client.character.Char;
 import net.swordie.ms.client.character.CharacterStat;
 import net.swordie.ms.client.character.info.HitInfo;
 import net.swordie.ms.client.character.items.BodyPart;
+import net.swordie.ms.client.character.items.Equip;
 import net.swordie.ms.client.character.items.Item;
 import net.swordie.ms.client.character.skills.ForceAtom;
 import net.swordie.ms.client.character.skills.Option;
@@ -694,6 +695,18 @@ public class Phantom extends Job {
         Option o4 = new Option();
         Option o5 = new Option();
         switch (skillID) {
+            case CANE_BOOSTER:
+                o1.nOption = si.getValue(x, slv);
+                o1.rOption = skillID;
+                o1.tOption = si.getValue(time, slv);
+                tsm.sendStat(Booster, o1);
+                break;
+            case MAPLE_WARRIOR_PH:
+                o1.nReason = skillID;
+                o1.nValue = si.getValue(x, slv);
+                o1.tTerm = si.getValue(time, slv);
+                tsm.sendStat(IndieStatR, o1);
+                break;
             case GHOSTWALK:
                 o1.nOption = si.getValue(x, slv);
                 o1.rOption = skillID;
@@ -967,6 +980,7 @@ public class Phantom extends Job {
         CharacterStat cs = chr.getAvatarData().getCharacterStat();
         cs.setPosMap(FieldConstants.HOME_MAP);
         cs.setLevel(10);
+        cs.setJob(JobConstants.JobEnum.PHANTOM1.getJobId());
         cs.setStr(4);
         cs.setDex(4);
         cs.setInt(4);
@@ -977,8 +991,35 @@ public class Phantom extends Job {
             cs.setMp(500);
             cs.setMaxMp(500);
         }
+        cs.getExtendSP().addSpToJobLevel(1, 5);
+        chr.getAvatarData().getAvatarLook().setJob(JobConstants.JobEnum.PHANTOM1.getJobId());
         chr.setStolenSkills(new HashSet<>());
         chr.setChosenSkills(new HashSet<>());
+    }
+
+    @Override
+    public void addItemToNewCharacter(Char chr) {
+        super.addItemToNewCharacter(chr);
+        Equip weapon = ItemData.getEquipDeepCopyFromID(1362000, false); // Starter Cane
+        if (weapon != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, weapon, true);
+            weapon.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            weapon.setCharID(chr.getId());
+            weapon.setInvType(EQUIPPED);
+            weapon.setBagIndex(BodyPart.Weapon.getVal());
+            weapon.saveToSQL();
+        }
+        Item secondary = ItemData.getItemDeepCopy(1352100); // Carte
+        if (secondary != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
+            secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            secondary.setCharID(chr.getId());
+            secondary.setInvType(EQUIPPED);
+            secondary.setBagIndex(BodyPart.Shield.getVal());
+            secondary.saveToSQL();
+            chr.getAvatarData().getAvatarLook().getHairEquips().add(secondary.getItemId());
+            chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+        }
     }
 
     @Override

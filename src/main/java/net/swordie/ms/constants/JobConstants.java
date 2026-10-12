@@ -1463,7 +1463,8 @@ public class JobConstants {
     }
 
     public static boolean isAran(short jobId) {
-        return jobId == JobEnum.ARAN1.getJobId()
+        return jobId == JobEnum.LEGEND.getJobId()
+                || jobId == JobEnum.ARAN1.getJobId()
                 || jobId == JobEnum.ARAN2.getJobId()
                 || jobId == JobEnum.ARAN3.getJobId()
                 || jobId == JobEnum.ARAN4.getJobId();

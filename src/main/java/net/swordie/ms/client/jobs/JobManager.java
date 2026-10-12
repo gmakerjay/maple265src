@@ -102,7 +102,6 @@ public class JobManager {
             new JobEntry(id -> JobConstants.isCadena((short) id), Cadena::new),
 
             // Heroes
-            new JobEntry(id -> JobConstants.isLegend((short) id), Legend::new),
             new JobEntry(id -> JobConstants.isAran((short) id), Aran::new),
             new JobEntry(id -> JobConstants.isEvan((short) id), Evan::new),
             new JobEntry(id -> JobConstants.isLuminous((short) id), Luminous::new),

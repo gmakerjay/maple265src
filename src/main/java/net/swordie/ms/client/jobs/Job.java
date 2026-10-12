@@ -3255,9 +3255,6 @@ public abstract class Job {
         } else {
             sm.openUI(1561);
         }
-        if (chr.getFieldID() == FieldConstants.START_MAP) {
-            sm.lockUI();
-        }
         if (FieldConstants.swimMaps.contains(chr.getFieldID())) {
             chr.write(FieldPacket.momentAreaOffAll(List.of("swim01")));
         }

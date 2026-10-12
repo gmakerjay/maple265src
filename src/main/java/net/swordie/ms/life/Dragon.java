@@ -2,6 +2,7 @@ package net.swordie.ms.life;
 
 import net.swordie.ms.client.character.Char;
 import net.swordie.ms.connection.packet.DragonPool;
+import net.swordie.ms.constants.JobConstants;
 import net.swordie.ms.util.Position;
 import net.swordie.ms.world.field.Foothold;
 
@@ -15,7 +16,12 @@ public class Dragon extends Life {
         super(0);
         this.ownerId = chr.getId();
         this.foothold = chr.getFoothold();
-        this.job = chr.getJob();
+        short chrJob = chr.getJob();
+        if (JobConstants.isEvan(chrJob) && (chr.getLevel() >= 260 || chr.hasSkill(22201000) || chr.hasSkill(22201500) || (chr.getHexaSkills() != null && !chr.getHexaSkills().isEmpty()))) {
+            this.job = 2220;
+        } else {
+            this.job = chrJob;
+        }
     }
 
     public void resetToPlayer(Position pos) {

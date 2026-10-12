@@ -1056,6 +1056,20 @@ public class SkillConstants {
             case 22141012:
             case 400021046:
             case 400021012:
+            // Evan 6th Job (HEXA)
+            case 22201002: // HEXA Thunder Circle
+            case 22201003: // HEXA Dragon Flash
+            case 22201004: // HEXA Thunder Flash
+            case 22201005: // HEXA Wind Flash
+            case 22201006: // HEXA Earth Circle
+            case 22201007: // HEXA Dragon Dive
+            case 22200008: // HEXA Earth Dive
+            case 22200009: // HEXA Thunder Dive
+            case 22201010: // HEXA Wind Circle
+            case 22201011: // HEXA Dragon Breath
+            case 22200012: // HEXA Earth Breath
+            case 22200013: // HEXA Earth Breath
+            case 22200014: // HEXA Wind Breath
                 return true;
         }
         return false;
@@ -2602,6 +2616,23 @@ public class SkillConstants {
                 return 5341012; // HEXA Monkey Fury Attack -> HEXA Monkey Fury
             case 5341503:
                 return 5341500; // Barrel of Monkeys -> Super Cannon Explosion Origin
+            // Evan 6th Job HEXA Sub-Skills
+            case 22201001: // HEXA Mana Burst Sub
+                return 22201000;
+            case 22201004: // HEXA Thunder Flash
+            case 22201005: // HEXA Wind Flash
+                return 22201003; // HEXA Dragon Flash
+            case 22200008: // HEXA Earth Dive
+            case 22200009: // HEXA Thunder Dive
+                return 22201007; // HEXA Dragon Dive
+            case 22200012: // HEXA Earth Breath
+            case 22200013: // HEXA Earth Breath
+            case 22200014: // HEXA Wind Breath
+                return 22201011; // HEXA Dragon Breath
+            case 22201501: // Zodiac Burst Attack
+            case 22201502: // United Horizons / Finisher
+            case 22201503: // United Horizons
+                return 22201500; // Zodiac Burst
             default:
                 // Universal 6th Job Origin Sub-Skill Redirection (xxx41501-xxx41599 -> xxx41500)
                 int subOrigin = skillID % 100000;
@@ -2685,6 +2716,14 @@ public class SkillConstants {
             case 22170066:
             case 22170067:
             case 22170094:
+            // Evan 6th Job (HEXA) Fusion Skills
+            case 22201004: // HEXA Thunder Flash
+            case 22201005: // HEXA Wind Flash
+            case 22200008: // HEXA Earth Dive
+            case 22200009: // HEXA Thunder Dive
+            case 22200012: // HEXA Earth Breath
+            case 22200013: // HEXA Earth Breath
+            case 22200014: // HEXA Wind Breath
                 return true;
             default:
                 return false;
@@ -4095,6 +4134,9 @@ public class SkillConstants {
             case 22171063:  // Evan.Dragon Breath
             case 22141012:  // Evan.Dragon Dive
             case 22140022:  // Evan.Dragon Dive
+            case 22201011:  // Evan.HEXA Dragon Breath
+            case 22201007:  // Evan.HEXA Dragon Dive
+            case 22201003:  // Evan.HEXA Dragon Flash
             case DarkKnight.SPEAR_OF_DARKNESS:
             case BlazeWizard.ORBITAL_INFERNO:
             case BlazeWizard.SALAMANDER_MISCHIEF:
@@ -4352,6 +4394,7 @@ public class SkillConstants {
                 // Evan
             case Evan.MAGIC_DEBRIS:
             case Evan.ENHANCED_MAGIC_DEBRIS:
+            case Evan.HEXA_MAGIC_DEBRIS:
                 // Phantom
             case Phantom.CARTE_NOIR:
             case Phantom.CARTE_BLANCHE:

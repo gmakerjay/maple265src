@@ -383,64 +383,15 @@ public class ScriptManagerImpl implements ScriptManager {
                 chr.dispose();
                 break;
             case Reactor:
-                chat("Reactor chưa được làm, vui lòng báo cho đội ngũ Developer. ID: " + parentID);
+                chat("This Reactor has not been implemented yet. ID: " + parentID);
                 chr.dispose();
                 break;
             case Field:
                 // Field scripts are optional map triggers; silently ignore if not implemented
                 break;
             case Npc:
-                String[] dialogues = new String[]{"Coi chừng! Mấy con Slime dạo này mạnh hơn bình thường đó.",
-                        "Bạn có thấy con lợn vàng nào chạy qua đây không? Tôi bị mất một con rồi!",
-                        "Tôi vừa thấy một con Golem Đất đá đang canh giữ một kho báu. Cẩn thận, nó rất cứng đầu.",
-                        "Ồ, bạn có vẻ là một Thợ Săn tiền thưởng. Liệu bạn có thể giúp tôi dọn dẹp một vài con quái vật?",
-                        "Những con Nấm Sừng đang lảng vảng gần rìa thị trấn. Hy vọng chúng không làm phiền ai.",
-                        "Bạn đã bao giờ thấy một con Yeti chưa? Chúng to lớn hơn tôi tưởng tượng nhiều.",
-                        "Tôi đã mất con dao yêu quý của mình ở gần Cây Ma. Chắc một con Quái Vật Ma Thuật đã lấy nó đi rồi.",
-                        "Bạn có mang theo một vài viên đạn không? Tôi đã dùng hết của mình để chiến đấu với lũ Rồng Đá.",
-                        "Đừng đánh giá thấp mấy con Slime xanh. Chúng có thể vô hại, nhưng khi chúng đi theo đàn...",
-                        "Mũ của bạn bị rách rồi, chắc là do mấy con lợn rừng gặm phải?",
-                        "Tôi cần một vài chiếc Sừng Mềm từ đám Nấm Xanh. Liệu bạn có thể giúp tôi không?",
-                        "Hãy giúp tôi tìm Lõi Quái Vật từ lũ Gấu Xanh. Tôi sẽ thưởng cho bạn một món quà xứng đáng.",
-                        "Chẳng may tôi làm rơi cuộn giấy phép thuật của mình. Nó có thể ở đâu đó gần khu rừng Phép Thuật.",
-                        "Bạn có đủ Băng Tuyết để tôi có thể làm ra món kem không? Sẽ rất khó để tìm được.",
-                        "Để chế tạo vũ khí này, tôi cần 10 Mảnh Vỡ Tinh Thể. Bạn có thể tìm thấy chúng trong mỏ.",
-                        "Tôi cần thêm một vài viên ngọc quý. Nghe nói chúng chỉ rơi ra từ những con Golem Đá đặc biệt.",
-                        "Hãy mang cho tôi một cái Cánh Dơi. Tôi cần nó để hoàn thành một nhiệm vụ bí mật.",
-                        "Bạn đã tìm thấy chiếc nhẫn mà tôi làm mất chưa? Nó có biểu tượng của một con Rồng.",
-                        "Tôi cần 20 chiếc Lông Chim để làm một cái gối. Liệu bạn có thể giúp tôi không?",
-                        "Tôi sẽ trả cho bạn một khoản tiền lớn nếu bạn mang về cho tôi Bùa Cấm Thuật từ Hang Rồng.",
-                        "Bạn cần một thanh kiếm mạnh hơn để đối phó với kẻ thù chứ? Tôi có thể rèn cho bạn một cái.",
-                        "Sắp tới, bạn có định chuyển nghề không? Cần phải suy nghĩ thật kĩ.",
-                        "Tôi đã chế tạo ra một lọ thuốc mới, nó có thể tăng sức mạnh của bạn trong thời gian ngắn.",
-                        "Bạn có đủ kinh nghiệm để học kĩ năng mới chưa?",
-                        "Kinh nghiệm là tất cả. Đừng chỉ tập trung vào việc kiếm tiền.",
-                        "Hãy học hỏi thật nhiều để trở nên mạnh mẽ hơn. Đó là lời khuyên của tôi.",
-                        "Tài năng thiên bẩm chỉ chiếm một phần nhỏ thôi. Sự chăm chỉ mới là điều quan trọng.",
-                        "Tôi đã từng là một thợ rèn danh tiếng. Nhưng bây giờ thì chỉ còn là quá khứ.",
-                        "Thế giới này luôn cần những người thợ thủ công giỏi. Bạn có muốn học nghề không?",
-                        "Lên cấp là một hành trình dài. Chúc may mắn.",
-                        "Bạn có kế hoạch đến Đảo Victoria không? Nơi đó có rất nhiều bí mật.",
-                        "Đừng bao giờ đến Bến Cảng Lith. Nơi đó quá nguy hiểm cho một người mới như bạn.",
-                        "Tôi đã nghe những câu chuyện về một thành phố trên trời. Có lẽ bạn sẽ khám phá được điều gì đó.",
-                        "Hãy cẩn thận khi đến Tháp Hỗn Độn. Nghe đồn những con quái vật ở đó rất đáng sợ.",
-                        "Bạn có thấy Lâu Đài Chuỗi Không Vận chưa? Nghe nói đó là nơi của những hiệp sĩ huyền thoại.",
-                        "Hãy đi đến vùng đất Tuyết của El Nath, ở đó có một ông già rất giỏi ma thuật.",
-                        "Thị trấn Perion luôn bận rộn với các chiến binh.",
-                        "Tôi nghĩ bạn nên đến Mỏ Ant Tunnel. Đó là nơi tuyệt vời để luyện cấp.",
-                        "Có rất nhiều nơi để khám phá. Hãy chuẩn bị hành trang của bạn thật kỹ.",
-                        "Bạn đã nghe về thành phố dưới biển Aquario chưa? Nghe nói rất đẹp.",
-                        "Chắc chắn là do tôi đã ăn quá nhiều lợn rừng. Bây giờ tôi chỉ muốn ngủ thôi.",
-                        "Bạn có một cái đầu nấm giống hệt một con nấm sừng đó!",
-                        "Tôi vừa bị một con Slime trượt chân làm té. Thật là xấu hổ.",
-                        "Có vẻ như tôi đã bị lạc. Bạn có thể giúp tôi tìm đường về không?",
-                        "Tôi đã nói với bạn rồi, tôi không phải là một NPC làm nhiệm vụ!",
-                        "Mũ của bạn trông thật buồn cười. Nó là một cái mũ nấm à?",
-                        "Món bánh ngọt ở đây ngon tuyệt vời! Bạn có muốn thử không?",
-                        "Tôi không thể giúp bạn đâu, tôi chỉ là một người qua đường thôi.",
-                        "Tôi đã thấy bạn đánh rơi một món đồ. À không, đó chỉ là một viên đá thôi.",
-                        "Ồ, tôi đang bận đếm số lá trên cây. Bạn có thể quay lại sau không?"};
-                sendOK(Util.getRandomFromCollection(dialogues), parentID);
+                chat("This NPC has not been implemented yet. ID: " + parentID);
+                chr.dispose();
                 break;
             default:
                 chr.dispose();
