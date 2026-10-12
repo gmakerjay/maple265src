@@ -94,6 +94,59 @@ description: >-
   - Kanna: `isSpiritWalkerSkill()` สำหรับเกิดเส้นชีพจรวิญญาณ (Mana Veins)
   - Lara: ธาตุ Earth/River/Wind/Sun interaction
 
+### 3.3 ข้อควรระวังและกลไกเฉพาะกลุ่ม Explorer Thief (Thief, NL, Shadower, DB)
+1. **Shadow Walker (400001023)**: โจมตีโดยไม่หลุด Dark Sight
+   - ใน `handleAttack()` ของ `Thief`, `NightLord`, `Shadower`, `DualBlade` จะต้องเช็ค `Option dsOpt = tsm.getOption(DarkSight); if (dsOpt == null || dsOpt.rOption != SHADOW_WALKER)` เสมอ ห้ามลบ Dark Sight ทิ้งหากเกิดจาก Shadow Walker
+   - ใน `handleSkill()` ต้องมอบ `IndiePMdR` (Final Damage) ควบคู่กับ `DarkSight` เสมอ
+2. **Dual Blade `lastShadowMeld`**: ต้องเป็น Instance Variable (`private long lastShadowMeld`) ห้ามเป็น `static` เพื่อป้องกันผู้เล่นทั้งเซิร์ฟเวอร์แชร์ Internal Cooldown ร่วมกัน
+3. **Shadow Assault Packet Decoding**: ใน `SkillConstants.isShadowAssault()` ต้องครอบคลุมทั้ง 5th Job (400041002-400041005) และ 6th Job HEXA Shadow Assault (4241006-4241010) มิฉะนั้น `AttackHandler` จะข้ามการ Decode `teleportByte` และ `teleportPt` ส่งผลให้ Packet หลุด Alignment (Desync)
+4. **Shadower Shadow Assault Stack**: ต้องเช็ค `!chr.hasSkillOnCooldown(SHADOW_ASSAULT)` ก่อนเติมสแต็กใน `update()` และสั่งเริ่มคูลดาวน์เมื่อสแต็กหมด
+5. **Night Lord SOSI & Random Bound Guard**: ต้องเช็ค Null-safety บน Shoot Object Single Info ใน Barrage และป้องกัน Random Bound `<= 0` ใน `handleMark()`
+
+### 3.4 ข้อควรระวังและกลไกเฉพาะกลุ่ม Legend / Heroes (Aran, Evan, Mercedes, Phantom, Luminous, Shade)
+1. **Aran (อารัน)**:
+   - **Surging Adrenaline Duration**: ค่าระยะเวลาในบัฟต้องเป็น `+ 5` วินาที ไม่ใช่ `+ 5000` (ที่จะกลายเป็น 5,000 วินาที)
+   - **Combo Accumulation**: ใน `handleAttack()` ต้องนับ Hit โจมตีของทุกม็อบ (`mai.damages.length`) เพื่อเรียก `setCombo(getCombo() + comboGain)` เสมอ มิฉะนั้นคอมโบจะไม่ขึ้นตามธรรมชาติ
+   - **Maha's Fury Cooldown**: คูลดาวน์ 3 วินาทีของท่าโจมตีต้องลงที่ `MAHAS_FURY_ATTACK` (400011020) ห้ามลงที่ `MAHAS_FURY_BUFF` (400011016) ซึ่งจะไปทับคูลดาวน์ 150 วินาทีของบัฟ
+2. **Evan (เอวาน)**:
+   - **Job Advancement Lv.100**: หลังรีแวมป์ คลาส 4 ของ Evan คือ Job ID `2217` (รหัส 2218 ไม่มีอยู่จริง) การเรียก `setJob` หรือ `addSpToSpecificJob` ต้องใช้ `2217` เท่านั้น
+   - **Magic Debris Rect Guard**: เช็ค `if (si == null || si.getFirstRect() == null) return;` ก่อนคำนวณ Force Atom
+3. **Mercedes (เมอร์เซเดส)**:
+   - **Array Containment Bug**: `summonAttacks` เป็น `int[]` ห้ามใช้ `Collections.singletonList(summonAttacks).contains(...)` เพราะจะได้ `List<int[]>` ให้ใช้ `Arrays.stream(summonAttacks).anyMatch(id -> id == skillId)`
+   - **Ignis Roar Stack**: ตรวจสอบการมีสกิลด้วย `chr.hasSkill(IGNIS_ROAR)` ห้ามเช็ค `tsm.hasStat(RpSiksin)` (ซึ่งเป็น CTS ของ Kanna)
+4. **Phantom (แฟนทอม)**:
+   - **IsCaneSkill Detection**: ต้องรวมรหัสคลาส 6 (`HEXA_MILLE_AIGUILLES`, `DEFYING_FATE`, `DEFYING_FATE_ATTACK`) ไว้ใน `isCaneSkill()` เพื่อให้สะสม Phantom's Mark และชาร์จไพ่ได้ครบ
+   - **Ace in the Hole & WZ Rect**: ตรวจสอบ null-safety สำหรับ `si.getFirstRect()` เสมอ
+5. **Luminous (ลูมิเนียส)**:
+   - **Ray of Redemption Party Healing**: ฮีลผู้ร่ายและสมาชิกทุกคนในปาร์ตี้ที่อยู่ในแผนที่เดียวกันผ่าน `chr.getParty().getPartyMembersInSameFieldWithChr(chr)`
+   - **Cooldown Synchronization**: จัดการ Cooldown ใน `handleSetCoolDownSkill()` สำหรับ Origin `HARMONIC_PARADOX`, `HEXA_ENDER`, `HEXA_REFLECTION`, `HEXA_APOCALYPSE`
+6. **Shade (อึนวอล)**:
+   - **Fox Spirits Rect Guard**: เพิ่ม Fallback Rect ป้องกัน NPE กรณี `si.getFirstRect() == null`
+   - **Summon Other Spirit Revive**: ใช้ข้อความภาษาอังกฤษมาตรฐาน ไม่ฮาร์ดโค้ดภาษาเวียดนาม
+
+### 3.5 คำสั่ง `!endgame` และการจัดการอุปกรณ์/สกิลอย่างถูกต้อง (Best Practices for Endgame Setup)
+1. **การเลื่อนขั้นอาชีพอัตโนมัติ (`setupEndgame`)**:
+   - ต้องดักจับ Beginner Jobs ของกลุ่ม Legend (2000-2005) และสายอาชีพเริ่มต้น เพื่อเปลี่ยนไปยังคลาส 4 ที่ถูกต้องเสมอ:
+     - Aran: `2112`, Evan: `2217` (ห้ามเป็น 2218), Mercedes: `2312`, Phantom: `2412`, Luminous: `2712`, Shade: `2512`
+   - รองรับ Alias ที่ผู้เล่นคุ้นเคย เช่น `!endgame eunwol` ชี้ไปยัง Shade
+2. **รหัสอุปกรณ์ BiS ตรงสายอาชีพ 100% (Verified via WZ String Data)**:
+   - **Aran**: Arcane Umbra Polearm (`1442274`), Princess No's Flower Ballast (`1352935`), Mitra Warrior Emblem (`1190555`), ชุดเกราะ Warrior 6 ชิ้น
+   - **Evan**: Arcane Umbra Staff (`1382265`), Princess No's Dragon Legacy (`1352945`), Mitra Magician Emblem (`1190557`), ชุดเกราะ Mage 6 ชิ้น
+   - **Mercedes**: Arcane Umbra Dual Bowguns (`1522143`), Princess No's Accursed Arrow (`1352009`), Mitra Bowman Emblem (`1190556`), ชุดเกราะ Archer 6 ชิ้น
+   - **Phantom**: Arcane Umbra Cane (`1362140`), Princess No's Carte (`1352109`), Mitra Thief Emblem (`1190558`), ชุดเกราะ Thief 6 ชิ้น
+   - **Luminous**: Arcane Umbra Shining Rod (`1212120`), Princess No's Soul Orb (`1352406`), Mitra Magician Emblem (`1190557`), ชุดเกราะ Mage 6 ชิ้น
+   - **Shade**: Arcane Umbra Knuckle (`1482221`), Princess No's Fox Marble (`1353105`), Mitra Pirate Emblem (`1190559`), ชุดเกราะ Pirate 6 ชิ้น
+3. **หลักการจัดการสกิลอย่างเป็นธรรมชาติ (Natural Skill Integrity)**:
+   - **ห้ามแอดสกิลมั่ว**: ห้ามใช้ `chr.addSkill()` อัด sub-action/invisible action IDs ใส่ตัวละครโดยเด็ดขาด เพราะจะทำให้ Skill Book ล้น มีไอคอนที่กดไม่ได้ และรบกวน UI
+   - สกิลคลาส 1-4 ให้อัปเต็มผ่าน `chr.maxSkills()` และแจก SP ใน ExtendSP อย่างสมบูรณ์
+   - สกิล V-Matrix และ HEXA Matrix ให้แจกวัตถุดิบและอุปกรณ์ให้เพียงพอ เพื่อให้ผู้เล่นเปิดและอัปเกรดตามธรรมชาติในตัวเกม:
+     - Sol Erda Energy x1,000 (`2636421`)
+     - Sol Erda Fragments x30,000 (`4009548`)
+     - Nodestones x3,000 (`2435719`)
+     - Experience Nodestones x500 (`2437760`)
+     - Power Elixirs x5,000 (`2000005`)
+     - เงิน 10B Mesos
+
 ---
 
 ## 4. สถาปัตยกรรมระบบบอส (Universal Boss Entry Architecture)

@@ -90,7 +90,7 @@ public class Timer {
                 scheduler.scheduleAtFixedRate(task.task, task.initialDelay, task.delay, task.timeUnit);
             }
             for (Char chr : Server.get().getChars().values()) {
-                chr.chatPopup("Dữ liệu máy chủ đã được làm mới. Vui lòng đăng nhập lại nếu bạn gặp bất kỳ sự cố nào.");
+                chr.chatPopup("Server data has been refreshed. Please log in again if you encounter any issues.");
             }
             System.err.println("[Timer] timer '" + name + "' đã khởi động lại thành công.");
         } catch (Exception e) {

@@ -1523,10 +1523,8 @@ public class SkillConstants {
     }
 
     public static boolean isShadowAssault(int skillID) {
-        return skillID == 400041002 ||
-                skillID == 400041003 ||
-                skillID == 400041004 ||
-                skillID == 400041005 ||
+        return (skillID >= 400041002 && skillID <= 400041005) ||
+                (skillID >= 4241006 && skillID <= 4241010) ||
                 skillID == 500061025 ||
                 skillID == 500061026;
     }
@@ -2221,8 +2219,62 @@ public class SkillConstants {
             case 14141020: // NW - HEXA Dark Omen (Shadow Bat Active)
                 return 14141017; // NW - HEXA Dark Omen
 
+            // Explorer Thief V-Matrix 5th Job & Origin Mappings
+            // Night Lord
+            case 400041016: // Spread Throw Sub 1
+            case 400041017: // Spread Throw Sub 2
+            case 400041018: // Spread Throw Sub 3
+                return 400041001; // Spread Throw
+            case 400041062: // Throw Blasting Attack
+                return 400041061; // Throw Blasting
+            case 4141501:   // Life and Death Attack
+            case 4141502:   // Life and Death Finisher
+                return 4141500;   // Life and Death
+
+            // Shadower
+            case 400041003: // Shadow Assault 2
+            case 400041004: // Shadow Assault 3
+            case 400041005: // Shadow Assault 4
+                return 400041002; // Shadow Assault
+            case 400041026: // Trickblade 1
+            case 400041027: // Trickblade 2
+                return 400041025; // Trickblade
+            case 400041070: // Slash Shadow Formation 1
+            case 400041071: // Slash Shadow Formation 2
+            case 400041072: // Slash Shadow Formation 3
+            case 400041073: // Slash Shadow Formation 4
+                return 400041069; // Slash Shadow Formation
+            case 4241501:   // Halve Slice Finisher
+            case 4241502:   // Halve Slice After
+                return 4241500;   // Halve Slice
+
+            // Dual Blade
+            case 400041043: // Blade Tornado Shoot Object
+                return 400041042; // Blade Tornado
+            case 400041076: // Haunted Edge Asura
+            case 400041077: // Haunted Edge Asura Wind
+            case 400041078: // Haunted Edge Yaksa
+                return 400041075; // Haunted Edge
+            case 4361501:   // Karma Blade Buff Attack
+            case 4361502:   // Karma Blade Extra
+            case 4361503:   // Karma Blade After Attack
+            case 4361504:   // Karma Blade Slash
+                return 4361500;   // Karma Blade
+
             case Mercedes.STAGGERING_STRIKES:
                 return Mercedes.STUNNING_STRIKES;
+
+            case 23141001: // HEXA Ishtar's Ring Extra
+                return 23141000; // HEXA Ishtar's Ring
+            case 23141501: // Unfading Glory Sub 1
+            case 23141502: // Unfading Glory Finisher
+            case 23141503: // Unfading Glory Extra
+                return 23141500; // Unfading Glory Origin
+            case 400031008: // Spirit of Elluel 1
+            case 400031009: // Spirit of Elluel 2
+                return 400031007; // Spirit of Elluel
+            case 400031045: // Royal Knights SA
+                return 400031044; // Royal Knights
 
             case Aran.SMASH_WAVE_COMBO:
                 return Aran.SMASH_WAVE;
@@ -2230,6 +2282,79 @@ public class SkillConstants {
             case Aran.FINAL_BLOW_COMBO:
             case Aran.FINAL_BLOW_SMASH_SWING_COMBO:
                 return Aran.FINAL_BLOW;
+
+            case 21121016: // Aran Beyond Blade 2
+            case 21121017: // Aran Beyond Blade 3
+                return 21120022; // Aran Beyond Blade 1
+
+            case 21141001: // HEXA Beyond Blade 2
+            case 21141002: // HEXA Beyond Blade 3
+                return 21141000; // HEXA Beyond Blade
+
+            case 21141501: // Adrenaline Surge Sub 1
+            case 21141502: // Adrenaline Surge Finisher
+            case 21141503: // Adrenaline Surge Extra
+                return 21141500; // Adrenaline Surge Origin
+
+            case 400010071: // Fenrir Crash Adrenaline
+                return 400010070; // Fenrir Crash
+
+            case 400011020: // Maha's Fury Attack
+                return 400011016; // Maha's Fury Buff
+
+            case 400010030: // Maha's Carnage Combo
+                return 400011031; // Maha's Carnage
+
+            case 400011122: // Blizzard Tempest Dire Wolf Attack
+            case 400011123: // Blizzard Tempest Mob
+                return 400011121; // Blizzard Tempest
+
+            // Phantom V-Matrix & Origin Sub-Skills
+            case 400041010: // Luck of the Draw Atom
+            case 400041011:
+            case 400041012:
+            case 400041013:
+            case 400041014:
+            case 400041015:
+                return 400041009; // Luck of the Draw
+            case 400041023: // Ace in the Hole Atom
+            case 400041024: // Ace in the Hole Finisher
+                return 400041022; // Ace in the Hole
+            case 400041045: // Phantom's Mark 2
+            case 400041046: // Phantom's Mark 3
+                return 400041040; // Phantom's Mark
+            case 24141002: // HEXA Mille Aiguilles Fortune
+                return 24141001; // HEXA Mille Aiguilles
+            case 24141501: // Defying Fate Buff
+            case 24141502: // Defying Fate Attack
+                return 24141500; // Defying Fate Origin
+
+            // Luminous 6th Job & V-Matrix Sub-Skills
+            case 27141501: // Harmonic Paradox Buff
+            case 27141502: // Lustrous Orb
+            case 27141503: // Harmonic Paradox Finisher
+                return 27141500; // Harmonic Paradox Origin
+            case 27141003: // HEXA Endless Darkness Attack
+                return 27141004; // HEXA Apocalypse
+            case 27141006: // HEXA Eternal Light Attack
+                return 27141001; // HEXA Reflection
+            case 400021106: // Liberation Orb Imbalance ForceAtom
+            case 400021107: // Liberation Orb Light Zone
+            case 400021108: // Liberation Orb Dark Bullet
+            case 400021109: // Liberation Orb Imbalance Attack
+            case 400021110: // Liberation Orb Balance Attack
+                return 400021105; // Liberation Orb
+
+            // Shade 6th Job & V-Matrix Sub-Skills
+            case 25141501: // Advent of the Fox God Sub 1
+            case 25141502: // Advent of the Fox God Sub 2
+                return 25141500; // Advent of the Fox God Origin
+            case 25141000: // HEXA Spirit Claw
+                return 25121005; // Spirit Claw
+            case 400051023: // Spiritgate Atom
+            case 400051028: // Spiritgate Summons 1
+            case 400051029: // Spiritgate Summons 2
+                return 400051022; // Spiritgate
 
             case AngelicBuster.SOUL_SEEKER_ATOM:
                 return AngelicBuster.SOUL_SEEKER;
@@ -2418,12 +2543,15 @@ public class SkillConstants {
                 return 4141503; // Deep Strike Sub
             // Shadower 6th Job Sub-Skills
             case 4241001:
-                return 4241000; // HEXA Assassinate Finisher
+                return 4241000; // HEXA Cruel Stab Extra
             case 4241003:
-                return 4241002; // HEXA Pulverize Finisher
+                return 4241002; // HEXA Assassinate 2
+            case 4241005:
+                return 4241004; // HEXA Pulverize Finisher
             case 4241007:
             case 4241008:
             case 4241009:
+            case 4241010:
                 return 4241006; // HEXA Meso Explosion Subs
             case 4240014:
                 return 4241013; // HEXA Shadow Veil Attack

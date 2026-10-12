@@ -53,6 +53,8 @@ public class DualBlade extends Job {
     public static final int LIFE_DRAIN = 4330007;
 
     public static final int FINAL_CUT = 4341002; //Special Attack
+    public static final int BLADE_FURY = 4341004;
+    public static final int PHANTOM_BLOW = 4341009;
     public static final int SUDDEN_RAID = 4341011; //Special Attack
     public static final int MAPLE_WARRIOR_DB = 4341000; //Buff
     public static final int MIRRORED_TARGET = 4341006; //Summon
@@ -88,8 +90,42 @@ public class DualBlade extends Job {
     public static final int YAMAS_DECREE = 4361505;
     public static final int YAMAS_DECREE_ATTACK = 4361506;
 
-    public static long lastShadowMeld = Long.MIN_VALUE;
+    private long lastShadowMeld = Long.MIN_VALUE;
     private int darkSightCount = 0;
+
+    public boolean isDualBladeAttack(int skillId) {
+        return switch (skillId) {
+            case 4301001, // Katara Jab
+                 4311002, // Slash Storm
+                 4311003, // Tornado Spin
+                 4321000, // Band of Thieves
+                 4321002, // Flashbang
+                 4321004, // Upper Stab
+                 4321006, // Flying Assaulter
+                 4331000, // Bloody Storm
+                 4331006, // Chains of Hell
+                 FINAL_CUT,
+                 BLADE_FURY,
+                 PHANTOM_BLOW,
+                 SUDDEN_RAID,
+                 ASURAS_ANGER,
+                 BLADE_CLONE,
+                 BLADE_TEMPEST, 400041017, 400041018, // Blade Tempest / Blade Storm
+                 BLADES_OF_DESTINY,
+                 BLADE_TORNADO, BLADE_TORNADO_SHOOT_OBJECT,
+                 HAUNTED_EDGE, HAUNTED_EDGE_ASURA, HAUNTED_EDGE_ASURA_WIND, HAUNTED_EDGE_YAKSA,
+                 KARMA_BLADE, KARMA_BLADE_BUFF, KARMA_BLADE_EXTRA, KARMA_BLADE_AFTER_ATTACK, 4361504,
+                 YAMAS_DECREE, YAMAS_DECREE_ATTACK,
+                 HEXA_PHANTOM_BLOW,
+                 HEXA_ASURAS_ANGER,
+                 HEXA_BLADE_CLONE,
+                 HEXA_BLADE_FURY,
+                 FURY_JET,
+                 HEXA_SUDDEN_RAID
+                 -> true;
+            default -> false;
+        };
+    }
 
     private final int[] addedSkills = new int[]{
             RETURN
@@ -217,24 +253,34 @@ public class DualBlade extends Job {
                     mob.getTemporaryStat().addStatOptions(mob, originStats);
                 }
             }
-            if (tsm.hasStat(DarkSight)) {
+            Option dsOpt = tsm.getOption(DarkSight);
+            if (dsOpt == null || dsOpt.rOption != SHADOW_WALKER) {
                 tsm.removeStat(DarkSight);
             }
-            if (tsm.hasStat(KarmaBlade) && SkillData.getSkillInfoById(KARMA_BLADE_BUFF).getSkillList1().contains(skillID)) {
+            SkillInfo kbSi = SkillData.getSkillInfoById(KARMA_BLADE_BUFF);
+            boolean isKbAttack = (kbSi != null && kbSi.getSkillList1() != null && kbSi.getSkillList1().contains(skillID)) || isDualBladeAttack(skillID);
+            if (tsm.hasStat(KarmaBlade) && isKbAttack) {
                 Option opt = tsm.getOption(KarmaBlade);
-                opt.nOption = Math.max(opt.nOption - 1, 0);
-                if (opt.nOption == 0) {
-                    tsm.removeStat(KarmaBlade);
-                    ExtraSkill extraSkill = new ExtraSkill(KARMA_BLADE_EXTRA, chr.getPosition());
-                    extraSkill.Value = 1;
-                    chr.write(UserLocal.registerExtraSkill(KARMA_BLADE_EXTRA, Collections.singletonList(extraSkill)));
-                } else {
-                    tsm.updateStat(KarmaBlade, opt);
-                    chr.write(UserLocal.userBonusAttackRequest(KARMA_BLADE_BUFF));
+                if (opt != null) {
+                    opt.nOption = Math.max(opt.nOption - 1, 0);
+                    if (opt.nOption == 0) {
+                        tsm.removeStat(KarmaBlade);
+                        ExtraSkill extraSkill = new ExtraSkill(KARMA_BLADE_EXTRA, chr.getPosition());
+                        extraSkill.Value = 1;
+                        chr.write(UserLocal.registerExtraSkill(KARMA_BLADE_EXTRA, Collections.singletonList(extraSkill)));
+                    } else {
+                        tsm.updateStat(KarmaBlade, opt);
+                        chr.write(UserLocal.userBonusAttackRequest(KARMA_BLADE_BUFF));
+                    }
                 }
             }
-            if (chr.hasSkill(MORTALITY) && SkillData.getSkillInfoById(MORTALITY).getSkillList1().contains(skillID)) {
+            SkillInfo mortSi = SkillData.getSkillInfoById(MORTALITY);
+            boolean isMortAttack = (mortSi != null && mortSi.getSkillList1() != null && mortSi.getSkillList1().contains(skillID)) || isDualBladeAttack(skillID);
+            if (chr.hasSkill(MORTALITY) && isMortAttack) {
                 Option opt = tsm.getOption(Mortality);
+                if (opt == null) {
+                    opt = new Option();
+                }
                 opt.nOption = Math.min(opt.nOption + 1, 15);
                 opt.rOption = MORTALITY;
                 if (opt.nOption >= 15) {
@@ -340,12 +386,21 @@ public class DualBlade extends Job {
                 break;
             case DARK_SIGHT:
                 darkSightCount = 0;
-                // Fall through intended
-            case SHADOW_WALKER:
                 o1.nOption = si.getValue(x, slv);
                 o1.rOption = skillID;
                 o1.tOption = si.getValue(time, slv);
                 tsm.sendStat(DarkSight, o1);
+                break;
+            case SHADOW_WALKER:
+                o1.nOption = si.getValue(x, slv);
+                o1.rOption = skillID;
+                o1.tOption = si.getValue(time, slv);
+                newStats.put(DarkSight, o1);
+                o2.nValue = si.getValue(indiePMdR, slv);
+                o2.nReason = skillID;
+                o2.tTerm = si.getValue(time, slv);
+                newStats.put(IndiePMdR, o2);
+                tsm.sendStat(newStats);
                 break;
             case SELF_HASTE:
                 o1.nOption = si.getValue(indieSpeed, slv);
@@ -594,6 +649,7 @@ public class DualBlade extends Job {
                 o1.tOption = si.getValue(time, slv);
                 tsm.sendStat(FinalCut, o1);
                 chr.heal(-(chr.getMaxHP() * si.getValue(x, slv)) / 100);
+                chr.setSkillCooldown(FINAL_CUT, slv);
                 break;
         }
         super.handleCancelKeyDownSkill(chr, skillID);
@@ -606,16 +662,34 @@ public class DualBlade extends Job {
                 chr.addSkillCooldown(skillId, 6000);
                 return 1;
             }
+            case SUDDEN_RAID -> {
+                int slv = chr.getSkillLevel(skillId);
+                chr.setSkillCooldown(skillId, slv);
+                if (chr.hasSkill(HEXA_SUDDEN_RAID)) {
+                    chr.setSkillCooldown(HEXA_SUDDEN_RAID, slv);
+                }
+                return 1;
+            }
             case HEXA_SUDDEN_RAID -> {
                 int skillID = SUDDEN_RAID;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
+                return 1;
+            }
+            case ASURAS_ANGER -> {
+                int slv = chr.getSkillLevel(skillId);
+                chr.setSkillCooldown(skillId, slv);
+                if (chr.hasSkill(HEXA_ASURAS_ANGER)) {
+                    chr.setSkillCooldown(HEXA_ASURAS_ANGER, slv);
+                }
                 return 1;
             }
             case HEXA_ASURAS_ANGER -> {
                 int skillID = ASURAS_ANGER;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
                 return 1;
             }
         }

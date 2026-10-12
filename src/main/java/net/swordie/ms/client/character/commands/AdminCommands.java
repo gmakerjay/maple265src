@@ -2585,6 +2585,18 @@ public class AdminCommands {
                 targetJob = (int) JobConstants.JobEnum.KAISER4.getJobId();
             } else if (JobConstants.isAngelicBuster(curJob)) {
                 targetJob = (int) JobConstants.JobEnum.ANGELIC_BUSTER4.getJobId();
+            } else if (JobConstants.isAran(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.ARAN4.getJobId();
+            } else if (JobConstants.isEvan(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.EVAN4.getJobId();
+            } else if (JobConstants.isMercedes(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.MERCEDES4.getJobId();
+            } else if (JobConstants.isPhantom(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.PHANTOM4.getJobId();
+            } else if (JobConstants.isLuminous(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.LUMINOUS4.getJobId();
+            } else if (JobConstants.isShade(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.SHADE4.getJobId();
             } else if (curJob % 100 < 12 && (curJob % 100 == 0 || curJob % 100 == 10 || curJob % 100 == 11)) {
                 targetJob = (curJob / 100) * 100 + 12;
             }
@@ -2819,11 +2831,36 @@ public class AdminCommands {
             secondaryId = 1353203; // Chess Piece
             emblemId = 1190557; // Mitra Magician Emblem
             armors = mageArmors;
+        } else if (JobConstants.isAran(job)) {
+            weaponId = 1442274; // Arcane Umbra Polearm
+            secondaryId = 1352935; // Princess No's Flower Ballast (Aran BiS Secondary)
+            emblemId = 1190555; // Mitra's Rage: Warrior
+            armors = warriorArmors;
+        } else if (JobConstants.isEvan(job)) {
+            weaponId = 1382265; // Arcane Umbra Staff
+            secondaryId = 1352945; // Princess No's Dragon Legacy (Evan BiS Secondary)
+            emblemId = 1190557; // Mitra's Rage: Magician
+            armors = mageArmors;
+        } else if (JobConstants.isMercedes(job)) {
+            weaponId = 1522143; // Arcane Umbra Dual Bowguns
+            secondaryId = 1352009; // Princess No's Accursed Arrow (Mercedes BiS Secondary)
+            emblemId = 1190556; // Mitra's Rage: Bowman
+            armors = archerArmors;
+        } else if (JobConstants.isPhantom(job)) {
+            weaponId = 1362140; // Arcane Umbra Cane
+            secondaryId = 1352109; // Princess No's Carte (Phantom BiS Secondary)
+            emblemId = 1190558; // Mitra's Rage: Thief
+            armors = thiefArmors;
         } else if (JobConstants.isLuminous(job)) {
             weaponId = 1212120; // Arcane Umbra Shining Rod
-            secondaryId = 1352403; // Orb
-            emblemId = 1190557; // Mitra Magician Emblem
+            secondaryId = 1352406; // Princess No's Soul Orb (Luminous BiS Secondary)
+            emblemId = 1190557; // Mitra's Rage: Magician
             armors = mageArmors;
+        } else if (JobConstants.isShade(job)) {
+            weaponId = 1482221; // Arcane Umbra Knuckle
+            secondaryId = 1353105; // Princess No's Fox Marble (Shade BiS Secondary)
+            emblemId = 1190559; // Mitra's Rage: Pirate
+            armors = pirateArmors;
         } else if (JobConstants.isDemonSlayer(job)) {
             weaponId = 1312204; // Arcane Umbra One-Handed Axe
             secondaryId = 1352003; // Force Shield
@@ -3107,8 +3144,9 @@ public class AdminCommands {
             }
         }
 
-        // 9. Add Testing Consumables: Nodestones x3,000, Power Elixirs x5,000, 10B Mesos
+        // 9. Add Testing Consumables: Nodestones x3,000, Exp Nodestones x500, Power Elixirs x5,000, 10B Mesos
         giveTestItem(chr, 2435719, 3000);
+        giveTestItem(chr, 2437760, 500);
         giveTestItem(chr, 2000005, 5000);
         chr.addMoney(10_000_000_000L);
 
@@ -3230,12 +3268,12 @@ public class AdminCommands {
                 } else if (arg.contains("aran")) {
                     targetJob = 2112;
                 } else if (arg.contains("evan")) {
-                    targetJob = 2218;
+                    targetJob = 2217;
                 } else if (arg.contains("mercedes") || arg.contains("merc")) {
                     targetJob = 2312;
                 } else if (arg.contains("phantom")) {
                     targetJob = 2412;
-                } else if (arg.contains("shade")) {
+                } else if (arg.contains("shade") || arg.contains("eunwol")) {
                     targetJob = 2512;
                 } else if (arg.contains("battlemage") || arg.contains("bam")) {
                     targetJob = 3212;

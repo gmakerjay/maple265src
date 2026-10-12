@@ -210,7 +210,7 @@ public class LoginHandler {
             userID = c.getUser().getId();
             user = c.getUser();
         } else {
-            c.write(WvsContext.broadcastMsg(BroadcastMsg.popUpMessage("Không tìm thấy dữ liệu tài khoản, vui lòng đăng nhập lại.")));
+            c.write(WvsContext.broadcastMsg(BroadcastMsg.popUpMessage("Account data not found, please log in again.")));
             return;
         }
         boolean isBannedMachine = false;

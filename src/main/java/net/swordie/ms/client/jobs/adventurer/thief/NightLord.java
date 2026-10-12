@@ -213,9 +213,13 @@ public class NightLord extends Thief {
                 }
             }
             if (tsm.hasStat(DarkSight)) {
-                tsm.removeStat(DarkSight);
+                Option dsOpt = tsm.getOption(DarkSight);
+                // Shadow Walker (V-Matrix 400001023) maintains Dark Sight during attacks
+                if (dsOpt == null || dsOpt.rOption != SHADOW_WALKER) {
+                    tsm.removeStat(DarkSight);
+                }
             }
-            if ((chr.hasSkill(ASSASSINS_MARK) || chr.hasSkill(HEXA_ASSASSINS_MARK))
+            if ((chr.hasSkill(ASSASSINS_MARK) || chr.hasSkill(NIGHT_LORD_MARK) || chr.hasSkill(HEXA_ASSASSINS_MARK))
                     && skillID != THROWING_STAR_BARRAGE_DOUBLE
                     && skillID != THROWING_STAR_BARRAGE_TRIPLE
                     && skillID != THROWING_STAR_BARRAGE_QUAD) {
@@ -250,6 +254,9 @@ public class NightLord extends Thief {
             case THROWING_STAR_BARRAGE_DOUBLE:
             case THROWING_STAR_BARRAGE_TRIPLE:
             case THROWING_STAR_BARRAGE_QUAD:
+                if (sosi == null || sosi.getShootObjects() == null) {
+                    return;
+                }
                 final int shootObjId = attackInfo.shootObjId;
                 ShootObject matched = null;
                 final List<ShootObject> list = sosi.getShootObjects();
@@ -375,8 +382,11 @@ public class NightLord extends Thief {
                 || skillId == GUST_CHARM
                 || skillId == TRIPLE_THROW
                 || skillId == SHADE_SPLITTER
-                || skillId == QUAD_STAR || skillId == HEXA_QUAD_STAR
-                || skillId == SHOWDOWN || skillId == HEXA_SHOWDOWN;
+                || skillId == QUAD_STAR || skillId == HEXA_QUAD_STAR || skillId == HEXA_ENHANCED_QUAD_STAR
+                || skillId == SHOWDOWN || skillId == HEXA_SHOWDOWN
+                || skillId == DEATH_STAR || skillId == HEXA_DEATH_STAR || skillId == HEXA_DEATH_STAR_RAMPANT
+                || skillId == LIFE_AND_DEATH || skillId == LIFE_AND_DEATH_ATTACK_1 || skillId == LIFE_AND_DEATH_ATTACK_2
+                || skillId == DEEP_STRIKE || skillId == DEEP_STRIKE_ATTACK;
     }
 
     public void doActiveThrowBlasting(AttackInfo attackInfo) {
@@ -424,6 +434,9 @@ public class NightLord extends Thief {
 
     public void doPassiveThrowBlasting(AttackInfo attackInfo) {
         if (chr.hasSkillOnCooldown(THROW_BLASTING_CD)) {
+            return;
+        }
+        if (attackInfo.mobAttackInfo.isEmpty()) {
             return;
         }
         Mob mob = (Mob) chr.getField().getLifeByObjectID(attackInfo.mobAttackInfo.getFirst().mobId);
@@ -516,8 +529,12 @@ public class NightLord extends Thief {
     private void setMarkonMob(Mob mob, long damage) {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         if (tsm.hasStat(NightLordMark)) {
-            int skillID = chr.hasSkill(HEXA_ASSASSINS_MARK) ? HEXA_ASSASSINS_MARK_DOT : getMarkSkill().getSkillId();
-            int slv = getMarkSkill().getCurrentLevel();
+            Skill skill = getMarkSkill();
+            if (skill == null) {
+                return;
+            }
+            int skillID = chr.hasSkill(HEXA_ASSASSINS_MARK) ? HEXA_ASSASSINS_MARK_DOT : skill.getSkillId();
+            int slv = skill.getCurrentLevel();
             var bi = BurnedInfo.createBurnInfo(chr, skillID, slv, damage);
             MobTemporaryStat mts = mob.getTemporaryStat();
             mts.createAndAddBurnedInfo(mob, bi, skillID);
@@ -532,7 +549,13 @@ public class NightLord extends Thief {
         if (skillID != NIGHTLORD_MARK_ATOM && skillID != ASSASSINS_MARK_ATOM && skillID != HEXA_ASSASSINS_MARK_ATOM) {
             Field field = chr.getField();
             Skill skill = getMarkSkill();
+            if (skill == null) {
+                return;
+            }
             int starCount = chr.getSkillStatValue(bulletCount, skill.getSkillId());
+            if (starCount <= 0) {
+                starCount = 4;
+            }
 
             ForceAtomEnum fae = ForceAtomEnum.ASSASSIN_MARK;
             int atom = ASSASSINS_MARK_ATOM;
@@ -543,7 +566,8 @@ public class NightLord extends Thief {
                 fae = ForceAtomEnum.NIGHTLORD_MARK;
                 atom = NIGHTLORD_MARK_ATOM;
             }
-            int randomInt = new Random().nextInt((360 / starCount) - 1);
+            int bound = (360 / Math.max(1, starCount)) - 1;
+            int randomInt = bound > 0 ? new Random().nextInt(bound) : 0;
             Rect rect = new Rect(new Position(chr.getPosition().getX() - 300, chr.getPosition().getY() - 300), new Position(chr.getPosition().getX() + 300, chr.getPosition().getY() + 300));
             List<Mob> lifes = chr.getField().getMobsInRect(rect);
             if (lifes.size() <= 0) {
@@ -766,18 +790,21 @@ public class NightLord extends Thief {
                 int skillID = DARK_FLARE;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
                 return 1;
             }
             case HEXA_SUDDEN_RAID -> {
                 int skillID = SUDDEN_RAID;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
                 return 1;
             }
             case HEXA_DEATH_STAR -> {
                 int skillID = DEATH_STAR;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
                 return 1;
             }
         }

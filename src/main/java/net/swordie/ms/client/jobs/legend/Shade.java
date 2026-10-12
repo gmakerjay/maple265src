@@ -9,6 +9,7 @@ import net.swordie.ms.client.character.skills.Option;
 import net.swordie.ms.client.character.skills.Skill;
 import net.swordie.ms.client.character.skills.info.AttackInfo;
 import net.swordie.ms.client.character.skills.info.ForceAtomInfo;
+import net.swordie.ms.client.character.skills.info.MobAttackInfo;
 import net.swordie.ms.client.character.skills.info.SkillInfo;
 import net.swordie.ms.client.character.skills.info.SkillUseInfo;
 import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
@@ -87,6 +88,12 @@ public class Shade extends Job {
     public static final int SMASHING_MULTIPUNCH_KEYDOWN = 400051078;
     public static final int SMASHING_MULTIPUNCH_FINALE = 400051079;
 
+    // HEXA & Origin Skills
+    public static final int HEXA_SPIRIT_CLAW = 25141000;
+    public static final int ADVENT_OF_THE_FOX_GOD = 25141500;
+    public static final int ADVENT_OF_THE_FOX_GOD_ATTACK1 = 25141501;
+    public static final int ADVENT_OF_THE_FOX_GOD_ATTACK2 = 25141502;
+
     private final int[] addedSkills = new int[]{
             FLASH_FIST,
             SPIRIT_AFFINITY,
@@ -117,7 +124,7 @@ public class Shade extends Job {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         chr.heal(chr.getMaxHP(), true);
         tsm.removeStatsBySkill(SUMMON_OTHER_SPIRIT);
-        chr.chatMessage("Bạn được hồi sinh bởi kỹ năng " + StringData.getSkillStringById(SUMMON_OTHER_SPIRIT).getName() + ".");
+        chr.chatMessage("You have been revived by " + StringData.getSkillStringById(SUMMON_OTHER_SPIRIT).getName() + ".");
         chr.write(UserPacket.effect(Effect.skillSpecial(SUMMON_OTHER_SPIRIT)));
         chr.getField().broadcast(UserRemote.effect(chr.getId(), Effect.skillSpecial(SUMMON_OTHER_SPIRIT)), chr);
         chr.write(UserPacket.effect(Effect.skillUse(25111211, chr.getLevel(), (byte) 1)));
@@ -242,6 +249,29 @@ public class Shade extends Job {
                 tsm.sendStat(NotDamaged, o);
                 chr.dispose();
                 break;
+            case ADVENT_OF_THE_FOX_GOD:
+            case ADVENT_OF_THE_FOX_GOD_ATTACK1:
+            case ADVENT_OF_THE_FOX_GOD_ATTACK2:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob == null || mob.getHp() <= 0) {
+                        continue;
+                    }
+                    MobTemporaryStat mts = mob.getTemporaryStat();
+                    Option o1 = new Option();
+                    o1.nOption = 1;
+                    o1.rOption = ADVENT_OF_THE_FOX_GOD;
+                    o1.tOption = 10;
+                    Option o2 = new Option();
+                    o2.nOption = 1;
+                    o2.rOption = ADVENT_OF_THE_FOX_GOD;
+                    o2.tOption = 20;
+                    EnumMap<MobStat, Option> originStats = new EnumMap<>(MobStat.class);
+                    originStats.put(MobStat.Freeze, o1);
+                    originStats.put(MobStat.OriginDebuff, o2);
+                    mts.addStatOptions(mob, originStats);
+                }
+                break;
         }
     }
 
@@ -249,7 +279,9 @@ public class Shade extends Job {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         if (tsm.hasStat(EunwolFoxSpirit)) {
             SkillInfo si = SkillData.getSkillInfoById(FOX_SPIRITS);
-            Rect rect = chr.getPosition().getRectAround(si.getFirstRect());
+            Rect rect = (si != null && si.getFirstRect() != null)
+                    ? chr.getPosition().getRectAround(si.getFirstRect())
+                    : chr.getPosition().getRectAround(new Rect(-500, -300, 500, 300));
             List<Mob> mobs = chr.getField().getMobsInRect(rect);
             if (mobs.size() <= 0) {
                 return;
@@ -507,6 +539,14 @@ public class Shade extends Job {
             case HEROS_WILL_SH:
                 tsm.removeAllDebuffs();
                 break;
+            case ADVENT_OF_THE_FOX_GOD:
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 7;
+                newStats.put(IndieNotDamaged, o1);
+                tsm.sendStat(newStats);
+                chr.getField().broadcast(UserPacket.effect(Effect.skillSpecial(skillID)), chr);
+                break;
         }
     }
 
@@ -591,6 +631,10 @@ public class Shade extends Job {
             }
             case SUMMON_OTHER_SPIRIT -> {
                 chr.reduceSkillCoolTime(SUMMON_OTHER_SPIRIT, 1800000);
+                return 1;
+            }
+            case ADVENT_OF_THE_FOX_GOD -> {
+                chr.setSkillCooldown(ADVENT_OF_THE_FOX_GOD, chr.getSkillLevel(ADVENT_OF_THE_FOX_GOD));
                 return 1;
             }
         }

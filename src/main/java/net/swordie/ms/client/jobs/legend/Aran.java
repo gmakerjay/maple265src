@@ -8,6 +8,7 @@ import net.swordie.ms.client.character.skills.Option;
 import net.swordie.ms.client.character.skills.Skill;
 import net.swordie.ms.client.character.skills.SkillStat;
 import net.swordie.ms.client.character.skills.info.AttackInfo;
+import net.swordie.ms.client.character.skills.info.MobAttackInfo;
 import net.swordie.ms.client.character.skills.info.SkillInfo;
 import net.swordie.ms.client.character.skills.info.SkillUseInfo;
 import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
@@ -123,6 +124,13 @@ public class Aran extends Job {
 
     // HEXA skills
     public static final int HEXA_FINAL_ATTACK = 21140012;
+    public static final int HEXA_BEYOND_BLADE = 21141000;
+    public static final int HEXA_BEYOND_BLADE_2 = 21141001;
+    public static final int HEXA_BEYOND_BLADE_3 = 21141002;
+    public static final int ADRENALINE_SURGE = 21141500;
+    public static final int ADRENALINE_SURGE_SUB = 21141501;
+    public static final int ADRENALINE_SURGE_FINISHER = 21141502;
+    public static final int ADRENALINE_SURGE_EXTRA = 21141503;
 
     private final int[] addedSkills = new int[]{
             REGAINED_MEMORY,
@@ -176,10 +184,11 @@ public class Aran extends Job {
             Option o = new Option();
             o.nOption = 1;
             o.rOption = ADRENALINE_RUSH;
-            o.tOption = si.getValue(time, slv) + (chr.hasSkill(SURGING_ADRENALINE) && chr.getLevel() >= 180 ? 5000 : 0);
+            int duration = si.getValue(time, slv) + (chr.hasSkill(SURGING_ADRENALINE) && chr.getLevel() >= 180 ? 5 : 0);
+            o.tOption = duration;
             o.cOption = 1;
             tsm.sendStat(AdrenalinBoost, o);
-            chr.getTimer().addEvent(() -> setCombo(500), si.getValue(time, slv), TimeUnit.SECONDS);
+            chr.getTimer().addEvent(() -> setCombo(500), duration, TimeUnit.SECONDS);
         }
     }
 
@@ -289,7 +298,36 @@ public class Aran extends Job {
         int slv = attackInfo.slv;
         Option o1 = new Option();
         if (hasHitMobs) {
-            if (chr.hasSkill(ADRENALINE_RUSH) && getCombo() > 999 && !tsm.hasStat(AdrenalinBoost)) {
+            if (skillID == ADRENALINE_SURGE || skillID == ADRENALINE_SURGE_SUB || skillID == ADRENALINE_SURGE_FINISHER) {
+                Option oOrigin1 = new Option();
+                Option oOrigin2 = new Option();
+                oOrigin1.nOption = 1;
+                oOrigin1.rOption = skillID;
+                oOrigin1.tOption = 10;
+                oOrigin2.nOption = 1;
+                oOrigin2.rOption = skillID;
+                oOrigin2.tOption = 20;
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob == null || mob.getHp() <= 0) {
+                        continue;
+                    }
+                    EnumMap<MobStat, Option> originStats = new EnumMap<>(MobStat.class);
+                    originStats.put(MobStat.Freeze, oOrigin1);
+                    originStats.put(MobStat.OriginDebuff, oOrigin2);
+                    mob.getTemporaryStat().addStatOptions(mob, originStats);
+                }
+            }
+            if (chr.hasSkill(COMBO_ABILITY) && !tsm.hasStat(AdrenalinBoost)) {
+                int comboGain = 0;
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    comboGain += mai.damages.length;
+                }
+                if (comboGain > 0) {
+                    setCombo(getCombo() + comboGain);
+                }
+            }
+            if (chr.hasSkill(ADRENALINE_RUSH) && getCombo() >= 1000 && !tsm.hasStat(AdrenalinBoost)) {
                 giveAdrenalinRushBuff(tsm);
             }
             if (now - lastDrain >= 500L) {
@@ -463,9 +501,9 @@ public class Aran extends Job {
     }
 
     public void mahaFuryAttack(TemporaryStatManager tsm) {
-        if (tsm.hasStat(EunwolSoulSeperateNotTime) && chr.checkAndSetSkillCooltime(MAHAS_FURY_BUFF, true)) {
+        if (tsm.hasStat(EunwolSoulSeperateNotTime) && chr.checkAndSetSkillCooltime(MAHAS_FURY_ATTACK, true)) {
             chr.getField().broadcast(UserLocal.userBonusAttackRequest(MAHAS_FURY_ATTACK));
-            chr.addSkillCooldown(MAHAS_FURY_BUFF, 3000); // every 3 sec
+            chr.addSkillCooldown(MAHAS_FURY_ATTACK, 3000); // every 3 sec
         }
     }
 
@@ -556,6 +594,14 @@ public class Aran extends Job {
             case ADRENALINE_BURST:
                 giveAdrenalinRushBuff(tsm);
                 break;
+            case ADRENALINE_SURGE:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
+                tsm.sendStat(IndieNotDamaged, o1);
+                chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
+                giveAdrenalinRushBuff(tsm);
+                break;
             case RETURN_TO_RIEN:
                 Field toField = chr.getOrCreateFieldByCurrentInstanceType(si.getValue(x, slv));
                 chr.warp(toField);
@@ -608,5 +654,27 @@ public class Aran extends Job {
         if (cts == AranComboTempestAura) {
             chr.write(WvsContext.aranDireWolfCurse(new HashMap<>()));
         }
+    }
+
+    @Override
+    public int handleSetCoolDownSkill(int skillId) {
+        switch (skillId) {
+            case ADRENALINE_BURST -> {
+                int slv = chr.getSkillLevel(skillId);
+                chr.setSkillCooldown(skillId, slv);
+                return 1;
+            }
+            case MAHAS_CARNAGE -> {
+                int slv = chr.getSkillLevel(skillId);
+                chr.setSkillCooldown(skillId, slv);
+                return 1;
+            }
+            case ADRENALINE_SURGE -> {
+                int slv = chr.getSkillLevel(skillId);
+                chr.setSkillCooldown(skillId, slv);
+                return 1;
+            }
+        }
+        return super.handleSetCoolDownSkill(skillId);
     }
 }

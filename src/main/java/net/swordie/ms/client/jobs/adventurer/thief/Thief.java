@@ -73,7 +73,11 @@ public class Thief extends Beginner {
         if (hasHitMobs) {
             TemporaryStatManager tsm = chr.getTemporaryStatManager();
             if (tsm.hasStat(DarkSight)) {
-                tsm.removeStat(DarkSight);
+                Option dsOpt = tsm.getOption(DarkSight);
+                // Shadow Walker (V-Matrix 400001023) maintains Dark Sight during attacks
+                if (dsOpt == null || dsOpt.rOption != SHADOW_WALKER) {
+                    tsm.removeStat(DarkSight);
+                }
             }
         }
     }
@@ -93,11 +97,21 @@ public class Thief extends Beginner {
         switch (skillID) {
             case DARK_SIGHT:
                 darkSightCount = 0;
+                o1.nOption = si.getValue(x, slv);
+                o1.rOption = skillID;
+                o1.tOption = si.getValue(time, slv);
+                tsm.sendStat(DarkSight, o1);
+                break;
             case SHADOW_WALKER:
                 o1.nOption = si.getValue(x, slv);
                 o1.rOption = skillID;
                 o1.tOption = si.getValue(time, slv);
                 tsm.sendStat(DarkSight, o1);
+                Option o2 = new Option();
+                o2.nReason = skillID;
+                o2.nValue = si.getValue(indieDamR, slv) > 0 ? si.getValue(indieDamR, slv) : si.getValue(x, slv);
+                o2.tTerm = si.getValue(time, slv);
+                tsm.sendStat(IndiePMdR, o2);
                 break;
             case MAPLE_RETURN:
                 Field toField = chr.getOrCreateFieldByCurrentInstanceType(si.getValue(x, slv));

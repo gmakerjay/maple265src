@@ -3,6 +3,201 @@
 This file tracks all bug fixes, feature implementations, and system optimizations across sessions.
 **Rule (AGENTS.md #4)**: Every agent MUST record new progress here and in `.agents/skills/maplestory-bug-knowledge/SKILL.md` after completing any modification.
 
+## 📅 [2026-10-12 18:45 น.] Hyper Burning Max NPC 9010000 Localization to Standard English
+
+### 🎯 Scope
+1. **แปลข้อความแจ้งเตือน NPC Maple Administrator (`9010000`) จากภาษาเวียดนามเป็นภาษาอังกฤษมาตรฐานใน [`Char.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java)**:
+   - ข้อความเดิม (เวียดนาม):
+     > *"Bạn đã đăng nhập bằng nhân vật #rHyper Buring Max#k.\r\nHãy trải nghiệm quá trình tăng trưởng không giới hạn\r\nvới hiệu ứng #bTăng cấp 1+4#k\r\ncho đến khi đạt #rLv. 260#k!"*
+   - แปลและปรับปรุงเป็นภาษาอังกฤษมาตรฐาน (แก้ไขคำสะกด "Hyper Buring" เป็น "Hyper Burning"):
+     > *"You have logged in with a #rHyper Burning Max#k character.\r\nExperience limitless growth\r\nwith the #b1+4 Level Up#k effect\r\nuntil you reach #rLv. 260#k!"*
+2. **แปลข้อความแจ้งเตือน Pop-up ที่เกี่ยวข้อง**:
+   - [`LoginHandler.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/LoginHandler.java): แปล *"Không tìm thấy dữ liệu tài khoản, vui lòng đăng nhập lại."* เป็น *"Account data not found, please log in again."*
+   - [`Timer.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/Timer.java): แปล *"Dữ liệu máy chủ đã được làm mới. Vui lòng đăng nhập lại nếu bạn gặp bất kỳ sự cố nào."* เป็น *"Server data has been refreshed. Please log in again if you encounter any issues."*
+
+### 📂 Files Modified
+- [`Char.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java)
+- [`LoginHandler.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/LoginHandler.java)
+- [`Timer.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/Timer.java)
+- [`PROGRESS.md`](file:///c:/Users/admin/Documents/MapleV265Src/PROGRESS.md)
+
+### 🧪 Verification
+- Maven Compile: `BUILD SUCCESS` (853 source files compiled in 24.0s, 0 errors)
+
+---
+
+## 📅 [2026-10-12 18:40 น.] Complete Endgame Command Integration for Legend (Heroes) Classes (Aran, Evan, Mercedes, Phantom, Luminous, Shade) & Testing Equipment Optimization
+
+### 🎯 Scope
+1. **เพิ่มการสนับสนุนคำสั่ง `!endgame` ครบทุกอาชีพกลุ่ม Legend (Heroes) ใน [`AdminCommands.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)**:
+   - **ระบบตรวจจับและเลื่อนขั้นอาชีพอัตโนมัติ (`setupEndgame`)**:
+     - เมื่อผู้เล่นพิมพ์คำสั่ง `!endgame` โดยไม่ระบุอาร์กิวเมนต์ ตัวเซิร์ฟเวอร์จะตรวจสอบ `curJob` และเลื่อนขั้นไปยังคลาส 4 อย่างถูกต้อง:
+       - Aran (2000, 2100, 2110, 2111) -> `2112`
+       - Evan (2001, 2200, 2210, 2212, 2214) -> `2217`
+       - Mercedes (2002, 2300, 2310, 2311) -> `2312`
+       - Phantom (2003, 2400, 2410, 2411) -> `2412`
+       - Luminous (2004, 2700, 2710, 2711) -> `2712`
+       - Shade (2005, 2500, 2510, 2511) -> `2512`
+     - แก้ไขบั๊กในคำสั่ง `!endgame evan`: เดิมกำหนด `targetJob = 2218` ซึ่งเป็น Job ID ที่ไม่มีอยู่จริง แก้ไขเป็น `2217`
+     - เพิ่ม Alias `!endgame eunwol` ให้ชี้ไปยัง Shade (2512) อย่างสมบูรณ์
+2. **ระบบแจกไอเทมและอุปกรณ์ BiS ตรงสายอาชีพ 100% (Item IDs Verified via WZ String Data)**:
+   - **Aran (2112)**:
+     - Weapon: Arcane Umbra Polearm (`1442274`)
+     - Secondary (BiS): Princess No's Flower Ballast (`1352935`)
+     - Emblem: Mitra's Rage: Warrior (`1190555`)
+     - Armors: Arcane Umbra Warrior 6 ชิ้น (`1004808, 1053063, 1073158, 1082695, 1102940, 1152196`)
+   - **Evan (2217)**:
+     - Weapon: Arcane Umbra Staff (`1382265`)
+     - Secondary (BiS): Princess No's Dragon Legacy (`1352945`)
+     - Emblem: Mitra's Rage: Magician (`1190557`)
+     - Armors: Arcane Umbra Mage 6 ชิ้น (`1004809, 1053064, 1073159, 1082696, 1102941, 1152197`)
+   - **Mercedes (2312)**:
+     - Weapon: Arcane Umbra Dual Bowguns (`1522143`)
+     - Secondary (BiS): Princess No's Accursed Arrow (`1352009`)
+     - Emblem: Mitra's Rage: Bowman (`1190556`)
+     - Armors: Arcane Umbra Archer 6 ชิ้น (`1004810, 1053065, 1073160, 1082697, 1102942, 1152198`)
+   - **Phantom (2412)**:
+     - Weapon: Arcane Umbra Cane (`1362140`)
+     - Secondary (BiS): Princess No's Carte (`1352109`)
+     - Emblem: Mitra's Rage: Thief (`1190558`)
+     - Armors: Arcane Umbra Thief 6 ชิ้น (`1004811, 1053066, 1073161, 1082698, 1102943, 1152199`)
+   - **Luminous (2712)**:
+     - Weapon: Arcane Umbra Shining Rod (`1212120`)
+     - Secondary (BiS): Princess No's Soul Orb (`1352406`)
+     - Emblem: Mitra's Rage: Magician (`1190557`)
+     - Armors: Arcane Umbra Mage 6 ชิ้น (`1004809, 1053064, 1073159, 1082696, 1102941, 1152197`)
+   - **Shade (2512)**:
+     - Weapon: Arcane Umbra Knuckle (`1482221`)
+     - Secondary (BiS): Princess No's Fox Marble (`1353105`)
+     - Emblem: Mitra's Rage: Pirate (`1190559`)
+     - Armors: Arcane Umbra Pirate 6 ชิ้น (`1004812, 1053067, 1073162, 1082699, 1102944, 1152200`)
+3. **การจัดการสกิลตามธรรมชาติและจัดเตรียมทรัพยากร V-Matrix และ HEXA Matrix**:
+   - ปฏิบัติตามข้อกำหนดอย่างเคร่งครัด: ไม่อัดสกิลย่อยหรือ invisible sub-actions ใส่ Skill Book ของตัวละคร เพื่อป้องกันสกิลล้นหรือไอคอนสกิลที่กดใช้ไม่ได้
+   - อัปเกรดสกิลคลาส 1 ถึง 4 ตามระบบปกติผ่าน `chr.maxSkills()` และแจก SP ใน ExtendSP อย่างสมบูรณ์
+   - มอบทรัพยากรจำนวนมหาศาลเพื่อให้ผู้เล่นอัปเกรด V-Matrix และ HEXA Matrix ได้อย่างอิสระและเป็นไปตามธรรมชาติของเกม:
+     - Sol Erda Energy x1,000 (`2636421`)
+     - Sol Erda Fragments x30,000 (`4009548`)
+     - Nodestones x3,000 (`2435719`)
+     - Experience Nodestones x500 (`2437760`)
+     - Power Elixirs x5,000 (`2000005`)
+     - เงิน 10,000,000,000 Mesos (10 Billion)
+
+### 📂 Files Modified
+- [`AdminCommands.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+- [`PROGRESS.md`](file:///c:/Users/admin/Documents/MapleV265Src/PROGRESS.md)
+- [`.agents/skills/maplestory-bug-knowledge/SKILL.md`](file:///c:/Users/admin/Documents/MapleV265Src/.agents/skills/maplestory-bug-knowledge/SKILL.md)
+
+### 🧪 Verification
+- Maven Compile: `BUILD SUCCESS` (853 source files compiled in 24.2s, 0 errors)
+
+---
+
+## 📅 [2026-10-12 18:30 น.] Comprehensive Audit & Fixes for Legend (Heroes) Classes (Legend, Aran, Evan, Mercedes, Phantom, Luminous, Shade) & SkillConstants Sub-Skill Mappings
+
+### 🎯 Scope
+1. **การตรวจสอบเชิงลึกและปรับปรุงแก้ไขกลุ่มอาชีพวีรบุรุษ Legend (Heroes) ทั้งหมด (`net.swordie.ms.client.jobs.legend`)**:
+   - **[`Legend.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Legend.java)**:
+     - ตรวจสอบความถูกต้องของคลาสเริ่มต้น (Job 2000) ความสะอาดของโค้ด โหลดสกิลพื้นฐาน และ Stat เริ่มต้น ทำงานสมบูรณ์
+   - **[`Aran.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Aran.java)**:
+     - **แก้บั๊ก Surging Adrenaline คำนวณระยะเวลาผิดพลาดมหาศาล**: เดิม `o.tOption = si.getValue(time, slv) + 5000;` ส่งผลให้บัฟ Adrenaline อยู่นานถึง 5,000 วินาที (~83 นาที) แก้ไขให้ถูกต้องเป็น `+ 5` วินาทีตามสเปกทางการ
+     - **แก้บั๊ก Combo Ability ไม่สะสมคอมโบเมื่อโจมตีมอนสเตอร์**: เดิมใน `handleAttack()` ไม่มีการเรียก `setCombo()` เมื่อโจมตีโดนมอนสเตอร์ ทำให้อารันไม่สามารถสะสมคอมโบตามธรรมชาติและไม่สามารถเข้าสู่สภาวะ Adrenaline Rush ได้ แก้ไขโดยนับจำนวน Hit โจมตีทั้งหมด (`comboGain += mai.damages.length; setCombo(getCombo() + comboGain);`)
+     - **แก้บั๊กคูลดาวน์ Maha's Fury**: ใน `mahaFuryAttack()` เดิมไปสั่งติดคูลดาวน์ที่ `MAHAS_FURY_BUFF` (400011016) ด้วยเวลา 3 วินาที ทำให้บัฟหลัก 150 วินาทีถูกเขียนทับ แก้ไขให้ติดคูลดาวน์เฉพาะท่าโจมตี `MAHAS_FURY_ATTACK` (400011020)
+     - **ติดตั้งระบบ 6th Job Origin Skill - `ADRENALINE_SURGE` (21141500)**:
+       - เพิ่มคัตซีนเอฟเฟกต์ และระบบอมตะ 7 วินาที (`IndieNotDamaged`)
+       - บังคับเปิดใช้งานสถานะ Adrenaline Rush ทันทีเมื่อร่ายสกิล
+       - สร้างสถานะ Freeze (10 วินาที) และ OriginDebuff (20 วินาที) ใส่มอนสเตอร์ทุกตัวที่โดนโจมตี
+     - **เพิ่มการจัดการ Cooldown ใน `handleSetCoolDownSkill()`**: สำหรับ Adrenaline Burst, Maha's Carnage และ Adrenaline Surge
+   - **[`Evan.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Evan.java)**:
+     - **แก้บั๊กคริติคอล Job ID และ SP Advancement หลุด (Level 100)**: เดิมบรรทัดที่ 577 สั่ง `chr.setStatAndSendPacket(Stat.job, 2218); chr.addSpToSpecificJob((short) 2218, 3);` ซึ่งในระบบ Evan หลังรีแวมป์ คลาส 4 คือ `2217` (2218 ไม่มีอยู่จริง) ทำให้แต้ม SP ถูกส่งไปยัง Job ID ที่ไม่ถูกต้องและค้าง แก้ไขให้เป็น `2217` อย่างถูกต้อง
+     - **ป้องกัน NullPointerException ใน `createMagicDebrisForceAtom()`**: เพิ่ม Guard `if (si == null || si.getFirstRect() == null) return;` ก่อนคำนวณตำแหน่งพื้นที่เศษซากเวทมนตร์
+     - **ติดตั้งระบบ 6th Job Origin Skill - `ZODIAC_BURST` (22201500)**:
+       - เพิ่มอมตะ 7 วินาที (`IndieNotDamaged`) และบรอดแคสต์สกิลเอฟเฟกต์
+       - สร้างสถานะ Freeze (10 วินาที) และ OriginDebuff (20 วินาที) บนมอนสเตอร์ที่โดนโจมตี
+     - **เพิ่ม Cooldown Handling ใน `handleSetCoolDownSkill()`** สำหรับ Zodiac Burst
+   - **[`Mercedes.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Mercedes.java)**:
+     - **แก้บั๊ก Array Containment เสมือน**: เดิมใช้ `Collections.singletonList(summonAttacks).contains(attackInfo.skillId)` ซึ่ง `summonAttacks` เป็น `int[]` ทำให้ได้ `List<int[]>` และเงื่อนไขคืนค่า `false` เสมอ แก้ไขเป็น `Arrays.stream(summonAttacks).anyMatch(id -> id == attackInfo.skillId)`
+     - **แก้บั๊กสแต็ก Ignis Roar ไม่สะสม**: เดิมบรรทัดที่ 331 ตรวจสอบ `if (tsm.hasStat(RpSiksin))` ซึ่ง `RpSiksin` เป็น CTS ของ Kanna ทำให้ Mercedes ไม่เคยสะสมหรือต่อเวลาสแต็ก Ignis Roar ได้เลย แก้ไขเป็น `if (chr.hasSkill(IGNIS_ROAR))`
+     - **ติดตั้งระบบ 6th Job Origin Skill - `UNFADING_GLORY` (23141500)**:
+       - เพิ่มอมตะ 7 วินาที บรอดแคสต์เอฟเฟกต์
+       - สร้างสถานะ Freeze (10 วินาที) และ OriginDebuff (20 วินาที) ใส่มอนสเตอร์
+     - **เพิ่ม Cooldown Handling ใน `handleSetCoolDownSkill()`**: สำหรับ Unfading Glory และ Wrath of Enlil
+   - **[`Phantom.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Phantom.java)**:
+     - **แปลภาษาข้อความชุบชีวิต Final Feint**: แก้ไขข้อความเวียดนาม `B¢n «ïæc hÓi sinh bäi k¸ n£ng Final Feint` เป็นภาษาอังกฤษมาตรฐาน `"You have been revived by Final Feint."`
+     - **ป้องกัน NullPointerException ใน `createAceInTheHoleForceAtom()`**: เพิ่ม Fallback Rect ป้องกันกรณี WZ ไม่มี FirstRect
+     - **ติดตั้งระบบ 6th Job Origin Skill - `DEFYING_FATE` (24141500) และ Sub-Skills**:
+       - เพิ่มค่าคงที่ `DEFYING_FATE` และ `DEFYING_FATE_ATTACK` (24141502)
+       - เพิ่มในเมธอด `isCaneSkill()` เพื่อให้สะสมสแต็ก Phantom's Mark และสแต็กไพ่ได้สมบูรณ์
+       - เพิ่มอมตะ 7 วินาที, Freeze (10s), OriginDebuff (20s)
+       - เพิ่มการจัดการ Cooldown ใน `handleSetCoolDownSkill()`
+   - **[`Luminous.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Luminous.java)**:
+     - **แก้บั๊ก Ray of Redemption ไม่ฮีลสมาชิกปาร์ตี้**: เดิมฮีลเฉพาะผู้ร่าย เพิ่มการฮีล 100% ให้สมาชิกปาร์ตี้ทุกคนในแมพเดียวกัน
+     - **ยกระดับ Origin Skill `HARMONIC_PARADOX` (27141500) & Sub-Skills**:
+       - เพิ่ม `HARMONIC_PARADOX_FINISHER` (27141503)
+       - เพิ่มระบบ Freeze (10s) และ OriginDebuff (20s) บนมอนสเตอร์ที่โดนโจมตี
+       - เพิ่มการจัดการ Cooldown ใน `handleSetCoolDownSkill()` สำหรับ Harmonic Paradox, HEXA Ender, HEXA Reflection, HEXA Apocalypse
+   - **[`Shade.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Shade.java)**:
+     - **แปลภาษาข้อความชุบชีวิต Summon Other Spirit**: แปลข้อความภาษาเวียดนามเป็นภาษาอังกฤษมาตรฐาน `"You have been revived by " + skillName + "."`
+     - **ป้องกัน NullPointerException ใน `createFoxSpiritForceAtom()`**: เพิ่ม Rect Fallback ในกรณีที่ FirstRect เป็น null
+     - **ติดตั้งระบบ 6th Job Origin Skill - `ADVENT_OF_THE_FOX_GOD` (25141500) และ Sub-Skills**:
+       - เพิ่มค่าคงที่ `HEXA_SPIRIT_CLAW` (25141000), `ADVENT_OF_THE_FOX_GOD` (25141500), `ADVENT_OF_THE_FOX_GOD_ATTACK1` (25141501), `ADVENT_OF_THE_FOX_GOD_ATTACK2` (25141502)
+       - เพิ่มอมตะ 7 วินาที (`IndieNotDamaged`) และบรอดแคสต์สกิลเอฟเฟกต์
+       - สร้างสถานะ Freeze (10 วินาที) และ OriginDebuff (20 วินาที) บนมอนสเตอร์
+       - เพิ่ม Cooldown Handling ใน `handleSetCoolDownSkill()`
+2. **การลงทะเบียน Sub-Skills และ HEXA Mappings ใน [`SkillConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)**:
+   - ลงทะเบียนรหัสสกิลลูกและ Origin Subs ทั้งหมดของ Aran, Evan, Mercedes, Phantom, Luminous, Shade ใน `getSkillBySubSkill()` เพื่อให้เซิร์ฟเวอร์ตรวจหาเลเวลสกิลแม่และคำนวณแดเมจได้ถูกต้อง
+
+### 📂 Files Modified
+- [`Legend.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Legend.java)
+- [`Aran.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Aran.java)
+- [`Evan.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Evan.java)
+- [`Mercedes.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Mercedes.java)
+- [`Phantom.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Phantom.java)
+- [`Luminous.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Luminous.java)
+- [`Shade.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Shade.java)
+- [`SkillConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+
+## 📅 [2026-10-12 18:08 น.] Comprehensive Audit & Fixes for Explorer Thief Classes (Thief, Night Lord, Shadower, Dual Blade) & SkillConstants Sub-Skill Mappings
+
+### 🎯 Scope
+1. **การตรวจสอบเชิงลึกและแก้ไขบั๊กสายอาชีพ Explorer Thief ทั้งหมด (`net.swordie.ms.client.jobs.adventurer.thief`)**:
+   - **[`Thief.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/thief/Thief.java)**:
+     - **แก้บั๊ก Dark Sight หลุดระหว่างเปิด Shadow Walker (V-Matrix 400001023)**: เดิม `handleAttack()` จะลบ `DarkSight` ทุกครั้งที่มีการโจมตี ส่งผลให้บัฟ Shadow Walker ที่มีคุณสมบัติโจมตีได้โดยไม่หลุด Dark Sight ทำงานผิดพลาด แก้ไขโดยตรวจสอบ `Option dsOpt = tsm.getOption(DarkSight); if (dsOpt == null || dsOpt.rOption != SHADOW_WALKER)`
+     - **เพิ่ม Final Damage (`IndiePMdR`) ให้กับ Shadow Walker ใน `handleSkill()`**: เพิ่มค่า Final Damage ตาม Skill Info ให้ถูกต้องตรงตาม Official
+   - **[`NightLord.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/thief/NightLord.java)**:
+     - **แก้บั๊ก Dark Sight หลุดตอนเปิด Shadow Walker**: เพิ่มเงื่อนไข `rOption != SHADOW_WALKER` เช่นเดียวกัน
+     - **แก้เงื่อนไข Mark of the Assassin / Night Lord Mark**: ขยายให้รองรับทั้ง `ASSASSINS_MARK` (4100011) และ `NIGHT_LORD_MARK` (4120018)
+     - **ป้องกัน NullPointerException จาก SOSI (Shoot Object Single Info)**: เพิ่ม Guard `if (sosi == null || sosi.getShootObjects() == null) return;` ก่อนลูป shoot objects ในสกิล `THROWING_STAR_BARRAGE` (400041001)
+     - **ขยายเงื่อนไข `isShurikenAttack()`**: เพิ่มสกิลคลาส 6 และท่าโจมตีใหม่ ได้แก่ `HEXA_ENHANCED_QUAD_STAR`, `DEATH_STAR`, `HEXA_DEATH_STAR`, `HEXA_DEATH_STAR_RAMPANT`, `LIFE_AND_DEATH` (และ Sub-Attacks ทั้งหมด), `DEEP_STRIKE` (และ Sub-Attacks) เพื่อให้สกิล Throw Blasting และ Darkness Shuriken ทำงานติดทุกลูกดาวกระจาย
+     - **ป้องกัน `IllegalArgumentException` / `ArithmeticException` ในการสุ่มมุมดาวกระจายของ `handleMark()`**: ป้องกันกรณี `starCount <= 0` ด้วย `int bound = (360 / Math.max(1, starCount)) - 1; int randomInt = bound > 0 ? new Random().nextInt(bound) : 0;`
+     - **ซิงค์ Cooldown ระหว่างสกิล Base และ HEXA ใน `handleSetCoolDownSkill()`**: ซิงค์คูลดาวน์ให้แสดงผลบน Quickslot อย่างถูกต้องสำหรับ `HEXA_DARK_FLARE`, `HEXA_SUDDEN_RAID`, `HEXA_DEATH_STAR`
+   - **[`Shadower.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/thief/Shadower.java)**:
+     - **แก้บั๊ก Shadow Assault ปั๊มชาร์จไม่จำกัด (Infinite Charge Exploit)**: ในเมธอด `update(long now)` เดิมมีการรีฟิลสแต็ก 4 ครั้งตลอดเวลาแม้สกิลกำลังติดคูลดาวน์ แก้ไขให้เติมสแต็กเฉพาะเมื่อ `!chr.hasSkillOnCooldown(SHADOW_ASSAULT)`
+     - **แก้บั๊ก Shadow Assault ชาร์จหมดแล้วไม่ติดคูลดาวน์**: ใน `handleSkill()` เมื่อใช้ครบ 4 ครั้ง (`o1.nOption <= 0`) เพิ่มการเรียก `chr.addSkillCooldown(SHADOW_ASSAULT, cd * 1000)` เพื่อเริ่มนับคูลดาวน์ทันที
+     - **เพิ่มระบบลดคูลดาวน์ Sonic Blow (400041039)**: เมื่อโจมตีโดนมอนสเตอร์ด้วย Assassinate, Cruel Stab, หรือ Meso Explosion จะลดคูลดาวน์ Sonic Blow ลง 500ms (0.5 วินาที)
+     - **แก้บั๊ก Trickblade Finisher Debuff ตกค้าง**: เมื่อกดใช้ Trickblade ฟินิชเชอร์ จะเคลียร์ทั้งสแต็ก `Shadower_Assassination` และ `SixthAssassination` (HEXA Assassinate) ให้หายไปพร้อมกัน
+     - **แก้บั๊กสลับ Force Atom Type ใน `createMesoExplosionForceAtom()`**: แก้ไขการแม็ปรหัสเงินประเภท 6 และ 7 ที่สลับกันระหว่าง `HEXA_ENHANCED_MESO_EXPLOSION_ATOM` และ `HEXA_MESO_EXPLOSION_ATOM`
+     - **แก้บั๊ก PickPocket Drop Counter Deadlock**: เพิ่ม `drops.removeIf(oid -> field.getLifeByObjectID(oid) == null);` ใน `dropFromPickPocket()` เพื่อไม่ให้เหรียญที่หายไปแล้วค้างในตัวนับจนเหรียญหยุดดรอป
+     - **ซิงค์ Cooldown ระหว่าง Base และ HEXA**: สำหรับ `HEXA_DARK_FLARE`, `HEXA_SHADOW_ASSAULT_5`, `HEXA_PULVERIZ_FINISHER`, `HEXA_SHADOW_VEIL`, `HEXA_SUDDEN_RAID`
+   - **[`DualBlade.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/thief/DualBlade.java)**:
+     - **แก้บั๊ก `public static long lastShadowMeld`**: เดิมตัวแปรเป็น `static` ทำให้ผู้เล่น Dual Blade ทุกคนในเซิร์ฟเวอร์แชร์คูลดาวน์ 5 วินาทีของ Shadow Meld ร่วมกัน แก้ไขเป็น Instance Variable `private long lastShadowMeld = Long.MIN_VALUE;`
+     - **เพิ่มค่าคงที่สกิลที่ขาดหายไป**: เพิ่ม `BLADE_FURY = 4341004;` และ `PHANTOM_BLOW = 4341009;`
+     - **เพิ่ม Helper Method `isDualBladeAttack(int skillId)`**: รวมรหัสสกิลโจมตีของคลาส Dual Blade ทุกคลาสจนถึง 5th และ 6th Job ไว้อย่างครบถ้วน
+     - **แก้บั๊ก Dark Sight หลุดระหว่างเปิด Shadow Walker**: ตรวจสอบ `rOption != SHADOW_WALKER` เพื่อคงสถานะ Dark Sight ตลอดการโจมตี
+     - **ป้องกัน NullPointerException ใน Karma Blade และ Mortality**: เพิ่ม Guard เช็ค Null และใช้ `isDualBladeAttack()` รองรับกรณี WZ ไม่มี SkillList1 ทำให้ตัดสแต็กและสะสมสแต็กติดแน่นอน
+     - **เพิ่ม Final Damage (`IndiePMdR`) ให้กับ Shadow Walker ใน `handleSkill()`**
+     - **แก้บั๊ก Final Cut ไม่ติดคูลดาวน์เมื่อปล่อยปุ่ม**: เพิ่ม `chr.setSkillCooldown(FINAL_CUT, slv);` ใน `handleCancelKeyDownSkill()`
+     - **ซิงค์ Cooldown ใน `handleSetCoolDownSkill()`**: ซิงค์ทั้ง Sudden Raid / Hexa Sudden Raid และ Asura's Anger / Hexa Asura's Anger
+2. **ปรับปรุง [`SkillConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)**:
+   - **แก้บั๊กแพ็กเกจหลุดตำแหน่ง (Packet Desync) ใน `isShadowAssault()`**: เพิ่มรหัส HEXA Shadow Assault (4241006 - 4241010) ใน `isShadowAssault()` เพื่อให้ `AttackHandler` และ `UserRemote` ถอดรหัส `teleportByte` และพิกัด Teleport X/Y ครบถ้วน ไม่หลุด Byte Alignment
+   - **ลงทะเบียน Sub-Skills ของ 5th Job V-Matrix ใน `getActualSkillIDfromSkillID()`**: เชื่อมโยงรหัสลูกของการโจมตีไปยังรหัสสกิลแม่ เพื่อให้ Server อ่านค่าเลเวลสกิล (`slv`) ได้อย่างถูกต้อง ไม่ตกเป็นเลเวล 0
+
+### 📂 Files Modified
+- [`Thief.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/thief/Thief.java)
+- [`NightLord.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/thief/NightLord.java)
+- [`Shadower.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/thief/Shadower.java)
+- [`DualBlade.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/thief/DualBlade.java)
+- [`SkillConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+
 ## 📅 [2026-10-12 16:38 น.] Massive Fashion Mall Grand Emporium, 100% Crash-Proof Direct-Unpack Set Bundles, and Server-Wide Vietnamese Translation to Clean English
 
 ### 🎯 Scope

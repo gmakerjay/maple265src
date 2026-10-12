@@ -97,6 +97,7 @@ public class Luminous extends Job {
     // ===== 6th Job HEXA Matrix Skills =====
     public static final int HARMONIC_PARADOX = 27141500; // Origin Skill
     public static final int LUSTROUS_ORB = 27141502; // Origin Second Skill
+    public static final int HARMONIC_PARADOX_FINISHER = 27141503;
     public static final int HEXA_ENDER = 27141000;
     public static final int HEXA_REFLECTION = 27141001;
     public static final int HEXA_ENDLESS_DARKNESS = 27140002;
@@ -334,21 +335,34 @@ public class Luminous extends Job {
         switch (skillID) {
             case HARMONIC_PARADOX:
             case LUSTROUS_ORB:
+            case HARMONIC_PARADOX_FINISHER:
                 for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
                     Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
                     if (mob != null && mob.getHp() > 0) {
                         MobTemporaryStat mts = mob.getTemporaryStat();
                         Option opt1 = new Option();
                         opt1.nOption = 1;
-                        opt1.rOption = skillID;
+                        opt1.rOption = HARMONIC_PARADOX;
                         opt1.tOption = 10; // 10s Absolute Freeze / Bind
                         opt1.cOption = chr.getId();
-                        mts.addStatOptions(mob, MobStat.Freeze, opt1);
+                        Option opt2 = new Option();
+                        opt2.nOption = 1;
+                        opt2.rOption = HARMONIC_PARADOX;
+                        opt2.tOption = 20;
+                        EnumMap<MobStat, Option> originStats = new EnumMap<>(MobStat.class);
+                        originStats.put(MobStat.Freeze, opt1);
+                        originStats.put(MobStat.OriginDebuff, opt2);
+                        mts.addStatOptions(mob, originStats);
                     }
                 }
                 break;
             case RAY_OF_REDEMPTION:
                 chr.heal(chr.getMaxHP()); // 800% Recovery
+                if (chr.getParty() != null) {
+                    for (Char pChr : chr.getParty().getPartyMembersInSameFieldWithChr(chr)) {
+                        pChr.heal(pChr.getMaxHP());
+                    }
+                }
                 break;
             case PRESSURE_VOID:
                 if (!tsm.hasStatBySkillId(skillID)) {
@@ -635,4 +649,26 @@ public class Luminous extends Job {
         super.handleCancelTimer(chr);
     }
 
+    @Override
+    public int handleSetCoolDownSkill(int skillId) {
+        switch (skillId) {
+            case HARMONIC_PARADOX -> {
+                chr.setSkillCooldown(HARMONIC_PARADOX, chr.getSkillLevel(HARMONIC_PARADOX));
+                return 1;
+            }
+            case HEXA_ENDER -> {
+                chr.setSkillCooldown(ENDER, chr.getSkillLevel(HEXA_ENDER));
+                return 1;
+            }
+            case HEXA_REFLECTION -> {
+                chr.setSkillCooldown(27121100, chr.getSkillLevel(HEXA_REFLECTION));
+                return 1;
+            }
+            case HEXA_APOCALYPSE -> {
+                chr.setSkillCooldown(27121202, chr.getSkillLevel(HEXA_APOCALYPSE));
+                return 1;
+            }
+        }
+        return super.handleSetCoolDownSkill(skillId);
+    }
 }

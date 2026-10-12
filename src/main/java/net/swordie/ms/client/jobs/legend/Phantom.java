@@ -128,6 +128,8 @@ public class Phantom extends Job {
     public static final int HEXA_ROSE_CARTE_FINALE = 24141006;
     public static final int HEXA_ROSE_CARTE_FINALE_TILE = 24141006;
     public static final int LA_MORT_CARTE = 24141008;
+    public static final int DEFYING_FATE = 24141500;
+    public static final int DEFYING_FATE_ATTACK = 24141502;
 
     private final int[] addedSkills = new int[]{
             SKILL_SWIPE,
@@ -140,7 +142,8 @@ public class Phantom extends Job {
 
     private boolean isCaneSkill(int skillId) {
         return skillId == 24001000 || skillId == 24101000 || skillId == 24101002 || skillId == 24111000
-                || skillId == 24111006 || skillId == 24121010 || skillId == MILLE_AIGUILLES || skillId == HEXA_MILLE_AIGUILLES;
+                || skillId == 24111006 || skillId == 24121010 || skillId == MILLE_AIGUILLES || skillId == HEXA_MILLE_AIGUILLES
+                || skillId == DEFYING_FATE || skillId == DEFYING_FATE_ATTACK;
     }
 
     private byte cardAmount;
@@ -192,7 +195,7 @@ public class Phantom extends Job {
         SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
         chr.heal(si.getValue(x, (byte) skill.getCurrentLevel()) * chr.getMaxHP(), true);
         tsm.removeStatsBySkill(skill.getSkillId());
-        chr.chatMessage("B¢n «ïæc hÓi sinh bäi k¸ n£ng Final Feint");
+        chr.chatMessage("You have been revived by Final Feint.");
         chr.write(UserPacket.effect(Effect.skillSpecial(skill.getSkillId())));
         chr.getField().broadcast(UserRemote.effect(chr.getId(), Effect.skillSpecial(skill.getSkillId())), chr);
     }
@@ -299,6 +302,27 @@ public class Phantom extends Job {
                 newStats.put(IndieNotDamaged, o1);
                 newStats.put(DarkSight, o1.deepCopy());
                 tsm.sendStat(newStats);
+                break;
+            case DEFYING_FATE:
+            case DEFYING_FATE_ATTACK:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob == null || mob.getHp() <= 0) {
+                        continue;
+                    }
+                    MobTemporaryStat mts = mob.getTemporaryStat();
+                    o1.nOption = 1;
+                    o1.rOption = DEFYING_FATE;
+                    o1.tOption = 10;
+                    Option o2 = new Option();
+                    o2.nOption = 1;
+                    o2.rOption = DEFYING_FATE;
+                    o2.tOption = 20;
+                    EnumMap<MobStat, Option> originStats = new EnumMap<>(MobStat.class);
+                    originStats.put(MobStat.Freeze, o1);
+                    originStats.put(MobStat.OriginDebuff, o2);
+                    mts.addStatOptions(mob, originStats);
+                }
                 break;
         }
         super.handleAttack(c, attackInfo, si, now);
@@ -632,8 +656,11 @@ public class Phantom extends Job {
         ForceAtomInfo forceAtomInfo = new ForceAtomInfo(chr.getNewForceAtomKey(), fae.getInc(), 4, 4,
                 270, 500, Util.getCurrentTime(), 1, 0,
                 new Position());
+        Rect rect = (si != null && si.getFirstRect() != null)
+                ? chr.getPosition().getRectAround(si.getFirstRect())
+                : chr.getPosition().getRectAround(new Rect(-500, -300, 500, 300));
         ForceAtom fa = new ForceAtom(false, 0, chr.getId(), fae,
-                true, mob == null || mob.getHp() <= 0 ? 0 : mob.getObjectId(), ACE_IN_THE_HOLE_ATOM, forceAtomInfo, chr.getPosition().getRectAround(si.getFirstRect()), 0, 300,
+                true, mob == null || mob.getHp() <= 0 ? 0 : mob.getObjectId(), ACE_IN_THE_HOLE_ATOM, forceAtomInfo, rect, 0, 300,
                 chr.getPosition(), 0, mob == null || mob.getHp() <= 0 ? new Position() : mob.getPosition(), 0);
         fa.setMaxRecreationCount(si.getValue(z, slv));
         chr.createForceAtom(fa);
@@ -808,6 +835,14 @@ public class Phantom extends Job {
                 o2.tTerm = si.getValue(time, slv);
                 newStats.put(IndieACC, o2);
                 tsm.sendStat(newStats);
+                break;
+            case DEFYING_FATE:
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 7;
+                newStats.put(IndieNotDamaged, o1);
+                tsm.sendStat(newStats);
+                chr.getField().broadcast(UserPacket.effect(Effect.skillSpecial(skillID)), chr);
                 break;
         }
     }
@@ -1027,6 +1062,10 @@ public class Phantom extends Job {
             }
             case HEXA_TEMPEST -> {
                 chr.setSkillCooldown(TEMPEST, chr.getSkillLevel(HEXA_TEMPEST));
+                return 1;
+            }
+            case DEFYING_FATE -> {
+                chr.setSkillCooldown(DEFYING_FATE, chr.getSkillLevel(DEFYING_FATE));
                 return 1;
             }
         }

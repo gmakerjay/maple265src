@@ -97,6 +97,9 @@ public class Evan extends Job {
 
     // HEXA Skills
     public static final int HEXA_DRAGON_SPARK = 22200016;
+    public static final int ZODIAC_BURST = 22201500;
+    public static final int ZODIAC_BURST_ATTACK = 22201501;
+    public static final int ZODIAC_BURST_FINISHER = 22201502;
 
     private int prevSkill = 0;
     private Dragon dragon;
@@ -170,6 +173,26 @@ public class Evan extends Job {
         int slv = attackInfo.slv;
         handleDragonSkillEffect(attackInfo, skillID);
         if (hasHitMobs) {
+            if (skillID == ZODIAC_BURST || skillID == ZODIAC_BURST_ATTACK || skillID == ZODIAC_BURST_FINISHER) {
+                Option oOrigin1 = new Option();
+                Option oOrigin2 = new Option();
+                oOrigin1.nOption = 1;
+                oOrigin1.rOption = skillID;
+                oOrigin1.tOption = 10;
+                oOrigin2.nOption = 1;
+                oOrigin2.rOption = skillID;
+                oOrigin2.tOption = 20;
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob == null || mob.getHp() <= 0) {
+                        continue;
+                    }
+                    EnumMap<MobStat, Option> originStats = new EnumMap<>(MobStat.class);
+                    originStats.put(MobStat.Freeze, oOrigin1);
+                    originStats.put(MobStat.OriginDebuff, oOrigin2);
+                    mob.getTemporaryStat().addStatOptions(mob, originStats);
+                }
+            }
             // Partners
             if (getEvanSkill(skillID) != 1) {
                 givePartnersBuff(skillID);
@@ -232,6 +255,9 @@ public class Evan extends Job {
     private void createMagicDebrisForceAtom() {
         Field field = chr.getField();
         SkillInfo si = SkillData.getSkillInfoById(getDebrisSkill());
+        if (si == null || si.getFirstRect() == null) {
+            return;
+        }
         Rect rect = chr.getPosition().getRectAround(si.getFirstRect());
         if (!chr.isLeft()) {
             rect = rect.horizontalFlipAround(chr.getPosition().getX());
@@ -458,6 +484,13 @@ public class Evan extends Job {
             case ENHANCED_MAGIC_DEBRIS:
                 createMagicDebrisForceAtom();
                 break;
+            case ZODIAC_BURST:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
+                tsm.sendStat(IndieNotDamaged, o1);
+                chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
+                break;
             case HEROS_WILL_EVAN:
                 tsm.removeAllDebuffs();
                 break;
@@ -548,9 +581,9 @@ public class Evan extends Job {
             }
             case 100:
                 chr.setJob(2217);
-                chr.setStatAndSendPacket(Stat.job, 2218);
+                chr.setStatAndSendPacket(Stat.job, 2217);
                 chr.addSpToSpecificJob((short) 2214, 2);
-                chr.addSpToSpecificJob((short) 2218, 3);
+                chr.addSpToSpecificJob((short) 2217, 3);
                 spawnDragon();
                 break;
             case 200: {
@@ -583,6 +616,11 @@ public class Evan extends Job {
             }
             case 22110022 -> { // Dragon Flash
                 chr.setSkillCooldown(22110022, chr.getSkillLevel(22111012));
+                return 1;
+            }
+            case ZODIAC_BURST -> {
+                int slv = chr.getSkillLevel(skillId);
+                chr.setSkillCooldown(skillId, slv);
                 return 1;
             }
         }

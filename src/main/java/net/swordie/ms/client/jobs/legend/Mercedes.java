@@ -9,6 +9,7 @@ import net.swordie.ms.client.character.items.Item;
 import net.swordie.ms.client.character.skills.Option;
 import net.swordie.ms.client.character.skills.Skill;
 import net.swordie.ms.client.character.skills.info.AttackInfo;
+import net.swordie.ms.client.character.skills.info.MobAttackInfo;
 import net.swordie.ms.client.character.skills.info.SkillInfo;
 import net.swordie.ms.client.character.skills.info.SkillUseInfo;
 import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
@@ -88,6 +89,9 @@ public class Mercedes extends Job {
     public static final int HEXA_SPIRIT_OF_ELLUEL_1 = 500061047;
     public static final int HEXA_SPIRIT_OF_ELLUEL_2 = 500061048;
     public static final int HEXA_FINAL_ATTACK_DBG = 23140017;
+    public static final int UNFADING_GLORY = 23141500;
+    public static final int UNFADING_GLORY_SUB = 23141501;
+    public static final int UNFADING_GLORY_FINISHER = 23141502;
 
     private final int[] summonAttacks = new int[]{
             ELEMENTAL_KNIGHTS_BLUE,
@@ -282,6 +286,26 @@ public class Mercedes extends Job {
             }
         }
         if (hasHitMobs) {
+            if (skillID == UNFADING_GLORY || skillID == UNFADING_GLORY_SUB || skillID == UNFADING_GLORY_FINISHER) {
+                Option oOrigin1 = new Option();
+                Option oOrigin2 = new Option();
+                oOrigin1.nOption = 1;
+                oOrigin1.rOption = skillID;
+                oOrigin1.tOption = 10;
+                oOrigin2.nOption = 1;
+                oOrigin2.rOption = skillID;
+                oOrigin2.tOption = 20;
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob == null || mob.getHp() <= 0) {
+                        continue;
+                    }
+                    EnumMap<MobStat, Option> originStats = new EnumMap<>(MobStat.class);
+                    originStats.put(MobStat.Freeze, oOrigin1);
+                    originStats.put(MobStat.OriginDebuff, oOrigin2);
+                    mob.getTemporaryStat().addStatOptions(mob, originStats);
+                }
+            }
             incrementIgnisRoarStackCount(tsm, attackInfo);
         }
         switch (attackInfo.skillId) {
@@ -292,7 +316,7 @@ public class Mercedes extends Job {
     }
 
     private void incrementIgnisRoarStackCount(TemporaryStatManager tsm, AttackInfo attackInfo) {
-        if (Collections.singletonList(summonAttacks).contains(attackInfo.skillId) || attackInfo.skillId == lastAttackSkill) {
+        if (Arrays.stream(summonAttacks).anyMatch(id -> id == attackInfo.skillId) || attackInfo.skillId == lastAttackSkill) {
             return;
         }
         Option o1 = new Option();
@@ -328,7 +352,7 @@ public class Mercedes extends Job {
         if (attackInfo.skillId != WRATH_OF_ENLIL) {
             chr.reduceSkillCoolTime(WRATH_OF_ENLIL, 1000);
         }
-        if (tsm.hasStat(RpSiksin)) {
+        if (chr.hasSkill(IGNIS_ROAR)) {
             if (tsm.hasStat(AddAttackCount)) {
                 amount = tsm.getOption(AddAttackCount).nOption;
                 if (amount < ignisRoarInfo.getValue(y, slv)) {
@@ -455,6 +479,13 @@ public class Mercedes extends Job {
                 newStats.put(IndieDamReduceR, o3);
                 tsm.sendStat(newStats);
                 break;
+            case UNFADING_GLORY:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
+                tsm.sendStat(IndieNotDamaged, o1);
+                chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
+                break;
         }
     }
 
@@ -479,6 +510,16 @@ public class Mercedes extends Job {
                 int skillID = SPIRIT_NIMBLE_FLIGHT;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
+                return 1;
+            }
+            case UNFADING_GLORY -> {
+                int slv = chr.getSkillLevel(skillId);
+                chr.setSkillCooldown(skillId, slv);
+                return 1;
+            }
+            case WRATH_OF_ENLIL -> {
+                int slv = chr.getSkillLevel(skillId);
+                chr.setSkillCooldown(skillId, slv);
                 return 1;
             }
         }

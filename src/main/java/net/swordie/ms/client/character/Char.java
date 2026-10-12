@@ -3253,10 +3253,10 @@ public class Char {
             if (!hasSkill(MYSTICAL_POWER_OF_THE_HAT)) {
                 addSkill(MYSTICAL_POWER_OF_THE_HAT, 1, 1);
             }
-            sendPopupSay(9010000, "Bạn đã đăng nhập bằng nhân vật #rHyper Buring Max#k.\r\n" +
-                    "Hãy trải nghiệm quá trình tăng trưởng không giới hạn\r\n" +
-                    "với hiệu ứng #bTăng cấp 1+4#k\r\n" +
-                    "cho đến khi đạt #rLv. 260#k!");
+            sendPopupSay(9010000, "You have logged in with a #rHyper Burning Max#k character.\r\n" +
+                    "Experience limitless growth\r\n" +
+                    "with the #b1+4 Level Up#k effect\r\n" +
+                    "until you reach #rLv. 260#k!");
         } else {
             if (hasSkill(MYSTICAL_POWER_OF_THE_HAT)) {
                 removeSkill(MYSTICAL_POWER_OF_THE_HAT);

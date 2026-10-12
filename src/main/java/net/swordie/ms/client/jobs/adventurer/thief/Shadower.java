@@ -118,18 +118,15 @@ public class Shadower extends Thief {
     public void update(long now) {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         if (chr.hasSkill(SHADOW_ASSAULT)) {
-            if ((tsm.hasStat(Shadower_ShadowAssault) && !chr.hasSkillOnCooldown(SHADOW_ASSAULT))
-                    || !tsm.hasStat(Shadower_ShadowAssault)) {
-                int max = 4;
-                if (chr.hasSkill(HEXA_SHADOW_ASSAULT_BOOST)) {
-                    max = 5;
-                }
+            if (!chr.hasSkillOnCooldown(SHADOW_ASSAULT)) {
+                int max = chr.hasSkill(HEXA_SHADOW_ASSAULT_BOOST) ? 5 : 4;
                 Option o = tsm.getOption(Shadower_ShadowAssault);
-                if (o.nOption < max) {
-                    o.nOption = max;
+                if (o == null || o.nOption < max) {
+                    Option newOpt = new Option();
+                    newOpt.nOption = max;
+                    newOpt.rOption = chr.hasSkill(HEXA_SHADOW_ASSAULT_BOOST) ? HEXA_SHADOW_ASSAULT_5 : SHADOW_ASSAULT;
+                    tsm.sendStat(Shadower_ShadowAssault, newOpt);
                 }
-                o.rOption = HEXA_SHADOW_ASSAULT_5;
-                tsm.sendStat(Shadower_ShadowAssault, o);
             }
         }
         super.update(now);
@@ -271,6 +268,15 @@ public class Shadower extends Thief {
             if (chr.hasSkill(COVERT_EDGE)) {
                 handleCovertEdge();
             }
+            if (chr.hasSkill(SONIC_BLOW) && chr.hasSkillOnCooldown(SONIC_BLOW)) {
+                if (skillID == ASSASSINATE || skillID == ASSASSINATE_FINISHER
+                        || skillID == HEXA_ASSASSINATE || skillID == HEXA_ASSASSINATE_FINISHER
+                        || skillID == CRUEL_STAB || skillID == HEXA_CRUEL_STAB
+                        || skillID == MESO_EXPLOSION || skillID == ENHANCED_MESO_EXPLOSION
+                        || skillID == HEXA_MESO_EXPLOSION || skillID == HEXA_ENHANCED_MESO_EXPLOSION) {
+                    chr.reduceSkillCoolTime(SONIC_BLOW, 500);
+                }
+            }
         }
         Option o1 = new Option();
         Option o2 = new Option();
@@ -382,13 +388,15 @@ public class Shadower extends Thief {
                 createCovetousDarkness();
                 break;
             case TRICKBLADE_FINISHER:
-                tsm.removeStatsBySkill(ASSASSINATE_FINISHER);
+                tsm.removeStat(Shadower_Assassination);
+                tsm.removeStat(SixthAssassination);
                 si = SkillData.getSkillInfoById(TRICKBLADE);
                 slv = chr.getSkillLevel(TRICKBLADE);
                 o1.nValue = 1;
                 o1.nReason = TRICKBLADE;
                 o1.tTerm = si.getValue(s, slv);
                 tsm.sendStat(IndieNotDamaged, o1);
+                // Fall through intended to set cooldown
             case TRICKBLADE_MOB_ATTACK:
                 si = SkillData.getSkillInfoById(TRICKBLADE);
                 slv = chr.getSkillLevel(TRICKBLADE);
@@ -472,7 +480,7 @@ public class Shadower extends Thief {
     }
 
     private void createMesoExplosionForceAtom() {
-        if (!chr.hasSkill(MESO_EXPLOSION)) {
+        if (!chr.hasSkill(MESO_EXPLOSION) && !chr.hasSkill(ENHANCED_MESO_EXPLOSION) && !chr.hasSkill(HEXA_MESO_EXPLOSION)) {
             return;
         }
         Field field = chr.getField();
@@ -498,8 +506,8 @@ public class Shadower extends Thief {
                 }
                 var fae = chr.hasSkill(HEXA_MESO_EXPLOSION) ? ForceAtomEnum.HEXA_FLYING_MESO :
                         drop.getMoneyType() == 1 ? ForceAtomEnum.FLYING_MESO : ForceAtomEnum.ENHANCE_FLYING_MESO;
-                var atomType = drop.getMoneyType() == 7 ? HEXA_ENHANCED_MESO_EXPLOSION_ATOM :
-                        drop.getMoneyType() == 6 ? HEXA_MESO_EXPLOSION_ATOM :
+                var atomType = drop.getMoneyType() == 6 ? HEXA_ENHANCED_MESO_EXPLOSION_ATOM :
+                        drop.getMoneyType() == 7 ? HEXA_MESO_EXPLOSION_ATOM :
                         drop.getMoneyType() == 4 ? ENHANCED_MESO_EXPLOSION_ATOM : MESO_EXPLOSION_ATOM;
                 ForceAtomInfo forceAtomInfo = new ForceAtomInfo(chr.getNewForceAtomKey(), fae.getInc(), 2, 3,
                         0, 0, Util.getCurrentTime(), 1, 0,
@@ -557,10 +565,15 @@ public class Shadower extends Thief {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         Field field = chr.getField();
         Skill skill = chr.getSkill(PICK_POCKET);
+        if (skill == null) {
+            return;
+        }
         SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
         int slv = skill.getCurrentLevel();
         int proc = si.getValue(prop, slv) + (chr.hasSkill(MESO_EXPLOSION_ENHANCE) ? 10 : 0);
         if (Util.succeedProp(proc)) {
+            // Clean up despawned or collected drops to prevent drop counter deadlock
+            drops.removeIf(oid -> field.getLifeByObjectID(oid) == null);
             int maxMesoCount = 15 + (chr.hasSkill(MESO_EXPLOSION_ENHANCE) ? 5 : 0);
             if (drops.size() >= maxMesoCount) {
                 return;
@@ -671,7 +684,14 @@ public class Shadower extends Thief {
                 o1 = tsm.getOption(Shadower_ShadowAssault);
                 o1.nOption = Math.max(o1.nOption - 1, 0);
                 o1.rOption = skillID;
-                tsm.sendStat(Shadower_ShadowAssault, o1);
+                if (o1.nOption <= 0) {
+                    tsm.removeStat(Shadower_ShadowAssault);
+                    int cd = chr.getSkillStatValue(cooltime, SHADOW_ASSAULT);
+                    if (cd <= 0) cd = 60;
+                    chr.addSkillCooldown(SHADOW_ASSAULT, cd * 1000);
+                } else {
+                    tsm.sendStat(Shadower_ShadowAssault, o1);
+                }
                 break;
             case SMOKE_SCREEN:
                 AffectedArea aa = AffectedArea.getPassiveAA(chr, skillID, slv);
@@ -704,28 +724,33 @@ public class Shadower extends Thief {
                 int skillID = DARK_FLARE;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
                 return 1;
             }
             case HEXA_SHADOW_ASSAULT_5 -> {
                 int skillID = SHADOW_ASSAULT;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
                 return 1;
             }
             case HEXA_PULVERIZ_FINISHER -> {
                 chr.addSkillCooldown(HEXA_PULVERIZE, 10000);
+                chr.addSkillCooldown(skillId, 10000);
                 return 1;
             }
             case HEXA_SHADOW_VEIL -> {
                 int skillID = SHADOW_VEIL;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
                 return 1;
             }
             case HEXA_SUDDEN_RAID -> {
                 int skillID = SUDDEN_RAID;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
                 return 1;
             }
         }
