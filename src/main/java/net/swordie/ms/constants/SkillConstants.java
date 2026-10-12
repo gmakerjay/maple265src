@@ -2462,6 +2462,18 @@ public class SkillConstants {
                 return 5241010; // HEXA Scurvy Summons Subs
             case 5241504:
                 return 5241503; // Quickdraw Dreadnought Attack
+            // Cannoneer 6th Job Sub-Skills
+            case 5341003:
+            case 5341004:
+                return 5341002; // HEXA Monkey Mortar Attacks -> HEXA Monkey Mortar
+            case 5341008:
+                return 5341014; // Max Cannon Rainbow -> HEXA Rolling Rainbow
+            case 5340010:
+                return 5341009; // HEXA Monkey Militia Twin -> HEXA Monkey Militia
+            case 5341013:
+                return 5341012; // HEXA Monkey Fury Attack -> HEXA Monkey Fury
+            case 5341503:
+                return 5341500; // Barrel of Monkeys -> Super Cannon Explosion Origin
             default:
                 // Universal 6th Job Origin Sub-Skill Redirection (xxx41501-xxx41599 -> xxx41500)
                 int subOrigin = skillID % 100000;

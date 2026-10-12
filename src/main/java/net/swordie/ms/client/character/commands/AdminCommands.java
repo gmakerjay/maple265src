@@ -2884,6 +2884,11 @@ public class AdminCommands {
             secondaryId = 1352916; // Princess No's Falcon Eye
             emblemId = 1190559; // Mitra Pirate Emblem
             armors = pirateArmors;
+        } else if (JobConstants.isCannoneer(job)) {
+            weaponId = 1532150; // Arcane Umbra Siege Gun
+            secondaryId = 1352928; // Princess No's Fire Bomb
+            emblemId = 1190559; // Mitra Pirate Emblem
+            armors = pirateArmors;
         } else {
             if (JobConstants.isWarriorEquipJob(job)) {
                 weaponId = 1402259;
@@ -3065,6 +3070,18 @@ public class AdminCommands {
                 chr.addSkill(5241501, 30, 30); // Battleship Dreadnought Attack 1
                 chr.addSkill(5241502, 30, 30); // Battleship Dreadnought Attack 2
                 chr.addSkill(5241504, 30, 30); // Quickdraw Dreadnought Attack
+            } else if (JobConstants.isCannoneer(job)) {
+                chr.addSkill(5341001, 30, 30); // HEXA Cannon Bazooka
+                chr.addSkill(5341003, 30, 30); // HEXA Monkey Mortar Sub 1
+                chr.addSkill(5341004, 30, 30); // HEXA Monkey Mortar Sub 2
+                chr.addSkill(5341007, 30, 30); // HEXA Rolling Rainbow Summon
+                chr.addSkill(5341008, 30, 30); // Max Cannon Rainbow Attack
+                chr.addSkill(5340010, 30, 30); // HEXA Monkey Militia Twin
+                chr.addSkill(5340011, 30, 30); // HEXA Monkey Militia Passive
+                chr.addSkill(5341013, 30, 30); // HEXA Monkey Fury Attack
+                chr.addSkill(5341501, 30, 30); // Super Cannon Explosion Attack
+                chr.addSkill(5341502, 30, 30); // Barrel of Monkeys Attack 1
+                chr.addSkill(5341503, 30, 30); // Barrel of Monkeys Ascent
             }
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] Hexa warning: " + e.getMessage());

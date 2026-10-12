@@ -6,6 +6,7 @@ import net.swordie.ms.client.character.CharacterStat;
 import net.swordie.ms.client.character.info.HitInfo;
 import net.swordie.ms.client.character.skills.*;
 import net.swordie.ms.client.character.skills.info.AttackInfo;
+import net.swordie.ms.client.character.skills.info.MobAttackInfo;
 import net.swordie.ms.client.character.skills.info.SkillInfo;
 import net.swordie.ms.client.character.skills.info.SkillUseInfo;
 import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
@@ -78,13 +79,27 @@ public class Cannoneer extends Job {
     public static final int POOLMAKER_CHEST_BUFF = 400051077;
 
     // HEXA Skills
+    public static final int HEXA_CANNON_BARRAGE = 5341000;
+    public static final int HEXA_CANNON_BAZOOKA = 5341001;
     public static final int HEXA_MONKEY_MORTAR = 5341002;
+    public static final int HEXA_MONKEY_MORTAR_ATTACK_1 = 5341003;
+    public static final int HEXA_MONKEY_MORTAR_ATTACK_2 = 5341004;
     public static final int HEXA_ANCHOR_AWEIGH = 5341005; //Summon
     public static final int HEXA_NAUTILUS_STRIKE = 5341006; //Special Attack / Buff
-    public static final int HEXA_MONKEY_MALITIA = 5341009; //Summon
-    public static final int HEXA_MONKEY_FURY = 5341012; //Summon
     public static final int HEXA_ROLLING_RAINBOW = 5341014;
     public static final int HEXA_ROLLING_RAINBOW_SUMMON = 5341007;
+    public static final int HEXA_ROLLING_RAINBOW_ATTACK = 5341008;
+    public static final int HEXA_MONKEY_MALITIA = 5341009; //Summon
+    public static final int HEXA_MONKEY_MALITIA_TWIN = 5340010;
+    public static final int HEXA_MONKEY_MILITIA_PASSIVE = 5340011;
+    public static final int HEXA_MONKEY_FURY = 5341012; //Summon
+    public static final int HEXA_MONKEY_FURY_ATTACK = 5341013;
+
+    // 6th Job Origin & Ascent Skills
+    public static final int SUPER_CANNON_EXPLOSION = 5341500;
+    public static final int SUPER_CANNON_EXPLOSION_ATTACK = 5341501;
+    public static final int BARREL_OF_MONKEYS_ATTACK = 5341502;
+    public static final int BARREL_OF_MONKEYS = 5341503;
 
     // HEXA Boosts
     public static final int HEXA_POOLMAKER = 500061029;
@@ -206,6 +221,26 @@ public class Cannoneer extends Job {
         boolean hasHitMobs = !attackInfo.mobAttackInfo.isEmpty();
         int slv = attackInfo.slv;
         if (hasHitMobs) {
+            if (skillID == SUPER_CANNON_EXPLOSION || skillID == SUPER_CANNON_EXPLOSION_ATTACK || skillID == BARREL_OF_MONKEYS_ATTACK) {
+                Option oOrigin1 = new Option();
+                Option oOrigin2 = new Option();
+                oOrigin1.nOption = 1;
+                oOrigin1.rOption = skillID;
+                oOrigin1.tOption = 10;
+                oOrigin2.nOption = 1;
+                oOrigin2.rOption = skillID;
+                oOrigin2.tOption = 20;
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob == null || mob.getHp() <= 0) {
+                        continue;
+                    }
+                    EnumMap<MobStat, Option> originStats = new EnumMap<>(MobStat.class);
+                    originStats.put(MobStat.Freeze, oOrigin1);
+                    originStats.put(MobStat.OriginDebuff, oOrigin2);
+                    mob.getTemporaryStat().addStatOptions(mob, originStats);
+                }
+            }
             // Monkey Wave Ignore KeyDown Time
             if (chr.hasSkill(MONKEY_WAVE)) {
                 Skill mwskill = chr.getSkill(MONKEY_WAVE);
@@ -583,6 +618,15 @@ public class Cannoneer extends Job {
                 this.poolMakerStartTime = System.currentTimeMillis();
                 this.poolMakerCoolTime = si.getValue(cooltime, slv) * 1000;
                 chr.write(UserLocal.poolMakerRequest(skillID, si.getValue(w, slv), poolMakerCoolTime));
+                break;
+            case SUPER_CANNON_EXPLOSION:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
+                tsm.sendStat(IndieNotDamaged, o1);
+                chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
+                break;
+            case BARREL_OF_MONKEYS:
                 break;
         }
     }

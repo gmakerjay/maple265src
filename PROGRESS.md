@@ -3,6 +3,47 @@
 This file tracks all bug fixes, feature implementations, and system optimizations across sessions.
 **Rule (AGENTS.md #4)**: Every agent MUST record new progress here and in `.agents/skills/maplestory-bug-knowledge/SKILL.md` after completing any modification.
 
+## 📅 [2026-10-12 13:03 น.] Phase 2: Explorer Class 15 (Cannoneer - 532) สมบูรณ์แบบ 100% — ปิดฉากสาย Explorer ครบทั้ง 15 อาชีพอย่างยิ่งใหญ่! Super Cannon Explosion, Barrel of Monkeys และคำสั่ง !endgame
+
+### 🎯 Scope
+ลงทะเบียนและตรวจสอบสกิลคลาส 6 สาย Explorer อาชีพที่ 15: **Cannoneer (แคนนอนเนียร์ / จอมปืนใหญ่ลิงสมุทร - Job ID 532)** สิ้นสุดกลุ่ม Pirate Trio และปิดฉากสายผจญภัยดั้งเดิม **Explorer ทั้ง 15 อาชีพครบ 100%** บรรจุสกิล Origin (Super Cannon Explosion & Ascent Skill: Barrel of Monkeys) และ HEXA Masteries ครบชุด (HEXA Cannon Barrage, HEXA Cannon Bazooka, HEXA Monkey Mortar, HEXA Anchors Away, HEXA Nautilus Strike, HEXA Rolling Rainbow & Max Cannon Rainbow, HEXA Monkey Militia & Twin, HEXA Monkey Fury) เชื่อมต่อระบบ Origin Absolute Bind/Debuff, Cutscene Broadcast, และคำสั่งทดสอบ `!endgame cannoneer` หรือ `!endgame cannon` ให้มอบอาวุธ BiS Arcane Umbra Siege Gun, Princess No's Fire Bomb, และ HEXA Cores ระดับ 30 เต็มระบบ
+
+### 📂 Files Modified
+- [`v214 src/.../Cannoneer.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/pirate/Cannoneer.java)
+- [`v214 src/.../SkillConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`v214 src/.../AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **Super Cannon Explosion Origin & Barrel of Monkeys Integration**:
+   - ปัญหา: ใน `Cannoneer.java`, ยังขาด Constants และการจัดการสกิล Origin `SUPER_CANNON_EXPLOSION` (`5341500`), Attacks (`5341501`, `5341502`), และ `BARREL_OF_MONKEYS` (`5341503`)
+   - วิธีแก้: ใน `handleSkill()`, เพิ่ม `case SUPER_CANNON_EXPLOSION:` มอบสถานะอมตะ `IndieNotDamaged` (7 วินาที) และบรอดคาสต์คัตซีน `UserLocal.showHexaSkillEff(chr)` ทั่วแมพ
+2. **Origin Absolute Bind & Origin Debuff Handling**:
+   - ปัญหา: ใน `handleAttack()`, การโจมตีด้วยสกิล Origin ยังไม่มอบสถานะดีบัฟพิเศษของคลาส 6
+   - วิธีแก้: เพิ่มเงื่อนไขตรวจสอบ `SUPER_CANNON_EXPLOSION`, `SUPER_CANNON_EXPLOSION_ATTACK`, และ `BARREL_OF_MONKEYS_ATTACK` เพื่อมอบสถานะ `MobStat.Freeze` (10 วินาที Absolute Bind) และ `MobStat.OriginDebuff` (20 วินาที) ให้กับศัตรูทุกตัวที่ถูกโจมตีด้วย `EnumMap<MobStat, Option>`
+3. **Sub-Skill Redirection in SkillConstants**:
+   - ปัญหา: สกิลลูกเสริมของ Cannoneer เช่น `HEXA Monkey Mortar Attacks` (`5341003`, `5341004`), `Max Cannon Rainbow` (`5341008`), `HEXA Monkey Militia Twin` (`5340010`), `HEXA Monkey Fury Attack` (`5341013`), และ `Barrel of Monkeys Ascent` (`5341503`) เป็น invisible skills ใน WZ
+   - วิธีแก้: เพิ่ม sub-skill mapping ใน `SkillConstants.getActualSkillIDfromSkillID()` เพื่อให้เซิร์ฟเวอร์ดึงค่าความเสียหายและคุณสมบัติจาก parent skill ได้ 100%
+4. **Full Testing Automation in `!endgame cannoneer`**:
+   - ใน `AdminCommands.setupEndgame()`:
+     - มอบอาวุธระดับเทพ: Arcane Umbra Siege Gun (`1532150`)
+     - มอบ Secondary BiS: Princess No's Fire Bomb (`1352928`)
+     - มอบ Mitra Pirate Emblem (`1190559`) และชุดเกราะ Arcane Umbra Pirate ครบ 6 ชิ้น
+     - ปลดล็อกและอัปเกรด HEXA Cores คลาส 6 ทุกคอร์ เลเวล 30 เต็ม พร้อมมอบสกิลเสริม (`5341001`, `5341003`, `5341004`, `5341007`, `5341008`, `5340010`, `5340011`, `5341013`, `5341501`, `5341502`, `5341503`)
+5. **Phase 2 Milestone Achievement**:
+   - สำเร็จการลงทะเบียนสกิล Origin และ HEXA Matrix ครบทั้ง 15 อาชีพในสาย Explorer:
+     1. Warrior Trio: Hero (112), Paladin (122), Dark Knight (132)
+     2. Magician Trio: Fire/Poison (212), Ice/Lightning (222), Bishop (232)
+     3. Bowman Trio: Bowmaster (312), Marksman (322), Pathfinder (332)
+     4. Thief Trio: Night Lord (412), Shadower (422), Dual Blade (434)
+     5. Pirate Trio: Buccaneer (512), Corsair (522), Cannoneer (532)
+
+### 🧪 Verification & Deployment
+- คอมไพล์ผ่าน Maven OpenJDK 21: `BUILD SUCCESS` (0 errors, total time: 1m 26s)
+- ดีพลอย Fat JAR: `Server263/maplestory.jar` (~138.64 MB)
+- สร้าง Incremental Patch Package ZIP รวมทุกอาชีพ Explorer ส่งมอบไว้ใน `Patches/`
+
+---
+
 ## 📅 [2026-10-12 12:58 น.] Phase 2: Explorer Class 14 (Corsair - 522) สมบูรณ์แบบ 100% — เรือรบประจัญบาน Battleship Dreadnought, Quickdraw และคำสั่ง !endgame
 
 ### 🎯 Scope
