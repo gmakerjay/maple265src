@@ -2416,6 +2416,23 @@ public class SkillConstants {
                 return 4141009; // HEXA Death Star Rampant
             case 4141504:
                 return 4141503; // Deep Strike Sub
+            // Shadower 6th Job Sub-Skills
+            case 4241001:
+                return 4241000; // HEXA Assassinate Finisher
+            case 4241003:
+                return 4241002; // HEXA Pulverize Finisher
+            case 4241007:
+            case 4241008:
+            case 4241009:
+                return 4241006; // HEXA Meso Explosion Subs
+            case 4240014:
+                return 4241013; // HEXA Shadow Veil Attack
+            case 4241018:
+            case 4241019:
+                return 4240016; // Covert Edge Subs
+            case 4241504:
+            case 4241506:
+                return 4241503; // Covetous Darkness Subs
             default:
                 // Universal 6th Job Origin Sub-Skill Redirection (xxx41501-xxx41599 -> xxx41500)
                 int subOrigin = skillID % 100000;

@@ -2864,6 +2864,11 @@ public class AdminCommands {
             secondaryId = 1352296; // Princess No's Charm
             emblemId = 1190558; // Mitra Thief Emblem
             armors = thiefArmors;
+        } else if (JobConstants.isShadower(job)) {
+            weaponId = 1332279; // Arcane Umbra Dagger
+            secondaryId = 1352286; // Princess No's Purple Shadow
+            emblemId = 1190558; // Mitra Thief Emblem
+            armors = thiefArmors;
         } else {
             if (JobConstants.isWarriorEquipJob(job)) {
                 weaponId = 1402259;
@@ -2999,6 +3004,19 @@ public class AdminCommands {
                 chr.addSkill(4141501, 30, 30); // Life and Death Attack 1
                 chr.addSkill(4141502, 30, 30); // Life and Death Attack 2
                 chr.addSkill(4141504, 30, 30); // Deep Strike Attack
+            } else if (JobConstants.isShadower(job)) {
+                chr.addSkill(4241001, 30, 30); // HEXA Assassinate Finisher
+                chr.addSkill(4241003, 30, 30); // HEXA Pulverize Finisher
+                chr.addSkill(4241007, 30, 30); // HEXA Enhanced Meso Explosion
+                chr.addSkill(4241008, 30, 30); // HEXA Meso Explosion Atom
+                chr.addSkill(4241009, 30, 30); // HEXA Enhanced Meso Explosion Atom
+                chr.addSkill(4240014, 30, 30); // HEXA Shadow Veil Attack
+                chr.addSkill(4240016, 30, 30); // Covert Edge
+                chr.addSkill(4241018, 30, 30); // Covert Edge Attack
+                chr.addSkill(4241501, 30, 30); // Halve Cut Attack 1
+                chr.addSkill(4241502, 30, 30); // Halve Cut Attack 2
+                chr.addSkill(4241504, 30, 30); // Covetous Darkness FA
+                chr.addSkill(4241506, 30, 30); // Covetous Darkness Sub
             }
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] Hexa warning: " + e.getMessage());

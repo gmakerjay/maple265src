@@ -245,6 +245,26 @@ public class Shadower extends Thief {
         int slv = attackInfo.slv;
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         if (hasHitMobs) {
+            if (skillID == HALVE_CUT || skillID == 4241501 || skillID == 4241502) {
+                Option oOrigin1 = new Option();
+                Option oOrigin2 = new Option();
+                oOrigin1.nOption = 1;
+                oOrigin1.rOption = skillID;
+                oOrigin1.tOption = 10;
+                oOrigin2.nOption = 1;
+                oOrigin2.rOption = skillID;
+                oOrigin2.tOption = 20;
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob == null || mob.getHp() <= 0) {
+                        continue;
+                    }
+                    EnumMap<MobStat, Option> originStats = new EnumMap<>(MobStat.class);
+                    originStats.put(MobStat.Freeze, oOrigin1);
+                    originStats.put(MobStat.OriginDebuff, oOrigin2);
+                    mob.getTemporaryStat().addStatOptions(mob, originStats);
+                }
+            }
             if (chr.hasSkill(FLIP_THE_COIN)) {
                 activateFlipTheCoin(tsm);
             }
@@ -666,6 +686,13 @@ public class Shadower extends Thief {
                 break;
             case COVETOUS_DARKNESS_AA:
                 tsm.removeStat(AuthenticDarkness);
+                break;
+            case HALVE_CUT:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
+                tsm.sendStat(IndieNotDamaged, o1);
+                chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
                 break;
         }
     }

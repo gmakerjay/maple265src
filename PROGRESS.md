@@ -3,6 +3,40 @@
 This file tracks all bug fixes, feature implementations, and system optimizations across sessions.
 **Rule (AGENTS.md #4)**: Every agent MUST record new progress here and in `.agents/skills/maplestory-bug-knowledge/SKILL.md` after completing any modification.
 
+## 📅 [2026-10-12 12:38 น.] Phase 2: Explorer Class 11 (Shadower - 422) สมบูรณ์แบบ 100% — อาชีพที่สองของกลุ่ม Thief Trio เชื่อมต่อ Halve Cut, Covetous Darkness และคำสั่ง !endgame
+
+### 🎯 Scope
+ลงทะเบียนและตรวจสอบสกิลคลาส 6 สาย Explorer อาชีพที่ 11: **Shadower (แชโดว์เวอร์ / กริชพิฆาตสังหาร - Job ID 422)** อาชีพที่สองของกลุ่ม Thief Trio บรรจุสกิล Origin (Halve Cut & Ascent Skill: Covetous Darkness / Authentic Darkness) และ HEXA Masteries ครบชุด (HEXA Assassinate, HEXA Assassinate Finisher, HEXA Pulverize, HEXA Pulverize Finisher, HEXA Meso Explosion, HEXA Enhanced Meso Explosion, HEXA Meso Explosion Atoms, HEXA Cruel Stab, HEXA Dark Flare, HEXA Shadow Veil, HEXA Sudden Raid, Covert Edge) เชื่อมต่อระบบ Origin Absolute Bind/Debuff, Pick Pocket Drop Synchronization, Trickblade Assassination Stacks, และคำสั่งทดสอบ `!endgame shadower` หรือ `!endgame shad` ให้มอบอาวุธ BiS Arcane Umbra Dagger, Princess No's Purple Shadow, และ HEXA Cores ระดับ 30 เต็มระบบ
+
+### 📂 Files Modified
+- [`v214 src/.../Shadower.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/thief/Shadower.java)
+- [`v214 src/.../SkillConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`v214 src/.../AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **Halve Cut Origin Integration & Cutscene Broadcast**:
+   - ปัญหา: แม้ใน `Shadower.java` จะมีการประกาศ Constants `HALVE_CUT` (`4241500`) ไว้อยู่แล้ว แต่ใน `handleSkill()` ยังขาด `case HALVE_CUT:` ส่งผลให้ไม่มอบสถานะอมตะ `IndieNotDamaged` และไม่ส่งคัตซีน
+   - วิธีแก้: ใน `Shadower.handleSkill()`, เพิ่ม `case HALVE_CUT:` มอบสถานะอมตะ `IndieNotDamaged` (7 วินาที) และบรอดคาสต์แพ็กเก็ตเอฟเฟกต์คัตซีน `UserLocal.showHexaSkillEff(chr)` ทั่วแมพ
+2. **Origin Absolute Bind & Origin Debuff Handling**:
+   - ปัญหา: ใน `handleAttack()`, การโจมตีด้วยสกิล Origin ยังไม่มอบสถานะดีบัฟพิเศษของคลาส 6
+   - วิธีแก้: เพิ่มเงื่อนไขตรวจสอบ `HALVE_CUT`, `4241501`, และ `4241502` เพื่อมอบสถานะ `MobStat.Freeze` (10 วินาที Absolute Bind) และ `MobStat.OriginDebuff` (20 วินาที) ให้กับศัตรูทุกตัวที่ถูกโจมตีด้วย `EnumMap<MobStat, Option>`
+3. **Sub-Skill Redirection in SkillConstants**:
+   - ปัญหา: สกิลลูกและเอฟเฟกต์โจมตีต่อเนื่อง เช่น `HEXA Assassinate Finisher` (`4241001`), `HEXA Pulverize Finisher` (`4241003`), `HEXA Meso Explosion Subs` (`4241007-4241009`), `HEXA Shadow Veil Attack` (`4240014`), `Covert Edge Subs` (`4241018`, `4241019`), และ `Covetous Darkness Subs` (`4241504`, `4241506`) เป็น invisible skills ใน WZ
+   - วิธีแก้: เพิ่มการ Redirect สกิลลูกทั้งหมดกลับไปยัง Parent Skills ใน `SkillConstants.getSkillBySubSkill()` เพื่อให้เซิร์ฟเวอร์คำนวณดาเมจได้อย่างถูกต้องสมบูรณ์
+4. **Full Testing Automation in `!endgame shadower`**:
+   - ใน `AdminCommands.setupEndgame()`:
+     - มอบอาวุธระดับเทพ: Arcane Umbra Dagger (`1332279`)
+     - มอบไอเทม Secondary BiS: Princess No's Purple Shadow (`1352286`)
+     - มอบ Mitra Thief Emblem (`1190558`) และชุดเกราะ Arcane Umbra Thief ครบ 6 ชิ้น
+     - ปลดล็อกและอัปเกรด HEXA Cores คลาส 6 ทุกคอร์ (Core 10000010, 10000062, 20000010, 20000060, 20000110, 20000156, 30000040-30000043, 40000000 Sol Janus) เลเวล 30 เต็ม พร้อมมอบสกิลเสริม (`4241001`, `4241003`, `4241007`, `4241008`, `4241009`, `4240014`, `4240016`, `4241018`, `4241501`, `4241502`, `4241504`, `4241506`)
+
+### 🧪 Verification & Deployment
+- คอมไพล์ผ่าน Maven OpenJDK 21: `BUILD SUCCESS` (0 errors, total time: 1m 37s)
+- ดีพลอย Fat JAR: `Server263/maplestory.jar` (~138.64 MB)
+- หมายเหตุ Patch: รวบรวมทำไฟล์แพตช์ ZIP ครั้งเดียวเมื่อครบ 15 อาชีพตามความประสงค์ของผู้ใช้
+
+---
+
 ## 📅 [2026-10-12 12:35 น.] Phase 2: Explorer Class 10 (Night Lord - 412) สมบูรณ์แบบ 100% — เปิดกลุ่ม Thief Trio เชื่อมต่อ Life and Death, Deep Strike และคำสั่ง !endgame
 
 ### 🎯 Scope
