@@ -8,47 +8,28 @@ cd /d "%~dp0"
 cls
 echo ==============================================================================
 echo                    SERVERGAMEOFFLINE-FACEBOOK PAGE                           
-echo         MapleStory v265 Portable Server Control Panel (Zero-Install)                 
+echo                   MapleStory Server Control Panel (Server263)                 
 echo ==============================================================================
 echo.
-echo   --- [ Game Server Operations ] ---
-echo   [1] Start Server (Launch Portable MariaDB + MapleStory Server)
+echo   [1] Start Server (Launch MariaDB + MapleStory Server)
 echo   [2] Restart Server (Clean Restart All Services)
 echo   [3] Stop Server (Safe Shutdown and Flush Database)
-echo.
-echo   --- [ Portable MariaDB Operations (Port 33066 - Zero-Install) ] ---
-echo   [4] Start ONLY MariaDB Engine (Standalone Background Database)
-echo   [5] Stop ONLY MariaDB Engine (Safe Flush & Shutdown)
-echo   [6] Open MariaDB Interactive Console (Direct CLI Client)
-echo   [7] Backup Database (Export timestamped .sql to Patches/archives)
-echo   [8] Reset / Re-import Database (Clean vietmaple from backup.sql)
-echo.
-echo   --- [ Account & Network Configuration ] ---
-echo   [9] Account Registration & Manager (Create / List / GM / Password)
-echo   [10] Configure Server IP (Localhost / Radmin VPN / LAN)
-echo.
-echo   --- [ Configuration & Tools ] ---
-echo   [11] Edit Server Rates & Settings (Adjust DropRate, ExpRate in notepad)
-echo   [12] Port Diagnostic & Setup
-echo   [13] Open Client Patch Files Folder (Launcher and Localhost)
+echo   [4] Edit Server Rates & Settings (Adjust DropRate, ExpRate in notepad)
+echo   [5] Port Diagnostic & Change Port (Check and Auto-Fallback)
+echo   [6] Reset / Re-import Database (vietmaple from backup.sql)
+echo   [7] Open Client Patch Files Folder (Launcher and Localhost)
 echo   [0] Exit
 echo.
 echo ==============================================================================
-set /p "CHOICE=Select an option (0-13): "
+set /p "CHOICE=Select an option (0-7): "
 
 if "!CHOICE!"=="1" goto :action_start
 if "!CHOICE!"=="2" goto :action_restart
 if "!CHOICE!"=="3" goto :action_stop
-if "!CHOICE!"=="4" goto :action_db_start
-if "!CHOICE!"=="5" goto :action_db_stop
-if "!CHOICE!"=="6" goto :action_db_console
-if "!CHOICE!"=="7" goto :action_db_backup
-if "!CHOICE!"=="8" goto :action_import
-if "!CHOICE!"=="9" goto :action_account
-if "!CHOICE!"=="10" goto :action_ip
-if "!CHOICE!"=="11" goto :action_config
-if "!CHOICE!"=="12" goto :action_port
-if "!CHOICE!"=="13" goto :action_client
+if "!CHOICE!"=="4" goto :action_config
+if "!CHOICE!"=="5" goto :action_port
+if "!CHOICE!"=="6" goto :action_import
+if "!CHOICE!"=="7" goto :action_client
 if "!CHOICE!"=="0" exit /b 0
 
 goto :menu
@@ -73,85 +54,6 @@ goto :menu
 :action_stop
 cls
 call "%~dp03_Stop_Server.bat"
-goto :menu
-
-:action_db_start
-cls
-call "%~dp0Start_Database.bat"
-goto :menu
-
-:action_db_stop
-cls
-call "%~dp0Stop_Database.bat"
-goto :menu
-
-:action_db_console
-start "MySQL Console - vietmaple" cmd /c ""%~dp0Open_MySQL_Console.bat""
-goto :menu
-
-:action_db_backup
-cls
-call "%~dp0Backup_Database.bat"
-goto :menu
-
-:action_import
-cls
-call "%~dp0Import_Database.bat"
-goto :menu
-
-:action_account
-if exist "%~dp0Create_Account.bat" (
-    call "%~dp0Create_Account.bat"
-) else (
-    echo [!] Create_Account.bat not found!
-    pause
-)
-goto :menu
-
-:action_ip
-cls
-echo ==============================================================================
-echo                     Configure Server Network IP
-echo ==============================================================================
-echo.
-set "PROP_FILE=%~dp0server.properties"
-for /f "tokens=1,* delims==" %%a in ('findstr /i "^server.ip=" "!PROP_FILE!" 2^>nul') do set "CURR_SERVER_IP=%%b"
-echo Current Server IP: !CURR_SERVER_IP!
-echo.
-echo Presets:
-echo   [1] Localhost (127.0.0.1) - Single Player / Host Machine
-echo   [2] Detect Network IPs (Radmin VPN / LAN / Wi-Fi)
-echo   [3] Enter Custom IP
-echo   [0] Back to Menu
-echo.
-set /p "IP_CHOICE=Choose (0-3): "
-if "!IP_CHOICE!"=="1" (
-    set "NEW_IP=127.0.0.1"
-    goto :save_ip
-)
-if "!IP_CHOICE!"=="2" (
-    echo.
-    echo Detected IPv4 Addresses on this machine:
-    ipconfig | findstr /i "IPv4"
-    echo.
-    set /p "NEW_IP=Enter the IP you wish to use: "
-    if "!NEW_IP!"=="" goto :menu
-    goto :save_ip
-)
-if "!IP_CHOICE!"=="3" (
-    echo.
-    set /p "NEW_IP=Enter Custom IP: "
-    if "!NEW_IP!"=="" goto :menu
-    goto :save_ip
-)
-goto :menu
-
-:save_ip
-powershell -NoProfile -Command "$path = '!PROP_FILE!'; $lines = Get-Content $path; $lines = $lines | ForEach-Object { if ($_ -match '^\s*server\.ip\s*=') { 'server.ip=!NEW_IP!' } else { $_ } }; [System.IO.File]::WriteAllLines($path, $lines)"
-echo.
-echo [OK] server.properties updated: server.ip=!NEW_IP!
-echo Remember to restart server if it is currently running.
-pause
 goto :menu
 
 :action_config
@@ -301,12 +203,6 @@ set "SAFE_DATA=!SAFE_DATA:\=/!"
     echo collation-server=utf8mb4_unicode_ci
     echo default-storage-engine=InnoDB
     echo max_allowed_packet=1024M
-    echo max_connections=500
-    echo connect_timeout=60
-    echo wait_timeout=28800
-    echo interactive_timeout=28800
-    echo net_read_timeout=120
-    echo net_write_timeout=120
     echo innodb_buffer_pool_size=256M
     echo innodb_log_file_size=64M
     echo sql_mode=NO_ENGINE_SUBSTITUTION
@@ -316,6 +212,11 @@ echo [v] Successfully updated server.properties and mariadb\my.ini to port !NEW_
 echo.
 pause
 goto :action_port
+
+:action_import
+cls
+call "%~dp0Import_Database.bat"
+goto :menu
 
 :action_client
 explorer.exe "%~dp0Client_Patch_Files"

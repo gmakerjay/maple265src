@@ -16,9 +16,12 @@ if %ERRORLEVEL% NEQ 0 (
     exit /b 1
 )
 
-python "%~dp0..\tools\create_patch.py"
-if %ERRORLEVEL% NEQ 0 (
+if exist "%~dp0..\tools\create_patch.py" (
+    python "%~dp0..\tools\create_patch.py"
+) else if exist "%~dp0tools\create_patch.py" (
     python "%~dp0tools\create_patch.py"
+) else (
+    echo [X] create_patch.py not found!
 )
 
 echo.
