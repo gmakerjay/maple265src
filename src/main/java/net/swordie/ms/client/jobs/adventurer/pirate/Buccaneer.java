@@ -91,6 +91,17 @@ public class Buccaneer extends Pirate {
     public static final int HEXA_SERPENT_SCALE_RAGE = 5141014;
     public static final int HEXA_HOOK_BOMBER = 5141015;
 
+    // Origin & Ascent (6th Job)
+    public static final int LIBERATOR = 5141500;
+    public static final int LIBERATOR_ATTACK_1 = 5141501;
+    public static final int LIBERATOR_ATTACK_2 = 5141502;
+    public static final int LIBERATOR_ATTACK_3 = 5141503;
+    public static final int LIBERATOR_ATTACK_4 = 5141504;
+    public static final int UNLEASHED_DRAGON = 5141505;
+    public static final int UNLEASHED_DRAGON_ATTACK_1 = 5141506;
+    public static final int UNLEASHED_DRAGON_ATTACK_2 = 5141507;
+    public static final int UNLEASHED_DRAGON_ATTACK_3 = 5141508;
+
     private long lastPerseverance = 0L;
     private long lastVStackBuff = 0L;
     private long NextSeaSerpentAttackTime = 0L;
@@ -172,6 +183,26 @@ public class Buccaneer extends Pirate {
         int skillID = attackInfo.skillId;
         boolean hasHitMobs = !attackInfo.mobAttackInfo.isEmpty();
         if (hasHitMobs) {
+            if (skillID == LIBERATOR || (skillID >= 5141501 && skillID <= 5141504)) {
+                Option oOrigin1 = new Option();
+                Option oOrigin2 = new Option();
+                oOrigin1.nOption = 1;
+                oOrigin1.rOption = skillID;
+                oOrigin1.tOption = 10;
+                oOrigin2.nOption = 1;
+                oOrigin2.rOption = skillID;
+                oOrigin2.tOption = 20;
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob == null || mob.getHp() <= 0) {
+                        continue;
+                    }
+                    EnumMap<MobStat, Option> originStats = new EnumMap<>(MobStat.class);
+                    originStats.put(MobStat.Freeze, oOrigin1);
+                    originStats.put(MobStat.OriginDebuff, oOrigin2);
+                    mob.getTemporaryStat().addStatOptions(mob, originStats);
+                }
+            }
             handlePerseverance(now);
             handleLordOfTheDeep(attackInfo);
             handleSerpentStone(attackInfo, false, now);
@@ -737,6 +768,15 @@ public class Buccaneer extends Pirate {
                 break;
             case HEROS_WILL:
                 tsm.removeAllDebuffs();
+                break;
+            case LIBERATOR:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
+                tsm.sendStat(IndieNotDamaged, o1);
+                chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
+                break;
+            case UNLEASHED_DRAGON:
                 break;
         }
     }

@@ -2438,6 +2438,18 @@ public class SkillConstants {
                 return 4361003; // Fury Jet -> HEXA Blade Fury
             case 4361506:
                 return 4361505; // Yama's Decree Attack -> Yama's Decree
+            // Buccaneer 6th Job Sub-Skills
+            case 5141001:
+                return 5141000; // HEXA Octopunch FA
+            case 5141003:
+                return 5141002; // Super Octopunch FA
+            case 5141013:
+            case 5141014:
+                return 5141011; // HEXA Serpent Scale Subs
+            case 5141506:
+            case 5141507:
+            case 5141508:
+                return 5141505; // Unleashed Dragon Attacks
             default:
                 // Universal 6th Job Origin Sub-Skill Redirection (xxx41501-xxx41599 -> xxx41500)
                 int subOrigin = skillID % 100000;

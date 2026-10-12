@@ -2874,6 +2874,11 @@ public class AdminCommands {
             secondaryId = 1342095; // Princess No's Poisoned Sword Katara
             emblemId = 1190558; // Mitra Thief Emblem
             armors = thiefArmors;
+        } else if (JobConstants.isBuccaneer(job)) {
+            weaponId = 1482221; // Arcane Umbra Knuckle
+            secondaryId = 1352906; // Princess No's Skull Armor
+            emblemId = 1190559; // Mitra Pirate Emblem
+            armors = pirateArmors;
         } else {
             if (JobConstants.isWarriorEquipJob(job)) {
                 weaponId = 1402259;
@@ -3030,6 +3035,22 @@ public class AdminCommands {
                 chr.addSkill(4361503, 30, 30); // Karma Blade After Attack
                 chr.addSkill(4361504, 30, 30); // Karma Blade Sub
                 chr.addSkill(4361506, 30, 30); // Yama's Decree Attack
+            } else if (JobConstants.isBuccaneer(job)) {
+                chr.addSkill(5140004, 30, 30); // HEXA Sea Serpent
+                chr.addSkill(5140010, 30, 30); // HEXA Nautilus Strike FA
+                chr.addSkill(5141001, 30, 30); // HEXA Octopunch FA
+                chr.addSkill(5141003, 30, 30); // Super Octopunch FA
+                chr.addSkill(5141006, 30, 30); // HEXA Sea Serpent Rage
+                chr.addSkill(5141008, 30, 30); // HEXA Sea Serpent Burst
+                chr.addSkill(5141013, 30, 30); // HEXA Serpent Scale Burst
+                chr.addSkill(5141014, 30, 30); // HEXA Serpent Scale Rage
+                chr.addSkill(5141501, 30, 30); // Liberator Attack 1
+                chr.addSkill(5141502, 30, 30); // Liberator Attack 2
+                chr.addSkill(5141503, 30, 30); // Liberator Attack 3
+                chr.addSkill(5141504, 30, 30); // Liberator Attack 4
+                chr.addSkill(5141506, 30, 30); // Unleashed Dragon Attack 1
+                chr.addSkill(5141507, 30, 30); // Unleashed Dragon Attack 2
+                chr.addSkill(5141508, 30, 30); // Unleashed Dragon Attack 3
             }
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] Hexa warning: " + e.getMessage());

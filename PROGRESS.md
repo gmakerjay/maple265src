@@ -3,6 +3,40 @@
 This file tracks all bug fixes, feature implementations, and system optimizations across sessions.
 **Rule (AGENTS.md #4)**: Every agent MUST record new progress here and in `.agents/skills/maplestory-bug-knowledge/SKILL.md` after completing any modification.
 
+## 📅 [2026-10-12 12:50 น.] Phase 2: Explorer Class 13 (Buccaneer - 512) สมบูรณ์แบบ 100% — เปิดฉากกลุ่ม Pirate Trio เชื่อมต่อ Liberator, Unleashed Dragon และคำสั่ง !endgame
+
+### 🎯 Scope
+ลงทะเบียนและตรวจสอบสกิลคลาส 6 สาย Explorer อาชีพที่ 13: **Buccaneer (บัคคาเนียร์ / หมัดมังกรสมุทร - Job ID 512)** อาชีพแรกของกลุ่ม Pirate Trio บรรจุสกิล Origin (Liberator & Ascent Skill: Unleashed Dragon) และ HEXA Masteries ครบชุด (HEXA Octopunch, Super Octopunch, HEXA Sea Serpent, HEXA Sea Serpent Rage, HEXA Sea Serpent Burst, HEXA Nautilus Strike, HEXA Serpent Scale, HEXA Hook Bomber) เชื่อมต่อระบบ Origin Absolute Bind/Debuff, Sea Serpent Automatic Extra Attacks, Super Octopunch Bonus Attacks, และคำสั่งทดสอบ `!endgame buccaneer` หรือ `!endgame bucc` ให้มอบอาวุธ BiS Arcane Umbra Knuckle, Princess No's Skull Armor, และ HEXA Cores ระดับ 30 เต็มระบบ
+
+### 📂 Files Modified
+- [`v214 src/.../Buccaneer.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/pirate/Buccaneer.java)
+- [`v214 src/.../SkillConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`v214 src/.../AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **Liberator Origin & Unleashed Dragon Ascent Integration**:
+   - ปัญหา: เดิมใน `Buccaneer.java`, ยังขาดการประกาศ Constants และการประมวลผลสำหรับ `LIBERATOR` (`5141500`), `UNLEASHED_DRAGON` (`5141505`), และ Attack Sub-skills (`5141501-5141504`, `5141506-5141508`)
+   - วิธีแก้: ใน `Buccaneer.handleSkill()`, เพิ่ม `case LIBERATOR:` มอบสถานะอมตะ `IndieNotDamaged` (7 วินาที) และบรอดคาสต์แพ็กเก็ตเอฟเฟกต์คัตซีน `UserLocal.showHexaSkillEff(chr)` ทั่วแมพ
+2. **Origin Absolute Bind & Origin Debuff Handling**:
+   - ปัญหา: ใน `handleAttack()`, การโจมตีด้วยสกิล Origin ยังไม่มอบสถานะดีบัฟพิเศษของคลาส 6
+   - วิธีแก้: เพิ่มเงื่อนไขตรวจสอบ `LIBERATOR` และ sub-skills `5141501-5141504` เพื่อมอบสถานะ `MobStat.Freeze` (10 วินาที Absolute Bind) และ `MobStat.OriginDebuff` (20 วินาที) ให้กับศัตรูทุกตัวที่ถูกโจมตีด้วย `EnumMap<MobStat, Option>`
+3. **Sub-Skill Redirection & Deduplication in SkillConstants**:
+   - ปัญหา: สกิลลูกของ Buccaneer เช่น `HEXA Octopunch FA` (`5141001`), `Super Octopunch FA` (`5141003`), `HEXA Serpent Scale Subs` (`5141013`, `5141014`), และ `Unleashed Dragon Attacks` (`5141506-5141508`) เป็น invisible skills ใน WZ และ `5141008` เคยมี mapping อยู่แล้วผ่าน `Buccaneer.HEXA_SEA_SERPENT_BURST`
+   - วิธีแก้: จัดระบบ mapping สกิลลูกให้ชี้กลับ Parent Skill อย่างแม่นยำ พร้อมลบ label ที่ซ้ำซ้อนเพื่อป้องกันคอมไพลเลอร์ error
+4. **Full Testing Automation in `!endgame buccaneer`**:
+   - ใน `AdminCommands.setupEndgame()`:
+     - มอบอาวุธระดับเทพ: Arcane Umbra Knuckle (`1482221`)
+     - มอบ Secondary BiS: Princess No's Skull Armor (`1352906`)
+     - มอบ Mitra Pirate Emblem (`1190559`) และชุดเกราะ Arcane Umbra Pirate ครบ 6 ชิ้น
+     - ปลดล็อกและอัปเกรด HEXA Cores คลาส 6 ทุกคอร์ (Core 10000012, 10000064, 20000012, 20000062, 20000112, 20000158, 30000048-30000051, 40000000 Sol Janus) เลเวล 30 เต็ม พร้อมมอบสกิลเสริม (`5140004`, `5140010`, `5141001`, `5141003`, `5141006`, `5141008`, `5141013`, `5141014`, `5141501-5141504`, `5141506-5141508`)
+
+### 🧪 Verification & Deployment
+- คอมไพล์ผ่าน Maven OpenJDK 21: `BUILD SUCCESS` (0 errors, total time: 1m 35s)
+- ดีพลอย Fat JAR: `Server263/maplestory.jar` (~138.64 MB)
+- หมายเหตุ Patch: รวบรวมทำไฟล์แพตช์ ZIP ครั้งเดียวเมื่อครบ 15 อาชีพตามความประสงค์ของผู้ใช้
+
+---
+
 ## 📅 [2026-10-12 12:42 น.] Phase 2: Explorer Class 12 (Dual Blade - 434) สมบูรณ์แบบ 100% — ปิดฉากกลุ่ม Thief Trio อย่างสมบูรณ์แบบ เชื่อมต่อ Karma Blade, Yama's Decree และคำสั่ง !endgame
 
 ### 🎯 Scope
