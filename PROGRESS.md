@@ -3,6 +3,23 @@
 This file tracks all bug fixes, feature implementations, and system optimizations across sessions.
 **Rule (AGENTS.md #4)**: Every agent MUST record new progress here and in `.agents/skills/maplestory-bug-knowledge/SKILL.md` after completing any modification.
 
+## 📅 [2026-10-12 16:26 น.] Fix getMaplePoints Runtime Exception, Massive Fashion & Pet Expansion, and Pure White Font Styling
+
+### 🎯 Scope
+1. แก้ไขข้อผิดพลาด Runtime Error `AttributeError: 'net.swordie.ms.client.character.Char' object has no attribute 'getMaplePoints'` ใน `pet_shop.py` โดยเปลี่ยนไปเรียกผ่าน `chr.getUser().getMaplePoints()` และ `chr.getUser().deductMaplePoints()` พร้อมตรวจสอบความปลอดภัยของทุกสคริปต์
+2. ขยายหมวดสินค้าแฟชั่นใน [`point_shop.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/point_shop.py) (Lucid) ให้มีไอเทมอย่างจุใจตามคำขอ: เพิ่มอาวุธแฟชั่นยอดนิยม (Scythes, Staves, Sabers), ชุด Transparent Equipment ครบทั้ง 9 ชิ้นพร้อมแพ็คเกจส่วนลด, ปีกและออร่าด้านหลัง (Wings & Capes), หมวกและหูสัตว์ (Hats & Ribbons), ชุดสูทชาย, ชุดเดรสหญิง และชุดคอสตูม Unisex
+3. ขยายคลังสัตว์เลี้ยงใน [`pet_shop.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/pet_shop.py) (Lara): เพิ่มสัตว์เลี้ยงแวคดูดของทั้งแมพ (Sherbet, Lil Death, Lil Pony, Lil Glowy, Petite Pico, Forest Dori) และสัตว์เลี้ยงคลาสสิกยอดนิยมกว่า 20 ชนิด
+4. ปรับสีฟอนต์ทั้งหมดในกล่องข้อความสนทนาเป็นสีขาวสว่างคมชัด (`#fc0xFFFFFFFF#`) เพื่อให้อ่านง่าย ชัดเจน ไม่กลืนกับพื้นหลังสีเข้มของหน้าต่างสนทนา
+
+### 📂 Files Modified
+- [`pet_shop.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/pet_shop.py) (และใน `Server263/data/scripts/npc/pet_shop.py`)
+- [`point_shop.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/point_shop.py) (และใน `Server263/data/scripts/npc/point_shop.py`)
+- [`quick_adminNPC.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/quick_adminNPC.py) (และใน `Server263/data/scripts/npc/quick_adminNPC.py`)
+- [`potion_shop.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/potion_shop.py) (และใน `Server263/data/scripts/npc/potion_shop.py`)
+- [`boss_arena.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/boss_arena.py) (และใน `Server263/data/scripts/npc/boss_arena.py`)
+- [`warp_service.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/warp_service.py) (และใน `Server263/data/scripts/npc/warp_service.py`)
+- [`Patches/Server263_Patch_20261012_1626.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_20261012_1626.zip)
+
 ## 📅 [2026-10-12 16:05 น.] Modular NPC System Refactor & Dedicated Illustrated Hub Architecture (!msnpc)
 
 ### 🎯 Scope

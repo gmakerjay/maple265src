@@ -1,13 +1,17 @@
-# Cash & Point Shop Depot
-# Categorized shop for Cubes, Flames, Pets, Beauty, and Fashion separated by Gender (Male / Female / Unisex)
+# ==============================================================================
+# Cash & Point Shop Depot (Lucid - 9063159)
+# Massive Fashion Collection, Cubes, Flames, Pets, Beauty & Transparent Sets
+# High-Contrast Pure White Font (#fc0xFFFFFFFF#) for Maximum In-Game Clarity
+# ==============================================================================
 from net.swordie.ms.util import Util
 from net.swordie.ms.enums import InvType
+
+NPC_ID = 9063159 # Lucid
 
 # ==============================================================================
 # CATEGORY 1: Cubes & Potential (Unisex)
 # ==============================================================================
 CUBE_ITEMS = [
-    # (id, name, unit_cost, desc)
     (5062009, "Red Cube", 1200, "Rerolls equipment potential up to Legendary tier."),
     (5062010, "Black Cube", 2200, "Rerolls potential with the choice to keep previous stats."),
     (5062500, "Bonus Potential Cube", 2400, "Rerolls bonus potential stats up to Legendary tier."),
@@ -47,95 +51,117 @@ UTILITY_ITEMS = [
 ]
 
 # ==============================================================================
-# CATEGORY 4: Pets & Pet Skills (Unisex)
+# CATEGORY 4: Transparent Equipment (Full Set)
 # ==============================================================================
-PET_ITEMS = [
-    (5002396, "Sherbet (Vac Pet - 30 Days)", 100000, 30, "Special vacuum pet with massive item & meso loot radius."),
-    (5180000, "Water of Life", 5000, 0, "Revives an expired regular pet for 90 days."),
-    (5000049, "Pet Snack", 5000, 0, "Feed to Trainer Bartos' pet to unlock Multi-Pet skill (3 pets)."),
-    (5190010, "Auto Buff Skill", 10000, 0, "Allows pet to automatically cast up to 2 active buff skills."),
-    (5190001, "Auto HP Potion Skill", 5000, 0, "Allows pet to automatically consume HP recovery potions."),
-    (5190006, "Auto MP Potion Skill", 5000, 0, "Allows pet to automatically consume MP recovery potions."),
-    (5190002, "Expanded Auto Move Skill", 8000, 0, "Expands pet auto-movement speed and collection range by 3x."),
-    (5190003, "Auto Move Skill", 5000, 0, "Allows pet to move automatically to pick up dropped items."),
-    (5190005, "Ignore Item Skill", 5000, 0, "Prevents pet from picking up unwanted specific items."),
-    (5190011, "Auto Feed Skill", 5000, 0, "Automatically feeds pet when fullness drops.")
+TRANSPARENT_EQUIPS = [
+    (1002186, "Transparent Hat", 15000, 0, "Hides equipped hat while preserving all stats."),
+    (1702585, "Universal Transparent Weapon", 25000, 0, "Hides any equipped weapon while preserving all stats."),
+    (1102039, "Transparent Cape", 15000, 0, "Hides equipped cape while preserving all stats."),
+    (1082102, "Transparent Gloves", 15000, 0, "Hides equipped gloves while preserving all stats."),
+    (1072153, "Transparent Shoes", 15000, 0, "Hides equipped shoes while preserving all stats."),
+    (1012104, "Transparent Face Accessory", 10000, 0, "Hides face accessory while preserving all stats."),
+    (1022048, "Transparent Eye Accessory", 10000, 0, "Hides eye accessory while preserving all stats."),
+    (1032024, "Transparent Earrings", 10000, 0, "Hides earrings while preserving all stats."),
+    (1092056, "Transparent Shield", 10000, 0, "Hides shield / secondary weapon while preserving all stats.")
 ]
 
 # ==============================================================================
-# CATEGORY 5: Fashion & Outfits (Male / Female / Unisex)
+# CATEGORY 5: Universal Weapon Covers (All Weapons)
 # ==============================================================================
-# 5.1 Male Fashion Items (Male Only)
+WEAPON_COVERS = [
+    (1702565, "Death's Scythe", 50000, 0, "Legendary floating reaper scythe weapon cover (all weapons)."),
+    (1703578, "Verus Hilla's Scythe", 50000, 0, "Ominous dark soul scythe wielded by True Hilla."),
+    (1703393, "Abyssal Shrine Black Scythe", 45000, 0, "Forbidden shadow scythe infused with void energy."),
+    (1703745, "White Checkmate Scythe", 45000, 0, "Elegant ivory grandmaster scythe."),
+    (1702586, "Dreaming Dandelion", 35000, 0, "Gentle floating dandelion floral weapon skin."),
+    (1702588, "Black Cat Plush", 35000, 0, "Cute huggable black kitten plush weapon."),
+    (1702591, "Grand Romance", 35000, 0, "Romantic blooming rose bouquet weapon skin."),
+    (1702587, "Rockin' Guitar", 35000, 0, "Electric rockstar guitar weapon skin."),
+    (1702589, "Fairy Blossom", 35000, 0, "Enchanted sparkling fairy wand weapon skin."),
+    (1702142, "Pink Angel Stick", 30000, 0, "Glittering magical girl heart wand."),
+    (1702154, "Plasma Saber", 30000, 0, "Futuristic glowing neon sci-fi blade."),
+    (1702155, "Shooting Star", 35000, 0, "Radiant celestial shooting star blade."),
+    (1702124, "My Friend Kitty", 25000, 0, "Adorable playful kitten sitting on a wand."),
+    (1702125, "Heart Cane", 25000, 0, "Gentleman's polished heart cane.")
+]
+
+# ==============================================================================
+# CATEGORY 6: Wings, Capes & Back Auras
+# ==============================================================================
+WINGS_AND_CAPES = [
+    (1102532, "Light Wing Cherubim", 35000, 0, "Sacred radiant angel wings with shimmering aura."),
+    (1102554, "Succubus Wings", 35000, 0, "Dark demonic bat wings with purple shadow mist."),
+    (1102546, "Blue Bird Dream Wings", 30000, 0, "Soft ethereal sky blue feathered dream wings."),
+    (1102547, "Amethyst Dream Wings", 30000, 0, "Enchanted violet crystal butterfly wings."),
+    (1102005, "Baby Angel Wings", 25000, 0, "Cute small white fluffy cherub wings."),
+    (1102006, "Devil Wings", 25000, 0, "Classic pointed dark devil wings."),
+    (1102501, "Friendly Nine-Tailed Fox Tails", 40000, 0, "Mystical nine fluffy golden fox tails."),
+    (1102503, "Cat Lolita Cape", 30000, 0, "Frilly gothic ribbon cape with playful cat tail."),
+    (1102530, "Spark Fairy Cape", 30000, 0, "Sparkling stardust trail that follows your steps."),
+    (1102537, "Magic Star Cape", 30000, 0, "Constellation halo orb that orbits behind you.")
+]
+
+# ==============================================================================
+# CATEGORY 7: Hats, Ribbons, Hoodies & Halos
+# ==============================================================================
+HATS_AND_HEADWEAR = [
+    (1005375, "Superstar Pink Bean Headphones", 25000, 0, "Pink Bean ear-cuffed gaming headphones."),
+    (1005380, "Summer Breeze Floral Crown", 25000, 0, "Delicate blooming flower tiara crown."),
+    (1004423, "Time Master Top Hat", 25000, 0, "Master Time Masterpiece gentleman's top hat."),
+    (1003131, "Black Dressy Ribbon", 20000, 0, "Elegant satin black hair ribbon."),
+    (1003780, "Frilly Pink Bean Hat", 20000, 0, "Ruffled cute Pink Bean plush hat."),
+    (1003865, "Starlight Wings Halo", 30000, 0, "Luminous floating halo with mini angel wings."),
+    (1004081, "Dawn Bear Hoodie", 25000, 0, "Warm cozy bear ear hoodie cap."),
+    (1002971, "Pink Bean Hat", 20000, 0, "Classic Pink Bean plush headwear."),
+    (1003271, "Pink Heart Transparent Hat", 20000, 0, "Transparent hat with floating pink love hearts."),
+    (1003276, "Blue Heart Transparent Hat", 20000, 0, "Transparent hat with floating blue starlight hearts.")
+]
+
+# ==============================================================================
+# CATEGORY 8: Male Fashion & Suits (Male Only)
+# ==============================================================================
 MALE_FASHION = [
-    # Hats
-    (1000103, "Tranquil Picnic Hat (M)", 15000, 0, "Picnic bowler hat for gentlemen [Male]."),
-    (1000104, "Shepherd's Straw Hat (M)", 15000, 0, "Rustic straw hat for gentle shepherds [Male]."),
-    (1005230, "Blue Marine Hat (M)", 15000, 0, "Crisp naval marine sailor hat [Male]."),
-    (1004423, "Time Master Hat (M)", 20000, 0, "Master Time Masterpiece top hat [Male]."),
-    # Overalls / Suits
     (1050522, "Tranquil Picnic Suit (M)", 35000, 0, "Spring picnic gentleman suit [Male]."),
     (1050524, "Summer Breeze Outfit (M)", 35000, 0, "Refreshing summer linen outfit [Male]."),
     (1050528, "Shepherd's Getup (M)", 35000, 0, "Pastoral shepherd vest and trousers [Male]."),
-    (1050505, "High Noon Gunslinger Outfit (M)", 35000, 0, "Wild West sheriff duster coat [Male]."),
-    (1050304, "Powder Butler's Digs (M)", 30000, 0, "Tailored butler uniform [Male]."),
-    (1050346, "Little Trainer Outfit (M)", 30000, 0, "Sporty monster trainer getup [Male]."),
-    (1050371, "Blue Marine Uniform (M)", 30000, 0, "Classic navy sailor uniform [Male]."),
-    (1050478, "Evan Overall Gown (M)", 35000, 0, "Dragon Master Evan formal wizard robes [Male]."),
-    (1050269, "Black Tuxedo (M)", 25000, 0, "Classic black formal gala tuxedo [Male]."),
-    # Shoes
+    (1050269, "Unleashed Atomic Suit (M)", 30000, 0, "Modern cybernetic combat bodysuit [Male]."),
+    (1050304, "Splash Choco Boy (M)", 30000, 0, "Tailored sweet chocolate butler uniform [Male]."),
+    (1050346, "Cheer Uniform (M)", 25000, 0, "Energetic team captain cheerleader outfit [Male]."),
+    (1050371, "Blue Crystal Uniform (M)", 30000, 0, "Classic navy sailor uniform [Male]."),
+    (1050478, "Iron Mace Officer (M)", 35000, 0, "Grand imperial officer dress uniform [Male]."),
+    (1000103, "Tranquil Picnic Hat (M)", 15000, 0, "Picnic bowler hat for gentlemen [Male]."),
+    (1000104, "Shepherd's Straw Hat (M)", 15000, 0, "Rustic straw hat for gentle shepherds [Male]."),
+    (1005230, "Blue Marine Hat (M)", 15000, 0, "Crisp naval marine sailor hat [Male]."),
     (1070086, "Tranquil Picnic Shoes (M)", 10000, 0, "Leather oxford picnic shoes [Male]."),
     (1070115, "Shepherd's Boots (M)", 10000, 0, "Leather pastoral walking boots [Male].")
 ]
 
-# 5.2 Female Fashion Items (Female Only)
+# ==============================================================================
+# CATEGORY 9: Female Fashion & Dresses (Female Only)
+# ==============================================================================
 FEMALE_FASHION = [
-    # Hats
-    (1001126, "Tranquil Picnic Straw Hat (F)", 15000, 0, "Lovely wide-brim ribbon straw hat [Female]."),
-    (1001127, "Shepherd's Bow Bandana (F)", 15000, 0, "Cute floral bow headscarf [Female]."),
-    (1005231, "Pink Marine Hat (F)", 15000, 0, "Pastel pink naval sailor beret [Female]."),
-    # Dresses / Overalls
     (1051592, "Tranquil Picnic Dress (F)", 35000, 0, "Lace-trimmed picnic sundress [Female]."),
     (1051594, "Summer Breeze Outfit (F)", 35000, 0, "Breezy pastel summer floral dress [Female]."),
     (1051598, "Shepherd's Frock (F)", 35000, 0, "Pastoral cottagecore ruffled dress [Female]."),
-    (1051564, "High Noon Gunslinger Dress (F)", 35000, 0, "Western cowgirl dress [Female]."),
-    (1051381, "Powder Maid's Uniform (F)", 30000, 0, "Frill French maid dress [Female]."),
-    (1051419, "Little Trainer Dress (F)", 30000, 0, "Cute monster trainer dress [Female]."),
-    (1051441, "Pink Marine Uniform (F)", 30000, 0, "Pastel pink sailor marine dress [Female]."),
-    (1051543, "Evan Overall Gown (F)", 35000, 0, "Dragon Master magical feminine robes [Female]."),
-    (1051280, "White Wedding Dress (F)", 25000, 0, "Pure white bridal ballgown dress [Female]."),
-    # Shoes
+    (1051564, "Nautically Pink Dress (F)", 35000, 0, "Sweet pastel pink sailor dress [Female]."),
+    (1051441, "Mousy Bunny Romper (F)", 30000, 0, "Adorable bunny ear feminine romper [Female]."),
+    (1051543, "Halloween Pumpkin Suit (F)", 30000, 0, "Festive cute witchy pumpkin dress [Female]."),
+    (1051280, "Gentle Hanbok (F)", 30000, 0, "Traditional graceful Korean Hanbok silk dress [Female]."),
+    (1001126, "Tranquil Picnic Straw Hat (F)", 15000, 0, "Lovely wide-brim ribbon straw hat [Female]."),
+    (1001127, "Shepherd's Bow Bandana (F)", 15000, 0, "Cute floral bow headscarf [Female]."),
+    (1005231, "Pink Marine Hat (F)", 15000, 0, "Pastel pink naval sailor beret [Female]."),
     (1071104, "Tranquil Picnic Shoes (F)", 10000, 0, "Dainty strapped picnic Mary Janes [Female]."),
     (1071131, "Shepherd's Clogs (F)", 10000, 0, "Charming rustic pastoral clogs [Female].")
 ]
 
-# 5.3 Unisex Fashion & Weapons (Unisex - All Characters)
-TRANSPARENT_EQUIPS = [
-    (1002186, "Transparent Hat", 15000, 0, "Hides equipped hat while preserving all stats."),
-    (1102039, "Transparent Cape", 15000, 0, "Hides equipped cape while preserving all stats."),
-    (1082102, "Transparent Gloves", 15000, 0, "Hides equipped gloves while preserving all stats."),
-    (1072153, "Transparent Shoes", 15000, 0, "Hides equipped shoes while preserving all stats."),
-    (1702585, "Universal Transparent Weapon", 25000, 0, "Hides any equipped weapon while preserving all stats."),
-    (1012104, "Transparent Face Accessory", 10000, 0, "Hides face accessory while preserving all stats."),
-    (1022048, "Transparent Eye Accessory", 10000, 0, "Hides eye accessory while preserving all stats."),
-    (1032024, "Transparent Earrings", 10000, 0, "Hides earrings while preserving all stats."),
-    (1092045, "Transparent Shield", 10000, 0, "Hides shield / secondary while preserving all stats.")
-]
-
-UNISEX_WEAPONS_AND_SUITS = [
-    # Universal Weapons (Cover all weapon types)
-    (1702565, "Death's Scythe", 50000, 0, "Legendary floating reaper scythe weapon cover (all weapons)."),
-    (1702586, "Dreaming Dandelion", 35000, 0, "Gentle floating dandelion weapon cover (all weapons)."),
-    (1702588, "Black Cat Plush", 35000, 0, "Cute huggable black kitten weapon cover (all weapons)."),
-    (1702591, "Grand Romance", 35000, 0, "Romantic blooming rose floral weapon cover (all weapons)."),
-    (1702587, "Rockin' Guitar", 35000, 0, "Electric rockstar guitar weapon skin (all weapons)."),
-    (1702589, "Fairy Blossom", 35000, 0, "Enchanted sparkling fairy wand weapon skin (all weapons)."),
-    # Unisex Overalls & Costumes
+# ==============================================================================
+# CATEGORY 10: Unisex Costumes & Onesies (All Characters)
+# ==============================================================================
+UNISEX_COSTUMES = [
     (1051455, "Time Cantabile", 40000, 0, "Master Time Masterpiece unisex royal suit [Unisex]."),
     (1053446, "Superstar Pink Bean Onesie", 35000, 0, "Adorable cuddly Pink Bean onesie costume [Unisex]."),
     (1053450, "Light Executor Garb", 35000, 0, "Holy white executor tactical robes [Unisex]."),
-    (1053449, "Dark Executor Garb", 35000, 0, "Dark shadow executor stealth robes [Unisex]."),
-    (1005375, "Superstar Pink Bean Headphones", 20000, 0, "Pink Bean ear-cuffed gaming headphones [Unisex]."),
-    (1005380, "Summer Breeze Floral Crown", 20000, 0, "Delicate blooming flower tiara crown [Unisex].")
+    (1053449, "Dark Executor Garb", 35000, 0, "Dark shadow executor stealth robes [Unisex].")
 ]
 
 def format_num(val):
@@ -143,7 +169,7 @@ def format_num(val):
 
 def get_char_gender(chr):
     try:
-        return chr.getAvatarData().getAvatarLook().getGender() # 0 = Male, 1 = Female
+        return chr.getAvatarData().getAvatarLook().getGender()
     except:
         try:
             return chr.getAvatarData().getCharacterStat().getGender()
@@ -152,10 +178,10 @@ def get_char_gender(chr):
 
 def get_gender_label(gender):
     if gender == 0:
-        return "#b[Male]#k"
+        return "#b[Male]#fc0xFFFFFFFF#"
     elif gender == 1:
-        return "#r[Female]#k"
-    return "#g[Unisex]#k"
+        return "#r[Female]#fc0xFFFFFFFF#"
+    return "#g[Unisex]#fc0xFFFFFFFF#"
 
 def get_points(chr):
     user = chr.getUser()
@@ -166,74 +192,65 @@ def get_points(chr):
 def buy_stackable_item(sm, chr, item_id, item_name, unit_cost, desc):
     while True:
         mp, dp = get_points(chr)
-        text = "#fs13#=== #e#b" + item_name + "#k#n ===\r\n"
-        text += "Item: #i" + str(item_id) + "# #b#z" + str(item_id) + "##k\r\n"
-        text += "Description: #fs11#" + desc + "#fs13#\r\n"
-        text += "Price: #r" + format_num(unit_cost) + " Maple Points#k each\r\n"
-        text += "Your Balance: #e#d" + format_num(mp) + " Maple Points#k#n\r\n\r\n"
+        text = "#face0##fc0xFFFFFFFF##fs13#=== #e#b" + item_name + "#fc0xFFFFFFFF##n ===\r\n"
+        text += "Item: #i" + str(item_id) + "# #b#z" + str(item_id) + "##fc0xFFFFFFFF#\r\n"
+        text += "Description: #fc0xFFCCCCCC##fs11#" + desc + "#fc0xFFFFFFFF##fs13#\r\n"
+        text += "Price: #r" + format_num(unit_cost) + " Maple Points#fc0xFFFFFFFF# each\r\n"
+        text += "Your Balance: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n\r\n"
         text += "Select quantity to purchase:\r\n"
         text += "#b#L1#Buy 1x (" + format_num(unit_cost) + " Points)#l\r\n"
         text += "#L10#Buy 10x (" + format_num(unit_cost * 10) + " Points)#l\r\n"
         text += "#L50#Buy 50x (" + format_num(unit_cost * 50) + " Points)#l\r\n"
         text += "#L100#Buy 100x (" + format_num(unit_cost * 100) + " Points)#l\r\n"
-        text += "#L999#Custom Quantity...#l\r\n"
-        text += "#d#L0#Back#l#k\r\n"
+        text += "#d#L0#[Cancel]#l#k\r\n"
 
         qty_sel = sm.sendNext(text)
         qty = 0
         if qty_sel in [1, 10, 50, 100]:
             qty = qty_sel
-        elif qty_sel == 999:
-            qty = sm.sendAskNumber("Enter quantity to purchase (1 - 1,000):", 1, 1, 1000)
         else:
-            return
-
-        if qty <= 0:
             return
 
         total_cost = int(qty) * unit_cost
         mp, dp = get_points(chr)
         if mp < total_cost:
-            sm.sendSayOkay("#fs13#You do not have enough Maple Points!\r\n\r\n"
-                           "Required: #r" + format_num(total_cost) + " Points#k\r\n"
-                           "You have: #b" + format_num(mp) + " Points#k")
+            sm.sendSayOkay("#face2##fc0xFFFFFFFF#You do not have enough Maple Points!\r\nRequired: #r" + format_num(total_cost) + " Points#fc0xFFFFFFFF#")
             continue
 
         if not sm.canHold(item_id, qty):
-            sm.sendSayOkay("#fs13#You do not have enough inventory space to hold this item!\r\n\r\n"
-                           "Please free up some slots and try again.")
+            sm.sendSayOkay("#face2##fc0xFFFFFFFF#Your inventory is full! Please make some space.")
             continue
 
-        chr.addMaplePoint(-total_cost)
+        chr.getUser().deductMaplePoints(total_cost)
+        try:
+            chr.getUser().updateUserToSQL()
+        except:
+            pass
         chr.addItemToInventory(item_id, qty)
         new_mp, _ = get_points(chr)
-        sm.sendSayOkay("#fs13##e#b[Purchase Successful!]#k#n\r\n\r\n"
-                       "You received: #i" + str(item_id) + "# #b" + item_name + " x" + str(qty) + "#k\r\n"
-                       "Deducted: #r" + format_num(total_cost) + " Maple Points#k\r\n"
-                       "Remaining Balance: #d" + format_num(new_mp) + " Maple Points#k")
+        sm.sendSayOkay("#face1##fc0xFFFFFFFF##e#b[Purchase Successful!]#fc0xFFFFFFFF##n\r\n\r\n"
+                       "Received: #i" + str(item_id) + "# #b" + item_name + " x" + str(qty) + "#fc0xFFFFFFFF#\r\n"
+                       "Deducted: #r" + format_num(total_cost) + " Maple Points#fc0xFFFFFFFF#\r\n"
+                       "Remaining Balance: #b" + format_num(new_mp) + " Maple Points#fc0xFFFFFFFF#")
         return
 
 def buy_single_equip(sm, chr, item_id, item_name, cost, days, desc, target_gender):
-    # target_gender: 0=Male, 1=Female, 2=Unisex
     char_gender = get_char_gender(chr)
     mp, dp = get_points(chr)
 
     warn_text = ""
     if target_gender == 0 and char_gender != 0:
-        warn_text = "\r\n#r(Notice: This item is for Male characters, but your character is Female!)#k\r\n"
+        warn_text = "\r\n#r(Notice: This item is for Male characters, but your character is Female!)#fc0xFFFFFFFF#\r\n"
     elif target_gender == 1 and char_gender != 1:
-        warn_text = "\r\n#r(Notice: This item is for Female characters, but your character is Male!)#k\r\n"
+        warn_text = "\r\n#r(Notice: This item is for Female characters, but your character is Male!)#fc0xFFFFFFFF#\r\n"
 
-    text = "#fs13#=== #e#b" + item_name + "#k#n ===\r\n\r\n"
-    text += "Item: #i" + str(item_id) + "# #b#z" + str(item_id) + "##k\r\n"
-    text += "Target Gender: " + get_gender_label(target_gender) + "\r\n"
-    text += "Description: #fs11#" + desc + "#fs13#\r\n"
-    if days > 0:
-        text += "Duration: #r" + str(days) + " Days#k\r\n"
-    else:
-        text += "Duration: #gPermanent#k\r\n"
-    text += "Price: #e#r" + format_num(cost) + " Maple Points#k#n\r\n"
-    text += "Your Balance: #e#d" + format_num(mp) + " Maple Points#k#n\r\n"
+    text = "#face0##fc0xFFFFFFFF##fs13#=== #e#b" + item_name + "#fc0xFFFFFFFF##n ===\r\n\r\n"
+    text += "Item: #i" + str(item_id) + "# #b#z" + str(item_id) + "##fc0xFFFFFFFF#\r\n"
+    text += "Gender: " + get_gender_label(target_gender) + "\r\n"
+    text += "Description: #fc0xFFCCCCCC##fs11#" + desc + "#fc0xFFFFFFFF##fs13#\r\n"
+    text += "Duration: #gPermanent#fc0xFFFFFFFF#\r\n" if days == 0 else "Duration: #r" + str(days) + " Days#fc0xFFFFFFFF#\r\n"
+    text += "Price: #e#r" + format_num(cost) + " Maple Points#fc0xFFFFFFFF##n\r\n"
+    text += "Your Balance: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n"
     text += warn_text + "\r\n"
     text += "Would you like to purchase this item?"
 
@@ -243,153 +260,92 @@ def buy_single_equip(sm, chr, item_id, item_name, cost, days, desc, target_gende
 
     mp, dp = get_points(chr)
     if mp < cost:
-        sm.sendSayOkay("#fs13#You do not have enough Maple Points!\r\n\r\n"
-                       "Required: #r" + format_num(cost) + " Points#k\r\n"
-                       "You have: #b" + format_num(mp) + " Points#k")
+        sm.sendSayOkay("#face2##fc0xFFFFFFFF#You do not have enough Maple Points!\r\nRequired: #r" + format_num(cost) + " Points#fc0xFFFFFFFF#")
         return
 
     if not sm.canHold(item_id, 1):
-        sm.sendSayOkay("#fs13#You do not have enough inventory space to hold this item!\r\n\r\n"
-                       "Please free up some slots and try again.")
+        sm.sendSayOkay("#face2##fc0xFFFFFFFF#Your Cash inventory tab is full! Please make some space.")
         return
 
-    chr.addMaplePoint(-cost)
+    chr.getUser().deductMaplePoints(cost)
+    try:
+        chr.getUser().updateUserToSQL()
+    except:
+        pass
     if days > 0:
         chr.addItemToInventory(item_id, 1, "day", days)
     else:
         chr.addItemToInventory(item_id, 1)
 
     new_mp, _ = get_points(chr)
-    sm.sendSayOkay("#fs13##e#b[Purchase Successful!]#k#n\r\n\r\n"
-                   "You received: #i" + str(item_id) + "# #b" + item_name + "#k\r\n"
-                   "Deducted: #r" + format_num(cost) + " Maple Points#k\r\n"
-                   "Remaining Balance: #d" + format_num(new_mp) + " Maple Points#k")
+    sm.sendSayOkay("#face1##fc0xFFFFFFFF##e#b[Purchase Successful!]#fc0xFFFFFFFF##n\r\n\r\n"
+                   "You received: #i" + str(item_id) + "# #b" + item_name + "#fc0xFFFFFFFF#\r\n"
+                   "Deducted: #r" + format_num(cost) + " Maple Points#fc0xFFFFFFFF#\r\n"
+                   "Remaining Balance: #b" + format_num(new_mp) + " Maple Points#fc0xFFFFFFFF#")
 
 def buy_transparent_bundle(sm, chr):
-    BUNDLE_COST = 100000 # 100k points for all 9 items (saved 35k)
+    BUNDLE_COST = 100000
     mp, _ = get_points(chr)
-
-    text = "#fs13#=== #e#b[Full Transparent Equipment Set Bundle]#k#n ===\r\n\r\n"
-    text += "Contains all 9 Permanent Transparent items (Unisex - All Characters):\r\n"
+    text = "#face0##fc0xFFFFFFFF##fs13#=== #e#b[Complete 9-Piece Transparent Bundle]#fc0xFFFFFFFF##n ===\r\n\r\n"
+    text += "This package includes all 9 permanent transparent pieces:\r\n"
     for tid, tname, _, _, _ in TRANSPARENT_EQUIPS:
-        text += "#i" + str(tid) + "# #b#z" + str(tid) + "##k\r\n"
-    text += "\r\nBundle Price: #e#r" + format_num(BUNDLE_COST) + " Maple Points#k#n (Save 35,000 Points!)\r\n"
-    text += "Your Balance: #e#d" + format_num(mp) + " Maple Points#k#n\r\n\r\n"
-    text += "Would you like to purchase the complete Transparent Set?"
+        text += "- #i" + str(tid) + "# #b" + tname + "#fc0xFFFFFFFF#\r\n"
+    text += "\r\nBundle Price: #e#r" + format_num(BUNDLE_COST) + " Maple Points#fc0xFFFFFFFF##n (Save 35,000 Points!)\r\n"
+    text += "Your Balance: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n\r\n"
+    text += "Would you like to purchase the complete transparent bundle?"
 
-    confirm = sm.sendAskYesNo(text)
-    if not confirm:
-        return
-
-    mp, _ = get_points(chr)
-    if mp < BUNDLE_COST:
-        sm.sendSayOkay("#fs13#You do not have enough Maple Points (" + format_num(BUNDLE_COST) + " required)!")
-        return
-
-    for tid, _, _, _, _ in TRANSPARENT_EQUIPS:
-        if not sm.canHold(tid, 1):
-            sm.sendSayOkay("#fs13#You need at least 9 free Equip / Cash inventory slots!\r\n\r\n"
-                           "Please free up some slots and try again.")
+    if sm.sendAskYesNo(text):
+        mp, _ = get_points(chr)
+        if mp < BUNDLE_COST:
+            sm.sendSayOkay("#face2##fc0xFFFFFFFF#You do not have enough Maple Points!\r\nRequired: #r" + format_num(BUNDLE_COST) + " Points#fc0xFFFFFFFF#")
             return
 
-    chr.addMaplePoint(-BUNDLE_COST)
-    for tid, _, _, _, _ in TRANSPARENT_EQUIPS:
-        chr.addItemToInventory(tid, 1)
-
-    new_mp, _ = get_points(chr)
-    sm.sendSayOkay("#fs13##e#b[Full Transparent Set Purchased Successfully!]#k#n\r\n\r\n"
-                   "All 9 transparent equips have been added to your inventory!\r\n"
-                   "Deducted: #r" + format_num(BUNDLE_COST) + " Maple Points#k\r\n"
-                   "Remaining Balance: #d" + format_num(new_mp) + " Maple Points#k")
-
-def handle_slot_expansion(sm, chr):
-    EXP_COST = 10000
-    while True:
-        mp, _ = get_points(chr)
-        eq_slots = chr.getInventoryByType(InvType.EQUIP).getSlots()
-        use_slots = chr.getInventoryByType(InvType.CONSUME).getSlots()
-        setup_slots = chr.getInventoryByType(InvType.INSTALL).getSlots()
-        etc_slots = chr.getInventoryByType(InvType.ETC).getSlots()
-        cash_slots = chr.getInventoryByType(InvType.CASH).getSlots()
-
-        text = "#fs13#=== #e#bInventory Slot Expansion Depot#k#n ===\r\n"
-        text += "Cost: #r" + format_num(EXP_COST) + " Maple Points#k for #b+8 slots#k (Max: 128 slots).\r\n"
-        text += "Your Balance: #e#d" + format_num(mp) + " Maple Points#k#n\r\n\r\n"
-        text += "Select inventory tab to expand:\r\n"
-        text += "#b#L1#Expand Equip Slots (Current: " + str(eq_slots) + " / 128)#l\r\n"
-        text += "#L2#Expand Use Slots (Current: " + str(use_slots) + " / 128)#l\r\n"
-        text += "#L3#Expand Setup Slots (Current: " + str(setup_slots) + " / 128)#l\r\n"
-        text += "#L4#Expand Etc Slots (Current: " + str(etc_slots) + " / 128)#l\r\n"
-        text += "#L5#Expand Cash Slots (Current: " + str(cash_slots) + " / 128)#l\r\n"
-        text += "#d#L0#Back to Main Shop#l#k\r\n"
-
-        sel = sm.sendNext(text)
-        if sel == 0:
+        free_slots = chr.getInventoryByType(InvType.CASH).getEmptySlots()
+        if free_slots < len(TRANSPARENT_EQUIPS):
+            sm.sendSayOkay("#face2##fc0xFFFFFFFF#You need at least 9 empty slots in your Cash inventory tab!")
             return
 
-        inv_map = {1: (InvType.EQUIP, "Equip"),
-                   2: (InvType.CONSUME, "Use"),
-                   3: (InvType.INSTALL, "Setup"),
-                   4: (InvType.ETC, "Etc"),
-                   5: (InvType.CASH, "Cash")}
+        chr.getUser().deductMaplePoints(BUNDLE_COST)
+        try:
+            chr.getUser().updateUserToSQL()
+        except:
+            pass
+        for tid, _, _, _, _ in TRANSPARENT_EQUIPS:
+            chr.addItemToInventory(tid, 1)
 
-        if sel not in inv_map:
-            continue
-
-        itype, iname = inv_map[sel]
-        cur = chr.getInventoryByType(itype).getSlots()
-        if cur >= 128:
-            sm.sendSayOkay("Your #b" + iname + "#k inventory tab is already maxed out at 128 slots!")
-            continue
-
-        mp, _ = get_points(chr)
-        if mp < EXP_COST:
-            sm.sendSayOkay("You do not have enough Maple Points (" + format_num(EXP_COST) + " required)!")
-            continue
-
-        chr.addMaplePoint(-EXP_COST)
-        sm.addInventorySlotsByInvType(8, sel)
-        new_slots = chr.getInventoryByType(itype).getSlots()
-        sm.sendSayOkay("#fs13##e#b[Slot Expansion Successful!]#k#n\r\n\r\n"
-                       "Your #b" + iname + "#k inventory has expanded to #e#g" + str(new_slots) + " slots#k#n!\r\n"
-                       "Deducted: #r" + format_num(EXP_COST) + " Maple Points#k")
+        sm.sendSayOkay("#face1##fc0xFFFFFFFF#Transparent bundle delivered successfully! Enjoy your sleek minimalist aesthetic!")
 
 def open_point_shop(sm, chr):
-    NPC_LUCID = 9063159
-    sm.setNpcBoxChat(NPC_LUCID)
+    sm.setNpcBoxChat(NPC_ID)
     while True:
         char_gender = get_char_gender(chr)
         mp, dp = get_points(chr)
 
-        menu = "#face0##fs13#=== #e#d[Lucid - Cash & Fashion Boutique]#k#n ===\r\n"
-        menu += "Welcome to the dream realm of Lucid, #h0#! What fashion, cubes, or cash items can I get for you today?\r\n"
-        menu += "Gender: " + get_gender_label(char_gender) + "  |  Cash: #e#b" + format_num(mp) + " Points#k#n  |  DP: #e#r" + format_num(dp) + "#k#n\r\n\r\n"
-        menu += "#b#L1##e[Cubes & Potential System (Unisex)]#n#k\r\n"
-        menu += "   #fs11#Red Cube, Black Cube, Bonus Potential, Violet, Glowing & Bright Cubes.#fs13#\r\n"
-        menu += "#b#L2##e[Rebirth Flames & Scrolls (Unisex)]#n#k\r\n"
-        menu += "   #fs11#Powerful / Eternal / Black Flames, Protection, Safety, Return Scrolls.#fs13#\r\n"
-        menu += "#b#L3##e[Utility & Convenience (Unisex)]#n#k\r\n"
-        menu += "   #fs11#Hyper Teleport Rock, Pendant Slot (30D), Revives, Slot Expansions.#fs13#\r\n"
-        menu += "#b#L4##e[Pets & Pet Skills (Unisex)]#n#k\r\n"
-        menu += "   #fs11#Sherbet Vac Pet, Auto Buff, Pet Snack, Auto HP/MP, Water of Life.#fs13#\r\n"
-        menu += "#b#L5##e[Fashion & Outfits (Male / Female / Unisex)]#n#k\r\n"
-        menu += "   #fs11#Separated into Male, Female, and Unisex/Weapons/Transparent items.#fs13#\r\n"
-        menu += "#b#L6##e[Royal Beauty Salon (Male / Female / Unisex)]#n#k\r\n"
-        menu += "   #fs11#VIP Royal Hairstyles & Face Styles separated by Male / Female / Dyes.#fs13#\r\n"
-        menu += "#d#L99#Exit Shop#l#k\r\n"
+        menu = "#face0##fc0xFFFFFFFF##fs13#=== #e#d[Lucid - Cash & Fashion Boutique]#fc0xFFFFFFFF##n ===\r\n"
+        menu += "Welcome to the dream realm of Lucid, #h0#! What fashion or cash items can I get for you today?\r\n"
+        menu += "Gender: " + get_gender_label(char_gender) + "  |  Cash: #e#b" + format_num(mp) + " Points#fc0xFFFFFFFF##n  |  DP: #e#r" + format_num(dp) + "#fc0xFFFFFFFF##n\r\n\r\n"
+        menu += "#b#L1##e[1] Cubes & Potential System (Unisex)#n#k\r\n"
+        menu += "   #fc0xFFEEEEEE##fs11#Red Cube, Black Cube, Bonus Potential, Violet, Glowing & Bright Cubes.#fc0xFFFFFFFF##fs13#\r\n"
+        menu += "#b#L2##e[2] Rebirth Flames & Scrolls (Unisex)#n#k\r\n"
+        menu += "   #fc0xFFEEEEEE##fs11#Powerful / Eternal / Black Flames, Protection, Safety, Return Scrolls.#fc0xFFFFFFFF##fs13#\r\n"
+        menu += "#b#L3##e[3] Utility & Inventory Slot Expansion#n#k\r\n"
+        menu += "   #fc0xFFEEEEEE##fs11#Hyper Teleport Rock, Pendant Slot (30D), Revives, Expand +8 Slots.#fc0xFFFFFFFF##fs13#\r\n"
+        menu += "#b#L4##e[4] Fashion & Outfits Boutique (Massive Collection)#n#k\r\n"
+        menu += "   #fc0xFFEEEEEE##fs11#Weapons, Full Transparent Set, Wings, Hats, Male/Female Suits & Dresses.#fc0xFFFFFFFF##fs13#\r\n"
+        menu += "#d#L99#Exit Boutique#l#k\r\n"
 
         cat = sm.sendNext(menu)
-        if cat == 99 or cat < 1 or cat > 6:
+        if cat == 99 or cat < 1 or cat > 4:
             break
 
         if cat == 1:
-            # Cubes (Unisex)
+            # Cubes
             while True:
                 mp, dp = get_points(chr)
-                c_menu = "#fs13#=== #e#bCubes & Potential System#k#n ===\r\n"
-                c_menu += "Current Points: #e#d" + format_num(mp) + " Maple Points#k#n\r\n\r\n"
+                c_menu = "#face0##fc0xFFFFFFFF##fs13#=== #e#bCubes & Potential System#fc0xFFFFFFFF##n ===\r\n"
+                c_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n\r\n"
                 for idx, (cid, cname, ccost, cdesc) in enumerate(CUBE_ITEMS):
-                    c_menu += "#L" + str(idx) + "##i" + str(cid) + "# #b" + cname + "#k - #r" + format_num(ccost) + " Points#k\r\n    #fs11#" + cdesc + "#fs13##l\r\n"
+                    c_menu += "#L" + str(idx) + "##i" + str(cid) + "# #b" + cname + "#fc0xFFFFFFFF# - #r" + format_num(ccost) + " Points#fc0xFFFFFFFF#\r\n    #fc0xFFCCCCCC##fs11#" + cdesc + "#fc0xFFFFFFFF##fs13##l\r\n"
                 c_menu += "#d#L99#[Back to Main Menu]#k#l\r\n"
 
                 c_sel = sm.sendNext(c_menu)
@@ -399,13 +355,13 @@ def open_point_shop(sm, chr):
                 buy_stackable_item(sm, chr, cid, cname, ccost, cdesc)
 
         elif cat == 2:
-            # Flames & Scrolls (Unisex)
+            # Flames & Scrolls
             while True:
                 mp, dp = get_points(chr)
-                f_menu = "#fs13#=== #e#bRebirth Flames & Upgrade Scrolls#k#n ===\r\n"
-                f_menu += "Current Points: #e#d" + format_num(mp) + " Maple Points#k#n\r\n\r\n"
+                f_menu = "#face0##fc0xFFFFFFFF##fs13#=== #e#bRebirth Flames & Scrolls#fc0xFFFFFFFF##n ===\r\n"
+                f_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n\r\n"
                 for idx, (fid, fname, fcost, fdesc) in enumerate(FLAME_SCROLL_ITEMS):
-                    f_menu += "#L" + str(idx) + "##i" + str(fid) + "# #b" + fname + "#k - #r" + format_num(fcost) + " Points#k\r\n    #fs11#" + fdesc + "#fs13##l\r\n"
+                    f_menu += "#L" + str(idx) + "##i" + str(fid) + "# #b" + fname + "#fc0xFFFFFFFF# - #r" + format_num(fcost) + " Points#fc0xFFFFFFFF#\r\n    #fc0xFFCCCCCC##fs11#" + fdesc + "#fc0xFFFFFFFF##fs13##l\r\n"
                 f_menu += "#d#L99#[Back to Main Menu]#k#l\r\n"
 
                 f_sel = sm.sendNext(f_menu)
@@ -415,238 +371,110 @@ def open_point_shop(sm, chr):
                 buy_stackable_item(sm, chr, fid, fname, fcost, fdesc)
 
         elif cat == 3:
-            # Utility & Slots (Unisex)
+            # Utility & Slots
             while True:
                 mp, dp = get_points(chr)
-                u_menu = "#fs13#=== #e#bUtility & Inventory Expansion#k#n ===\r\n"
-                u_menu += "Current Points: #e#d" + format_num(mp) + " Maple Points#k#n\r\n\r\n"
-                u_menu += "#e#r#L100#[* Expand Inventory Slots (+8 Slots)]#n#k\r\n   #fs11#Expand Equip, Use, Setup, Etc, or Cash tabs up to 128 slots.#fs13##l\r\n\r\n"
+                u_menu = "#face0##fc0xFFFFFFFF##fs13#=== #e#bUtility & Inventory Expansion#fc0xFFFFFFFF##n ===\r\n"
+                u_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n\r\n"
                 for idx, (uid, uname, ucost, udays, udesc) in enumerate(UTILITY_ITEMS):
                     dur_str = " (30 Days)" if udays > 0 else ""
-                    u_menu += "#L" + str(idx) + "##i" + str(uid) + "# #b" + uname + "#k - #r" + format_num(ucost) + " Points#k" + dur_str + "\r\n    #fs11#" + udesc + "#fs13##l\r\n"
+                    u_menu += "#L" + str(idx) + "##i" + str(uid) + "# #b" + uname + "#fc0xFFFFFFFF# - #r" + format_num(ucost) + " Points#fc0xFFFFFFFF#" + dur_str + "\r\n    #fc0xFFCCCCCC##fs11#" + udesc + "#fc0xFFFFFFFF##fs13##l\r\n"
                 u_menu += "#d#L99#[Back to Main Menu]#k#l\r\n"
 
                 u_sel = sm.sendNext(u_menu)
-                if u_sel == 99:
+                if u_sel == 99 or u_sel < 0 or u_sel >= len(UTILITY_ITEMS):
                     break
-                elif u_sel == 100:
-                    handle_slot_expansion(sm, chr)
-                elif 0 <= u_sel < len(UTILITY_ITEMS):
-                    uid, uname, ucost, udays, udesc = UTILITY_ITEMS[u_sel]
-                    if udays > 0:
-                        buy_single_equip(sm, chr, uid, uname, ucost, udays, udesc, 2)
-                    else:
-                        buy_stackable_item(sm, chr, uid, uname, ucost, udesc)
+                uid, uname, ucost, udays, udesc = UTILITY_ITEMS[u_sel]
+                if udays > 0:
+                    buy_single_equip(sm, chr, uid, uname, ucost, udays, udesc, 2)
+                else:
+                    buy_stackable_item(sm, chr, uid, uname, ucost, udesc)
 
         elif cat == 4:
-            # Pets (Unisex)
-            while True:
-                mp, dp = get_points(chr)
-                p_menu = "#fs13#=== #e#bPets, Vac Pets & Pet Skills#k#n ===\r\n"
-                p_menu += "Current Points: #e#d" + format_num(mp) + " Maple Points#k#n\r\n\r\n"
-                for idx, (pid, pname, pcost, pdays, pdesc) in enumerate(PET_ITEMS):
-                    dur_str = " (" + str(pdays) + " Days)" if pdays > 0 else ""
-                    p_menu += "#L" + str(idx) + "##i" + str(pid) + "# #b" + pname + "#k - #r" + format_num(pcost) + " Points#k" + dur_str + "\r\n    #fs11#" + pdesc + "#fs13##l\r\n"
-                p_menu += "#d#L99#[Back to Main Menu]#k#l\r\n"
-
-                p_sel = sm.sendNext(p_menu)
-                if p_sel == 99 or p_sel < 0 or p_sel >= len(PET_ITEMS):
-                    break
-                pid, pname, pcost, pdays, pdesc = PET_ITEMS[p_sel]
-                if pdays > 0:
-                    buy_single_equip(sm, chr, pid, pname, pcost, pdays, pdesc, 2)
-                else:
-                    buy_stackable_item(sm, chr, pid, pname, pcost, pdesc)
-
-        elif cat == 5:
-            # Fashion & Outfits (Male / Female / Unisex)
+            # Fashion & Outfits Mega Boutique
             while True:
                 char_gender = get_char_gender(chr)
                 mp, _ = get_points(chr)
-                f_top = "#fs13#=== #e#d[Fashion & Outfits Depot]#k#n ===\r\n"
-                f_top += "Your Character: " + get_gender_label(char_gender) + "\r\n"
-                f_top += "Current Points: #e#d" + format_num(mp) + " Maple Points#k#n\r\n\r\n"
-                f_top += "Please select a category:\r\n"
-                f_top += "#b#L1##e[1. Male Fashion & Outfits (Male Only)]#n#k\r\n"
-                f_top += "   #fs11#Hats, Suits, Outfits, and Shoes for Male characters.#fs13#\r\n"
-                f_top += "#r#L2##e[2. Female Fashion & Outfits (Female Only)]#n#k\r\n"
-                f_top += "   #fs11#Hats, Dresses, Sundresses, and Shoes for Female characters.#fs13#\r\n"
-                f_top += "#g#L3##e[3. Unisex Fashion, Weapons & Transparent (All Characters)]#n#k\r\n"
-                f_top += "   #fs11#Full Transparent Set, All-Weapon covers, and Onesie Costumes.#fs13#\r\n"
+                f_top = "#face0##fc0xFFFFFFFF##fs13#=== #e#d[Fashion & Outfits Mega Boutique]#fc0xFFFFFFFF##n ===\r\n"
+                f_top += "Your Character: " + get_gender_label(char_gender) + "  |  Points: #e#b" + format_num(mp) + "#fc0xFFFFFFFF##n\r\n\r\n"
+                f_top += "Please select a fashion category:\r\n"
+                f_top += "#b#L1##e[1. Universal Weapon Skins (All Weapons)]#n#k\r\n"
+                f_top += "   #fc0xFFEEEEEE##fs11#Death's Scythe, Verus Hilla Scythe, Dandelion, Plasma Saber, Guitars.#fc0xFFFFFFFF##fs13#\r\n"
+                f_top += "#b#L2##e[2. Full Transparent Equipment Set]#n#k\r\n"
+                f_top += "   #fc0xFFEEEEEE##fs11#Complete 9-piece Transparent Set + 35k Point Discount Bundle.#fc0xFFFFFFFF##fs13#\r\n"
+                f_top += "#b#L3##e[3. Wings, Capes & Back Auras]#n#k\r\n"
+                f_top += "   #fc0xFFEEEEEE##fs11#Light Wing Cherubim, Succubus Wings, Dream Wings, Nine-Tailed Tails.#fc0xFFFFFFFF##fs13#\r\n"
+                f_top += "#b#L4##e[4. Hats, Ribbons, Hoodies & Halos]#n#k\r\n"
+                f_top += "   #fc0xFFEEEEEE##fs11#Pink Bean Horns, Floral Crowns, Dressy Ribbons, Starlight Halos.#fc0xFFFFFFFF##fs13#\r\n"
+                f_top += "#b#L5##e[5. Male Fashion & Suits (Male Only)]#n#k\r\n"
+                f_top += "   #fc0xFFEEEEEE##fs11#Picnic Suits, Officer Uniforms, Butler Outfits, Oxford Shoes.#fc0xFFFFFFFF##fs13#\r\n"
+                f_top += "#r#L6##e[6. Female Fashion & Dresses (Female Only)]#n#k\r\n"
+                f_top += "   #fc0xFFEEEEEE##fs11#Picnic Sundresses, Pink Sailor Uniforms, Hanboks, Mary Janes.#fc0xFFFFFFFF##fs13#\r\n"
+                f_top += "#g#L7##e[7. Unisex Costumes & Onesies (All Characters)]#n#k\r\n"
+                f_top += "   #fc0xFFEEEEEE##fs11#Time Cantabile, Pink Bean Onesie, Light & Dark Executor Garbs.#fc0xFFFFFFFF##fs13#\r\n"
                 f_top += "#d#L99#[Back to Main Menu]#k#l\r\n"
 
                 f_sub = sm.sendNext(f_top)
                 if f_sub == 99:
                     break
 
-                elif f_sub == 1:
-                    # Male Fashion (Male Only)
-                    while True:
-                        mp, _ = get_points(chr)
-                        m_menu = "#fs13#=== #e#b[Male Fashion & Outfits]#k#n ===\r\n"
-                        if char_gender != 0:
-                            m_menu += "#r(Notice: Your character is " + get_gender_label(char_gender) + ". Male equips may not fit!)#k\r\n"
-                        m_menu += "Current Points: #e#d" + format_num(mp) + " Maple Points#k#n\r\n\r\n"
-                        for idx, (mid, mname, mcost, mdays, mdesc) in enumerate(MALE_FASHION):
-                            m_menu += "#L" + str(idx) + "##i" + str(mid) + "# #b" + mname + "#k - #r" + format_num(mcost) + " Points#k\r\n    #fs11#" + mdesc + "#fs13##l\r\n"
-                        m_menu += "#d#L99#[Back to Fashion Menu]#k#l\r\n"
+                target_list = None
+                target_gender = 2
+                title = ""
 
-                        m_sel = sm.sendNext(m_menu)
-                        if m_sel == 99 or m_sel < 0 or m_sel >= len(MALE_FASHION):
-                            break
-                        mid, mname, mcost, mdays, mdesc = MALE_FASHION[m_sel]
-                        buy_single_equip(sm, chr, mid, mname, mcost, mdays, mdesc, 0)
-
+                if f_sub == 1:
+                    target_list = WEAPON_COVERS
+                    title = "Universal Weapon Skins"
                 elif f_sub == 2:
-                    # Female Fashion (Female Only)
+                    # Transparent submenu
                     while True:
                         mp, _ = get_points(chr)
-                        w_menu = "#fs13#=== #e#r[Female Fashion & Outfits]#k#n ===\r\n"
-                        if char_gender != 1:
-                            w_menu += "#r(Notice: Your character is " + get_gender_label(char_gender) + ". Female equips may not fit!)#k\r\n"
-                        w_menu += "Current Points: #e#d" + format_num(mp) + " Maple Points#k#n\r\n\r\n"
-                        for idx, (wid, wname, wcost, wdays, wdesc) in enumerate(FEMALE_FASHION):
-                            w_menu += "#L" + str(idx) + "##i" + str(wid) + "# #b" + wname + "#k - #r" + format_num(wcost) + " Points#k\r\n    #fs11#" + wdesc + "#fs13##l\r\n"
-                        w_menu += "#d#L99#[Back to Fashion Menu]#k#l\r\n"
+                        t_menu = "#face0##fc0xFFFFFFFF##fs13#=== #e#bTransparent Equipment Set#fc0xFFFFFFFF##n ===\r\n"
+                        t_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n\r\n"
+                        t_menu += "#e#r#L100#[* Purchase Complete 9-Item Transparent Bundle (100,000 Points - Save 35k!)]#fc0xFFFFFFFF##n#l\r\n\r\n"
+                        for tidx, (tid, tname, tcost, tdays, tdesc) in enumerate(TRANSPARENT_EQUIPS):
+                            t_menu += "#L" + str(tidx) + "##i" + str(tid) + "# #b" + tname + "#fc0xFFFFFFFF# - #r" + format_num(tcost) + " Points#fc0xFFFFFFFF#\r\n    #fc0xFFCCCCCC##fs11#" + tdesc + "#fc0xFFFFFFFF##fs13##l\r\n"
+                        t_menu += "#d#L99#[Back to Fashion Menu]#k#l\r\n"
 
-                        w_sel = sm.sendNext(w_menu)
-                        if w_sel == 99 or w_sel < 0 or w_sel >= len(FEMALE_FASHION):
+                        t_sel = sm.sendNext(t_menu)
+                        if t_sel == 99:
                             break
-                        wid, wname, wcost, wdays, wdesc = FEMALE_FASHION[w_sel]
-                        buy_single_equip(sm, chr, wid, wname, wcost, wdays, wdesc, 1)
+                        elif t_sel == 100:
+                            buy_transparent_bundle(sm, chr)
+                        elif 0 <= t_sel < len(TRANSPARENT_EQUIPS):
+                            tid, tname, tcost, tdays, tdesc = TRANSPARENT_EQUIPS[t_sel]
+                            buy_single_equip(sm, chr, tid, tname, tcost, tdays, tdesc, 2)
+                    continue
 
                 elif f_sub == 3:
-                    # Unisex & Others
+                    target_list = WINGS_AND_CAPES
+                    title = "Wings, Capes & Back Auras"
+                elif f_sub == 4:
+                    target_list = HATS_AND_HEADWEAR
+                    title = "Hats, Ribbons & Headwear"
+                elif f_sub == 5:
+                    target_list = MALE_FASHION
+                    target_gender = 0
+                    title = "Male Fashion & Suits"
+                elif f_sub == 6:
+                    target_list = FEMALE_FASHION
+                    target_gender = 1
+                    title = "Female Fashion & Dresses"
+                elif f_sub == 7:
+                    target_list = UNISEX_COSTUMES
+                    title = "Unisex Costumes & Onesies"
+
+                if target_list is not None:
                     while True:
                         mp, _ = get_points(chr)
-                        u_fmenu = "#fs13#=== #e#g[Unisex Fashion & Weapons]#k#n ===\r\n"
-                        u_fmenu += "#fs11#These items can be equipped by both Male and Female characters.#fs13#\r\n"
-                        u_fmenu += "Current Points: #e#d" + format_num(mp) + " Maple Points#k#n\r\n\r\n"
-                        u_fmenu += "#b#L1##e[Full Transparent Equipment Set]#n#k\r\n"
-                        u_fmenu += "   #fs11#Transparent Hat, Cape, Shoes, Gloves, Weapon, Face, Eye, Earrings.#fs13#\r\n"
-                        u_fmenu += "#b#L2##e[Exclusive Weapon Covers & Costumes]#n#k\r\n"
-                        u_fmenu += "   #fs11#Death's Scythe, Time Cantabile, Dandelion, Pink Bean Onesie...#fs13#\r\n"
-                        u_fmenu += "#d#L99#[Back to Fashion Menu]#k#l\r\n"
+                        sub_menu = "#face0##fc0xFFFFFFFF##fs13#=== #e#b[" + title + "]#fc0xFFFFFFFF##n ===\r\n"
+                        sub_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n\r\n"
+                        for idx, (iid, iname, icost, idays, idesc) in enumerate(target_list):
+                            sub_menu += "#L" + str(idx) + "##i" + str(iid) + "# #b" + iname + "#fc0xFFFFFFFF# - #r" + format_num(icost) + " Points#fc0xFFFFFFFF#\r\n    #fc0xFFCCCCCC##fs11#" + idesc + "#fc0xFFFFFFFF##fs13##l\r\n"
+                        sub_menu += "#d#L99#[Back to Fashion Menu]#k#l\r\n"
 
-                        u_sub = sm.sendNext(u_fmenu)
-                        if u_sub == 99:
+                        s_sel = sm.sendNext(sub_menu)
+                        if s_sel == 99 or s_sel < 0 or s_sel >= len(target_list):
                             break
-                        elif u_sub == 1:
-                            # Transparent Equips
-                            while True:
-                                mp, _ = get_points(chr)
-                                t_menu = "#fs13#=== #e#bTransparent Equipment Set (Unisex)#k#n ===\r\n"
-                                t_menu += "Current Points: #e#d" + format_num(mp) + " Maple Points#k#n\r\n\r\n"
-                                t_menu += "#e#r#L100#[* Purchase Complete 9-Item Transparent Bundle (100,000 Points - Save 35k!)]#n#k#l\r\n\r\n"
-                                for tidx, (tid, tname, tcost, tdays, tdesc) in enumerate(TRANSPARENT_EQUIPS):
-                                    t_menu += "#L" + str(tidx) + "##i" + str(tid) + "# #b" + tname + "#k - #r" + format_num(tcost) + " Points#k\r\n    #fs11#" + tdesc + "#fs13##l\r\n"
-                                t_menu += "#d#L99#[Back to Unisex Menu]#k#l\r\n"
-
-                                t_sel = sm.sendNext(t_menu)
-                                if t_sel == 99:
-                                    break
-                                elif t_sel == 100:
-                                    buy_transparent_bundle(sm, chr)
-                                elif 0 <= t_sel < len(TRANSPARENT_EQUIPS):
-                                    tid, tname, tcost, tdays, tdesc = TRANSPARENT_EQUIPS[t_sel]
-                                    buy_single_equip(sm, chr, tid, tname, tcost, tdays, tdesc, 2)
-
-                        elif u_sub == 2:
-                            # Weapons & Unisex suits
-                            while True:
-                                mp, _ = get_points(chr)
-                                wpn_menu = "#fs13#=== #e#bWeapon Covers & Costumes (Unisex)#k#n ===\r\n"
-                                wpn_menu += "Current Points: #e#d" + format_num(mp) + " Maple Points#k#n\r\n\r\n"
-                                for widx, (wid, wname, wcost, wdays, wdesc) in enumerate(UNISEX_WEAPONS_AND_SUITS):
-                                    wpn_menu += "#L" + str(widx) + "##i" + str(wid) + "# #b" + wname + "#k - #r" + format_num(wcost) + " Points#k\r\n    #fs11#" + wdesc + "#fs13##l\r\n"
-                                wpn_menu += "#d#L99#[Back to Unisex Menu]#k#l\r\n"
-
-                                wpn_sel = sm.sendNext(wpn_menu)
-                                if wpn_sel == 99 or wpn_sel < 0 or wpn_sel >= len(UNISEX_WEAPONS_AND_SUITS):
-                                    break
-                                wid, wname, wcost, wdays, wdesc = UNISEX_WEAPONS_AND_SUITS[wpn_sel]
-                                buy_single_equip(sm, chr, wid, wname, wcost, wdays, wdesc, 2)
-
-        elif cat == 6:
-            # Royal Beauty Salon (Male / Female / Unisex)
-            while True:
-                char_gender = get_char_gender(chr)
-                mp, dp = get_points(chr)
-                b_menu = "#fs13#=== #e#b[Royal Beauty Salon]#k#n ===\r\n"
-                b_menu += "Your Character: " + get_gender_label(char_gender) + "\r\n"
-                b_menu += "Donation Points: #e#r" + format_num(dp) + " DP#k#n  |  Maple Points: #e#b" + format_num(mp) + "#k#n\r\n\r\n"
-                b_menu += "Please select a beauty service:\r\n"
-                b_menu += "#b#L1##e[1. Male Hair & Face Styles (Male Only)]#n#k (10,000 DP)\r\n"
-                b_menu += "   #fs11#Browse and preview Royal Hairstyles & Faces for Male characters.#fs13#\r\n"
-                b_menu += "#r#L2##e[2. Female Hair & Face Styles (Female Only)]#n#k (10,000 DP)\r\n"
-                b_menu += "   #fs11#Browse and preview Royal Hairstyles & Faces for Female characters.#fs13#\r\n"
-                b_menu += "#g#L3##e[3. Beauty Care, Dyes & Lenses (Unisex)]#n#k\r\n"
-                b_menu += "   #fs11#Hair Color Coupons, Skin Care, and Cosmetic Lens Coupons.#fs13#\r\n"
-                b_menu += "#d#L99#[Back to Main Menu]#k#l\r\n"
-
-                b_sel = sm.sendNext(b_menu)
-                if b_sel == 99:
-                    break
-
-                elif b_sel == 1:
-                    # Male Beauty (Male Only)
-                    if char_gender != 0:
-                        warn = sm.sendAskYesNo("#fs13##rNotice:#k Your character is " + get_gender_label(char_gender) + "\r\n"
-                                               "Male hairstyles/faces might not render properly on female characters!\r\n\r\n"
-                                               "Do you wish to proceed?")
-                        if not warn:
-                            continue
-                    male_b_menu = "#fs13#=== #e#b[Male Hair & Face Styles]#k#n ===\r\n"
-                    male_b_menu += "Cost: #r10,000 DP#k per change (Preview before confirming)\r\n"
-                    male_b_menu += "Your DP: #e#d" + format_num(dp) + " DP#k#n\r\n\r\n"
-                    male_b_menu += "#b#L1#Change Male Hairstyle (Royal Hair)#l\r\n"
-                    male_b_menu += "#L2#Change Male Face Style (Royal Face)#l\r\n"
-                    male_b_menu += "#d#L99#[Back]#k#l\r\n"
-
-                    mb_choice = sm.sendNext(male_b_menu)
-                    if mb_choice == 1:
-                        sm.giveCharacterLookByXuVang(True)
-                    elif mb_choice == 2:
-                        sm.giveCharacterLookByXuVang(False)
-
-                elif b_sel == 2:
-                    # Female Beauty (Female Only)
-                    if char_gender != 1:
-                        warn = sm.sendAskYesNo("#fs13##rNotice:#k Your character is " + get_gender_label(char_gender) + "\r\n"
-                                               "Female hairstyles/faces might not render properly on male characters!\r\n\r\n"
-                                               "Do you wish to proceed?")
-                        if not warn:
-                            continue
-                    fem_b_menu = "#fs13#=== #e#r[Female Hair & Face Styles]#k#n ===\r\n"
-                    fem_b_menu += "Cost: #r10,000 DP#k per change (Preview before confirming)\r\n"
-                    fem_b_menu += "Your DP: #e#d" + format_num(dp) + " DP#k#n\r\n\r\n"
-                    fem_b_menu += "#b#L1#Change Female Hairstyle (Royal Hair)#l\r\n"
-                    fem_b_menu += "#L2#Change Female Face Style (Royal Face)#l\r\n"
-                    fem_b_menu += "#d#L99#[Back]#k#l\r\n"
-
-                    fb_choice = sm.sendNext(fem_b_menu)
-                    if fb_choice == 1:
-                        sm.giveCharacterLookByXuVang(True)
-                    elif fb_choice == 2:
-                        sm.giveCharacterLookByXuVang(False)
-
-                elif b_sel == 3:
-                    # Unisex Care (Unisex)
-                    while True:
-                        mp, _ = get_points(chr)
-                        care_menu = "#fs13#=== #e#g[Beauty Care, Dyes & Lenses]#k#n ===\r\n"
-                        care_menu += "Current Points: #e#d" + format_num(mp) + " Maple Points#k#n\r\n\r\n"
-                        care_menu += "#b#L1##i5150053# #bVIP Hair Color Coupon#k - #r5,000 Maple Points#k\r\n   #fs11#Dye your hair to any preferred color.#fs13##l\r\n"
-                        care_menu += "#b#L2##i5153015# #bSkin Care Coupon#k - #r5,000 Maple Points#k\r\n   #fs11#Changes your character skin complexion.#fs13##l\r\n"
-                        care_menu += "#b#L3##i5152053# #bRoyal Cosmetic Lens Coupon#k - #r5,000 Maple Points#k\r\n   #fs11#Changes eye contact lens color.#fs13##l\r\n"
-                        care_menu += "#d#L99#[Back to Beauty Menu]#k#l\r\n"
-
-                        c_choice = sm.sendNext(care_menu)
-                        if c_choice == 99:
-                            break
-                        elif c_choice == 1:
-                            buy_stackable_item(sm, chr, 5150053, "VIP Hair Color Coupon", 5000, "Dye hair to any preferred color.")
-                        elif c_choice == 2:
-                            buy_stackable_item(sm, chr, 5153015, "Skin Care Coupon", 5000, "Change character skin complexion.")
-                        elif c_choice == 3:
-                            buy_stackable_item(sm, chr, 5152053, "Royal Cosmetic Lens Coupon", 5000, "Change eye contact lens color.")
+                        iid, iname, icost, idays, idesc = target_list[s_sel]
+                        buy_single_equip(sm, chr, iid, iname, icost, idays, idesc, target_gender)

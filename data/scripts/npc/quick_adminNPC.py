@@ -78,31 +78,31 @@ def open_dimensional_mirror():
                 sm.sendSayOkay("You are already at #b" + dest_name + "#k.")
 
 sm.setNpcBoxChat(NPC)
-menu_text = "#face0##fs13#Greetings, #h0#! I am the #bMaple Administrator#k.\r\n"
+menu_text = "#face0##fc0xFFFFFFFF##fs13#Greetings, #h0#! I am the #bMaple Administrator#fc0xFFFFFFFF#.\r\n"
 menu_text += "Welcome to the central server operations and utility hub! How may I assist you today?\r\n\r\n"
-menu_text += "#e#d=== Travel & Warping Services (Warp Center) ===#k#n\r\n"
-menu_text += "#b#L26##e[Universal Warp Center]#n#k Fast travel to Major Towns, Grandis, Arcane River & Training Maps (by Hoyoung).#l\r\n"
-menu_text += "#r#L30##e[Boss Arena & Boss Warp]#n#k Instant warp and challenge all bosses up to Kaling Extreme & Limbo (by Seren).#l\r\n"
-menu_text += "#g#L25##e[Dimensional Mirror]#n#k Dimensional Gate for Party Quests, Monster Park & Theme Dungeons.#l\r\n\r\n"
-menu_text += "#e#d=== Merchant & Specialty Services (Shops) ===#k#n\r\n"
-menu_text += "#g#L40##e[General Store & Boss Buff Depot]#n#k Utility supplies, balanced 100% Elixirs & 10x Boss Buff bundles (by Adele).#l\r\n"
-menu_text += "#b#L60##e[Pet Sanctuary & Pet Skills]#n#k Vacuum Pets, Pet Food, Water of Life & Auto Pet Skills (by Lara).#l\r\n"
-menu_text += "#d#L50##e[Cash & Fashion Boutique]#n#k Cubes, Rebirth Flames, Gender-separated Outfits & Royal Beauty (by Lucid).#l\r\n"
-menu_text += "#r#L20##e[Starter Package]#n#k Claim 100k DP, 1M Cash Points, and a 30-Day Vac Pet #r(1x per account)#k.#l\r\n\r\n"
-menu_text += "#e#d=== Character & Progression Tools ===#k#n\r\n"
-menu_text += "#b#L14#Fast Job Advancement.#l\r\n"
-menu_text += "#L21#Unlock 5th Job (V-Matrix System).#l\r\n"
-menu_text += "#L22#Unlock 6th Job (HEXA Matrix System).#l\r\n"
-menu_text += "#L5#Complete All Boss Prequests.#l\r\n"
-menu_text += "#L13#Upgrade Mechanical Heart (Requires #i1672020#).#l\r\n"
-menu_text += "#L12#Check Your MVP Tier & Status.#l\r\n"
-menu_text += "#L0#Remove Unwanted Cash Items.#l\r\n"
+menu_text += "#e#d=== Travel & Warping Services (Warp Center) ===#fc0xFFFFFFFF##n\r\n"
+menu_text += "#b#L26##e[Universal Warp Center]#n#k #fc0xFFFFFFFF#Fast travel to Major Towns, Grandis, Arcane River & Training Maps (by Hoyoung).#l\r\n"
+menu_text += "#r#L30##e[Boss Arena & Boss Warp]#n#k #fc0xFFFFFFFF#Instant warp and challenge all bosses up to Kaling Extreme & Limbo (by Seren).#l\r\n"
+menu_text += "#g#L25##e[Dimensional Mirror]#n#k #fc0xFFFFFFFF#Dimensional Gate for Party Quests, Monster Park & Theme Dungeons.#l\r\n\r\n"
+menu_text += "#e#d=== Merchant & Specialty Services (Shops) ===#fc0xFFFFFFFF##n\r\n"
+menu_text += "#g#L40##e[General Store & Boss Buff Depot]#n#k #fc0xFFFFFFFF#Utility supplies, balanced 100% Elixirs & 10x Boss Buff bundles (by Adele).#l\r\n"
+menu_text += "#b#L60##e[Pet Sanctuary & Pet Skills]#n#k #fc0xFFFFFFFF#Vacuum Pets, Pet Food, Water of Life & Auto Pet Skills (by Lara).#l\r\n"
+menu_text += "#d#L50##e[Cash & Fashion Boutique]#n#k #fc0xFFFFFFFF#Cubes, Rebirth Flames, Massive Fashion Outfits & Royal Beauty (by Lucid).#l\r\n"
+menu_text += "#r#L20##e[Starter Package]#n#k #fc0xFFFFFFFF#Claim 100k DP, 1M Cash Points, and a 30-Day Vac Pet #r(1x per account)#fc0xFFFFFFFF#.#l\r\n\r\n"
+menu_text += "#e#d=== Character & Progression Tools ===#fc0xFFFFFFFF##n\r\n"
+menu_text += "#b#L14##fc0xFFFFFFFF#Fast Job Advancement.#l\r\n"
+menu_text += "#L21##fc0xFFFFFFFF#Unlock 5th Job (V-Matrix System).#l\r\n"
+menu_text += "#L22##fc0xFFFFFFFF#Unlock 6th Job (HEXA Matrix System).#l\r\n"
+menu_text += "#L5##fc0xFFFFFFFF#Complete All Boss Prequests.#l\r\n"
+menu_text += "#L13##fc0xFFFFFFFF#Upgrade Mechanical Heart (Requires #i1672020#).#l\r\n"
+menu_text += "#L12##fc0xFFFFFFFF#Check Your MVP Tier & Status.#l\r\n"
+menu_text += "#L0##fc0xFFFFFFFF#Remove Unwanted Cash Items.#l\r\n"
 is_ohk = False
 try:
     is_ohk = chr.isOneHitKill()
 except:
     is_ohk = False
-menu_text += "#L99##r[Admin One-Hit Kill Mode]#k (Status: #e" + ("#rENABLED (ON)#k" if is_ohk else "#gDISABLED (OFF - Real Damage)#k") + "#n)#l\r\n"
+menu_text += "#L99##r[Admin One-Hit Kill Mode]#fc0xFFFFFFFF# (Status: #e" + ("#rENABLED (ON)#fc0xFFFFFFFF#" if is_ohk else "#gDISABLED (OFF - Real Damage)#fc0xFFFFFFFF#") + "#n)#l\r\n"
 selection = sm.sendNext(menu_text)
 
 if selection == 50:

@@ -116,12 +116,12 @@ def open_warp_service(sm, chr):
     
     total_locations = sum(len(locs) for _, locs in WARP_CATEGORIES)
     
-    menu_text = "#face0##fs14##e#b[Hoyoung - Universal Warp Center]#k#n\r\n"
+    menu_text = "#face0##fc0xFFFFFFFF##fs14##e#b[Hoyoung - Universal Warp Center]#fc0xFFFFFFFF##n\r\n"
     menu_text += "Yo! I am Hoyoung, the mischievous Anima sage! Where across the worlds would you like to travel today, #h0#?\r\n"
-    menu_text += "#dCurrent Map ID: " + str(current_map_id) + " (" + str(total_locations) + " total destinations available)#k\r\n\r\n"
+    menu_text += "#fc0xFFCCCCCC##fs11#Current Map ID: " + str(current_map_id) + " (" + str(total_locations) + " total destinations available)#fc0xFFFFFFFF##fs13#\r\n\r\n"
     
     for i, (cat_name, locations) in enumerate(WARP_CATEGORIES):
-        menu_text += "#L" + str(i) + "##e#b" + cat_name + "#k#n (" + str(len(locations)) + " destinations)#l\r\n"
+        menu_text += "#L" + str(i) + "##e#b" + cat_name + "#fc0xFFFFFFFF##n (" + str(len(locations)) + " destinations)#l\r\n"
     menu_text += "#L99##dShow All Destinations Alphabetically (A - Z)#k#l\r\n"
     
     cat_sel = sm.sendNext(menu_text)

@@ -133,14 +133,14 @@ def open_boss_arena(sm, chr):
     party = chr.getParty()
     is_party = (party is not None)
     
-    menu_text = "#face0##fs14##e#r[Chosen Seren - Boss Arena & Warp]#k#n\r\n"
+    menu_text = "#face0##fc0xFFFFFFFF##fs14##e#r[Chosen Seren - Boss Arena & Warp]#fc0xFFFFFFFF##n\r\n"
     menu_text += "I am Seren, the guardian of the Holy Sword. Welcome #h0# to the Boss Arena of Maple World!\r\n"
-    menu_text += "#d0 Prequests | Unlimited Attempts | 30 Mins | 15 Deaths | " + ("Party Mode" if is_party else "Solo Mode") + "#k\r\n\r\n"
-    menu_text += "#fs13##bYour Meso Balance:#k #e#g" + "{:,}".format(current_meso) + " Mesos#k#n\r\n"
-    menu_text += "#d(Entry fee scales with the difficulty and power of each boss)#k\r\n\r\n"
+    menu_text += "#fc0xFFEEEEEE##fs11#0 Prequests | Unlimited Attempts | 30 Mins | 15 Deaths | " + ("Party Mode" if is_party else "Solo Mode") + "#fc0xFFFFFFFF##fs13#\r\n\r\n"
+    menu_text += "#bYour Meso Balance:#fc0xFFFFFFFF# #e#y" + "{:,}".format(current_meso) + " Mesos#fc0xFFFFFFFF##n\r\n"
+    menu_text += "#fc0xFFCCCCCC##fs11#(Entry fee scales with the difficulty and power of each boss)#fc0xFFFFFFFF##fs13#\r\n\r\n"
     
     for i, (cat_name, bosses) in enumerate(BOSS_CATEGORIES):
-        menu_text += "#L" + str(i) + "##e#b" + cat_name + "#k#n (" + str(len(bosses)) + " Bosses)#l\r\n"
+        menu_text += "#L" + str(i) + "##e#b" + cat_name + "#fc0xFFFFFFFF##n (" + str(len(bosses)) + " Bosses)#l\r\n"
     menu_text += "#L99##dShow All Bosses (A-Z)#k#l\r\n"
     menu_text += "#L999##rLeave Boss Arena (Return to Henesys)#k#l\r\n"
     

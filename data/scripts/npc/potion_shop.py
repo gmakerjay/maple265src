@@ -66,17 +66,17 @@ def open_potion_shop(sm, chr):
     sm.setNpcBoxChat(NPC_ID)
     while True:
         cur_mesos = chr.getMoney()
-        menu = "#face0#Greetings, #h0#! I am #bAdele#k.\r\n"
+        menu = "#face0##fc0xFFFFFFFF##fs13#Greetings, #h0#! I am #bAdele#fc0xFFFFFFFF#.\r\n"
         menu += "Welcome to the Knight's Military General Store & Combat Buff Depot.\r\n\r\n"
-        menu += "Current Meso Balance: #e#d" + format_num(cur_mesos) + " Mesos#k#n\r\n\r\n"
+        menu += "Current Meso Balance: #e#y" + format_num(cur_mesos) + " Mesos#fc0xFFFFFFFF##n\r\n\r\n"
         menu += "#b#L1##e[1] General Utility Supplies#n#k\r\n"
-        menu += "   #fs11#Town Scrolls, Arrows, Throwing-Stars, All-Cure Potions (Standard Prices)#fs13#\r\n"
+        menu += "   #fc0xFFEEEEEE##fs11#Town Scrolls, Arrows, Throwing-Stars, All-Cure Potions (Standard Prices)#fc0xFFFFFFFF##fs13#\r\n"
         menu += "#b#L2##e[2] HP / MP Recovery Potions (Elixirs)#n#k\r\n"
-        menu += "   #fs11#Ginger Ale (75%), Power Elixir (100%), Elixir (50%) in 100 / 1,000 packs#fs13#\r\n"
+        menu += "   #fc0xFFEEEEEE##fs11#Ginger Ale (75%), Power Elixir (100%), Elixir (50%) in 100 / 1,000 packs#fc0xFFFFFFFF##fs13#\r\n"
         menu += "#b#L3##e[3] Boss Combat Buff Bundles (10-Bottle Sets)#n#k\r\n"
-        menu += "   #fs11#Onyx Apple, Adv Boss Rush, IED, Extreme Potions, EAP, WAP in sets of 10#fs13#\r\n"
+        menu += "   #fc0xFFEEEEEE##fs11#Onyx Apple, Adv Boss Rush, IED, Extreme Potions, EAP, WAP in sets of 10#fc0xFFFFFFFF##fs13#\r\n"
         menu += "#b#L4##e[4] Ultimate All-in-One Bossing Bundle#n#k\r\n"
-        menu += "   #fs11#Complete bundle of 8 top bossing buffs (10x each = 80 bottles) for 45M Mesos#fs13#\r\n"
+        menu += "   #fc0xFFEEEEEE##fs11#Complete bundle of 8 top bossing buffs (10x each = 80 bottles) for 45M Mesos#fc0xFFFFFFFF##fs13#\r\n"
         menu += "#d#L99#Exit Store#l#k\r\n"
 
         cat = sm.sendNext(menu)
