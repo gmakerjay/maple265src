@@ -78,12 +78,15 @@ public class DualBlade extends Job {
     public static final int KARMA_BLADE_BUFF = 4361501;
     public static final int KARMA_BLADE_EXTRA = 4361502;
     public static final int KARMA_BLADE_AFTER_ATTACK = 4361503;
+    public static final int HEXA_PHANTOM_BLOW = 4361000;
     public static final int HEXA_ASURAS_ANGER = 4361001;
     public static final int HEXA_BLADE_CLONE = 4361002;
     public static final int HEXA_BLADE_FURY = 4361003;
     public static final int FURY_JET = 4361004;
     public static final int HEXA_SUDDEN_RAID = 4361005;
     public static final int MORTALITY = 4360006;
+    public static final int YAMAS_DECREE = 4361505;
+    public static final int YAMAS_DECREE_ATTACK = 4361506;
 
     public static long lastShadowMeld = Long.MIN_VALUE;
     private int darkSightCount = 0;
@@ -194,6 +197,26 @@ public class DualBlade extends Job {
         }
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         if (hasHitMobs) {
+            if (skillID == KARMA_BLADE || skillID == KARMA_BLADE_BUFF || skillID == KARMA_BLADE_EXTRA || skillID == KARMA_BLADE_AFTER_ATTACK || skillID == 4361504) {
+                Option oOrigin1 = new Option();
+                Option oOrigin2 = new Option();
+                oOrigin1.nOption = 1;
+                oOrigin1.rOption = skillID;
+                oOrigin1.tOption = 10;
+                oOrigin2.nOption = 1;
+                oOrigin2.rOption = skillID;
+                oOrigin2.tOption = 20;
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob == null || mob.getHp() <= 0) {
+                        continue;
+                    }
+                    EnumMap<MobStat, Option> originStats = new EnumMap<>(MobStat.class);
+                    originStats.put(MobStat.Freeze, oOrigin1);
+                    originStats.put(MobStat.OriginDebuff, oOrigin2);
+                    mob.getTemporaryStat().addStatOptions(mob, originStats);
+                }
+            }
             if (tsm.hasStat(DarkSight)) {
                 tsm.removeStat(DarkSight);
             }
@@ -400,6 +423,15 @@ public class DualBlade extends Job {
                 break;
             case HEROS_WILL:
                 tsm.removeAllDebuffs();
+                break;
+            case KARMA_BLADE:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
+                tsm.sendStat(IndieNotDamaged, o1);
+                chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
+                break;
+            case YAMAS_DECREE:
                 break;
         }
     }

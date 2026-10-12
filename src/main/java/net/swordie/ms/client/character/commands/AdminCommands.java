@@ -2869,6 +2869,11 @@ public class AdminCommands {
             secondaryId = 1352286; // Princess No's Purple Shadow
             emblemId = 1190558; // Mitra Thief Emblem
             armors = thiefArmors;
+        } else if (JobConstants.isDualBlade(job)) {
+            weaponId = 1332279; // Arcane Umbra Dagger
+            secondaryId = 1342095; // Princess No's Poisoned Sword Katara
+            emblemId = 1190558; // Mitra Thief Emblem
+            armors = thiefArmors;
         } else {
             if (JobConstants.isWarriorEquipJob(job)) {
                 weaponId = 1402259;
@@ -3017,6 +3022,14 @@ public class AdminCommands {
                 chr.addSkill(4241502, 30, 30); // Halve Cut Attack 2
                 chr.addSkill(4241504, 30, 30); // Covetous Darkness FA
                 chr.addSkill(4241506, 30, 30); // Covetous Darkness Sub
+            } else if (JobConstants.isDualBlade(job)) {
+                chr.addSkill(4360006, 30, 30); // Mortality
+                chr.addSkill(4361004, 30, 30); // Fury Jet
+                chr.addSkill(4361501, 30, 30); // Karma Blade Buff
+                chr.addSkill(4361502, 30, 30); // Karma Blade Extra
+                chr.addSkill(4361503, 30, 30); // Karma Blade After Attack
+                chr.addSkill(4361504, 30, 30); // Karma Blade Sub
+                chr.addSkill(4361506, 30, 30); // Yama's Decree Attack
             }
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] Hexa warning: " + e.getMessage());

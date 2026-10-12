@@ -2433,6 +2433,11 @@ public class SkillConstants {
             case 4241504:
             case 4241506:
                 return 4241503; // Covetous Darkness Subs
+            // Dual Blade 6th Job Sub-Skills
+            case 4361004:
+                return 4361003; // Fury Jet -> HEXA Blade Fury
+            case 4361506:
+                return 4361505; // Yama's Decree Attack -> Yama's Decree
             default:
                 // Universal 6th Job Origin Sub-Skill Redirection (xxx41501-xxx41599 -> xxx41500)
                 int subOrigin = skillID % 100000;
