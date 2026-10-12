@@ -2724,6 +2724,11 @@ public class AdminCommands {
             secondaryId = 1352236; // Princess No's Poison Orb (F/P BiS Secondary)
             emblemId = 1190557; // Mitra Magician Emblem
             armors = mageArmors;
+        } else if (JobConstants.isIceLightning(job)) {
+            weaponId = 1382265; // Arcane Umbra Staff
+            secondaryId = 1352246; // Princess No's Ice Orb (I/L BiS Secondary)
+            emblemId = 1190557; // Mitra Magician Emblem
+            armors = mageArmors;
         } else if (JobConstants.isKhali(job)) {
             weaponId = 1404018; // Arcane Umbra Chakram
             secondaryId = 1354033; // Infinite Hex Seeker
@@ -2907,6 +2912,15 @@ public class AdminCommands {
                 chr.addSkill(2141016, 30, 30); // HEXA Megiddo Flame Explosion
                 chr.addSkill(2141501, 30, 30); // Infernal Venom Icon
                 chr.addSkill(2141505, 30, 30); // Immortal Flame Sub
+            } else if (JobConstants.isIceLightning(job)) {
+                chr.addSkill(2241001, 30, 30); // HEXA Chain Lightning Tile
+                chr.addSkill(2241004, 30, 30); // HEXA Blizzard FA
+                chr.addSkill(2241008, 30, 30); // HEXA Thunder Sphere Stay
+                chr.addSkill(2241010, 30, 30); // HEXA Lightning Orb 2
+                chr.addSkill(2241501, 30, 30); // Frozen Lightning Sub 1
+                chr.addSkill(2241503, 30, 30); // Frozen Lightning Sub 2
+                chr.addSkill(2241504, 30, 30); // Frozen Lightning Buff
+                chr.addSkill(2241506, 30, 30); // Parabolic Bolt SA
             }
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] Hexa warning: " + e.getMessage());

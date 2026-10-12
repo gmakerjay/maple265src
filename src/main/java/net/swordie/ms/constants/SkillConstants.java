@@ -2329,6 +2329,17 @@ public class SkillConstants {
                 return 2141000; // HEXA Flame Sweep Extra
             case 2141505:
                 return 2141504; // Immortal Flame Sub
+            // Ice/Lightning 6th Job Sub-Skills
+            case 2241001:
+                return 2241000; // HEXA Chain Lightning Tile
+            case 2241004:
+                return 2241003; // HEXA Blizzard FA
+            case 2241008:
+                return 2241007; // HEXA Thunder Sphere Stay
+            case 2241010:
+                return 2241005; // HEXA Lightning Orb 2
+            case 2241506:
+                return 2241505; // Parabolic Bolt SA
             default:
                 // Universal 6th Job Origin Sub-Skill Redirection (xxx41501-xxx41599 -> xxx41500)
                 int subOrigin = skillID % 100000;

@@ -88,8 +88,9 @@ public class IceLightning extends Magician {
     public static final int HEXA_THUNDER_SPHERE = 2241007;
     public static final int HEXA_THUNDER_SPHERE_STAY = 2241008;
     public static final int HEXA_ELQUINES = 2241009;
-    public static final int FROZEN_LIGHTING = 2241503;
-    public static final int FROZEN_LIGHTING_BUFF = 2241504;
+    public static final int FROZEN_LIGHTNING = 2241500;
+    public static final int FROZEN_LIGHTNING_SUB = 2241503;
+    public static final int FROZEN_LIGHTNING_BUFF = 2241504;
     public static final int PARABOLIC_BOLT = 2241505;
     public static final int PARABOLIC_BOLT_SA = 2241506;
 
@@ -232,10 +233,11 @@ public class IceLightning extends Magician {
             case HEXA_CHAIN_LIGHTNING:
                 setHexaChainLightning(attackInfo);
                 break;
-            case FROZEN_LIGHTING:
+            case FROZEN_LIGHTNING:
+            case FROZEN_LIGHTNING_SUB:
                 if (!tsm.hasStat(SixthFrozenLightning)) {
                     o1.nOption = 1;
-                    o1.rOption = FROZEN_LIGHTING_BUFF;
+                    o1.rOption = FROZEN_LIGHTNING_BUFF;
                     o1.tOption = 30;
                     tsm.sendStat(SixthFrozenLightning, o1);
                 } else {
@@ -529,6 +531,19 @@ public class IceLightning extends Magician {
                 setBoltBarrage(si, skillID, slv, chrPos, isLeft, positions);
                 chr.write(UserPacket.effect(Effect.skillUse(skillID, chr.getLevel(), (byte) slv)));
                 chr.getField().broadcast(UserRemote.effect(chr.getId(), Effect.skillUse(skillID, chr.getLevel(), (byte) slv)), chr);
+                break;
+            case FROZEN_LIGHTNING:
+                chr.heal(chr.getMaxHP());
+                chr.healMP(chr.getMaxMP());
+                if (!tsm.hasStat(SixthFrozenLightning)) {
+                    o1.nOption = 1;
+                    o1.rOption = FROZEN_LIGHTNING_BUFF;
+                    o1.tOption = 30;
+                    tsm.sendStat(SixthFrozenLightning, o1);
+                }
+                break;
+            case PARABOLIC_BOLT:
+                chr.heal(chr.getMaxHP() / 2);
                 break;
             case PARABOLIC_BOLT_SA: {
                 slv = chr.getSkillLevel(PARABOLIC_BOLT);

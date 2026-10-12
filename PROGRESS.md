@@ -5,6 +5,40 @@ This file tracks all bug fixes, feature implementations, and system optimization
 
 ---
 
+## 📅 [2026-10-12 12:02 น.] Phase 2: Explorer Class 5 (Ice/Lightning Arch Mage - 222) สมบูรณ์แบบ 100% — เชื่อมต่อ Frozen Lightning, Parabolic Bolt และคำสั่ง !endgame
+
+### 🎯 Scope
+ลงทะเบียนและตรวจสอบสกิลคลาส 6 สาย Explorer อาชีพที่ 5: **Ice/Lightning Arch Mage (จอมเวทน้ำแข็ง/สายฟ้า - Job ID 222)** บรรจุสกิล Origin (Frozen Lightning & Ascent Skill: Parabolic Bolt) และ HEXA Masteries ครบชุด (HEXA Chain Lightning, HEXA Chain Lightning Tile, HEXA Frozen Orb, HEXA Blizzard, HEXA Blizzard FA, HEXA Lightning Orb, HEXA Lightning Orb 2, Cryo Shock, HEXA Thunder Sphere, HEXA Thunder Sphere Stay, HEXA Elquines) เชื่อมต่อบัฟสถานะ SixthFrozenLightning และคำสั่งทดสอบ `!endgame il` หรือ `!endgame icelightning` ให้มอบอาวุธ BiS Arcane Umbra Staff, Princess No's Ice Orb, และ HEXA Cores ระดับ 30 เต็มระบบ
+
+### 📂 Files Modified
+- [`v214 src/.../IceLightning.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/magician/IceLightning.java)
+- [`v214 src/.../SkillConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`v214 src/.../AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **Frozen Lightning Origin Skill ID Correction**:
+   - ปัญหา: เดิมใน `IceLightning.java` กำหนด Constant `FROZEN_LIGHTING = 2241503;` ซึ่งเป็นเพียงรหัส Sub-attack ไม่ใช่รหัสหลักของ Origin Skill ส่งผลให้ระบบ Origin สากล (7s Absolute Invincibility, Cutscene, 10s Absolute Freeze, 20s Origin Debuff) ไม่ทำงาน
+   - วิธีแก้: ปรับแก้เป็น `FROZEN_LIGHTNING = 2241500;` (ตรงตาม Core 10000004 ใน HexaCore.img.xml) และกำหนด `FROZEN_LIGHTNING_SUB = 2241503;` พร้อมเชื่อมต่อใน `handleSkill()` ให้ฮีลเลือด/มานา 100% และมอบบัฟ `SixthFrozenLightning` (30 วินาที)
+2. **Parabolic Bolt Ascent Skill Support**:
+   - ปัญหา: สกิล `PARABOLIC_BOLT` (`2241505`) ยังขาดการฟื้นฟูพลังชีวิตในการร่าย
+   - วิธีแก้: เพิ่มการดักจับ `case PARABOLIC_BOLT:` ให้ฟื้นฟูเลือด 50%
+3. **Sub-Skill Redirection in SkillConstants**:
+   - ปัญหา: การโจมตีต่อเนื่องของ `HEXA_CHAIN_LIGHTNING_TILE` (`2241001`), `HEXA_BLIZZARD_FA` (`2241004`), `HEXA_THUNDER_SPHERE_STAY` (`2241008`), `HEXA_LIGHTNING_ORB_2` (`2241010`), และ `PARABOLIC_BOLT_SA` (`2241506`) เป็นสกิลที่ซ่อนอยู่ใน WZ (`invisible = 1`)
+   - วิธีแก้: เพิ่มการจับคู่ใน `SkillConstants.getActualSkillIDfromSkillID()` เพื่อเชื่อมโยงเลเวลและความเสียหายได้อย่างแม่นยำ 100%
+4. **Full Testing Automation in `!endgame il`**:
+   - ใน `AdminCommands.setupEndgame()`:
+     - มอบอาวุธระดับเทพ: Arcane Umbra Staff (`1382265`)
+     - มอบไอเทมลูกแก้วน้ำแข็งรอง BiS: Princess No's Ice Orb (`1352246`)
+     - มอบ Mitra Magician Emblem (`1190557`) และเซ็ตเกราะ Arcane Umbra Mage ครบ 6 ชิ้น
+     - ปลดล็อกและอัปเกรด HEXA Cores คลาส 6 ทุกคอร์ (Core 10000004, 10000056, 20000004, 20000054, 20000104, 20000150, 30000016-30000019, 40000000 Sol Janus) เลเวล 30 เต็ม พร้อมมอบสกิลเสริมครบถ้วนทุกสกิล (`2241001`, `2241004`, `2241008`, `2241010`, `2241501`, `2241503`, `2241504`, `2241506`)
+
+### 🧪 Verification & Deployment
+- คอมไพล์ผ่าน Maven OpenJDK 21: `BUILD SUCCESS` (0 errors, total time: 1m 36s)
+- ดีพลอย Fat JAR: `Server263/maplestory.jar` (~138.64 MB)
+- สร้างไฟล์แพตช์อัปเดตแบบเบา: [`Patches/Server263_Patch_20261012_1201.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches) ขนาด 121.61 MB
+
+---
+
 ## 📅 [2026-10-12 11:55 น.] Phase 2: Explorer Class 4 (Fire/Poison Arch Mage - 212) สมบูรณ์แบบ 100% — เชื่อมต่อ Infernal Venom, Immortal Flame และคำสั่ง !endgame
 
 ### 🎯 Scope
