@@ -2355,6 +2355,15 @@ public class SkillConstants {
                 return 2341011; // HEXA Heaven's Door Sub
             case 2341508:
                 return 2341507; // Commandment of Heaven Sub
+            // Bowmaster 6th Job Sub-Skills
+            case 3141001:
+                return 3141000; // HEXA Hurricane Sub
+            case 3141003:
+                return 3141002; // HEXA Arrow Stream Sub
+            case 3141014:
+                return 3141013; // HEXA Speed Mirage Sub
+            case 3141504:
+                return 3141503; // Flashpoint Sub
             default:
                 // Universal 6th Job Origin Sub-Skill Redirection (xxx41501-xxx41599 -> xxx41500)
                 int subOrigin = skillID % 100000;

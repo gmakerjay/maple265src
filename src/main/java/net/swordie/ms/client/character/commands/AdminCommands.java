@@ -2849,6 +2849,11 @@ public class AdminCommands {
             secondaryId = 1352604; // Green Soul Ring (4th Job Secondary)
             emblemId = 1190101; // Angel Emblem (Gold Emblem)
             armors = pirateArmors;
+        } else if (JobConstants.isBowMaster(job)) {
+            weaponId = 1452257; // Arcane Umbra Bow
+            secondaryId = 1352266; // Princess No's Feather
+            emblemId = 1190556; // Mitra Bowman Emblem
+            armors = archerArmors;
         } else {
             if (JobConstants.isWarriorEquipJob(job)) {
                 weaponId = 1402259;
@@ -2938,6 +2943,13 @@ public class AdminCommands {
                 chr.addSkill(2341503, 30, 30); // Holy Advent R
                 chr.addSkill(2341504, 30, 30); // Holy Advent After
                 chr.addSkill(2341508, 30, 30); // Commandment of Heaven Sub
+            } else if (JobConstants.isBowMaster(job)) {
+                chr.addSkill(3141001, 30, 30); // HEXA Hurricane Sub
+                chr.addSkill(3141003, 30, 30); // HEXA Arrow Stream Sub
+                chr.addSkill(3141014, 30, 30); // HEXA Speed Mirage Sub
+                chr.addSkill(3141501, 30, 30); // Ascendant Shadow Sub 1
+                chr.addSkill(3141502, 30, 30); // Ascendant Shadow Sub 2
+                chr.addSkill(3141504, 30, 30); // Flashpoint Sub
             }
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] Hexa warning: " + e.getMessage());

@@ -3,6 +3,38 @@
 This file tracks all bug fixes, feature implementations, and system optimizations across sessions.
 **Rule (AGENTS.md #4)**: Every agent MUST record new progress here and in `.agents/skills/maplestory-bug-knowledge/SKILL.md` after completing any modification.
 
+## 📅 [2026-10-12 12:18 น.] Phase 2: Explorer Class 7 (Bowmaster - 312) สมบูรณ์แบบ 100% — เชื่อมต่อ Ascendant Shadow, Flashpoint และคำสั่ง !endgame
+
+### 🎯 Scope
+ลงทะเบียนและตรวจสอบสกิลคลาส 6 สาย Explorer อาชีพที่ 7: **Bowmaster (โบว์มาสเตอร์ / นักธนูสายธนู - Job ID 312)** เริ่มต้นกลุ่ม Bowman Trio บรรจุสกิล Origin (Ascendant Shadow & Ascent Skill: Flashpoint) และ HEXA Masteries ครบชุด (HEXA Hurricane, HEXA Arrow Stream, HEXA Arrow Blaster, HEXA Quiver Cartridge, Extra Quiver Cartridge, HEXA Phoenix, HEXA Speed Mirage, HEXA Gritty Gust, HEXA Silhouette Mirage) เชื่อมต่อระบบ Quiver Cartridge, Speed Mirage Afterimages, Origin Absolute Bind/Debuff และคำสั่งทดสอบ `!endgame bowmaster` หรือ `!endgame bm` ให้มอบอาวุธ BiS Arcane Umbra Bow, Princess No's Feather, และ HEXA Cores ระดับ 30 เต็มระบบ
+
+### 📂 Files Modified
+- [`v214 src/.../Bowmaster.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/archer/Bowmaster.java)
+- [`v214 src/.../SkillConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`v214 src/.../AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **Ascendant Shadow Origin & Flashpoint Ascent Integration**:
+   - ปัญหา: เดิมใน `Bowmaster.java`, ยังขาด Constants และการรองรับ `ASCENDANT_SHADOW` (`3141500`), `FLASHPOINT` (`3141503`), และ Attack Sub-skills (`3141501`, `3141502`, `3141504`) ส่งผลให้การกดร่ายไม่เกิดอมตะและไม่ส่งแพ็กเก็ตเอฟเฟกต์คัตซีน
+   - วิธีแก้: ใน `Bowmaster.handleSkill()`, เพิ่ม `case ASCENDANT_SHADOW:` มอบสถานะอมตะ `IndieNotDamaged` (7 วินาที) และส่งแพ็กเก็ต `UserLocal.showHexaSkillEff(chr)` สู่ปาร์ตี้/ฟิลด์
+2. **Origin Absolute Bind & Origin Debuff Handling**:
+   - ปัญหา: ใน `handleAttack()`, การโจมตีด้วย `ASCENDANT_SHADOW` ยังไม่ติดสถานะควบคุมมอนสเตอร์
+   - วิธีแก้: เพิ่มเงื่อนไขตรวจสอบการโจมตีจาก `ASCENDANT_SHADOW` และ Sub-skills ติดสถานะ `MobStat.Freeze` (10 วินาที Absolute Bind) และ `MobStat.OriginDebuff` (20 วินาที) ให้กับศัตรูทุกตัวที่ถูกโจมตี
+3. **Sub-Skill Redirection in SkillConstants**:
+   - ปัญหา: การโจมตีต่อเนื่องของ `HEXA_HURRICANE` (`3141001`), `HEXA_ARROW_STREAM` (`3141003`), `HEXA_SPEED_MIRAGE_ATOM` (`3141014`), และ `FLASHPOINT_ATTACK` (`3141504`) เป็นสกิลที่ซ่อนอยู่ใน WZ (`invisible = 1`)
+   - วิธีแก้: เพิ่มการจับคู่ใน `SkillConstants.getSkillBySubSkill()` เพื่อเชื่อมโยงเลเวลและความเสียหายได้อย่างแม่นยำ 100%
+4. **Full Testing Automation in `!endgame bowmaster`**:
+   - ใน `AdminCommands.setupEndgame()`:
+     - มอบอาวุธระดับเทพ: Arcane Umbra Bow (`1452257`)
+     - มอบขนนกติดคันศรรอง BiS: Princess No's Feather (`1352266`)
+     - มอบ Mitra Bowman Emblem (`1190556`) และเซ็ตเกราะ Arcane Umbra Archer ครบ 6 ชิ้น
+     - ปลดล็อกและอัปเกรด HEXA Cores คลาส 6 ทุกคอร์ (Core 10000006, 10000058, 20000006, 20000056, 20000106, 20000152, 30000024-30000027, 40000000 Sol Janus) เลเวล 30 เต็ม พร้อมมอบสกิลเสริมครบถ้วนทุกสกิล (`3141001`, `3141003`, `3141014`, `3141501`, `3141502`, `3141504`)
+
+### 🧪 Verification & Deployment
+- คอมไพล์ผ่าน Maven OpenJDK 21: `BUILD SUCCESS` (0 errors, total time: 1m 38s)
+- ดีพลอย Fat JAR: `Server263/maplestory.jar` (~138.64 MB)
+- สร้างไฟล์แพตช์อัปเดตแบบเบา: [`Patches/Server263_Patch_20261012_1217.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches) ขนาด 121.61 MB
+
 ---
 
 ## 📅 [2026-10-12 12:08 น.] Phase 2: Explorer Class 6 (Bishop - 232) สมบูรณ์แบบ 100% — เชื่อมต่อ Holy Advent, Commandment of Heaven และคำสั่ง !endgame

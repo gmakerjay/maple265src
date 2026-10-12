@@ -102,6 +102,13 @@ public class BowMaster extends Archer {
     public static final int HEXA_SPEED_MIRAGE_ATOM = 3141014;
     public static final int HEXA_GRITTY_GUST = 3141015;
 
+    // Origin & Ascent (6th Job)
+    public static final int ASCENDANT_SHADOW = 3141500;
+    public static final int ASCENDANT_SHADOW_ATTACK_1 = 3141501;
+    public static final int ASCENDANT_SHADOW_ATTACK_2 = 3141502;
+    public static final int FLASHPOINT = 3141503;
+    public static final int FLASHPOINT_ATTACK = 3141504;
+
     // HEXA Boosts
     public static final int HEXA_SILHOUETTE_MIRAGE = 500061016;
     public static final int HEXA_SILHOUETTE_MIRAGE_ATTACK = 500061017;
@@ -263,6 +270,26 @@ public class BowMaster extends Archer {
         int skillID = attackInfo.skillId;
         boolean hasHitMobs = !attackInfo.mobAttackInfo.isEmpty();
         if (hasHitMobs) {
+            if (skillID == ASCENDANT_SHADOW || skillID == ASCENDANT_SHADOW_ATTACK_1 || skillID == ASCENDANT_SHADOW_ATTACK_2) {
+                Option o1 = new Option();
+                Option o2 = new Option();
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 10;
+                o2.nOption = 1;
+                o2.rOption = skillID;
+                o2.tOption = 20;
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob == null || mob.getHp() <= 0) {
+                        continue;
+                    }
+                    EnumMap<MobStat, Option> originStats = new EnumMap<>(MobStat.class);
+                    originStats.put(MobStat.Freeze, o1);
+                    originStats.put(MobStat.OriginDebuff, o2);
+                    mob.getTemporaryStat().addStatOptions(mob, originStats);
+                }
+            }
             handleSpeedMirageOnAttack(attackInfo, now);
             if (chr.hasSkill(FOCUSED_FURY)) {
                 incrementFocusedFury();
@@ -744,6 +771,15 @@ public class BowMaster extends Archer {
                 o1.xOption = 0; // clones
                 tsm.sendStat(ShadowShield, o1);
                 chr.write(WvsContext.updateSkillStackRequestResult(SILHOUETTE_MIRAGE, (byte) o1.xOption));
+                break;
+            case ASCENDANT_SHADOW:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
+                tsm.sendStat(IndieNotDamaged, o1);
+                chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
+                break;
+            case FLASHPOINT:
                 break;
             case HEROS_WILL:
                 tsm.removeAllDebuffs();
