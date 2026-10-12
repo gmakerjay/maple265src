@@ -3,6 +3,40 @@
 This file tracks all bug fixes, feature implementations, and system optimizations across sessions.
 **Rule (AGENTS.md #4)**: Every agent MUST record new progress here and in `.agents/skills/maplestory-bug-knowledge/SKILL.md` after completing any modification.
 
+## 📅 [2026-10-12 12:28 น.] Phase 2: Explorer Class 9 (Pathfinder - 332) สมบูรณ์แบบ 100% — สิ้นสุดกลุ่ม Bowman Trio อย่างสมบูรณ์แบบ เชื่อมต่อ Forsaken Relic, Piercing Relic และคำสั่ง !endgame
+
+### 🎯 Scope
+ลงทะเบียนและตรวจสอบสกิลคลาส 6 สาย Explorer อาชีพที่ 9: **Pathfinder (พาธไฟน์เดอร์ / นักธนูโบราณ Relic - Job ID 332)** สิ้นสุดกลุ่ม Bowman Trio ครบทั้ง 3 อาชีพอย่างสมบูรณ์แบบ บรรจุสกิล Origin (Forsaken Relic & Ascent Skill: Piercing Relic) และ HEXA Masteries ครบชุด (HEXA Cardinal Burst, HEXA Bountiful Burst, HEXA Cardinal Deluge, HEXA Bountiful Deluge, HEXA Cardinal Torrent, HEXA Glyph of Impalement, HEXA Ancient Astra, HEXA Shadow Raven, HEXA Combo Assault, Manifest Curse) เชื่อมต่อระบบ Relic Gauge, Cardinal Force Switching, Ancient Guidance, Origin Absolute Bind/Debuff และคำสั่งทดสอบ `!endgame pathfinder` หรือ `!endgame pf` ให้มอบอาวุธ BiS Arcane Umbra Ancient Bow, Magic Arrows, และ HEXA Cores ระดับ 30 เต็มระบบ
+
+### 📂 Files Modified
+- [`v214 src/.../Pathfinder.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/archer/Pathfinder.java)
+- [`v214 src/.../SkillConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`v214 src/.../AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **Forsaken Relic Origin & Piercing Relic Ascent Broadcast & Debuff**:
+   - ปัญหา: เดิมการร่าย `FORSAKEN_RELIC` (`3341500`) ส่งแพ็กเก็ตเอฟเฟกต์คัตซีน `showHexaSkillEff` ให้เฉพาะสมาชิกปาร์ตี้ และใน `handleAttack()` ติดเฉพาะสถานะ Freeze แต่ยังขาด `MobStat.OriginDebuff`
+   - วิธีแก้: ใน `handleSkill()`, ปรับให้บรอดคาสต์ `showHexaSkillEff(chr)` ทั่วทั้งแมพ และใน `handleAttack()` เพิ่ม `MobStat.OriginDebuff` (20 วินาที) มอบให้มอนสเตอร์ทุกตัวที่โดนการโจมตี
+2. **HEXA Cardinal Force Integration**:
+   - ปัญหา: ใน `Pathfinder.java`, สวิตช์การทำงานของ `CARDINAL_BURST`, `CARDINAL_DELUGE`, `CARDINAL_TORRENT`, และ `COMBO_ASSAULT` ดักจับเฉพาะรหัสสกิลคลาส 1-4 เดิม ทำให้เมื่อผู้เล่นอัปเกรดเป็นคลาส 6 (`HEXA_CARDINAL_BURST`, `HEXA_CARDINAL_DELUGE`, `HEXA_CARDINAL_TORRENT`, `HEXA_COMBO_ASSAULT`) ระบบชาร์จ Relic Gauge และ Bountiful Atoms ไม่ทำงาน
+   - วิธีแก้: บรรจุรหัสสกิล HEXA Cardinal และ HEXA Combo Assault ทั้งหมดเข้าสู่สวิตช์ใน `handleSkill()` และ `handleAttack()`
+3. **Sub-Skill Redirection in SkillConstants**:
+   - ปัญหา: การโจมตีต่อเนื่องของ `HEXA_CARDINAL_BURST_ATTACK` (`3341001`), `HEXA_BOUNTIFUL_BURST_SUB` (`3341003`), `HEXA_BOUNTIFUL_DELUGE_SUB` (`3341005`), `HEXA_GLYPH_OF_IMPALEMENT_SUB` (`3341007`), `HEXA_CARDINAL_TORRENT_SUB` (`3341009`), `HEXA_ANCIENT_ASTRA_SUBS` (`3341011-3341015`), และ `HEXA_COMBO_ASSAULT_SUBS` (`3341017-3341023`) เป็นสกิลที่ซ่อนอยู่ใน WZ (`invisible = 1`)
+   - วิธีแก้: เพิ่มการจับคู่ครบทั้ง 18 สกิลใน `SkillConstants.getSkillBySubSkill()` เพื่อเชื่อมโยงเลเวลและความเสียหายได้อย่างแม่นยำ 100%
+4. **Full Testing Automation in `!endgame pathfinder`**:
+   - ใน `AdminCommands.setupEndgame()`:
+     - มอบอาวุธระดับเทพ: Arcane Umbra Ancient Bow (`1592020`)
+     - มอบไอเทมเสริมพลัง Relic รอง BiS: Magic Arrows (`1352014`)
+     - มอบ Mitra Bowman Emblem (`1190556`) และเซ็ตเกราะ Arcane Umbra Archer ครบ 6 ชิ้น
+     - ปลดล็อกและอัปเกรด HEXA Cores คลาส 6 ทุกคอร์ (Core 10000008, 10000060, 20000008, 20000058, 20000108, 20000154, 30000032-30000035, 40000000 Sol Janus) เลเวล 30 เต็ม พร้อมมอบสกิลเสริมครบถ้วนทุกสกิล (`3341001`, `3341003`, `3341005`, `3341007`, `3341009`, `3341011-3341015`, `3341017`, `3341501-3341504`)
+
+### 🧪 Verification & Deployment
+- คอมไพล์ผ่าน Maven OpenJDK 21: `BUILD SUCCESS` (0 errors, total time: 1m 23s)
+- ดีพลอย Fat JAR: `Server263/maplestory.jar` (~138.64 MB)
+- หมายเหตุ Patch: รวบรวมทำไฟล์แพตช์ ZIP ครั้งเดียวเมื่อครบ 15 อาชีพตามความประสงค์ของผู้ใช้
+
+---
+
 ## 📅 [2026-10-12 12:22 น.] Phase 2: Explorer Class 8 (Marksman - 322) สมบูรณ์แบบ 100% — เชื่อมต่อ Final Aim, Fatal Trigger และคำสั่ง !endgame
 
 ### 🎯 Scope

@@ -34,6 +34,7 @@ import net.swordie.ms.util.Util;
 import net.swordie.ms.world.field.Field;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -402,7 +403,15 @@ public class Pathfinder extends Job {
                         opt1.rOption = skillID;
                         opt1.tOption = 10; // 10s Absolute Freeze / Bind
                         opt1.cOption = chr.getId();
-                        mts.addStatOptions(mob, MobStat.Freeze, opt1);
+                        Option opt2 = new Option();
+                        opt2.nOption = 1;
+                        opt2.rOption = skillID;
+                        opt2.tOption = 20; // 20s Origin Debuff
+                        opt2.cOption = chr.getId();
+                        EnumMap<MobStat, Option> originStats = new EnumMap<>(MobStat.class);
+                        originStats.put(MobStat.Freeze, opt1);
+                        originStats.put(MobStat.OriginDebuff, opt2);
+                        mts.addStatOptions(mob, originStats);
                     }
                 }
                 break;
@@ -424,6 +433,7 @@ public class Pathfinder extends Job {
             case CARDINAL_BURST:
             case CARDINAL_BURST_AMPLIFICATION:
             case CARDINAL_BURST_ADVANCED:
+            case HEXA_CARDINAL_BURST:
                 if (inDeluge()) {
                     createBountifulForceAtoms(BOUNTIFUL_DELUGE);
                 }
@@ -439,6 +449,7 @@ public class Pathfinder extends Job {
             case COMBO_ASSAULT_BURST:
             case COMBO_ASSAULT_DELUGE:
             case COMBO_ASSAULT_TORRENT:
+            case HEXA_COMBO_ASSAULT:
                 setEmblem(EmblemType.None);
                 chr.write(UserLocal.bonusAttackDelayRequest(new HashMap<>() {{
                     put(skillID + 1, 650);
@@ -635,11 +646,7 @@ public class Pathfinder extends Job {
                 o1.nValue = 1;
                 o1.tTerm = 7;
                 tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
-                if (chr.getParty() != null) {
-                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
-                        other.write(UserLocal.showHexaSkillEff(chr));
-                    }
-                }
+                chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
                 chr.chatMessage(ChatType.Notice, "[Origin] Forsaken Relic activated! Ancient powers awaken.");
                 chr.dispose();
                 break;
@@ -675,6 +682,7 @@ public class Pathfinder extends Job {
             case CARDINAL_DELUGE:
             case CARDINAL_DELUGE_AMPLIFICATION:
             case CARDINAL_DELUGE_ADVANCED:
+            case HEXA_CARDINAL_DELUGE:
                 relicChargeLogic(skillID);
                 Position position = inPacket.decodePosition();
                 byte mobSize = inPacket.decodeByte();
@@ -705,6 +713,7 @@ public class Pathfinder extends Job {
                 break;
             case CARDINAL_TORRENT:
             case CARDINAL_TORRENT_ADVANCED:
+            case HEXA_CARDINAL_TORRENT:
                 if (getSwiftStrikeCharge() > 0) {
                     updateVSkillStackBuff(chr, getSwiftStrikeCharge() - 1);
                 } else {

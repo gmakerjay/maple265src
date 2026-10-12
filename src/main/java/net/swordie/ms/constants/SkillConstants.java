@@ -2379,6 +2379,31 @@ public class SkillConstants {
                 return 3241005; // HEXA Piercing Arrow Sub
             case 3241503:
                 return 3241502; // Fatal Trigger Sub
+            // Pathfinder 6th Job Sub-Skills
+            case 3341001:
+                return 3341000; // HEXA Cardinal Burst Attack
+            case 3341003:
+                return 3341002; // HEXA Bountiful Burst Sub
+            case 3341005:
+                return 3341004; // HEXA Bountiful Deluge Sub
+            case 3341007:
+                return 3341006; // HEXA Glyph of Impalement Sub
+            case 3341009:
+                return 3341008; // HEXA Cardinal Torrent Sub
+            case 3341011:
+            case 3341012:
+            case 3341013:
+            case 3341014:
+            case 3341015:
+                return 3341010; // HEXA Ancient Astra Subs
+            case 3341017:
+            case 3341018:
+            case 3341019:
+            case 3341020:
+            case 3341021:
+            case 3341022:
+            case 3341023:
+                return 3341016; // HEXA Combo Assault Subs
             default:
                 // Universal 6th Job Origin Sub-Skill Redirection (xxx41501-xxx41599 -> xxx41500)
                 int subOrigin = skillID % 100000;

@@ -2968,6 +2968,22 @@ public class AdminCommands {
                 chr.addSkill(3241011, 30, 30); // Piercing Sub 6
                 chr.addSkill(3241501, 30, 30); // Final Aim Sub
                 chr.addSkill(3241503, 30, 30); // Fatal Trigger Sub
+            } else if (JobConstants.isPathFinder(job)) {
+                chr.addSkill(3341001, 30, 30); // HEXA Cardinal Burst Attack
+                chr.addSkill(3341003, 30, 30); // HEXA Bountiful Burst Sub
+                chr.addSkill(3341005, 30, 30); // HEXA Bountiful Deluge Sub
+                chr.addSkill(3341007, 30, 30); // HEXA Glyph of Impalement Sub
+                chr.addSkill(3341009, 30, 30); // HEXA Cardinal Torrent Sub
+                chr.addSkill(3341011, 30, 30); // HEXA Ancient Astra Sub 1
+                chr.addSkill(3341012, 30, 30); // HEXA Ancient Astra Sub 2
+                chr.addSkill(3341013, 30, 30); // HEXA Ancient Astra Sub 3
+                chr.addSkill(3341014, 30, 30); // HEXA Ancient Astra Sub 4
+                chr.addSkill(3341015, 30, 30); // HEXA Ancient Astra Sub 5
+                chr.addSkill(3341017, 30, 30); // HEXA Combo Assault Sub
+                chr.addSkill(3341501, 30, 30); // Forsaken Relic Sub 1
+                chr.addSkill(3341502, 30, 30); // Forsaken Relic Sub 2
+                chr.addSkill(3341503, 30, 30); // Forsaken Relic Sub 3
+                chr.addSkill(3341504, 30, 30); // Forsaken Relic Sub 4
             }
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] Hexa warning: " + e.getMessage());
