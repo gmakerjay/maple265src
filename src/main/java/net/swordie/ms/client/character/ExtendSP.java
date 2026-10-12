@@ -49,8 +49,12 @@ public class ExtendSP {
     }
 
     public void deleteFromSQL(Connection con) throws SQLException {
-        for (SPSet spSet : getSpSet()) {
-            spSet.deleteSPSetFromSQL();
+        if (getSpSet() != null) {
+            for (SPSet spSet : getSpSet()) {
+                if (spSet != null) {
+                    spSet.deleteSPSetFromSQL(con);
+                }
+            }
         }
         String extendspQuery = "DELETE FROM `extendsp` WHERE `id` = ?";
         try (PreparedStatement ps = con.prepareStatement(extendspQuery)) {

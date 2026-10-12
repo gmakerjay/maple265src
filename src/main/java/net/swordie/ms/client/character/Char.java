@@ -1311,6 +1311,9 @@ public class Char {
         try {
             con = DatabaseManager.getConnection();
             con.setAutoCommit(false); // Start the transaction
+            try (Statement stmt = con.createStatement()) {
+                stmt.execute("SET FOREIGN_KEY_CHECKS = 0;");
+            }
             if (getAvatarData() != null) {
                 getAvatarData().deleteFromSQL(con);
             }
@@ -1359,17 +1362,24 @@ public class Char {
             deleteDataFromTable(con, "itemsbuylimit", "charid", getId());
             deleteDataFromTable(con, "rewardinfo", "charid", getId());
             deleteDataFromTable(con, "characters", "id", getId());
+            try (Statement stmt = con.createStatement()) {
+                stmt.execute("SET FOREIGN_KEY_CHECKS = 1;");
+            }
             con.commit();
             setId(0);
         } catch (Exception e) {
             if (con != null) {
                 try {
+                    try (Statement stmt = con.createStatement()) {
+                        stmt.execute("SET FOREIGN_KEY_CHECKS = 1;");
+                    }
                     con.rollback();
                 } catch (Exception rollBack) {
                     DataPrinter.send(DataPrinter.HIKARICP_ERROR, rollBack);
                 }
             }
             DataPrinter.send(DataPrinter.HIKARICP_ERROR, e);
+            throw new RuntimeException("deleteFromSQL failed for character ID " + getId(), e);
         } finally {
             if (con != null) {
                 try {

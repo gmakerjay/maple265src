@@ -284,6 +284,12 @@ public class CharacterStat {
     }
 
     public void deleteFromSQL(Connection con) throws SQLException {
+        // Delete child table characterstats first so foreign key constraints are not held
+        String query = "DELETE FROM `characterstats` WHERE `id` = ?";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, getId());
+            ps.executeUpdate();
+        }
         if (getExtendSP() != null) {
             getExtendSP().deleteFromSQL(con);
         }
@@ -292,11 +298,6 @@ public class CharacterStat {
         }
         if (getAccountLastLogout() != null) {
             getAccountLastLogout().deleteFromSQL(con);
-        }
-        String query = "DELETE FROM `characterstats` WHERE `id` = ?";
-        try (PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setInt(1, getId());
-            ps.executeUpdate();
         }
     }
 

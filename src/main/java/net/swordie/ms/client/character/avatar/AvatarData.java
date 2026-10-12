@@ -170,6 +170,12 @@ public class AvatarData {
     }
 
     public void deleteFromSQL(Connection con) throws SQLException {
+        // Delete child table avatardata first so foreign key constraints are not held
+        String query = "DELETE FROM `avatardata` WHERE `id` = ?";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, getId());
+            ps.executeUpdate();
+        }
         if (getCharacterStat() != null) {
             getCharacterStat().deleteFromSQL(con);
         }
@@ -178,11 +184,6 @@ public class AvatarData {
         }
         if (getZeroAvatarLook() != null) {
             getZeroAvatarLook().deleteFromSQL(con);
-        }
-        String query = "DELETE FROM `avatardata` WHERE `id` = ?";
-        try (PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setInt(1, getId());
-            ps.executeUpdate();
         }
     }
 

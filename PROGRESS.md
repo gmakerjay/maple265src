@@ -3,6 +3,38 @@
 This file tracks all bug fixes, feature implementations, and system optimizations across sessions.
 **Rule (AGENTS.md #4)**: Every agent MUST record new progress here and in `.agents/skills/maplestory-bug-knowledge/SKILL.md` after completing any modification.
 
+## 📅 [2026-10-12 14:48 น.] Fix Database Foreign Key Constraint Failure on Character Deletion (Error 1451-23000)
+
+### 🎯 Scope
+แก้ไขปัญหาข้อผิดพลาด `SQLIntegrityConstraintViolationException: Error 1451-23000: Cannot delete or update a parent row: a foreign key constraint fails (characterstats_ibfk_1 FOREIGN KEY (extendsp) REFERENCES extendsp (id))` เมื่อทำการลบตัวละคร ส่งผลให้ MariaDB ทำการ Rollback ทรานแซกชัน ข้อมูลตัวละครไม่ถูกลบออกจากฐานข้อมูลจริง เมื่อผู้เล่นออกจากเกมหรือเปลี่ยนแชนแนล ตัวละครจึงยังคงแสดงผลกลับมาเหมือนเดิม
+
+### 📂 Files Modified
+- [`Char.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java)
+- [`CharacterStat.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/CharacterStat.java)
+- [`AvatarData.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/avatar/AvatarData.java)
+- [`ExtendSP.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/ExtendSP.java)
+- [`SPSet.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/SPSet.java)
+- [`Server263/maplestory.jar`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/maplestory.jar)
+- [`Patches/Server263_Patch_20261012_1447.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_20261012_1447.zip)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **Foreign Key Constraint Inversion (ลำดับการลบตารางสลับด้าน)**:
+   - ปัญหา: โค้ดเดิมใน `CharacterStat.java:288` เรียก `getExtendSP().deleteFromSQL(con)` ซึ่งสั่ง `DELETE FROM extendsp WHERE id = ?` ก่อนคำสั่ง `DELETE FROM characterstats WHERE id = ?` แต่ตาราง `characterstats` มี Foreign Key ผูกไปยัง `extendsp.id` ส่งผลให้ MariaDB บล็อกคำสั่งลบทันทีด้วย Error 1451-23000
+   - ปัญหาเดียวกันใน `AvatarData.java`: เรียก `getCharacterStat().deleteFromSQL(con)` ก่อนลบ `avatardata`
+2. **Session-Scoped Foreign Key Bypass (`SET FOREIGN_KEY_CHECKS = 0`)**:
+   - ใน [`Char.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java): ปรับปรุง `deleteFromSQL()` ให้ส่งคำสั่ง `SET FOREIGN_KEY_CHECKS = 0;` บน Connection เดียวกันก่อนเริ่มลบข้อมูลตัวละคร 30+ ตาราง และคืนค่า `SET FOREIGN_KEY_CHECKS = 1;` ก่อน Commit เพื่อรับประกันว่า MariaDB จะไม่บล็อกข้อจำกัด Foreign Key ในระหว่างการกวาดล้างข้อมูลตัวละครทั้งหมด
+   - ปรับให้โยน `RuntimeException` ในบล็อก `catch` หากเกิดข้อผิดพลาด เพื่อให้ `LoginHandler.deleteCharacterCompletely` รับรู้สถานะล้มเหลวที่แท้จริง ไม่ลบตัวละครออกจากหน่วยความจำหากฐานข้อมูลบันทึกไม่สำเร็จ
+3. **Reordering Child-Parent SQL Deletions**:
+   - ใน [`CharacterStat.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/CharacterStat.java): สลับให้ลบตารางลูก `characterstats` ก่อน แล้วจึงตามด้วยตารางแม่ `extendsp`, `noncombatstatdaylimit`, `accountlastlogout`
+   - ใน [`AvatarData.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/avatar/AvatarData.java): สลับให้ลบตารางลูก `avatardata` ก่อน แล้วจึงตามด้วยตารางแม่ `characterstats`, `avatarlook`
+   - ใน [`ExtendSP.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/ExtendSP.java) และ [`SPSet.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/SPSet.java): ปรับให้ `deleteSPSetFromSQL` ใช้ Connection เดียวกันใน Transaction ป้องกัน Connection deadlock
+4. **Compilation, Deployment & Patch Creation**:
+   - คอมไพล์ผ่าน Maven OpenJDK 21: `BUILD SUCCESS` (0 errors)
+   - อัปเดต Fat JAR: `Server263/maplestory.jar` (~138.65 MB)
+   - สร้าง Incremental Patch Package: `Patches/Server263_Patch_20261012_1447.zip` (121.59 MB)
+
+---
+
 ## 📅 [2026-10-12 14:28 น.] Instant Character Deletion System & Automatic Ghost Character Purge (Zero-Wait Deletion)
 
 ### 🎯 Scope

@@ -6,6 +6,7 @@ import net.swordie.ms.util.DataPrinter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +65,15 @@ public class SPSet {
         String query = "DELETE FROM `spset` WHERE " +
                 String.format("`id` = %d", getId());
         DatabaseManager.executeStatement(query);
+        setId(0);
+    }
+
+    public void deleteSPSetFromSQL(Connection con) throws SQLException {
+        String query = "DELETE FROM `spset` WHERE `id` = ?";
+        try (PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, getId());
+            ps.executeUpdate();
+        }
         setId(0);
     }
 
