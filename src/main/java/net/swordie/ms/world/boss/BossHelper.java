@@ -290,11 +290,12 @@ public class BossHelper {
                 field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
             }
         }
-        // Black Mage
-        if (mobID == 8880500 || mobID == 8880501) { // Phase 1 (Aeonian Rise & Tanadian Ruin)
+        // Black Mage (Hard & Extreme)
+        if (mobID == 8880500 || mobID == 8880501 || mobID == 8880530 || mobID == 8880531) { // Phase 1
             boolean otherAlive = false;
+            boolean isExtreme = (mobID == 8880530 || mobID == 8880531);
             for (Mob m : field.getMobs()) {
-                if (m.getObjectId() != mob.getObjectId() && (m.getTemplateId() == 8880500 || m.getTemplateId() == 8880501)) {
+                if (m.getObjectId() != mob.getObjectId() && (m.getTemplateId() == 8880500 || m.getTemplateId() == 8880501 || m.getTemplateId() == 8880530 || m.getTemplateId() == 8880531)) {
                     otherAlive = true;
                     break;
                 }
@@ -303,67 +304,75 @@ public class BossHelper {
                 field.removeMobs();
                 field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
                 int nextMap = 450013300;
+                int nextMob = isExtreme ? 8880532 : 8880502;
+                long nextHp = isExtreme ? 350000000000000L : 135000000000000L;
                 if (party != null) {
                     chr.getTimer().addEvent(() -> {
                         sm.warpParty(nextMap, party);
                         Field nextField = chr.getOrCreateFieldByCurrentInstanceType(nextMap);
-                        if (nextField != null && !nextField.hasMobById(8880502)) {
-                            nextField.spawnMob(8880502, 0, 88, false, 135000000000000L);
+                        if (nextField != null && !nextField.hasMobById(nextMob)) {
+                            nextField.spawnMob(nextMob, 0, 88, false, nextHp);
                         }
                     }, 2000);
                 } else {
                     chr.getTimer().addEvent(() -> {
                         chr.warp(nextMap);
                         Field nextField = chr.getOrCreateFieldByCurrentInstanceType(nextMap);
-                        if (nextField != null && !nextField.hasMobById(8880502)) {
-                            nextField.spawnMob(8880502, 0, 88, false, 135000000000000L);
+                        if (nextField != null && !nextField.hasMobById(nextMob)) {
+                            nextField.spawnMob(nextMob, 0, 88, false, nextHp);
                         }
                     }, 2000);
                 }
             }
-        } else if (mobID == 8880502) { // Black Mage Phase 2
+        } else if (mobID == 8880502 || mobID == 8880532) { // Black Mage Phase 2
             field.removeMobs();
             field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
+            boolean isExtreme = (mobID == 8880532);
             int nextMap = 450013500;
+            int nextMob = isExtreme ? 8880533 : 8880503;
+            long nextHp = isExtreme ? 400000000000000L : 200000000000000L;
             if (party != null) {
                 chr.getTimer().addEvent(() -> {
                     sm.warpParty(nextMap, party);
                     Field nextField = chr.getOrCreateFieldByCurrentInstanceType(nextMap);
-                    if (nextField != null && !nextField.hasMobById(8880503)) {
-                        nextField.spawnMob(8880503, 375, 88, false, 200000000000000L);
+                    if (nextField != null && !nextField.hasMobById(nextMob)) {
+                        nextField.spawnMob(nextMob, 375, 88, false, nextHp);
                     }
                 }, 2000);
             } else {
                 chr.getTimer().addEvent(() -> {
                     chr.warp(nextMap);
                     Field nextField = chr.getOrCreateFieldByCurrentInstanceType(nextMap);
-                    if (nextField != null && !nextField.hasMobById(8880503)) {
-                        nextField.spawnMob(8880503, 375, 88, false, 200000000000000L);
+                    if (nextField != null && !nextField.hasMobById(nextMob)) {
+                        nextField.spawnMob(nextMob, 375, 88, false, nextHp);
                     }
                 }, 2000);
             }
-        } else if (mobID == 8880503) { // Black Mage Phase 3
+        } else if (mobID == 8880503 || mobID == 8880533) { // Black Mage Phase 3
             field.removeMobs();
             field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
+            boolean isExtreme = (mobID == 8880533);
             int nextMap = 450013700;
+            int nextMob = isExtreme ? 8880534 : 8880504;
+            long nextHp = isExtreme ? 250000000000000L : 100000000000000L;
             if (party != null) {
                 chr.getTimer().addEvent(() -> {
                     sm.warpParty(nextMap, party);
                     Field nextField = chr.getOrCreateFieldByCurrentInstanceType(nextMap);
-                    if (nextField != null && !nextField.hasMobById(8880504)) {
-                        nextField.spawnMob(8880504, 375, 88, false, 100000000000000L);
+                    if (nextField != null && !nextField.hasMobById(nextMob)) {
+                        nextField.spawnMob(nextMob, 375, 88, false, nextHp);
                     }
                 }, 2000);
             } else {
                 chr.getTimer().addEvent(() -> {
                     chr.warp(nextMap);
                     Field nextField = chr.getOrCreateFieldByCurrentInstanceType(nextMap);
-                    if (nextField != null && !nextField.hasMobById(8880504)) {
-                        nextField.spawnMob(8880504, 375, 88, false, 100000000000000L);
+                    if (nextField != null && !nextField.hasMobById(nextMob)) {
+                        nextField.spawnMob(nextMob, 375, 88, false, nextHp);
                     }
                 }, 2000);
             }
-        } else if (mobID == 8880504) { // Black Mage Phase 4
+        } else if (mobID == 8880504 || mobID == 8880534) { // Black Mage Phase 4 (Hard / Extreme)
             field.removeMobs();
             sm.showFieldEffect("Map/Effect.img/killing/clear");
             field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
@@ -376,6 +385,128 @@ public class BossHelper {
                 field.spawnMob(9601623, 0, 264, false, 400000000000L);
             }, 1500);
         } else if (mobID == 9601623) { // Phase 2
+            field.removeMobs();
+            sm.showFieldEffect("Map/Effect.img/killing/clear");
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
+        }
+        // Will (Normal & Hard)
+        if (mobID == 8880340 || mobID == 8880300) { // Will Phase 1
+            field.removeMobs();
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
+            int nextFieldID = field.getId() + 100;
+            if (party != null) {
+                chr.getTimer().addEvent(() -> {
+                    sm.warpParty(nextFieldID, party);
+                    Will.spawn(2, chr);
+                }, 2000);
+            } else {
+                chr.getTimer().addEvent(() -> {
+                    chr.warp(nextFieldID);
+                    Will.spawn(2, chr);
+                }, 2000);
+            }
+        } else if (mobID == 8880341 || mobID == 8880301) { // Will Phase 2
+            field.removeMobs();
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
+            int nextFieldID = field.getId() + 100;
+            if (party != null) {
+                chr.getTimer().addEvent(() -> {
+                    sm.warpParty(nextFieldID, party);
+                    Will.spawn(3, chr);
+                }, 2000);
+            } else {
+                chr.getTimer().addEvent(() -> {
+                    chr.warp(nextFieldID);
+                    Will.spawn(3, chr);
+                }, 2000);
+            }
+        } else if (mobID == 8880342 || mobID == 8880302) { // Will Phase 3
+            field.removeMobs();
+            sm.showFieldEffect("Map/Effect.img/killing/clear");
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
+        }
+        // Chosen Seren (Normal / Hard / Extreme)
+        if (mobID == 8880600 || mobID == 8880602 || mobID == 8880604) {
+            field.removeMobs();
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
+            int nextMobId = (mobID == 8880600) ? 8880601 : ((mobID == 8880602) ? 8880603 : 8880605);
+            chr.getTimer().addEvent(() -> {
+                int y = BossEntry.snapToFootholdY(field, 0, 275);
+                field.spawnMob(nextMobId, 0, y, false);
+            }, 2500);
+        } else if (mobID == 8880601 || mobID == 8880603 || mobID == 8880605) {
+            field.removeMobs();
+            sm.showFieldEffect("Map/Effect.img/killing/clear");
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
+        }
+        // Kalos the Guardian (Easy / Normal / Chaos / Extreme)
+        if (mobID == 8881010 || mobID == 8880800 || mobID == 8881030 || mobID == 8881050) {
+            field.removeMobs();
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
+            int nextMobId = (mobID == 8881010) ? 8881011 : ((mobID == 8880800) ? 8880801 : ((mobID == 8881030) ? 8881031 : 8881051));
+            chr.getTimer().addEvent(() -> {
+                int y = BossEntry.snapToFootholdY(field, -300, 398);
+                field.spawnMob(nextMobId, -300, y, false);
+            }, 2500);
+        } else if (mobID == 8881011 || mobID == 8880801 || mobID == 8881031 || mobID == 8881051) {
+            field.removeMobs();
+            sm.showFieldEffect("Map/Effect.img/killing/clear");
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
+        }
+        // Kaling
+        if (mobID == 8880967) { // Extreme Phase 1 -> Phase 2
+            field.removeMobs();
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
+            chr.getTimer().addEvent(() -> {
+                int y = BossEntry.snapToFootholdY(field, 900, 106);
+                field.spawnMob(8880972, 900, y, false);
+            }, 2500);
+        } else if (mobID == 8880972) { // Extreme Phase 2 -> Phase 3
+            field.removeMobs();
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
+            chr.getTimer().addEvent(() -> {
+                int y = BossEntry.snapToFootholdY(field, 900, 106);
+                field.spawnMob(8880976, 900, y, false);
+            }, 2500);
+        } else if (mobID == 8880907 || mobID == 8880837 || mobID == 8880937 || mobID == 8880976) {
+            field.removeMobs();
+            sm.showFieldEffect("Map/Effect.img/killing/clear");
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
+        }
+        // Limbo (Normal / Hard)
+        if (mobID == 8881304 || mobID == 8881354) { // Phase 1 -> Final Phase
+            field.removeMobs();
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
+            int nextMobId = (mobID == 8881304) ? 8881320 : 8881370;
+            chr.getTimer().addEvent(() -> {
+                int y = BossEntry.snapToFootholdY(field, 0, 3);
+                field.spawnMob(nextMobId, 0, y, false);
+            }, 2500);
+        } else if (mobID == 8881320 || mobID == 8881370) {
+            field.removeMobs();
+            sm.showFieldEffect("Map/Effect.img/killing/clear");
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
+        }
+        // First Adversary (Easy / Normal / Hard / Extreme)
+        if (mobID == 8881800) { // Extreme Phase 1 -> Phase 2
+            field.removeMobs();
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
+            chr.getTimer().addEvent(() -> {
+                int y = BossEntry.snapToFootholdY(field, 0, 55);
+                field.spawnMob(8881820, 0, y, false);
+            }, 2500);
+        } else if (mobID == 8881710 || mobID == 8881740 || mobID == 8881770 || mobID == 8881820) {
+            field.removeMobs();
+            sm.showFieldEffect("Map/Effect.img/killing/clear");
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
+        }
+        // Single Phase Late-game Bosses
+        if (mobID == 8644650 || mobID == 8644655 // Gloom
+                || mobID == 8645009 || mobID == 8645066 // Darknell
+                || mobID == 8880405 || mobID == 8880410 // Verus Hilla
+                || mobID == 8880700 || mobID == 8880711 // Guardian Angel Slime
+                || mobID == 8881600 || mobID == 8881650 // Baldrix
+        ) {
             field.removeMobs();
             sm.showFieldEffect("Map/Effect.img/killing/clear");
             field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));

@@ -3,6 +3,72 @@
 This file tracks all bug fixes, feature implementations, and system optimizations across sessions.
 **Rule (AGENTS.md #4)**: Every agent MUST record new progress here and in `.agents/skills/maplestory-bug-knowledge/SKILL.md` after completing any modification.
 
+## 📅 [2026-10-12 15:30 น.] Official Boss Drops & Multi-Phase Progression Architecture (v265 New Age / Grandis Bosses)
+
+### 🎯 Scope
+วิเคราะห์และปรับปรุงระบบการดรอปไอเทมและระบบเปลี่ยน Phase ของบอสใหม่ทั้งหมดในแพตช์ v265 / New Age ให้ตรงตาม Official MapleStory 100% ครอบคลุมบอสระดับ Grandis และ Arcane River ตอนปลาย ได้แก่ **Limbo, First Adversary, Baldrix, Kaling, Kalos the Guardian, Chosen Seren, Guardian Angel Slime, Verus Hilla, Gloom, Darknell, Black Mage, และ Will** รวมถึงการแก้ไขข้อผิดพลาดของบอสระดับกลาง (Lotus, Damien, Lucid) และการแก้ปัญหาผลึกบอส (Intense Power Crystal) ไม่ดรอป
+
+### 📂 Files Modified
+- [`mob_drops.json`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/data/resources/mob_drops.json) (และใน `v214 src/data/resources/mob_drops.json`)
+- [`GameConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/GameConstants.java)
+- [`BossHelper.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/boss/BossHelper.java)
+- [`tools/create_patch.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/create_patch.py)
+- [`Server263/maplestory.jar`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/maplestory.jar)
+- [`Patches/Server263_Patch_20261012_1529.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_20261012_1529.zip)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **การเติมเต็มตารางดรอปไอเทมของบอสใหม่ (New Boss Official Drop System)**:
+   - ปัญหา: โค้ดเดิมใน `mob_drops.json` ไม่มีข้อมูลดรอปของบอสใหม่ (Will, Gloom, Darknell, Verus Hilla, Black Mage, Seren, Slime, Kalos, Kaling, Limbo, Baldrix, First Adversary) ส่งผลให้เมื่อบอสถูกกำจัด ตัวบอสจะตายและไม่มีไอเทมใดๆ ตกเลย
+   - การแก้ไข: เพิ่มตารางดรอปไอเทมใหม่ 869 รายการ ตามค่าจริงของ Official MapleStory และตรวจสอบกับ WZ Data (`String.wz`, `Item.wz`, `Character.wz`):
+     - **Pitched Boss Accessories**:
+       - Lotus Hard: เพิ่ม `1012632` (Berserked) (chance=3500)
+       - Damien Hard: ย้าย `1022278` (Magic Eyepatch) จาก Normal มาไว้ที่ Hard Damien (chance=3500)
+       - Lucid Hard Box: เพิ่ม `1132308` (Dreamy Belt) (chance=3500)
+       - Will Hard: เพิ่ม `1162080`-`1162083` (Cursed Red/Blue/Green/Yellow Spellbook)
+       - Gloom Chaos: เพิ่ม `1113306` (Endless Terror) (chance=3500)
+       - Darknell Hard: เพิ่ม `1032316` (Commanding Force Earring) (chance=3500)
+       - Verus Hilla Hard: เพิ่ม `1122430` (Source of Suffering / Source of Whispers) (chance=3500)
+       - Black Mage: เพิ่ม `1182285` (Genesis Badge) (chance=4000/6000)
+       - Chosen Seren Hard/Extreme: เพิ่ม `1190555`-`1190559` (Mitra's Rage ทุกสายอาชีพ) และ `2633927` (Mitra's Rage Selection Box)
+       - Limbo: เพิ่ม `1113341` (Whisper of the Source)
+     - **Dawn Boss Accessories**:
+       - Guardian Angel Slime: เพิ่ม `1113313` (Guardian Angel Ring) (Normal/Chaos)
+       - Gloom: เพิ่ม `1032330` (Estella Earrings) (Normal/Chaos)
+       - Darknell: เพิ่ม `1012757` (Twilight Mark) (Normal/Hard)
+       - Verus Hilla & Seren: เพิ่ม `1122443` (Daybreak Pendant)
+     - **Eternal Equipment Boxes & Materials**:
+       - Kalos: เพิ่ม `2634472` (Kalos's Residual Determination), `2636606` (Fragment), `2638064` (Divine Eternal Armor Box)
+       - Kaling: เพิ่ม `2638065` (Ferocious Beast Eternal Armor Box), `1152212`-`1152216` (Eternal Shoulder)
+       - Limbo: เพิ่ม `2638066` (Eternal Armor of Desire Box)
+       - Baldrix: เพิ่ม `2639252` (Trace of Eternal Loyalty), `2639253` (Eternal Armor of Oaths Box)
+       - First Adversary: เพิ่ม `2830305` (Whisper of Ancient Resolve), `2830306` (Ancient Eternal Armor Box)
+     - **Arcane Umbra Weapon Boxes**:
+       - มอบให้แก่ Hard Lucid, Hard Will, Chaos Gloom, Hard Darknell, Hard Verus Hilla, Black Mage
+     - **Boss Soul Shards & 6th Job HEXA Materials**:
+       - เพิ่ม Soul Shards ตรงตาม WZ: Will (`2438396`), Verus Hilla (`2439567`), Darknell (`2439568`), Kalos (`2634499`), Kaling (`2635761`), Limbo (`2638089`), Baldrix (`2639268`), First Adversary (`2830318`)
+       - บอสระดับสูงทุกตัวดรอป `4009000` (Sol Erda Energy) และ `4009001` (Sol Erda Fragment) สำหรับพัฒนาระบบคลาส 6
+2. **การแก้ไขระบบผลึกบอส (Intense Power Crystal Fix)**:
+   - ปัญหา: ใน `GameConstants.java` เมธอด `getBossRewardID()` ทำงานโดยลูปเทียบ `entry.getValue().getRealMonster() == BossTemplateID` แต่ Mob ID ของ Kalos (ทั้ง 4 โหมด), Kaling, Limbo, Baldrix, Seren, First Adversary, และ Verus Hilla ไม่ตรงกับ Mob ID ที่ถูก Spawn จริงใน `BossEntry.java` ทำให้คืนค่า 0 และไม่มีผลึกบอสตก
+   - การแก้ไข: เพิ่ม explicit switch matching ใน `GameConstants.getBossRewardID()` รองรับ Mob ID ทุกร่างและทุก Phase ของบอสทุกระดับความยากอย่างถูกต้อง 100%
+3. **ระบบเปลี่ยน Phase และ Victory Clear (Phase Progression & Clear System)**:
+   - ปัญหา: โค้ดเดิมใน `BossHelper.java` ขาดตัวควบคุมการเปลี่ยน Phase ของบอสใหม่หลายตัว เช่น Will ไม่เปลี่ยนไปยัง Phase 2/3, Seren Phase 1 ตายแล้วไม่เกิด Phase 2, Kalos, Kaling, Limbo, First Adversary ขาดการเปลี่ยน Phase
+   - การแก้ไข: เพิ่มระบบตรวจจับการตายและ Spawn Phase ถัดไปใน `BossHelper.java`:
+     - **Will**: Normal & Hard Phase 1 ตาย -> วาร์ปปาร์ตี้ไปห้องถัดไป + เสก Phase 2 -> Phase 2 ตาย -> วาร์ปไปห้องถัดไป + เสก Phase 3 -> Phase 3 ตาย -> เล่นเอฟเฟกต์ Clear
+     - **Chosen Seren**: Phase 1 ตาย -> เล่นเอฟเฟกต์ตาย -> เสก Phase 2 (Normal: 8880601, Hard: 8880603, Extreme: 8880605) -> Phase 2 ตาย -> เล่นเอฟเฟกต์ Clear
+     - **Kalos the Guardian**: Phase 1 ตาย -> เสก Phase 2 (Easy: 8881011, Normal: 8880801, Chaos: 8881031, Extreme: 8881051) -> Phase 2 ตาย -> เล่นเอฟเฟกต์ Clear
+     - **Kaling**: Extreme Phase 1 (`8880967`) -> Phase 2 (`8880972`) -> Phase 3 (`8880976`) -> Clear; Easy/Normal/Hard ตาย -> เล่นเอฟเฟกต์ Clear
+     - **Limbo**: Phase 1 (`8881304`/`8881354`) -> Final Phase (`8881320`/`8881370`) -> Clear
+     - **First Adversary**: Extreme Phase 1 (`8881800`) -> Phase 2 (`8881820`) -> Clear; Easy/Normal/Hard ตาย -> Clear
+     - **Extreme Black Mage**: รองรับ Phase 1 (`8880530`/`8880531`) -> P2 (`8880532`) -> P3 (`8880533`) -> P4 (`8880534`)
+     - **Gloom, Darknell, Verus Hilla, Slime, Baldrix**: เพิ่มการส่งแพ็กเก็ตแสดงป้าย CLEAR ให้แก่ผู้เล่นทุกคนในแมพเมื่อบอสถูกกำจัด
+4. **Compilation, Deployment & Incremental Patch**:
+   - คอมไพล์สำเร็จ `BUILD SUCCESS` (Java 21 OpenJDK)
+   - อัปเดต `maplestory.jar` (132.23 MB) ไปยัง `Server263/` และ Root
+   - ปรับปรุง `tools/create_patch.py` ให้ซิงค์ `data/resources` (mob_drops.json)
+   - สร้าง Incremental Patch: `Patches/Server263_Patch_20261012_1529.zip` (122.40 MB)
+
+---
+
 ## 📅 [2026-10-12 14:48 น.] Fix Database Foreign Key Constraint Failure on Character Deletion (Error 1451-23000)
 
 ### 🎯 Scope

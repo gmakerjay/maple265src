@@ -1858,6 +1858,63 @@ public class GameConstants {
     }
 
     public static int getBossRewardID(int BossTemplateID) {
+        // Explicit mapping for multi-phase and variant mob IDs (v265 Official KMS values)
+        switch (BossTemplateID) {
+            // Gloom
+            case 8644650 -> { return 9210042; } // Normal Gloom (49.6M)
+            case 8644655 -> { return 9210046; } // Chaos Gloom (92.4M)
+            // Darknell
+            case 8645009 -> { return 9210043; } // Normal Darknell (52.8M)
+            case 8645066 -> { return 9210047; } // Hard Darknell (96.8M)
+            // Verus Hilla
+            case 8880405, 8880450 -> { return 9210055; } // Normal Verus Hilla (89.5M)
+            case 8880410 -> { return 9210040; } // Hard Verus Hilla (110.4M)
+            // Guardian Angel Slime
+            case 8880700 -> { return 9210052; } // Normal Slime (34.3M)
+            case 8880711 -> { return 9210051; } // Chaos Slime (90.3M)
+            // Will
+            case 8880340, 8880341, 8880342 -> { return 9210053; } // Normal Will (38.2M)
+            case 8880300, 8880301, 8880302 -> { return 9210039; } // Hard Will (88.2M)
+            // Black Mage
+            case 8880500, 8880501, 8880502, 8880503, 8880504 -> { return 9210041; } // Hard Black Mage (500M)
+            case 8880530, 8880531, 8880532, 8880533, 8880534 -> { return 9210057; } // Extreme Black Mage (3.6B)
+            // Chosen Seren
+            case 8880600, 8880601, 8880630 -> { return 9210054; } // Normal Seren (133.6M)
+            case 8880602, 8880603 -> { return 9210050; } // Hard Seren (151.2M)
+            case 8880604, 8880605, 8880650 -> { return 9210058; } // Extreme Seren (847M)
+            // Kalos the Guardian
+            case 8881010, 8881011 -> { return 9210060; } // Easy Kalos (187.5M)
+            case 8880800, 8880801, 8880802 -> { return 9210056; } // Normal Kalos (200M)
+            case 8881030, 8881031 -> { return 9210061; } // Chaos Kalos (520M)
+            case 8881050, 8881051 -> { return 9210062; } // Extreme Kalos (1.04B)
+            // Kaling
+            case 8880907 -> { return 9210063; } // Easy Kaling (206.2M)
+            case 8880837, 8880845 -> { return 9210059; } // Normal Kaling (301.3M)
+            case 8880937 -> { return 9210064; } // Hard Kaling (598M)
+            case 8880967, 8880972, 8880976 -> { return 9210065; } // Extreme Kaling (1.205B)
+            // Limbo
+            case 8881304, 8881320 -> { return 9210067; } // Normal Limbo (420M)
+            case 8881354, 8881370 -> { return 9210068; } // Hard Limbo (749M)
+            // Baldrix
+            case 8881600, 8881601 -> { return 9210069; } // Normal Baldrix (560M)
+            case 8881650, 8881651 -> { return 9210070; } // Hard Baldrix (840M)
+            // First Adversary
+            case 8881710 -> { return 9210071; } // Easy First Adversary (197M)
+            case 8881740 -> { return 9210072; } // Normal First Adversary (273M)
+            case 8881770 -> { return 9210073; } // Hard First Adversary (588M)
+            case 8881800, 8881820 -> { return 9210074; } // Extreme First Adversary (1.176B)
+            // Lotus
+            case 8950100, 8950101, 8950102 -> { return 9210030; } // Normal Lotus (32.5M)
+            case 8950000, 8950001, 8950002 -> { return 9210031; } // Hard Lotus (67.6M)
+            case 8881300, 8881301, 8881302, 8881200 -> { return 9210066; } // Extreme Lotus (279.5M)
+            // Damien
+            case 8880110, 8880111 -> { return 9210031; } // Normal Damien (33.8M)
+            case 8880100, 8880101 -> { return 9210032; } // Hard Damien (70.3M)
+            // Lucid
+            case 8880166, 8880176, 8880156 -> { return 9210048; } // Easy Lucid (35.1M)
+            case 8880140, 8880150, 8880177 -> { return 9210033; } // Normal Lucid (40.6M)
+            case 8880141, 8880151, 8880153, 8880167 -> { return 9210034; } // Hard Lucid (80M)
+        }
         for (var entry : intensePowerCrystal.int2ObjectEntrySet()) {
             if (entry.getValue().getRealMonster() == BossTemplateID) {
                 return entry.getValue().getNamingMonster();
