@@ -3,6 +3,44 @@
 This file tracks all bug fixes, feature implementations, and system optimizations across sessions.
 **Rule (AGENTS.md #4)**: Every agent MUST record new progress here and in `.agents/skills/maplestory-bug-knowledge/SKILL.md` after completing any modification.
 
+## 📅 [2026-10-12 16:05 น.] Modular NPC System Refactor & Dedicated Illustrated Hub Architecture (!msnpc)
+
+### 🎯 Scope
+จัดระเบียบและปรับโครงสร้างระบบ NPC ประจำเซิร์ฟเวอร์ใหม่ทั้งหมดตามสถาปัตยกรรม Modular Service Architecture:
+1. ลบฟังก์ชันโกงสกิล `All Max Skills` ออกจากสคริปต์สาธารณะอย่างถาวรตามกฎข้อที่ 6 ของโครงการ
+2. แยกฟังก์ชันบริการต่างๆ ออกเป็น NPC ประจำตัวที่มีภาพวาด Illustration คัทซีนขนาดใหญ่ (Illustration BoxChat) ครบทุกตัว
+3. สร้าง Hub กลางผ่านคำสั่ง `!msnpc` (และ `@msnpc` / NPC 9062000 Maple Admin) สำหรับเรียกใช้ทุกบริการได้จากทุกที่
+4. ปรับเปลี่ยนข้อความและบทสนทนาทั้งหมดเป็นภาษาอังกฤษ 100% (Clean English) เพื่อป้องกันปัญหาฟอนต์ภาษาไทยในเกมแสดงผลผิดพลาด
+
+### 📂 Files Modified / Added
+- [`quick_adminNPC.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/quick_adminNPC.py) (และใน `Server263/data/scripts/npc/quick_adminNPC.py`)
+- [`9062000.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/9062000.py) (Maple Admin - Main Hub)
+- [`3006703.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/3006703.py) & [`boss_arena.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/boss_arena.py) (Seren - Boss Arena & Warp)
+- [`3003938.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/3003938.py) & [`warp_service.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/warp_service.py) (Hoyoung - Universal Warp Center)
+- [`3003940.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/3003940.py) & [`potion_shop.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/potion_shop.py) (Adele - General Store & Boss Buff Depot)
+- [`3005101.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/3005101.py) & [`pet_shop.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/pet_shop.py) (Lara - Pet Sanctuary & Skills)
+- [`9063159.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/9063159.py) & [`point_shop.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/point_shop.py) (Lucid - Cash & Fashion Boutique)
+- [`PlayerCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/PlayerCommands.java)
+- [`AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+- [`Server263/maplestory.jar`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/maplestory.jar)
+- [`Patches/Server263_Patch_20261012_1605.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_20261012_1605.zip)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **การกำจัดฟังก์ชันโกงสกิล (Removed All Max Skill)**:
+   - ปัญหา: เดิมทีใน `quick_adminNPC.py` มีตัวเลือก `Max all skills (1st - 4th Job)` ซึ่งขัดต่อมาตรฐานความสะอาดของสคริปต์สาธารณะ
+   - การแก้ไข: ลบคำสั่ง `chr.maxSkills()` และตัวเลือกดังกล่าวออกจาก `quick_adminNPC.py` 100% โดยผู้พัฒนาสามารถใช้คำสั่งลับ `!boost` หรือ `!endgame` ได้เท่านั้น
+2. **การแยกบทบาทบริการออกเป็น NPC รายตัว (Dedicated Illustrated NPCs)**:
+   - **Seren (`3006703`)**: ลานประลองบอสและวาร์ปห้องบอสทุกตัว (`boss_arena.py`)
+   - **Hoyoung (`3003938`)**: ศูนย์กลางวาร์ปทั่วโลก เมืองหลัก Grandis, Arcane River, แผนที่เก็บเลเวล (`warp_service.py`)
+   - **Adele (`3003940`)**: ร้านของชำเอนกประสงค์ (ใบวาร์ป, ธนู, ดาวกระจาย) + ยาฟื้นฟู 100% ปรับสมดุล (Power Elixir 100/1000 ขวด) + ชุดยาบัพบอสแยกขายเป็นชุด ชุดละ 10 ขวด (Onyx Apple, Adv Boss Rush, IED, Extreme Potions, EAP, WAP) + ชุดรวมมิตรลุยบอส 80 ขวด (`potion_shop.py`)
+   - **Lara (`3005101`)**: ร้านสัตว์เลี้ยงครบวงจร ขาย Sherbet Vac Pet ดูดของทั้งแมพ 30 วัน, สัตว์เลี้ยงคลาสสิก, อาหารสัตว์, น้ำแห่งชีวิต 90 วัน, Pet Snack 3 ตัว, สกิลสัตว์เลี้ยงอัตโนมัติทุกชนิด (`pet_shop.py`)
+   - **Lucid (`9063159`)**: ร้านแคช แฟชั่นเสื้อผ้าแยกเพศ ชาย/หญิง/Unisex, ลูกบาศก์ Cube, Rebirth Flames (`point_shop.py`)
+3. **การสร้างคำสั่ง `!msnpc` และ Hub กลาง (Maple Admin `9062000`)**:
+   - เพิ่ม Alias `@msnpc` และ `!msnpc` ใน `PlayerCommands.java` และ `AdminCommands.java`
+   - สามารถพิมพ์ `!msnpc` เพื่อเปิดเมนูศูนย์กลางเข้าถึงทุก NPC และจัดการตัวละคร (Job Advance, 5th Job, 6th Job, Boss Prequests, Starter Package, Remove Cash Items)
+4. **มาตรฐานภาษาอังกฤษ 100% (Clean English Client Compatibility)**:
+   - ปรับข้อความทั้งหมดในสคริปต์ NPC ให้เป็นภาษาอังกฤษ 100% เพื่อให้แสดงผลในเกมได้อย่างคมชัด ถูกต้อง ไม่เกิดปัญหาตัวอักษรภาษาไทยเพี้ยนหรือเป็นบล็อกสี่เหลี่ยม
+
 ## 📅 [2026-10-12 15:30 น.] Official Boss Drops & Multi-Phase Progression Architecture (v265 New Age / Grandis Bosses)
 
 ### 🎯 Scope

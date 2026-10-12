@@ -110,14 +110,15 @@ WARP_CATEGORIES = [
 ]
 
 def open_warp_service(sm, chr):
-    sm.setSpeakerID(9010000)
+    NPC_HOYOUNG = 3003938
+    sm.setNpcBoxChat(NPC_HOYOUNG)
     current_map_id = chr.getFieldID()
     
     total_locations = sum(len(locs) for _, locs in WARP_CATEGORIES)
     
-    menu_text = "#fs14##e#b[Universal Warp & Fast Travel Center]#k#n\r\n"
-    menu_text += "Where would you like to travel today, #h0#?\r\n"
-    menu_text += "#dCurrent Location: Field ID " + str(current_map_id) + " (" + str(total_locations) + " total destinations)#k\r\n\r\n"
+    menu_text = "#face0##fs14##e#b[Hoyoung - Universal Warp Center]#k#n\r\n"
+    menu_text += "Yo! I am Hoyoung, the mischievous Anima sage! Where across the worlds would you like to travel today, #h0#?\r\n"
+    menu_text += "#dCurrent Map ID: " + str(current_map_id) + " (" + str(total_locations) + " total destinations available)#k\r\n\r\n"
     
     for i, (cat_name, locations) in enumerate(WARP_CATEGORIES):
         menu_text += "#L" + str(i) + "##e#b" + cat_name + "#k#n (" + str(len(locations)) + " destinations)#l\r\n"

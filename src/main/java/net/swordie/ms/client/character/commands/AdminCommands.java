@@ -591,7 +591,7 @@ public class AdminCommands {
         }
     }
 
-    @Command(names = {"adminnpc", "admin"}, requiredType = GameMaster)
+    @Command(names = {"msnpc", "adminnpc", "admin"}, requiredType = GameMaster)
     public static class AdminNpcCmd extends AdminCommand {
 
         public static void execute(Char chr, String[] args) {

@@ -1,167 +1,177 @@
-# Admin Potion & Buff Supply Depot
-# Special bulk shop for 50% HP/MP recovery elixirs and 500k combat buffs
+# ==============================================================================
+# General Store, Potions & Boss Buff Depot (Adele - 3003940)
+# General Supplies, Balanced 100% Recovery Potions & 10x Boss Buff Bundles
+# ==============================================================================
 from net.swordie.ms.util import Util
+from net.swordie.ms.enums import InvType
 
-POTION_PACKS = [
-    # (id, name, qty, cost, description)
-    (2000004, "Elixir", 1000, 20000000, "Recovers 50% Max HP & 50% Max MP (Economical Bulk Pack)"),
-    (2000004, "Elixir", 100, 2500000, "Recovers 50% Max HP & 50% Max MP (Small Pack)"),
-    (2022000, "Ginger Ale", 1000, 50000000, "Recovers 75% Max HP & 75% Max MP (High Recovery)"),
-    (2000005, "Power Elixir", 1000, 100000000, "Recovers 100% Max HP & 100% Max MP (End-Game Luxury - 100M)"),
-    (2000005, "Power Elixir", 100, 12000000, "Recovers 100% Max HP & 100% Max MP (Premium Pack - 12M)"),
-    (2050004, "All-Cure Potion", 100, 1000000, "Cures all abnormal status conditions (100 bottles - 1M)")
-]
-
-BUFF_POTIONS = [
-    # (id, name, desc)
-    (2022179, "Onyx Apple", "Weapon ATT +100, Magic ATT +100, Avoid +20 (10 min)"),
-    (2003596, "Adv. Boss Rush Boost Potion", "Boss Damage +20% (2 Hours)"),
-    (2003598, "Adv. Penetrating Boost Potion", "Ignore Monster DEF +20% (2 Hours)"),
-    (2003597, "Adv. Great Hero Boost Potion", "Weapon ATT +30, Magic ATT +30 (2 Hours)"),
-    (2023125, "Extreme Red Potion", "Weapon ATT +30, Max HP +2,000 (30 min)"),
-    (2023126, "Extreme Green Potion", "Attack Speed +1 stage (30 min)"),
-    (2023127, "Extreme Blue Potion", "Magic ATT +30, Max MP +2,000 (30 min)"),
-    (2023128, "Extreme Gold Potion", "Bonus EXP +10%, Max HP/MP +2,000 (30 min)"),
-    (2003550, "EXP Accumulation Potion (EAP)", "Bonus EXP +10% (2 Hours)"),
-    (2003551, "Wealth Acquisition Potion (WAP)", "Item Drop Rate +20%, Mesos +20% (2 Hours)"),
-    (2023544, "MVP Superpower Buff", "Weapon ATT +30, Magic ATT +30 (30 min)")
-]
-
-ALL_BUFF_IDS = [2022179, 2003596, 2003598, 2003597, 2023125, 2023126, 2023127, 2023128, 2003550, 2003551]
+NPC_ID = 3003940 # Adele
 
 def format_num(val):
     return Util.getNumberFormat(val)
 
+# (id, name, qty, cost, description)
+GENERAL_SUPPLIES = [
+    (2030000, "Town Return Scroll (x100)", 100, 50000, "Instantly warps to the nearest town (100 scrolls)."),
+    (2030004, "Return to Nearest Town Scroll (x100)", 100, 50000, "Instantly warps to the regional capital city (100 scrolls)."),
+    (2050004, "All-Cure Potion (x100)", 100, 500000, "Cures and clears all abnormal status ailments (100 bottles)."),
+    (2060000, "Bow Arrow (x2,000)", 2000, 2000, "Standard arrows for bows (2,000 arrows)."),
+    (2061000, "Crossbow Arrow (x2,000)", 2000, 2000, "Standard bolts for crossbows (2,000 bolts)."),
+    (2070000, "Subi Throwing-Stars", 1, 500, "Basic throwing-star (Weapon ATT +15)."),
+    (2070006, "Ilbi Throwing-Stars", 1, 3000000, "High-tier iconic throwing-star (Weapon ATT +21)."),
+    (2000002, "White Potion (x100)", 100, 32000, "Recovers 300 HP (100 bottles)."),
+    (2000006, "Mana Elixir (x100)", 100, 62000, "Recovers 300 MP (100 bottles).")
+]
+
+RECOVERY_POTIONS = [
+    # Ginger Ale (75% HP/MP)
+    (2022000, "Ginger Ale (x100)", 100, 1500000, "Recovers 75% Max HP & 75% Max MP (100 bottles - 15,000 each)"),
+    (2022000, "Ginger Ale (x1,000)", 1000, 12000000, "Recovers 75% Max HP & 75% Max MP (Bulk 1,000 bottles - 12,000 each)"),
+    # Power Elixir (100% HP/MP)
+    (2000005, "Power Elixir (x100)", 100, 5000000, "Recovers 100% Max HP & 100% Max MP (100 bottles - 50,000 each)"),
+    (2000005, "Power Elixir (x1,000)", 1000, 45000000, "Recovers 100% Max HP & 100% Max MP (Bulk 1,000 bottles - 45,000 each)"),
+    # Elixir (50% HP/MP)
+    (2000004, "Elixir (x100)", 100, 800000, "Recovers 50% Max HP & 50% Max MP (100 bottles - 8,000 each)"),
+    (2000004, "Elixir (x1,000)", 1000, 7000000, "Recovers 50% Max HP & 50% Max MP (Bulk 1,000 bottles - 7,000 each)")
+]
+
+# Boss Buff Potions - Sold in 10-packs
+BOSS_BUFF_10PACKS = [
+    (2022179, "Onyx Apple (x10)", 10, 10000000, "Weapon ATT +100, Magic ATT +100 (10 min) [10 pieces]"),
+    (2003596, "Adv. Boss Rush Boost Potion (x10)", 10, 8000000, "Boss Damage +20% (Duration: 2 Hours) [10 bottles]"),
+    (2003598, "Adv. Penetrating Boost Potion (x10)", 10, 8000000, "Ignore Monster DEF (IED) +20% (Duration: 2 Hours) [10 bottles]"),
+    (2003597, "Adv. Great Hero Boost Potion (x10)", 10, 5000000, "Weapon ATT +30, Magic ATT +30 (Duration: 2 Hours) [10 bottles]"),
+    (2023125, "Extreme Red Potion (x10)", 10, 4000000, "Weapon ATT +30, Max HP +2,000 (Duration: 30 min) [10 bottles]"),
+    (2023126, "Extreme Green Potion (x10)", 10, 5000000, "Attack Speed +1 Stage (Breaks soft cap, 30 min) [10 bottles]"),
+    (2023127, "Extreme Blue Potion (x10)", 10, 4000000, "Magic ATT +30, Max MP +2,000 (Duration: 30 min) [10 bottles]"),
+    (2023128, "Extreme Gold Potion (x10)", 10, 5000000, "Bonus EXP +10%, Max HP/MP +2,000 (Duration: 30 min) [10 bottles]"),
+    (2003550, "EXP Accumulation Potion (EAP) (x10)", 10, 8000000, "Bonus EXP +10% stackable (Duration: 2 Hours) [10 bottles]"),
+    (2003551, "Wealth Acquisition Potion (WAP) (x10)", 10, 8000000, "Item Drop Rate +20%, Mesos +20% (Duration: 2 Hours) [10 bottles]"),
+    (2023544, "MVP Superpower Buff (x10)", 10, 5000000, "Weapon ATT +30, Magic ATT +30 (Duration: 30 min) [10 bottles]")
+]
+
+ALL_IN_ONE_BUFFS = [
+    (2022179, "Onyx Apple", 10),
+    (2003596, "Adv. Boss Rush Boost Potion", 10),
+    (2003598, "Adv. Penetrating Boost Potion", 10),
+    (2003597, "Adv. Great Hero Boost Potion", 10),
+    (2023125, "Extreme Red Potion", 10),
+    (2023126, "Extreme Green Potion", 10),
+    (2023127, "Extreme Blue Potion", 10),
+    (2023128, "Extreme Gold Potion", 10)
+]
+ALL_IN_ONE_COST = 45000000
+
 def open_potion_shop(sm, chr):
+    sm.setNpcBoxChat(NPC_ID)
     while True:
         cur_mesos = chr.getMoney()
-        shop_menu = "#fs13#=== #e#bAdmin Potion & Combat Buff Supply Depot#k#n ===\r\n"
-        shop_menu += "Current Mesos: #e#d" + format_num(cur_mesos) + " Mesos#k#n\r\n\r\n"
-        shop_menu += "#b#L1##e[HP / MP & Recovery Potions]#n#k\r\n"
-        shop_menu += "   #fs11#Elixirs (50%), Power Elixirs (100%), and All-Cure Potions (x100).#fs13#\r\n"
-        shop_menu += "#b#L2##e[Combat Buff Potions - 500,000 Mesos Each]#n#k\r\n"
-        shop_menu += "   #fs11#Onyx Apple, Adv Boss Rush, Penetrating, Extreme potions, etc.#fs13#\r\n"
-        shop_menu += "#b#L3##e[All-in-One Bossing Buff Supply Package]#n#k\r\n"
-        shop_menu += "   #fs11#Bundle of all top 10 buffs (10x each = 100 bottles) for 50,000,000 Mesos.#fs13#\r\n"
-        shop_menu += "#d#L99#Exit Shop#l#k\r\n"
+        menu = "#face0#Greetings, #h0#! I am #bAdele#k.\r\n"
+        menu += "Welcome to the Knight's Military General Store & Combat Buff Depot.\r\n\r\n"
+        menu += "Current Meso Balance: #e#d" + format_num(cur_mesos) + " Mesos#k#n\r\n\r\n"
+        menu += "#b#L1##e[1] General Utility Supplies#n#k\r\n"
+        menu += "   #fs11#Town Scrolls, Arrows, Throwing-Stars, All-Cure Potions (Standard Prices)#fs13#\r\n"
+        menu += "#b#L2##e[2] HP / MP Recovery Potions (Elixirs)#n#k\r\n"
+        menu += "   #fs11#Ginger Ale (75%), Power Elixir (100%), Elixir (50%) in 100 / 1,000 packs#fs13#\r\n"
+        menu += "#b#L3##e[3] Boss Combat Buff Bundles (10-Bottle Sets)#n#k\r\n"
+        menu += "   #fs11#Onyx Apple, Adv Boss Rush, IED, Extreme Potions, EAP, WAP in sets of 10#fs13#\r\n"
+        menu += "#b#L4##e[4] Ultimate All-in-One Bossing Bundle#n#k\r\n"
+        menu += "   #fs11#Complete bundle of 8 top bossing buffs (10x each = 80 bottles) for 45M Mesos#fs13#\r\n"
+        menu += "#d#L99#Exit Store#l#k\r\n"
 
-        category = sm.sendNext(shop_menu)
+        cat = sm.sendNext(menu)
 
-        if category == 1:
-            # Bulk Potions Menu
-            pot_menu = "#fs13#Select recovery potion package to purchase:\r\n"
-            pot_menu += "Current Mesos: #e#d" + format_num(chr.getMoney()) + " Mesos#k#n\r\n\r\n"
+        if cat == 1:
+            # General supplies
+            gen_menu = "#face0#Select utility supplies to purchase:\r\n"
+            gen_menu += "Current Mesos: #e#d" + format_num(chr.getMoney()) + " Mesos#k#n\r\n\r\n"
+            for idx, (g_id, g_name, g_qty, g_cost, g_desc) in enumerate(GENERAL_SUPPLIES):
+                gen_menu += "#L" + str(idx) + "##i" + str(g_id) + "# #e#b" + g_name + "#k#n - #r" + format_num(g_cost) + " Mesos#k\r\n    #fs11#" + g_desc + "#fs13##l\r\n"
+            gen_menu += "#L99##d[Back to Main Menu]#k#l\r\n"
 
-            for idx, (p_id, p_name, p_qty, p_cost, p_desc) in enumerate(POTION_PACKS):
-                pot_menu += "#L" + str(idx) + "##i" + str(p_id) + "# #e#b" + p_name + " x" + str(p_qty) + "#k#n - #r" + format_num(p_cost) + " Mesos#k\r\n    #fs11#" + p_desc + "#fs13##l\r\n"
-            pot_menu += "#L99##d[Back to Main Menu]#k#l\r\n"
-
-            p_sel = sm.sendNext(pot_menu)
-            if p_sel == 99 or p_sel < 0 or p_sel >= len(POTION_PACKS):
+            g_sel = sm.sendNext(gen_menu)
+            if g_sel == 99 or g_sel < 0 or g_sel >= len(GENERAL_SUPPLIES):
                 continue
 
-            p_id, p_name, p_qty, p_cost, p_desc = POTION_PACKS[p_sel]
-            if chr.getMoney() < p_cost:
-                sm.sendSayOkay("#fs13#You do not have enough mesos!\r\n\r\n"
-                               "Required: #r" + format_num(p_cost) + " Mesos#k\r\n"
-                               "You have: #b" + format_num(chr.getMoney()) + " Mesos#k")
-            elif not sm.canHold(p_id, p_qty):
-                sm.sendSayOkay("#fs13#You do not have enough free space in your USE inventory tab!\r\n\r\n"
-                               "Please free up some slots and try again.")
+            g_id, g_name, g_qty, g_cost, g_desc = GENERAL_SUPPLIES[g_sel]
+            if chr.getMoney() < g_cost:
+                sm.sendSayOkay("#face2#You do not have enough mesos!\r\nRequired: #r" + format_num(g_cost) + " Mesos#k")
+            elif not sm.canHold(g_id, g_qty):
+                sm.sendSayOkay("#face2#Your inventory is full! Please make some space.")
             else:
-                chr.deductMoney(p_cost)
-                chr.addItemToInventory(p_id, p_qty)
-                sm.sendSayOkay("#fs13##e#b[Purchase Successful!]#k#n\r\n\r\n"
-                               "You received: #i" + str(p_id) + "# #b" + p_name + " x" + str(p_qty) + "#k\r\n"
-                               "Deducted: #r" + format_num(p_cost) + " Mesos#k\r\n"
-                               "Remaining Mesos: #d" + format_num(chr.getMoney()) + " Mesos#k")
+                chr.deductMoney(g_cost)
+                chr.addItemToInventory(g_id, g_qty)
+                sm.sendSayOkay("#face1#Purchase completed!\r\nReceived: #i" + str(g_id) + "# #b" + g_name + "#k\r\nDeducted: #r" + format_num(g_cost) + " Mesos#k")
 
-        elif category == 2:
-            # Buff Potions Menu (500k each)
-            buff_menu = "#fs13#Select a combat buff potion to purchase (#r500,000 Mesos / bottle#k):\r\n"
+        elif cat == 2:
+            # Recovery potions
+            rec_menu = "#face0#Select recovery potion package to purchase:\r\n"
+            rec_menu += "Current Mesos: #e#d" + format_num(chr.getMoney()) + " Mesos#k#n\r\n\r\n"
+            for idx, (r_id, r_name, r_qty, r_cost, r_desc) in enumerate(RECOVERY_POTIONS):
+                rec_menu += "#L" + str(idx) + "##i" + str(r_id) + "# #e#b" + r_name + "#k#n - #r" + format_num(r_cost) + " Mesos#k\r\n    #fs11#" + r_desc + "#fs13##l\r\n"
+            rec_menu += "#L99##d[Back to Main Menu]#k#l\r\n"
+
+            r_sel = sm.sendNext(rec_menu)
+            if r_sel == 99 or r_sel < 0 or r_sel >= len(RECOVERY_POTIONS):
+                continue
+
+            r_id, r_name, r_qty, r_cost, r_desc = RECOVERY_POTIONS[r_sel]
+            if chr.getMoney() < r_cost:
+                sm.sendSayOkay("#face2#You do not have enough mesos!\r\nRequired: #r" + format_num(r_cost) + " Mesos#k")
+            elif not sm.canHold(r_id, r_qty):
+                sm.sendSayOkay("#face2#Your USE inventory tab is full! Please make some space.")
+            else:
+                chr.deductMoney(r_cost)
+                chr.addItemToInventory(r_id, r_qty)
+                sm.sendSayOkay("#face1#Supplies delivered!\r\nReceived: #i" + str(r_id) + "# #b" + r_name + "#k\r\nDeducted: #r" + format_num(r_cost) + " Mesos#k")
+
+        elif cat == 3:
+            # Boss buff 10-packs
+            buff_menu = "#face0#Select a boss combat buff set (10 bottles per set):\r\n"
             buff_menu += "Current Mesos: #e#d" + format_num(chr.getMoney()) + " Mesos#k#n\r\n\r\n"
-            for b_idx, (b_id, b_name, b_desc) in enumerate(BUFF_POTIONS):
-                buff_menu += "#L" + str(b_idx) + "##i" + str(b_id) + "# #e#b" + b_name + "#k#n - #fs11#" + b_desc + "#fs13##l\r\n"
+            for idx, (b_id, b_name, b_qty, b_cost, b_desc) in enumerate(BOSS_BUFF_10PACKS):
+                buff_menu += "#L" + str(idx) + "##i" + str(b_id) + "# #e#b" + b_name + "#k#n - #r" + format_num(b_cost) + " Mesos#k\r\n    #fs11#" + b_desc + "#fs13##l\r\n"
             buff_menu += "#L99##d[Back to Main Menu]#k#l\r\n"
 
             b_sel = sm.sendNext(buff_menu)
-            if b_sel == 99 or b_sel < 0 or b_sel >= len(BUFF_POTIONS):
+            if b_sel == 99 or b_sel < 0 or b_sel >= len(BOSS_BUFF_10PACKS):
                 continue
 
-            b_id, b_name, b_desc = BUFF_POTIONS[b_sel]
-
-            # Quantity selection
-            qty_menu = "#fs13#How many #i" + str(b_id) + "# #e#b" + b_name + "#k#n would you like to buy?\r\n"
-            qty_menu += "Price: #r500,000 Mesos#k per bottle.\r\n"
-            qty_menu += "Current Mesos: #d" + format_num(chr.getMoney()) + " Mesos#k\r\n\r\n"
-            qty_menu += "#L1#Buy 1 bottle (500,000 Mesos)#l\r\n"
-            qty_menu += "#L10#Buy 10 bottles (5,000,000 Mesos)#l\r\n"
-            qty_menu += "#L50#Buy 50 bottles (25,000,000 Mesos)#l\r\n"
-            qty_menu += "#L100#Buy 100 bottles (50,000,000 Mesos)#l\r\n"
-            qty_menu += "#L999#Custom Quantity (1 - 1,000)...#l\r\n"
-            qty_menu += "#L0##dCancel#k#l\r\n"
-
-            qty_choice = sm.sendNext(qty_menu)
-            buy_qty = 0
-            if qty_choice in [1, 10, 50, 100]:
-                buy_qty = qty_choice
-            elif qty_choice == 999:
-                buy_qty = sm.sendAskNumber("Enter quantity to purchase (1 - 1,000):", 1, 1, 1000)
+            b_id, b_name, b_qty, b_cost, b_desc = BOSS_BUFF_10PACKS[b_sel]
+            if chr.getMoney() < b_cost:
+                sm.sendSayOkay("#face2#You do not have enough mesos!\r\nRequired: #r" + format_num(b_cost) + " Mesos#k")
+            elif not sm.canHold(b_id, b_qty):
+                sm.sendSayOkay("#face2#Your USE inventory tab is full! Please make some space.")
             else:
-                continue
+                chr.deductMoney(b_cost)
+                chr.addItemToInventory(b_id, b_qty)
+                sm.sendSayOkay("#face1#Buff pack received!\r\nReceived: #i" + str(b_id) + "# #b" + b_name + "#k\r\nDeducted: #r" + format_num(b_cost) + " Mesos#k")
 
-            if buy_qty <= 0:
-                continue
+        elif cat == 4:
+            # All-in-one bundle
+            bundle_text = "#face0#Would you like to purchase the #e#b[Ultimate All-in-One Bossing Bundle]#k#n?\r\n\r\n"
+            bundle_text += "The bundle contains 10 bottles of each essential buff (80 bottles total):\r\n"
+            for b_id, b_name, b_qty in ALL_IN_ONE_BUFFS:
+                bundle_text += "- #i" + str(b_id) + "# #b" + b_name + "#k x" + str(b_qty) + "\r\n"
+            bundle_text += "\r\nSpecial Package Price: #r" + format_num(ALL_IN_ONE_COST) + " Mesos#k\r\n"
 
-            total_buff_cost = int(buy_qty) * 500000
-            if chr.getMoney() < total_buff_cost:
-                sm.sendSayOkay("#fs13#You do not have enough mesos!\r\n\r\n"
-                               "Required: #r" + format_num(total_buff_cost) + " Mesos#k\r\n"
-                               "You have: #b" + format_num(chr.getMoney()) + " Mesos#k")
-            elif not sm.canHold(b_id, buy_qty):
-                sm.sendSayOkay("#fs13#You do not have enough free space in your USE inventory tab!\r\n\r\n"
-                               "Please free up some slots and try again.")
-            else:
-                chr.deductMoney(total_buff_cost)
-                chr.addItemToInventory(b_id, buy_qty)
-                sm.sendSayOkay("#fs13##e#b[Purchase Successful!]#k#n\r\n\r\n"
-                               "You received: #i" + str(b_id) + "# #b" + b_name + " x" + str(buy_qty) + "#k\r\n"
-                               "Deducted: #r" + format_num(total_buff_cost) + " Mesos#k\r\n"
-                               "Remaining Mesos: #d" + format_num(chr.getMoney()) + " Mesos#k")
-
-        elif category == 3:
-            # All-in-One Bossing Buff Supply Package
-            pack_cost = 50000000
-
-            pack_info = "#fs13#=== #e#gAll-in-One Bossing Buff Supply Package#k#n ===\r\n\r\n"
-            pack_info += "Contains #b10 bottles each#k of the top 10 combat buffs (Total: 100 bottles):\r\n"
-            for aid in ALL_BUFF_IDS:
-                pack_info += "#i" + str(aid) + "# #b#z" + str(aid) + "# x10\r\n"
-            pack_info += "\r\nPrice: #e#r50,000,000 Mesos#k#n (50M)\r\n"
-            pack_info += "Current Mesos: #d" + format_num(chr.getMoney()) + " Mesos#k\r\n\r\n"
-            pack_info += "Would you like to purchase this supply package?"
-
-            confirm = sm.sendAskYesNo(pack_info)
-            if confirm:
-                if chr.getMoney() < pack_cost:
-                    sm.sendSayOkay("#fs13#You do not have enough mesos!\r\n\r\n"
-                                   "Required: #r" + format_num(pack_cost) + " Mesos#k\r\n"
-                                   "You have: #b" + format_num(chr.getMoney()) + " Mesos#k")
+            if sm.sendAskYesNo(bundle_text):
+                if chr.getMoney() < ALL_IN_ONE_COST:
+                    sm.sendSayOkay("#face2#You do not have enough mesos!\r\nRequired: #r" + format_num(ALL_IN_ONE_COST) + " Mesos#k")
                 else:
                     can_hold_all = True
-                    for aid in ALL_BUFF_IDS:
-                        if not sm.canHold(aid, 10):
+                    for b_id, b_name, b_qty in ALL_IN_ONE_BUFFS:
+                        if not sm.canHold(b_id, b_qty):
                             can_hold_all = False
                             break
                     if not can_hold_all:
-                        sm.sendSayOkay("#fs13#You do not have enough free space in your USE inventory tab!\r\n\r\n"
-                                       "Please ensure you have at least 10 free USE slots.")
+                        sm.sendSayOkay("#face2#You need at least 8 free slots in your USE inventory tab!")
                     else:
-                        chr.deductMoney(pack_cost)
-                        for aid in ALL_BUFF_IDS:
-                            chr.addItemToInventory(aid, 10)
-                        sm.sendSayOkay("#fs13##e#g[Package Purchased Successfully!]#k#n\r\n\r\n"
-                                       "You received 10x of each bossing buff potion (100 total bottles).\r\n"
-                                       "Remaining Mesos: #d" + format_num(chr.getMoney()) + " Mesos#k.")
-        else:
+                        chr.deductMoney(ALL_IN_ONE_COST)
+                        for b_id, b_name, b_qty in ALL_IN_ONE_BUFFS:
+                            chr.addItemToInventory(b_id, b_qty)
+                        sm.sendSayOkay("#face1#Combat provisions delivered! May victory follow your blades in battle!")
+
+        elif cat == 99:
+            sm.sendSayOkay("#face0#Safe travels, warrior. Return when you need reinforcements.")
             break

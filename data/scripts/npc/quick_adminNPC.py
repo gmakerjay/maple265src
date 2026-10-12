@@ -13,7 +13,7 @@ for p in ["data/scripts/npc", "data/scripts"]:
         sys.path.append(p)
 
 DAME = 9010106
-NPC = 9010000
+NPC = 9062000 # Maple Admin (with illustration)
 BOSS_PREQUEST = [40905, 30007, 3170, 31198, 31179, 7313 ,31851, 31833, 31686, 31498, 3521 ,31152, 33294, 33565, 34015, 17523, 58913, 58955]
 
 def open_dimensional_mirror():
@@ -77,31 +77,32 @@ def open_dimensional_mirror():
             else:
                 sm.sendSayOkay("You are already at #b" + dest_name + "#k.")
 
-sm.setSpeakerID(NPC)
-menu_text = "#fs13#Hello, #h0#! I am the Maple Administrator. How may I assist you today?\r\n\r\n"
+sm.setNpcBoxChat(NPC)
+menu_text = "#face0##fs13#Greetings, #h0#! I am the #bMaple Administrator#k.\r\n"
+menu_text += "Welcome to the central server operations and utility hub! How may I assist you today?\r\n\r\n"
 menu_text += "#e#d=== Travel & Warping Services (Warp Center) ===#k#n\r\n"
-menu_text += "#b#L26##e#b[Universal Warp Service]#k#n Fast Travel to Major Towns, Grandis, Arcane River & Popular Training Fields.#l\r\n"
-menu_text += "#L30##e#r[Boss Arena & Boss Warp]#k#n Fast Warp to all Bosses up to Kaling Extreme (Scaled Meso Fee).#l\r\n"
-menu_text += "#L25##e#g[Dimensional Mirror]#k#n Fast Travel to Party Quests, Theme Dungeons & Event Areas.#l\r\n\r\n"
-menu_text += "#e#d=== Featured Services ===#k#n\r\n"
-menu_text += "#b#L50##e#d[Cash & Point Shop]#k#n Cubes, Flames, Pets, Beauty & Fashion (Male / Female / Unisex).#l\r\n"
-menu_text += "#L40##e#g[Potion & Buff Depot]#k#n Bulk Potions (x1000) & Combat Buffs.#l\r\n"
-menu_text += "#L20##e#r[Starter Package]#k#n 100k DP, 1M Cash Points, Vac Pet #r(1x per account)#k.#l\r\n\r\n"
-menu_text += "#e#d=== Character & System Tools ===#k#n\r\n"
+menu_text += "#b#L26##e[Universal Warp Center]#n#k Fast travel to Major Towns, Grandis, Arcane River & Training Maps (by Hoyoung).#l\r\n"
+menu_text += "#r#L30##e[Boss Arena & Boss Warp]#n#k Instant warp and challenge all bosses up to Kaling Extreme & Limbo (by Seren).#l\r\n"
+menu_text += "#g#L25##e[Dimensional Mirror]#n#k Dimensional Gate for Party Quests, Monster Park & Theme Dungeons.#l\r\n\r\n"
+menu_text += "#e#d=== Merchant & Specialty Services (Shops) ===#k#n\r\n"
+menu_text += "#g#L40##e[General Store & Boss Buff Depot]#n#k Utility supplies, balanced 100% Elixirs & 10x Boss Buff bundles (by Adele).#l\r\n"
+menu_text += "#b#L60##e[Pet Sanctuary & Pet Skills]#n#k Vacuum Pets, Pet Food, Water of Life & Auto Pet Skills (by Lara).#l\r\n"
+menu_text += "#d#L50##e[Cash & Fashion Boutique]#n#k Cubes, Rebirth Flames, Gender-separated Outfits & Royal Beauty (by Lucid).#l\r\n"
+menu_text += "#r#L20##e[Starter Package]#n#k Claim 100k DP, 1M Cash Points, and a 30-Day Vac Pet #r(1x per account)#k.#l\r\n\r\n"
+menu_text += "#e#d=== Character & Progression Tools ===#k#n\r\n"
 menu_text += "#b#L14#Fast Job Advancement.#l\r\n"
-menu_text += "#L21#Unlock 5th Job (Job V).#l\r\n"
-menu_text += "#L22#Unlock 6th Job (Job VI).#l\r\n"
-menu_text += "#L16#Max all skills (1st - 4th Job).#l\r\n"
-menu_text += "#L5#Complete all Boss Prequests.#l\r\n"
-menu_text += "#L13#Upgrade Mechanical Heart (Required: #i1672020#).#l\r\n"
-menu_text += "#L12#Check Your MVP Status.#l\r\n"
-menu_text += "#L0#Remove Cash Item(s).#l\r\n"
+menu_text += "#L21#Unlock 5th Job (V-Matrix System).#l\r\n"
+menu_text += "#L22#Unlock 6th Job (HEXA Matrix System).#l\r\n"
+menu_text += "#L5#Complete All Boss Prequests.#l\r\n"
+menu_text += "#L13#Upgrade Mechanical Heart (Requires #i1672020#).#l\r\n"
+menu_text += "#L12#Check Your MVP Tier & Status.#l\r\n"
+menu_text += "#L0#Remove Unwanted Cash Items.#l\r\n"
 is_ohk = False
 try:
     is_ohk = chr.isOneHitKill()
 except:
     is_ohk = False
-menu_text += "#L99##r[Toggle One-Hit Kill Mode]#k (Current: #e" + ("#rON#k" if is_ohk else "#gOFF (Normal Real Damage)#k") + "#n)#l\r\n"
+menu_text += "#L99##r[Admin One-Hit Kill Mode]#k (Status: #e" + ("#rENABLED (ON)#k" if is_ohk else "#gDISABLED (OFF - Real Damage)#k") + "#n)#l\r\n"
 selection = sm.sendNext(menu_text)
 
 if selection == 50:
@@ -259,9 +260,17 @@ elif selection == 14:
         chr.getJobHandler().handleJobAdvance()
     else:
         sm.sendSayOkay("Unable to process Job Advancement at this time.")
-elif selection == 16:
-    chr.maxSkills()
-    sm.sendSayOkay("All skills (1st - 4th Job) have been maxed!")
+elif selection == 60:
+    import sys
+    for p in ["data/scripts/npc", "data/scripts"]:
+        if p not in sys.path:
+            sys.path.append(p)
+    if 'pet_shop' in sys.modules:
+        reload(sys.modules['pet_shop'])
+        import pet_shop
+    else:
+        import pet_shop
+    pet_shop.open_pet_shop(sm, chr)
 elif selection == 99:
     current_ohk = False
     try:

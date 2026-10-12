@@ -355,12 +355,15 @@ def handle_slot_expansion(sm, chr):
                        "Deducted: #r" + format_num(EXP_COST) + " Maple Points#k")
 
 def open_point_shop(sm, chr):
+    NPC_LUCID = 9063159
+    sm.setNpcBoxChat(NPC_LUCID)
     while True:
         char_gender = get_char_gender(chr)
         mp, dp = get_points(chr)
 
-        menu = "#fs13#=== #e#d[Cash & Point Shop Depot]#k#n ===\r\n"
-        menu += "Character: " + get_gender_label(char_gender) + "  |  Points: #e#b" + format_num(mp) + " Maple Points#k#n  |  DP: #e#r" + format_num(dp) + "#k#n\r\n\r\n"
+        menu = "#face0##fs13#=== #e#d[Lucid - Cash & Fashion Boutique]#k#n ===\r\n"
+        menu += "Welcome to the dream realm of Lucid, #h0#! What fashion, cubes, or cash items can I get for you today?\r\n"
+        menu += "Gender: " + get_gender_label(char_gender) + "  |  Cash: #e#b" + format_num(mp) + " Points#k#n  |  DP: #e#r" + format_num(dp) + "#k#n\r\n\r\n"
         menu += "#b#L1##e[Cubes & Potential System (Unisex)]#n#k\r\n"
         menu += "   #fs11#Red Cube, Black Cube, Bonus Potential, Violet, Glowing & Bright Cubes.#fs13#\r\n"
         menu += "#b#L2##e[Rebirth Flames & Scrolls (Unisex)]#n#k\r\n"

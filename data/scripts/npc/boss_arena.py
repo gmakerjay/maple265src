@@ -127,16 +127,17 @@ BOSS_CATEGORIES = [
 ]
 
 def open_boss_arena(sm, chr):
-    sm.setSpeakerID(9010000)
+    NPC_SEREN = 3006703
+    sm.setNpcBoxChat(NPC_SEREN)
     current_meso = chr.getMoney()
     party = chr.getParty()
     is_party = (party is not None)
     
-    menu_text = "#fs14##e#r[Offline Boss Arena & Warp]#k#n\r\n"
-    menu_text += "Welcome #h0#! Challenge Maple World Bosses up to #rKaling Extreme#k!\r\n"
+    menu_text = "#face0##fs14##e#r[Chosen Seren - Boss Arena & Warp]#k#n\r\n"
+    menu_text += "I am Seren, the guardian of the Holy Sword. Welcome #h0# to the Boss Arena of Maple World!\r\n"
     menu_text += "#d0 Prequests | Unlimited Attempts | 30 Mins | 15 Deaths | " + ("Party Mode" if is_party else "Solo Mode") + "#k\r\n\r\n"
     menu_text += "#fs13##bYour Meso Balance:#k #e#g" + "{:,}".format(current_meso) + " Mesos#k#n\r\n"
-    menu_text += "#d(Scaled entry fee is deducted per challenge. Stronger bosses cost more!)#k\r\n\r\n"
+    menu_text += "#d(Entry fee scales with the difficulty and power of each boss)#k\r\n\r\n"
     
     for i, (cat_name, bosses) in enumerate(BOSS_CATEGORIES):
         menu_text += "#L" + str(i) + "##e#b" + cat_name + "#k#n (" + str(len(bosses)) + " Bosses)#l\r\n"
