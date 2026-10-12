@@ -5,6 +5,30 @@ This file tracks all bug fixes, feature implementations, and system optimization
 
 ---
 
+## 📅 [2026-10-12 11:05 น.] ปรับปรุงเอกสาร README ทั้งระบบ และสร้าง Agent Skill คู่มือพัฒนาฉบับสมบูรณ์ (Overhaul READMEs, Agent Skills & Standards)
+
+### 🎯 Scope
+ปรับปรุงและยกเครื่องเอกสาร README ทั้งระบบ (Root `README.md`, `v214 src/README.md`, `v214 src/PORTABLE_README.md`) ให้สะท้อนข้อมูลปัจจุบัน 100% ไม่มีความคลาดเคลื่อน และสร้าง Agent Skill ประจำโปรเจกต์ (`maplestory-server-runner` / `maplestory-bug-knowledge`) ลงในทั้ง Local และ Global Customization Roots ตามมาตรฐานของ IDE
+
+### 📂 Files Modified
+- [`README.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/README.md) *(New)*
+- [`v214 src/README.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/README.md)
+- [`v214 src/PORTABLE_README.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/PORTABLE_README.md)
+- [`.agents/skills/maplestory-server-runner/SKILL.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/.agents/skills/maplestory-server-runner/SKILL.md) *(New)*
+- [`.agents/skills/maplestory-bug-knowledge/SKILL.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/.agents/skills/maplestory-bug-knowledge/SKILL.md) *(New)*
+- [`C:\Users\admin\.gemini\config\skills\maplestory-server-runner\SKILL.md`](file:///C:/Users/admin/.gemini/config/skills/maplestory-server-runner/SKILL.md) *(New)*
+- [`.agents/rules/progress-logging-standard.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/.agents/rules/progress-logging-standard.md) *(New)*
+- [`AGENTS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/AGENTS.md)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **Root README Missing & Obsolete Information**:
+   - ปัญหา: โฟลเดอร์ Root ขาด `README.md` ขณะที่ `v214 src/README.md` เดิมมีข้อมูลเก่าค้างจากปี 2022 (v179 / Java 16) และ `PORTABLE_README.md` ยังระบุพอร์ต 3306 เดิม
+   - วิธีแก้: สร้าง Root `README.md` ใหม่ สรุปจุดเด่น สถาปัตยกรรม พอร์ต 33066, ระบบ Multi-Network, บอส 129 ตัว, สกิลคลาส 6, ขั้นตอนรันและคอมไพล์โค้ดอย่างแม่นยำ
+2. **Agent Skill Master Guide Creation**:
+   - สร้าง Agent Skill `maplestory-server-runner` บันทึกกฎเหล็ก 5 ข้อ, สถาปัตยกรรม MariaDB 33066, HEXA Matrix standards, Universal Boss architecture, และคำสั่งลับ `!endgame` บรรจุทั้งใน Workspace และ Global config
+
+---
+
 ## 📅 [2026-10-11] Full Audit & Stability Enhancement: Nova (Angelic Buster, Kaiser) & Sengoku (Hayato, Kanna) + !endgame Parity
 
 ### 🎯 Scope
