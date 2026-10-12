@@ -5,6 +5,43 @@ This file tracks all bug fixes, feature implementations, and system optimization
 
 ---
 
+## 📅 [2026-10-12 12:08 น.] Phase 2: Explorer Class 6 (Bishop - 232) สมบูรณ์แบบ 100% — เชื่อมต่อ Holy Advent, Commandment of Heaven และคำสั่ง !endgame
+
+### 🎯 Scope
+ลงทะเบียนและตรวจสอบสกิลคลาส 6 สาย Explorer อาชีพที่ 6: **Bishop (บิชอป / นักบวชศักดิ์สิทธิ์ - Job ID 232)** สิ้นสุดกลุ่ม Magician Trio อย่างสมบูรณ์แบบ บรรจุสกิล Origin (Holy Advent & 3 Archangels Summon & Ascent Skill: Commandment of Heaven) และ HEXA Masteries ครบชุด (HEXA Angel Ray, HEXA Angel Ray Bonus, HEXA Big Bang, HEXA Big Bang Extra, HEXA Triumph Feather, HEXA Triumph Feather Atom, HEXA Fountain of Vengeance, HEXA Angelic Wrath, HEXA Angelic Wrath Summon, HEXA Genesis, HEXA Genesis FA, HEXA Heaven's Door, HEXA Bahamut) เชื่อมต่อระบบ PDR/MDR debuff และคำสั่งทดสอบ `!endgame bishop` หรือ `!endgame bish` ให้มอบอาวุธ BiS Arcane Umbra Staff, Princess No's Shining Book, และ HEXA Cores ระดับ 30 เต็มระบบ
+
+### 📂 Files Modified
+- [`v214 src/.../Bishop.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/magician/Bishop.java)
+- [`v214 src/.../SkillConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`v214 src/.../AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **Holy Advent Origin & 3 Archangels Summoning**:
+   - ปัญหา: เดิมใน `Bishop.handleSkill()`, ยังขาดการดักจับ `HOLY_ADVENT` (`2341500`) ส่งผลให้การกดร่ายไม่เกิดการฟื้นฟูเลือด/มานาเต็ม และไม่เปิดใช้งานสถานะบัฟของ Holy Advent พร้อมทั้งไม่เสก 3 เทวทูตศักดิ์สิทธิ์ (Michael, Gabriel, Raphael)
+   - วิธีแก้: ใน `Bishop.handleSkill()`, เพิ่ม `case HOLY_ADVENT:` ฟื้นฟู HP/MP 100% เต็มทันที มอบบัฟ `HolyAdvent` (60 วินาที) เรียกใช้ `setHolyAdvent()` เสกอัครเทวทูตทั้ง 3 ออกมาโจมตีศัตรูพร้อมกัน และส่งแพ็กเก็ต `holyAdventResult()` สู่ผู้เล่น
+2. **Commandment of Heaven Ascent Skill Integration**:
+   - ปัญหา: สกิล `COMMANDMENT_OF_HEAVEN` (`2341507`) ยังไม่ได้รับการดักจับใน `handleSkill()`
+   - วิธีแก้: เพิ่ม `case COMMANDMENT_OF_HEAVEN:` ให้ฟื้นฟูพลังชีวิต 50%
+3. **HEXA Big Bang Debuff Synchronization**:
+   - ปัญหา: ใน `handleDebuffOnMob()`, มีเพียง `BIG_BANG` เดิมเท่านั้นที่ลดค่า PDR/MDR ของมอนสเตอร์ ทำให้เมื่ออัปเกรดเป็น `HEXA_BIG_BANG` (`2341002`) มอนสเตอร์ไม่ติดสถานะลดเกราะป้องกัน
+   - วิธีแก้: เพิ่ม `case HEXA_BIG_BANG:` ร่วมกับ `BIG_BANG` ให้ลดค่า PDR และ MDR ของมอนสเตอร์ครบถ้วน
+4. **Sub-Skill Redirection in SkillConstants**:
+   - ปัญหา: การโจมตีต่อเนื่องของ `HEXA_ANGEL_RAY_BONUS` (`2341001`), `HEXA_BIG_BANG_EX` (`2341003`), `HEXA_TRIUMPH_FEATHER_ATOM` (`2341005`), `HEXA_ANGELIC_WRATH_SUMMON` (`2341008`), `HEXA_GENESIS_FA` (`2341010`), `HEXA_HEAVENS_DOOR_SUB` (`2341012`), และ `COMMANDMENT_OF_HEAVEN_SUB` (`2341508`) เป็นสกิลที่ซ่อนอยู่ใน WZ (`invisible = 1`)
+   - วิธีแก้: เพิ่มการจับคู่ครบทั้ง 7 สกิลใน `SkillConstants.getActualSkillIDfromSkillID()` เพื่ออ่านค่าดาเมจและเลเวลสกิลได้แม่นยำ 100%
+5. **Full Testing Automation in `!endgame bishop`**:
+   - ใน `AdminCommands.setupEndgame()`:
+     - มอบอาวุธระดับเทพ: Arcane Umbra Staff (`1382265`)
+     - มอบคัมภีร์ศักดิ์สิทธิ์รอง BiS: Princess No's Shining Book (`1352256`)
+     - มอบ Mitra Magician Emblem (`1190557`) และเซ็ตเกราะ Arcane Umbra Mage ครบ 6 ชิ้น
+     - ปลดล็อกและอัปเกรด HEXA Cores คลาส 6 ทุกคอร์ (Core 10000005, 10000057, 20000005, 20000055, 20000105, 20000151, 30000020-30000023, 40000000 Sol Janus) เลเวล 30 เต็ม พร้อมมอบสกิลเสริมครบถ้วนทุกสกิล (`2341001`, `2341003`, `2341005`, `2341008`, `2341010`, `2341012`, `2341501-2341504`, `2341508`)
+
+### 🧪 Verification & Deployment
+- คอมไพล์ผ่าน Maven OpenJDK 21: `BUILD SUCCESS` (0 errors, total time: 3m 10s)
+- ดีพลอย Fat JAR: `Server263/maplestory.jar` (~138.64 MB)
+- สร้างไฟล์แพตช์อัปเดตแบบเบา: [`Patches/Server263_Patch_20261012_1208.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches) ขนาด 121.61 MB
+
+---
+
 ## 📅 [2026-10-12 12:02 น.] Phase 2: Explorer Class 5 (Ice/Lightning Arch Mage - 222) สมบูรณ์แบบ 100% — เชื่อมต่อ Frozen Lightning, Parabolic Bolt และคำสั่ง !endgame
 
 ### 🎯 Scope

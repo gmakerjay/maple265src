@@ -2729,6 +2729,11 @@ public class AdminCommands {
             secondaryId = 1352246; // Princess No's Ice Orb (I/L BiS Secondary)
             emblemId = 1190557; // Mitra Magician Emblem
             armors = mageArmors;
+        } else if (JobConstants.isBishop(job)) {
+            weaponId = 1382265; // Arcane Umbra Staff
+            secondaryId = 1352256; // Princess No's Shining Book (Bishop BiS Secondary)
+            emblemId = 1190557; // Mitra Magician Emblem
+            armors = mageArmors;
         } else if (JobConstants.isKhali(job)) {
             weaponId = 1404018; // Arcane Umbra Chakram
             secondaryId = 1354033; // Infinite Hex Seeker
@@ -2921,6 +2926,18 @@ public class AdminCommands {
                 chr.addSkill(2241503, 30, 30); // Frozen Lightning Sub 2
                 chr.addSkill(2241504, 30, 30); // Frozen Lightning Buff
                 chr.addSkill(2241506, 30, 30); // Parabolic Bolt SA
+            } else if (JobConstants.isBishop(job)) {
+                chr.addSkill(2341001, 30, 30); // HEXA Angel Ray Bonus
+                chr.addSkill(2341003, 30, 30); // HEXA Big Bang Extra
+                chr.addSkill(2341005, 30, 30); // HEXA Triumph Feather Atom
+                chr.addSkill(2341008, 30, 30); // HEXA Angelic Wrath Summon
+                chr.addSkill(2341010, 30, 30); // HEXA Genesis FA
+                chr.addSkill(2341012, 30, 30); // HEXA Heaven's Door Sub
+                chr.addSkill(2341501, 30, 30); // Holy Advent M
+                chr.addSkill(2341502, 30, 30); // Holy Advent L
+                chr.addSkill(2341503, 30, 30); // Holy Advent R
+                chr.addSkill(2341504, 30, 30); // Holy Advent After
+                chr.addSkill(2341508, 30, 30); // Commandment of Heaven Sub
             }
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] Hexa warning: " + e.getMessage());

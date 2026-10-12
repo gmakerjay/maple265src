@@ -265,6 +265,7 @@ public class Bishop extends Magician {
                 }
                 break;
             case BIG_BANG:
+            case HEXA_BIG_BANG:
                 o1.nOption = -si.getValue(x, slv);
                 o1.rOption = skillID;
                 o1.tOption = si.getValue(time, slv);
@@ -408,6 +409,7 @@ public class Bishop extends Magician {
                 o.tOption = si.getValue(cooltime, slv);
                 tsm.sendStat(KeyDownTimeIgnore, o);
                 break;
+            case HOLY_ADVENT:
             case HOLY_ADVENT_AFTER:
                 if (!tsm.hasStat(HolyAdvent)) {
                     o.nOption = 1;
@@ -812,6 +814,21 @@ public class Bishop extends Magician {
                 summon.setMoveAbility(MoveAbility.Walk);
                 summon.setAssistType(skillID == ANGEL_OF_BALANCE_AVENGE ? AssistType.Attack : AssistType.Heal);
                 chr.getField().spawnSummon(summon);
+                break;
+            case HOLY_ADVENT:
+                chr.heal(chr.getMaxHP());
+                chr.healMP(chr.getMaxMP());
+                if (!tsm.hasStat(HolyAdvent)) {
+                    o1.nOption = 1;
+                    o1.rOption = HOLY_ADVENT;
+                    o1.tOption = 60;
+                    tsm.sendStat(HolyAdvent, o1);
+                    setHolyAdvent();
+                    chr.write(UserLocal.holyAdventResult());
+                }
+                break;
+            case COMMANDMENT_OF_HEAVEN:
+                chr.heal(chr.getMaxHP() / 2);
                 break;
         }
     }

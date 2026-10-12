@@ -2340,6 +2340,21 @@ public class SkillConstants {
                 return 2241005; // HEXA Lightning Orb 2
             case 2241506:
                 return 2241505; // Parabolic Bolt SA
+            // Bishop 6th Job Sub-Skills
+            case 2341001:
+                return 2341000; // HEXA Angel Ray Bonus
+            case 2341003:
+                return 2341002; // HEXA Big Bang Extra
+            case 2341005:
+                return 2341004; // HEXA Triumph Feather Atom
+            case 2341008:
+                return 2341007; // HEXA Angelic Wrath Summon
+            case 2341010:
+                return 2341009; // HEXA Genesis FA
+            case 2341012:
+                return 2341011; // HEXA Heaven's Door Sub
+            case 2341508:
+                return 2341507; // Commandment of Heaven Sub
             default:
                 // Universal 6th Job Origin Sub-Skill Redirection (xxx41501-xxx41599 -> xxx41500)
                 int subOrigin = skillID % 100000;
