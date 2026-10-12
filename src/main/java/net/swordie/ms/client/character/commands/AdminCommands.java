@@ -2709,6 +2709,11 @@ public class AdminCommands {
             secondaryId = 1352206; // Princess No's Medal (Hero BiS Secondary)
             emblemId = 1190555; // Mitra Warrior Emblem
             armors = warriorArmors;
+        } else if (JobConstants.isPaladin(job)) {
+            weaponId = 1422189; // Arcane Umbra Two-handed Hammer
+            secondaryId = 1352216; // Princess No's Rosary (Paladin BiS Secondary)
+            emblemId = 1190555; // Mitra Warrior Emblem
+            armors = warriorArmors;
         } else if (JobConstants.isKhali(job)) {
             weaponId = 1404018; // Arcane Umbra Chakram
             secondaryId = 1354033; // Infinite Hex Seeker
@@ -2865,6 +2870,15 @@ public class AdminCommands {
             if (JobConstants.isHero(job)) {
                 chr.addSkill(1141001, 30, 30); // HEXA Raging Blow (Enraged)
                 chr.addSkill(1141501, 30, 30); // Spirit Calibur (Continuous Slash)
+            } else if (JobConstants.isPaladin(job)) {
+                chr.addSkill(1241002, 30, 30); // HEXA Divine Judgment Debuff
+                chr.addSkill(1241004, 30, 30); // HEXA Divine Mark
+                chr.addSkill(1241006, 30, 30); // Falling Justice 2
+                chr.addSkill(1241010, 30, 30); // HEXA Heaven's Hammer Impact
+                chr.addSkill(1241501, 30, 30); // Sacred Bastion Tile
+                chr.addSkill(1241502, 30, 30); // Sacred Bastion Extra
+                chr.addSkill(1241503, 30, 30); // Sacred Bastion After Attack
+                chr.addSkill(1241505, 30, 30); // Dominus Oblivion Hit
             }
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] Hexa warning: " + e.getMessage());

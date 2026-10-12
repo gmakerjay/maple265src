@@ -5,6 +5,39 @@ This file tracks all bug fixes, feature implementations, and system optimization
 
 ---
 
+## 📅 [2026-10-12 11:41 น.] Phase 2: Explorer Class 2 (Paladin - 122) สมบูรณ์แบบ 100% — เชื่อมต่อ Sacred Bastion, Dominus Oblivion และคำสั่ง !endgame
+
+### 🎯 Scope
+ลงทะเบียนและตรวจสอบสกิลคลาส 6 สาย Explorer อาชีพที่ 2: **Paladin (อัศวินศักดิ์สิทธิ์ - Job ID 122)** บรรจุสกิล Origin (Sacred Bastion & Finisher: Dominus Oblivion) และ HEXA Masteries ครบชุด (HEXA Blast, HEXA Divine Judgment, HEXA Divine Charge, Falling Justice, Rising Justice, HEXA Heaven's Hammer, HEXA Final Attack) เชื่อมต่อระบบชาร์จธาตุ Elemental Charge และคำสั่งทดสอบ `!endgame paladin` ให้มอบอาวุธ BiS Arcane Umbra Hammer, Princess No's Rosary, และ HEXA Cores ระดับ 30 เต็มระบบ
+
+### 📂 Files Modified
+- [`v214 src/.../Paladin.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/warrior/Paladin.java)
+- [`v214 src/.../SkillConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`v214 src/.../AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **Paladin Origin & Finisher Missing Implementation**:
+   - ปัญหา: เดิมใน `Paladin.java` มีเพียงชื่อ Constant `SACRED_BASTION` แต่ไม่เคยถูกดักจับใน `handleSkill()` ทำให้เมื่อผู้เล่นกดร่ายสกิลคลาส 6 `1241500` จะไม่เกิดบัฟ Sacred Bastion และไม่สร้างอาณาเขตศักดิ์สิทธิ์บนพื้น
+   - วิธีแก้: ใน `handleSkill()`, เพิ่ม `case SACRED_BASTION:` ควบคู่กับ `SACRED_BASTION_TILE` ให้สร้าง `AffectedArea` บนตำแหน่งตัวละคร มอบบัฟ `SacredBastion`, ชาร์จเกจธาตุเต็มแม็กซ์ (`giveChargeBuff`), และเพิ่มการดักจับ `case DOMINUS_OBLIVION:` เมื่อกดใช้สกิลปิดฉากจะเคลียร์บัฟศักดิ์สิทธิ์และมอบเกจเต็ม
+2. **Dominus Oblivion Sub-Skill Mapping (1241505 -> 1241504)**:
+   - ปัญหา: การโจมตีของ Dominus Oblivion ส่ง Action ย่อยรหัส `1241505` ซึ่งเป็นสกิลที่ซ่อนอยู่ใน WZ (`invisible = 1`) ทำให้ระบบค้นหาเลเวลสกิลไม่พบ
+   - วิธีแก้: ใน `SkillConstants.getActualSkillIDfromSkillID()`, เพิ่มการจับคู่ `case 1241505: return 1241504;` เพื่อให้อ่านค่าดาเมจและเลเวลตาม Dominus Oblivion ของ Core 10000053 ได้อย่างแม่นยำ
+3. **HEXA Constants Alignment**:
+   - เพิ่ม Constants `DOMINUS_OBLIVION` (`1241504`), `DOMINUS_OBLIVION_HIT` (`1241505`), และ `HEXA_HEAVENS_HAMMER_IMPACT` (`1241010`) ใน `Paladin.java` ให้ตรงตามโครงสร้าง WZ
+4. **Full Testing Automation in `!endgame paladin`**:
+   - ใน `AdminCommands.setupEndgame()`:
+     - มอบอาวุธระดับเทพ: Arcane Umbra Two-handed Hammer (`1422189`)
+     - มอบไอเทมโล่/ลูกประคำรอง BiS: Princess No's Rosary (`1352216`)
+     - มอบ Mitra Warrior Emblem (`1190555`) และเซ็ตเกราะ Arcane Umbra Warrior ครบ 6 ชิ้น
+     - ปลดล็อกและอัปเกรด HEXA Cores คลาส 6 ทุกคอร์ (Core 10000001, 10000053, 20000001, 20000051, 20000101, 20000147, 30000004-30000007, 40000000 Sol Janus) เลเวล 30 เต็ม พร้อมมอบสกิลเสริมครบถ้วนทุกสกิล (`1241002`, `1241004`, `1241006`, `1241010`, `1241501-1241503`, `1241505`)
+
+### 🧪 Verification & Deployment
+- คอมไพล์ผ่าน Maven OpenJDK 21: `BUILD SUCCESS` (0 errors, total time: 3m 09s)
+- ดีพลอย Fat JAR: `Server263/maplestory.jar` (~138.64 MB)
+- สร้างไฟล์แพตช์อัปเดตแบบเบา: [`Patches/Server263_Patch_20261012_1140.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches) ขนาด 121.61 MB
+
+---
+
 ## 📅 [2026-10-12 11:32 น.] Phase 2: Explorer Class 1 (Hero - 112) สมบูรณ์แบบ 100% — เชื่อมต่อ HEXA Matrix, Origin Skill และคำสั่ง !endgame
 
 ### 🎯 Scope

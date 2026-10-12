@@ -93,7 +93,10 @@ public class Paladin extends Warrior {
     public static final int FALLING_JUSTICE = 1241005;
     public static final int FALLING_JUSTICE_2 = 1241006;
     public static final int HEXA_HEAVENS_HAMMER = 1241007;
+    public static final int HEXA_HEAVENS_HAMMER_IMPACT = 1241010;
     public static final int RISING_JUSTICE = 1241009;
+    public static final int DOMINUS_OBLIVION = 1241504;
+    public static final int DOMINUS_OBLIVION_HIT = 1241505;
 
     // HEXA Boosts
     public static final int HEXA_DIVINE_ECHO = 500061000;
@@ -243,6 +246,10 @@ public class Paladin extends Warrior {
                 if (hasHitMobs) {
                     doDivineJudgement(attackInfo, now);
                 }
+                break;
+            case DOMINUS_OBLIVION:
+            case DOMINUS_OBLIVION_HIT:
+                giveChargeBuff(skillID, tsm);
                 break;
         }
     }
@@ -629,11 +636,15 @@ public class Paladin extends Warrior {
                     decreaseMightyMjolnir();
                 }
                 break;
+            case SACRED_BASTION:
             case SACRED_BASTION_TILE:
                 slv = chr.getSkillLevel(SACRED_BASTION);
+                si = SkillData.getSkillInfoById(SACRED_BASTION);
                 AffectedArea aa = AffectedArea.getPassiveAA(chr, SACRED_BASTION_TILE, slv);
                 aa.setPosition(chr.getPosition());
-                aa.setRect(aa.getRectAround(si.getFirstRect()));
+                if (!si.getRects().isEmpty()) {
+                    aa.setRect(aa.getRectAround(si.getFirstRect()));
+                }
                 aa.setDelay((short) 3);
                 aa.setDuration(si.getValue(time, slv) * 1000);
                 chr.getField().spawnAffectedArea(aa);
@@ -643,6 +654,13 @@ public class Paladin extends Warrior {
                     o1.tOption = si.getValue(time, slv);
                     tsm.sendStat(SacredBastion, o1);
                 }
+                giveChargeBuff(skillID, tsm);
+                break;
+            case DOMINUS_OBLIVION:
+                if (tsm.hasStat(SacredBastion)) {
+                    tsm.removeStatsBySkill(SACRED_BASTION);
+                }
+                giveChargeBuff(skillID, tsm);
                 break;
         }
     }
