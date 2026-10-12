@@ -2321,6 +2321,9 @@ public class SkillConstants {
             // Paladin 6th Job Origin Finisher
             case 1241505:
                 return 1241504; // Dominus Oblivion
+            // Dark Knight 6th Job Origin Finisher
+            case 1341503:
+                return 1341502; // Dark Halidom
             default:
                 // Universal 6th Job Origin Sub-Skill Redirection (xxx41501-xxx41599 -> xxx41500)
                 int subOrigin = skillID % 100000;

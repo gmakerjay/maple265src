@@ -2714,6 +2714,11 @@ public class AdminCommands {
             secondaryId = 1352216; // Princess No's Rosary (Paladin BiS Secondary)
             emblemId = 1190555; // Mitra Warrior Emblem
             armors = warriorArmors;
+        } else if (JobConstants.isDarkKnight(job)) {
+            weaponId = 1432218; // Arcane Umbra Spear
+            secondaryId = 1352226; // Princess No's Flower Chain (Dark Knight BiS Secondary)
+            emblemId = 1190555; // Mitra Warrior Emblem
+            armors = warriorArmors;
         } else if (JobConstants.isKhali(job)) {
             weaponId = 1404018; // Arcane Umbra Chakram
             secondaryId = 1354033; // Infinite Hex Seeker
@@ -2879,6 +2884,13 @@ public class AdminCommands {
                 chr.addSkill(1241502, 30, 30); // Sacred Bastion Extra
                 chr.addSkill(1241503, 30, 30); // Sacred Bastion After Attack
                 chr.addSkill(1241505, 30, 30); // Dominus Oblivion Hit
+            } else if (JobConstants.isDarkKnight(job)) {
+                chr.addSkill(1341002, 30, 30); // Dark Bident
+                chr.addSkill(1341005, 30, 30); // HEXA Enhanced Revenge of the Evil Eye
+                chr.addSkill(1341006, 30, 30); // Evil Eye Punishment
+                chr.addSkill(1341009, 30, 30); // HEXA Evil Eye Shock Shoot
+                chr.addSkill(1341501, 30, 30); // Dead Space Attack
+                chr.addSkill(1341503, 30, 30); // Dark Halidom Attack
             }
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] Hexa warning: " + e.getMessage());

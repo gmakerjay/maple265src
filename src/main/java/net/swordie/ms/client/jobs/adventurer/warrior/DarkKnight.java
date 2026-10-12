@@ -78,12 +78,17 @@ public class DarkKnight extends Warrior {
     public static final int SPEAR_OF_DARKNESS = 400011004;
 
     // HEXA Skills
+    public static final int DEAD_SPACE = 1341500;
+    public static final int DEAD_SPACE_ATTACK = 1341501;
+    public static final int DARK_HALIDOM = 1341502;
+    public static final int DARK_HALIDOM_ATTACK = 1341503;
     public static final int HEXA_GUNGNIR_DESCENT = 1341000;
     public static final int HEXA_DARK_IMPALE = 1341001;
     public static final int DARK_BIDENT = 1341002;
     public static final int HEXA_NIGHTSHADE_EXPLOSION = 1341003;
     public static final int HEXA_REVENGE_OF_THE_EVIL_EYE = 1340004;
     public static final int HEXA_ENHANCED_REVENGE_OF_THE_EVIL_EYE = 1341005;
+    public static final int EVIL_EYE_PUNISHMENT = 1341006;
     public static final int HEXA_EVIL_EYE_SHOCK = 1341008;
     public static final int HEXA_EVIL_EYE_SHOCK_SHOOT = 1341009;
     public static final int HEXA_FINAL_ATTACK = 1340007;
@@ -588,13 +593,37 @@ public class DarkKnight extends Warrior {
                     tsm.sendStat(IndieAllHitDamR, o2);
                 }
                 break;
+            case DEAD_SPACE:
+                chr.heal(chr.getMaxHP());
+                if (chr.hasSkill(DARK_RESONANCE)) {
+                    Skill drSkill = chr.getSkill(DARK_RESONANCE);
+                    SkillInfo drSi = SkillData.getSkillInfoById(drSkill.getSkillId());
+                    int drSlv = drSkill.getCurrentLevel();
+                    Option drO1 = new Option();
+                    Option drO2 = new Option();
+                    Option drO3 = new Option();
+                    drO1.nReason = drSkill.getSkillId();
+                    drO1.nValue = drSi.getValue(v, drSlv);
+                    drO1.tTerm = drSi.getValue(time, drSlv);
+                    newStats.put(IndieDamR, drO1);
+                    drO2.nReason = drSkill.getSkillId();
+                    drO2.nValue = drSi.getValue(x, drSlv);
+                    drO2.tTerm = drSi.getValue(time, drSlv);
+                    newStats.put(IndieIgnoreMobpdpR, drO2);
+                    drO3.nReason = drSkill.getSkillId();
+                    drO3.nValue = drSi.getValue(indieBDR, drSlv);
+                    drO3.tTerm = drSi.getValue(time, drSlv);
+                    newStats.put(IndieBDR, drO3);
+                    tsm.sendStat(newStats);
+                }
+                break;
         }
     }
 
     @Override
     public int alterCooldownSkill(int skillId) {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
-        if (skillId == GUNGNIR_DESCENT) {
+        if (skillId == GUNGNIR_DESCENT || skillId == HEXA_GUNGNIR_DESCENT) {
             if (tsm.hasStatBySkillId(DARK_RESONANCE)) {
                 return 0;
             }
@@ -606,7 +635,7 @@ public class DarkKnight extends Warrior {
     @Override
     public void handleHit(Client c, InPacket inPacket, HitInfo hitInfo) {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
-        if (chr.hasSkill(REVENGE_OF_THE_EVIL_EYE)) {
+        if (chr.hasSkill(REVENGE_OF_THE_EVIL_EYE) || chr.hasSkill(HEXA_REVENGE_OF_THE_EVIL_EYE)) {
             Skill skill = chr.getSkill(REVENGE_OF_THE_EVIL_EYE);
             int slv = skill.getCurrentLevel();
             SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
@@ -789,7 +818,7 @@ public class DarkKnight extends Warrior {
                 chr.setSkillCooldown(skillID, slv);
                 return 1;
             }
-            case HEXA_EVIL_EYE_SHOCK_SHOOT -> {
+            case HEXA_EVIL_EYE_SHOCK, HEXA_EVIL_EYE_SHOCK_SHOOT -> {
                 int skillID = EVIL_EYE_SHOCK;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);

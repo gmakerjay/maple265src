@@ -5,6 +5,43 @@ This file tracks all bug fixes, feature implementations, and system optimization
 
 ---
 
+## 📅 [2026-10-12 11:50 น.] Phase 2: Explorer Class 3 (Dark Knight - 132) สมบูรณ์แบบ 100% — เชื่อมต่อ Dead Space, Dark Halidom และคำสั่ง !endgame
+
+### 🎯 Scope
+ลงทะเบียนและตรวจสอบสกิลคลาส 6 สาย Explorer อาชีพที่ 3: **Dark Knight (อัศวินแห่งความมืด - Job ID 132)** บรรจุสกิล Origin (Dead Space & Finisher: Dark Halidom) และ HEXA Masteries ครบชุด (HEXA Gungnir's Descent, HEXA Dark Impale, Dark Bident, HEXA Nightshade Explosion, HEXA Revenge of the Evil Eye, Evil Eye Punishment, HEXA Final Attack, HEXA Evil Eye Shock, HEXA Evil Eye Shock Shoot) เชื่อมต่อระบบ Dark Resonance ไม่คิดคูลดาวน์ HEXA Gungnir และคำสั่งทดสอบ `!endgame darkknight` หรือ `!endgame drk` ให้มอบอาวุธ BiS Arcane Umbra Spear, Princess No's Flower Chain, และ HEXA Cores ระดับ 30 เต็มระบบ
+
+### 📂 Files Modified
+- [`v214 src/.../DarkKnight.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/warrior/DarkKnight.java)
+- [`v214 src/.../SkillConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`v214 src/.../AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **Dark Resonance No-Cooldown on HEXA Gungnir**:
+   - ปัญหา: เมื่อตัวละครติดสถานะ Dark Resonance สกิล Gungnir's Descent ปกติจะสามารถกดรัวได้โดยไม่ติดคูลดาวน์ แต่ `alterCooldownSkill()` ยังไม่ได้ลงทะเบียน `HEXA_GUNGNIR_DESCENT` (`1341000`) ส่งผลให้เมื่ออัปเกรดคลาส 6 ยังคงติดคูลดาวน์ตามเดิม
+   - วิธีแก้: ใน `DarkKnight.alterCooldownSkill()`, เพิ่มเงื่อนไข `skillId == HEXA_GUNGNIR_DESCENT` ร่วมกับ `GUNGNIR_DESCENT` ให้คืนค่า `0` ทันทีเมื่อมีบัฟ `DARK_RESONANCE`
+2. **Dead Space Origin Activation & Full HP Recovery**:
+   - ปัญหา: การร่าย Origin Skill `DEAD_SPACE` (`1341500`) ยังขาดการฟื้นฟูเลือดเต็มและเปิดใช้งานสถานะบัฟดาเมจของ Dark Resonance
+   - วิธีแก้: ใน `handleSkill()`, เพิ่ม `case DEAD_SPACE:` ฟื้นฟู HP 100% เต็มทันที พร้อมมอบบัฟ `IndieDamR`, `IndieIgnoreMobpdpR`, และ `IndieBDR` ตามอัตราของ Dark Resonance
+3. **Dark Halidom Finisher Sub-Skill Mapping (1341503 -> 1341502)**:
+   - ปัญหา: สกิลปิดฉาก Dark Halidom ส่ง Action ย่อยรหัส `1341503` ซึ่งเป็นสกิลที่ซ่อนอยู่ใน WZ (`invisible = 1`)
+   - วิธีแก้: ใน `SkillConstants.getActualSkillIDfromSkillID()`, เพิ่ม `case 1341503: return 1341502;` เพื่อเชื่อมโยงเลเวลและความเสียหายของ Dark Halidom ได้ถูกต้อง 100%
+4. **HEXA Constants & Skill Support**:
+   - เพิ่ม Constants `DEAD_SPACE` (`1341500`), `DEAD_SPACE_ATTACK` (`1341501`), `DARK_HALIDOM` (`1341502`), `DARK_HALIDOM_ATTACK` (`1341503`), และ `EVIL_EYE_PUNISHMENT` (`1341006`)
+   - รองรับ `HEXA_REVENGE_OF_THE_EVIL_EYE` ใน `handleHit()` และ `HEXA_EVIL_EYE_SHOCK` ใน `handleSetCoolDownSkill()`
+5. **Full Testing Automation in `!endgame darkknight`**:
+   - ใน `AdminCommands.setupEndgame()`:
+     - มอบอาวุธระดับเทพ: Arcane Umbra Spear (`1432218`)
+     - มอบไอเทมโซ่รอง BiS: Princess No's Flower Chain (`1352226`)
+     - มอบ Mitra Warrior Emblem (`1190555`) และเซ็ตเกราะ Arcane Umbra Warrior ครบ 6 ชิ้น
+     - ปลดล็อกและอัปเกรด HEXA Cores คลาส 6 ทุกคอร์ (Core 10000002, 10000054, 20000002, 20000052, 20000102, 20000148, 30000008-30000011, 40000000 Sol Janus) เลเวล 30 เต็ม พร้อมมอบสกิลเสริมครบถ้วนทุกสกิล (`1341002`, `1341005`, `1341006`, `1341009`, `1341501`, `1341503`)
+
+### 🧪 Verification & Deployment
+- คอมไพล์ผ่าน Maven OpenJDK 21: `BUILD SUCCESS` (0 errors, total time: 1m 22s)
+- ดีพลอย Fat JAR: `Server263/maplestory.jar` (~138.64 MB)
+- สร้างไฟล์แพตช์อัปเดตแบบเบา: [`Patches/Server263_Patch_20261012_1149.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches) ขนาด 121.61 MB
+
+---
+
 ## 📅 [2026-10-12 11:41 น.] Phase 2: Explorer Class 2 (Paladin - 122) สมบูรณ์แบบ 100% — เชื่อมต่อ Sacred Bastion, Dominus Oblivion และคำสั่ง !endgame
 
 ### 🎯 Scope
