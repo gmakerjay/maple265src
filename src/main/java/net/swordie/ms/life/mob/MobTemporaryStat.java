@@ -256,7 +256,7 @@ public class MobTemporaryStat {
             option.tStart = (int) now;
             option.startTime = now;
             skillID = option.nReason > 0 ? option.nReason : option.rOption;
-            if (option.rOption == Job.ORIGIN_SKILL) {
+            if (option.rOption == Job.ORIGIN_SKILL || Job.isOriginSkill(option.rOption)) {
                 MobBindInfo mobBindInfo = new MobBindInfo();
                 mobBindInfo.setCharID(option.cOption);
                 mobBindInfo.setValue(10);
@@ -370,7 +370,7 @@ public class MobTemporaryStat {
                 option.tStart = (int) now;
                 option.startTime = now;
                 skillID = option.nReason > 0 ? option.nReason : option.rOption;
-                if (option.rOption == Job.ORIGIN_SKILL) {
+                if (option.rOption == Job.ORIGIN_SKILL || Job.isOriginSkill(option.rOption)) {
                     MobBindInfo mobBindInfo = new MobBindInfo();
                     mobBindInfo.setCharID(option.cOption);
                     mobBindInfo.setValue(10);

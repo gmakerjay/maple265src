@@ -5,6 +5,34 @@ This file tracks all bug fixes, feature implementations, and system optimization
 
 ---
 
+## 📅 [2026-10-12 11:18 น.] ปรับปรุงระบบสกิลคลาส 6 ให้ครอบคลุมทุกอาชีพ และแก้ปัญหาสถานะ OriginDebuff / Freeze (Universal 6th Job Origin Engine)
+
+### 🎯 Scope
+แก้ไขปัญหาเมคานิกสกิลคลาส 6 (Origin Skills) ไม่ติดสถานะ Freeze (Absolute Bind 10 วินาที) และ OriginDebuff (20 วินาที) ในมอนสเตอร์และบอสสำหรับอาชีพส่วนใหญ่ และสร้าง Universal Sub-Skill Redirection ครอบคลุมทั้ง 40+ อาชีพ ให้การคำนวณดาเมจและการอ่านเลเวลสกิลของ Action ย่อยในคัทซีนทำงานได้อย่างสมบูรณ์แบบ 100%
+
+### 📂 Files Modified
+- [`v214 src/.../SkillConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`v214 src/.../Job.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/Job.java)
+- [`v214 src/.../MobTemporaryStat.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/life/mob/MobTemporaryStat.java)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **Universal Origin Sub-Skill Redirection**:
+   - ปัญหา: เมื่อผู้เล่นใช้สกิล Origin ไคลเอนต์จะส่งแพ็กเก็ตการโจมตีย่อย (`xxx41501`, `xxx41502` ฯลฯ) ซึ่งเดิมใน `SkillConstants.getActualSkillIDfromSkillID()` มีการฮาร์ดโค้ดแมปไว้เพียง 5 อาชีพ ทำให้อีก 35+ อาชีพที่เหลือ (รวมถึง Explorer ทั้งหมด) ตัวเกมมองว่ามีเลเวลสกิลเป็น 0 หรือไม่พบดาเมจ
+   - วิธีแก้: ออกแบบ Universal Algorithm ใน `default:` case ของ `getActualSkillIDfromSkillID()`: ตรวจสอบแพทเทิร์น `subOrigin > 41500 && subOrigin <= 41599` รวมถึง Dual Blade (`4361501+`) และ Evan (`22201501+`) และรีไดเรกต์กลับสู่ Base Origin ID (`(skillID / 100) * 100`) โดยอัตโนมัติหากมีข้อมูลใน WZ
+2. **Absolute Freeze 10s & OriginDebuff 20s Parity**:
+   - ปัญหา: ใน `Job.handleAttack()`, `rOption` ของการติดสถานะ Freeze และ OriginDebuff ถูกบันทึกเป็นรหัส Action ย่อย ทำให้ระบบคำนวณคูลดาวน์การติดดีบัฟคลาดเคลื่อน
+   - วิธีแก้: ดึง `actualOriginId = SkillConstants.getActualSkillIDfromSkillID(skillID)` มาเป็น `rOption` สม่ำเสมอทุกอาชีพ
+3. **MobBindInfo Registration in MobTemporaryStat**:
+   - ปัญหา: ใน `MobTemporaryStat.java` (บรรทัด 259 และ 373) มีการตรวจสอบเฉพาะ `option.rOption == Job.ORIGIN_SKILL` ทำให้ Origin Skill ของแต่ละอาชีพหลุดไปตกในบล็อกของ Stun ธรรมดา และไม่ได้บันทึก `MobBindInfo` คูลดาวน์การกัน Bind 100 วินาทีตามทางการ
+   - วิธีแก้: เพิ่มการตรวจสอบ `Job.isOriginSkill(option.rOption)` ในทั้งสองจุด เพื่อให้บอสได้รับสถานะ Absolute Bind และติดคูลดาวน์กัน Bind 100 วินาทีอย่างถูกต้องตามออฟฟิเชียล
+
+### 🧪 Verification & Deployment
+- คอมไพล์ผ่าน Maven: `BUILD SUCCESS` (0 errors)
+- สร้าง Fat JAR `maplestory.jar` (~138.64 MB) และส่งมอบไปยัง `Server263/maplestory.jar`, `v214 src/maplestory.jar`, และ Root `maplestory.jar`
+- สร้างไฟล์แพตช์อัปเดตแบบเบา: [`Patches/Server263_Patch_20261012_1117.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches) ขนาด 121.61 MB
+
+---
+
 ## 📅 [2026-10-12 11:05 น.] ปรับปรุงเอกสาร README ทั้งระบบ และสร้าง Agent Skill คู่มือพัฒนาฉบับสมบูรณ์ (Overhaul READMEs, Agent Skills & Standards)
 
 ### 🎯 Scope

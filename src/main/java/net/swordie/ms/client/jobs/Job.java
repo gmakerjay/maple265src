@@ -281,8 +281,7 @@ public abstract class Job {
         if (skillID == ORIGIN_SKILL) {
             return true;
         }
-        int sub = skillID % 100000;
-        return sub >= 41500 && sub <= 41599;
+        return SkillConstants.isOriginSkill(skillID);
     }
     public static final int SOL_JANUS_ACTIVATION = 500001000;
     public static final int SOL_JANUS_DUSK = 500001001;
@@ -333,20 +332,21 @@ public abstract class Job {
             if (hasHitMobs) {
                 // 6th Job Origin Skill: 10s Absolute Bind (Freeze) & 20s Origin Debuff
                 if (SkillConstants.isOriginSkill(skillID)) {
+                    int actualOriginId = SkillConstants.getActualSkillIDfromSkillID(skillID);
                     for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
                         Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
                         if (mob != null && mob.getHp() > 0) {
                             MobTemporaryStat mts = mob.getTemporaryStat();
                             Option opt1 = new Option();
                             opt1.nOption = 1;
-                            opt1.rOption = skillID;
+                            opt1.rOption = actualOriginId;
                             opt1.tOption = 10; // 10s Absolute Freeze / Bind
                             opt1.cOption = chr.getId();
                             mts.addStatOptions(mob, MobStat.Freeze, opt1);
 
                             Option opt2 = new Option();
                             opt2.nOption = 1;
-                            opt2.rOption = skillID;
+                            opt2.rOption = actualOriginId;
                             opt2.tOption = 20; // 20s Origin Debuff
                             opt2.cOption = chr.getId();
                             mts.addStatOptions(mob, MobStat.OriginDebuff, opt2);

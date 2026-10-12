@@ -2319,6 +2319,16 @@ public class SkillConstants {
             case 175141502:
                 return 175141500;
             default:
+                // Universal 6th Job Origin Sub-Skill Redirection (xxx41501-xxx41599 -> xxx41500)
+                int subOrigin = skillID % 100000;
+                if ((subOrigin > 41500 && subOrigin <= 41599)
+                        || (skillID > 4361500 && skillID <= 4361599) // Dual Blade Origin Sub
+                        || (skillID > 22201500 && skillID <= 22201599)) { // Evan Origin Sub
+                    int baseSkill = (skillID / 100) * 100;
+                    if (SkillData.getSkillInfoById(baseSkill) != null) {
+                        return baseSkill;
+                    }
+                }
                 return skillID;
         }
     }
