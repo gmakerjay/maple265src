@@ -82,3 +82,18 @@
     - ก๊อปปี้ไฟล์ทั้งหมดในโฟลเดอร์ Client_Patch_Files\ ไปวางทับในตัวเกม MapleStory v265
     - รันเกมผ่าน Run_Game.bat หรือ Launcher.exe ในโฟลเดอร์ตัวเกม
 ==============================================================================
+
+==============================================================================
+[8] การแก้ปัญหาเบื้องต้น (TROUBLESHOOTING & WINDOWS 11 DEVICE GUARD):
+==============================================================================
+    - ปัญหา: เปิดแล้วขึ้น "'...mysqld.exe' was blocked by your organization's Device Guard policy."
+    - สาเหตุ: บน Windows 11 (22H2/23H2/24H2) มีระบบ Smart App Control บล็อกไฟล์ Portable ที่ไม่มีใบรับรอง
+    - วิธีแก้ 1 (ปิด Smart App Control):
+      1. เปิด Windows Security ใน Start Menu
+      2. เลือกเมนู "App & browser control" -> "Smart App Control settings"
+      3. ปรับสถานะเป็น "Off" (ปิด)
+    - วิธีแก้ 2 (ปลดล็อกไฟล์ Mark of the Web):
+      เปิด Command Prompt หรือ PowerShell แล้วรันคำสั่ง:
+      powershell -Command "Get-ChildItem -Path '%~dp0' -Recurse | Unblock-File"
+==============================================================================
+

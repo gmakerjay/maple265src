@@ -3,6 +3,29 @@
 This file tracks all bug fixes, feature implementations, and system optimizations across sessions.
 **Rule (AGENTS.md #4)**: Every agent MUST record new progress here and in `.agents/skills/maplestory-bug-knowledge/SKILL.md` after completing any modification.
 
+## 📅 [2026-10-12 23:48 น.] Windows 11 Smart App Control (SAC) & Device Guard Policy Blocking Portable MariaDB: Technical Diagnosis & Resolution Standard
+
+### 🎯 Scope & Technical Details
+1. **ปัญหาที่พบ (Problem)**:
+   - ผู้เล่นบน Windows 11 (build 26200 / 24H2) รัน `1_Start_Server.bat` หรือ `Start_Database.bat` แล้ว MariaDB ไม่ยอมสตาร์ต พร้อมแสดงข้อความ Error บน Console:
+     `'...\Server263\mariadb\bin\mysqld.exe' was blocked by your organization's Device Guard policy. Contact your support person for more info.`
+2. **สาเหตุเชิงลึก (Technical Root Cause)**:
+   - **Smart App Control (SAC) Kernel Enforcement**: บน Windows 11 เวอร์ชัน 22H2 / 23H2 / 24H2 มีระบบ Smart App Control ที่เปิดใช้งานมาแต่เริ่มต้น ซึ่งทำงานครอบคลุมอยู่บนเลเยอร์เคอร์เนลของ **Windows Defender Application Control (WDAC) / Device Guard**
+   - **Unsigned Binary (Status: NotSigned)**: จากการตรวจสอบ `Get-AuthenticodeSignature` พบว่า `mysqld.exe` ของ MariaDB Portable เป็นโอเพนซอร์สที่ไม่มี Digital Certificate ขององค์กร (ต่างจาก `java.exe` ที่มีใบรับรอง Eclipse Foundation Valid) ทำให้ SAC/Device Guard บล็อกการ Exec ทันที
+   - **Mark of the Web (Zone.Identifier)**: เมื่อผู้เล่นดาวน์โหลดไฟล์ผ่านเว็บ/คลาวด์ไดรฟ์ Windows จะแนบ NTFS Alternate Data Stream `Zone.Identifier` (ZoneId=3) ทำให้ระบบรักษาความปลอดภัยเพ่งเล็งและสกัดกั้นการรัน
+   - **Command Prompt vs PowerShell**: เมื่อผู้เล่นพิมพ์คำสั่ง `Get-ChildItem ... | Unblock-File` ใน Command Prompt (CMD) ปกติ ระบบจะแจ้งเตือนว่าไม่รู้จักคำสั่ง ต้องครอบด้วย `powershell -Command "..."`
+3. **แนวทางแก้ไขและผลลัพธ์ (Solution & Outcome)**:
+   - **วิธีแก้หลัก**: สั่งปิด Smart App Control ใน `Windows Security` -> `App & browser control` -> `Smart App Control settings` -> เปลี่ยนเป็น `Off`
+   - **วิธีเสริม**: ปลดล็อก Mark of the Web ด้วยคำสั่ง CMD: `powershell -Command "Get-ChildItem -Path '<Folder>' -Recurse | Unblock-File"`
+   - ผู้เล่นสามารถเปิดใช้งาน Portable MariaDB พอร์ต 33066 และรันเซิร์ฟเวอร์ MapleStory v265 ได้สำเร็จ 100%
+
+### 📂 Files Modified
+- [`SKILL.md`](file:///c:/Users/admin/Documents/MapleV265Src/.agents/skills/maplestory-bug-knowledge/SKILL.md) (เพิ่มหัวข้อ 2.3 คู่มือแก้ปัญหา Device Guard / Smart App Control)
+- [`HOW_TO_USE.txt`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/HOW_TO_USE.txt) (เพิ่มหัวข้อ [7] คู่มือ Troubleshooting สำหรับผู้เล่น)
+- [`Server263/HOW_TO_USE.txt`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/Server263/HOW_TO_USE.txt) (เพิ่มหัวข้อ [8] คู่มือ Troubleshooting ในแพ็คแจกจ่าย)
+- [`v214 src/PROGRESS.md`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/PROGRESS.md)
+- [`PROGRESS.md`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/PROGRESS.md)
+
 ## 📅 [2026-10-12 22:55 น.] Evan Complete HEXA Matrix Overhaul: HEXA Enhanced Magic Debris (22201015), HEXA Dragon Spark (22200016), Lv. 260 Auto-Evolution & No-Cooldown Attack Handlers
 
 ### 🎯 Scope & Technical Details

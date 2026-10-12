@@ -73,6 +73,29 @@ description: >-
   - ในการบันทึกเควสต์ (`QuestProgressRequirement.saveToSQL`): **ห้ามเปิด Connection ใหม่จาก DatabaseManager ขณะที่ยังอยู่ใน Transaction** เพราะจะเกิด InnoDB Deadlock (`Lock wait timeout exceeded (50s)`). ให้ส่ง `Connection con` ที่เปิดอยู่แล้วเข้ามารันใน Transaction เดียวกันเสมอ
   - ตาราง `questprogressrequirements` ไม่มีคอลัมน์ `charid` (มีเฉพาะใน `questprogressrequirements_acc` สำหรับ Account Quests)
 
+### 2.3 การแก้ปัญหา Portable MariaDB ถูกบล็อกโดย Windows 11 Device Guard / Smart App Control (SAC)
+- **อาการ/ข้อความ Error**:
+  ```text
+  '...\Server263\mariadb\bin\mysqld.exe' was blocked by your organization's Device Guard policy.
+  Contact your support person for more info.
+  ```
+- **สาเหตุเชิงลึก**:
+  1. ใน **Windows 11 (22H2 / 23H2 / 24H2)** ระบบเปิดใช้งานฟีเจอร์ **Smart App Control (SAC)** เป็นค่าเริ่มต้น
+  2. ตัว Engine ของ SAC ทำงานผ่านระบบเคอร์เนลของ **Windows Defender Application Control (WDAC) / Device Guard**
+  3. ไฟล์ `mysqld.exe` ของ MariaDB Portable เป็น Unsigned Binary (`Status: NotSigned`) ไม่มี Digital Signature ระดับองค์กร เมื่อ SAC หรือ Device Guard ตรวจจับจะสั่งบล็อกการ Exec ทันที
+  4. ไฟล์ที่ดาวน์โหลดผ่านอินเทอร์เน็ตจะติดสตรีมความปลอดภัย `Zone.Identifier` (Mark of the Web) เพิ่มความเข้มงวดในการบล็อก
+- **แนวทางแก้ไข (Solution Workflow)**:
+  1. **ปิด Smart App Control ใน Windows 11** (วิธีหลักที่ได้ผล 100%):
+     - ไปที่ `Windows Security` -> `App & browser control` -> `Smart App Control settings`
+     - สลับสถานะเป็น **`Off` (ปิด)**
+  2. **ปลดบล็อก Mark of the Web ด้วย PowerShell**:
+     - รันผ่าน Command Prompt / PowerShell:
+       ```cmd
+       powershell -Command "Get-ChildItem -Path '<Path>' -Recurse | Unblock-File"
+       ```
+  3. **ตรวจสอบ Work/School Account**:
+     - หากเป็นเครื่องส่วนตัวแต่เชื่อมต่ออีเมลสถาบัน ให้ไปที่ `Settings` -> `Accounts` -> `Access work or school` แล้วกด Disconnect เพื่อล้างนโยบาย Device Guard ภายนอกออก
+
 ---
 
 ## 3. มาตรฐานการพัฒนาสกิลคลาส 6 & HEXA Matrix
@@ -110,7 +133,9 @@ description: >-
    - **Maha's Fury Cooldown**: คูลดาวน์ 3 วินาทีของท่าโจมตีต้องลงที่ `MAHAS_FURY_ATTACK` (400011020) ห้ามลงที่ `MAHAS_FURY_BUFF` (400011016) ซึ่งจะไปทับคูลดาวน์ 150 วินาทีของบัฟ
 2. **Evan (เอวาน)**:
    - **Job Advancement Lv.100**: หลังรีแวมป์ คลาส 4 ของ Evan คือ Job ID `2217` (รหัส 2218 ไม่มีอยู่จริง) การเรียก `setJob` หรือ `addSpToSpecificJob` ต้องใช้ `2217` เท่านั้น
+   - **Mir Stage 9 (2220) & 6th Job Crash**: ใน MapleStory v265 โหนดแอนิเมชันสกิลคลาส 6 (`6thDragonSwift`, `6thDragonDive`, `6thDragonBreath` ฯลฯ) มีเฉพาะใน `Skill.wz/Skill_00007/Dragon/2220.xml` เท่านั้น หากเสก Mir ด้วย Job `2217` (Stage 8) เมื่อกดสกิลคลาส 6 ไคลเอนต์จะหาโหนดไม่เจอและ Crash ทันทีด้วย `0x22000006` (`INVALID_GAME_DATA`) ต้องกำหนด Job ของ Mir ให้เป็น `2220` เสมอเมื่อตัวละครมีสกิลคลาส 6 หรือเลเวล 260+
    - **Magic Debris Rect Guard**: เช็ค `if (si == null || si.getFirstRect() == null) return;` ก่อนคำนวณ Force Atom
+   - **Evan Fusion & Force Skills**: ต้องลงทะเบียนสกิลคลาส 6 ครบทั้ง `isEvanForceSkill`, `isEvanFusionSkill` และ `getActualSkillIDfromSkillID` เพื่อให้ Packet Decoding และการคำนวณ Damage/Wreckage ถูกต้อง 100%
 3. **Mercedes (เมอร์เซเดส)**:
    - **Array Containment Bug**: `summonAttacks` เป็น `int[]` ห้ามใช้ `Collections.singletonList(summonAttacks).contains(...)` เพราะจะได้ `List<int[]>` ให้ใช้ `Arrays.stream(summonAttacks).anyMatch(id -> id == skillId)`
    - **Ignis Roar Stack**: ตรวจสอบการมีสกิลด้วย `chr.hasSkill(IGNIS_ROAR)` ห้ามเช็ค `tsm.hasStat(RpSiksin)` (ซึ่งเป็น CTS ของ Kanna)
@@ -146,6 +171,57 @@ description: >-
      - Experience Nodestones x500 (`2437760`)
      - Power Elixirs x5,000 (`2000005`)
      - เงิน 10B Mesos
+
+### 3.6 วงจรชีวิตการสร้างตัวละครและการบังคับเกิดที่ Henesys (Starter Lifecycle & Henesys Spawn Bypass)
+1. **สาเหตุของปัญหาตัวละครเริ่มเกมใช้สกิล/กดยาไม่ได้เมื่อเกิดที่ Henesys**:
+   - เมื่อเซิร์ฟเวอร์ตั้งค่าบังคับให้ตัวละครใหม่เกิดที่ Henesys (100000000) ใน LoginHandler.java จะเป็นการข้ามแมพ Tutorial ทั้งหมด
+   - อาชีพที่ไม่มี Starter Lifecycle จะค้างอยู่ที่ **Lv. 1 / Beginner Job** โดยมี HP 50 / MP 50, มีเฉพาะสกิลพื้นฐาน (โจมตีปกติ/ก้ม/กระโดด), ไม่มีอาวุธหลักหรือรองสวมใส่อยู่
+   - **กดยาไม่ได้**: เนื่องจากตัวละคร Lv. 1 มีเลือดเต็ม 50/50 อยู่แล้ว ระบบเซิร์ฟเวอร์จะปฏิเสธแพ็กเก็ตการใช้ยาเพิ่มเลือด (Potion rejected because HP is 100%)
+   - **ใช้สกิลไม่ได้**: ไม่มีอาวุธสวมใส่และไม่มีสกิลคลาส 1 เพราะไม่ได้ผ่านเควสต์เปลี่ยนอาชีพใน Tutorial
+   - **Aran พิเศษ**: JobConstants.isAran ต้องมี JobEnum.LEGEND (2000) และใน JobManager ต้องไม่มีคลาส Legend::new สตับเปล่ามาดักจับ
+2. **มาตรฐาน Starter Lifecycle 3 สเต็ปสำหรับทุกอาชีพ**:
+   - **สเต็ป 1: setCharCreationStats(Char chr)**:
+     - เซ็ตเลเวลเริ่มต้นเป็น Lv. 10 ทันที
+     - เปลี่ยนเป็น 1st Job ID (เช่น Aran: 2100, Evan: 2210, Mercedes: 2300, Phantom: 2400, Luminous: 2700, Shade: 2500, Hayato: 4100, Mihile: 5100)
+     - เซ็ต Max HP 1,000, Max MP 500 (Luminous MP 1,000)
+     - มอบ SP 5 แต้มลงในช่อง SP คลาส 1
+   - **สเต็ป 2: addItemToNewCharacter(Char chr)**:
+     - สวมใส่อาวุธเริ่มต้นและอาวุธรอง (Secondary Weapon) ลงในช่อง Equipped ทันที
+   - **สเต็ป 3: handleInitAfterMigrate(Char chr)**:
+     - ดักจับเมื่อผู้เล่นเข้าสู่เกมครั้งแรก (if (chr.getLevel() < 30))
+     - สำเร็จเควสต์เปิดตัว/เนื้อเรื่องเริ่มต้นทั้งหมด
+     - เรียก chr.levelUntil(30) และเปลี่ยนอาชีพเป็น 2nd Job
+     - มอบและสวมใส่อาวุธ Lv. 30 และ Secondary Weapon Lv. 30
+     - วาร์ปตัวละครสู่ Henesys (100000000) อย่างปลอดภัย
+3. **ตารางรหัส Secondary Weapon ประจำอาชีพ**:
+   - **Aran**: 1st 1352930 (Maha's Weight), 2nd 1352931 (Maha's Pendant), BiS 1352935 (Princess No's Flower Ballast)
+   - **Evan**: 1st 1352940 (Dragon Document), 2nd 1352941, BiS 1352945 (Princess No's Dragon Legacy)
+   - **Mercedes**: 1st 1352000 (Magic Arrow), 2nd 1352001, BiS 1352009 (Princess No's Accursed Arrow)
+   - **Phantom**: 1st 1352100 (Carte Blanche), 2nd 1352101, BiS 1352109 (Princess No's Carte)
+   - **Luminous**: 1st 1352400 (Light Orb), 2nd 1352401, BiS 1352406 (Princess No's Soul Orb)
+   - **Shade**: 1st 1353100 (Fox Marble), 2nd 1353101, BiS 1353105 (Princess No's Fox Marble)
+   - **Hayato**: 1st 1352800 (Wakizashi), 2nd 1352801, BiS 1352803 (Princess No's Wakizashi)
+   - **Kanna**: 1st 1352810 (Haku Fan), 2nd 1352811, BiS 1352813 (Princess No's Haku Fan)
+   - **Mihile**: 1st 1098000 (Soul Shield), 2nd 1098001, BiS 1098007 (Justice Soul Shield)
+4. **ความปลอดภัยของระบบและการป้องกัน Client Freeze**:
+   - **Henesys lockUI Removal in Job.java**: ห้ามมีคำสั่ง if (chr.getFieldID() == FieldConstants.START_MAP) sm.lockUI(); ใน handleInitAfterField() เด็ดขาด เพราะจะส่งแพ็กเก็ตล็อก UI ทำให้ตัวละครกดคีย์ลัด สกิล และยาไม่ได้เมื่อเกิดที่ Henesys
+   - **Kanna Haku Null Safety**: ตรวจสอบ Null Check ใน spawnHaku() (if (chr == null || chr.getField() == null || chr.getFoxMan() == null || chr.getSkillPet() == null) return;) ป้องกันเซิร์ฟเวอร์ Crash
+   - **Evan Mir & Partners Buff**: ตรวจสอบ Null Check ก่อนเรียกใช้เสมอ (if (dragon != null) { ... }) ป้องกัน NPE ระหว่างการย้ายแมพ
+   - **Undefined NPC/Reactor Fallback**: ใน ScriptManagerImpl.undefined() ห้ามเปิดหน้าต่างสนทนาค้างไว้ ให้แจ้งข้อความในกล่องแชท chr.chatMessage(...) และเรียก chr.dispose() ทันที เพื่อป้องกันตัวละครติดสถานะล็อกขยับไม่ได้
+
+### 3.4 กลไกการเกิดและแอนิเมชันของสัตว์คู่หู Evan Mir & Kanna Haku (Companion Life & 6th Job Stage Evolution)
+1. **มังกร Mir กับสกิลคลาส 6 (HEXA Matrix Animation Desync Bug)**:
+   - **ปัญหา**: เมื่อ Evan ปลดล็อกสกิลคลาส 6 (เลเวล >= 260 หรือมีสกิล HEXA Matrix เช่น Zodiac Burst, HEXA Flash, HEXA Dive) ตัว Client จะเรียกหาท่าทางของ Mir ตระกูล `6thDragon*` ใน WZ Data
+   - **โครงสร้าง WZ**: `Skill.wz/Skill_00007/Dragon/2217.xml` (Stage 8) มีเพียง 17 actions ไม่มีโหนดคลาส 6; ส่วน `2220.xml` (Stage 9) มีครบ 26 actions รวมถึงโหนดคลาส 6 ทั้ง 9 ท่า
+   - **กฎเหล็ก**: 
+     - ใน `Dragon.java`, `Evan.spawnDragon()`, และ `Evan.getDragon()` ต้องตรวจสอบสถานะคลาส 6 หากเลเวล >= 260 หรือมีสกิลคลาส 6 ให้ตั้งค่า `dragon.setJob(2220)` เสมอ
+     - หากมังกรเคยอยู่ในแมพแล้วเปลี่ยน Job stage ต้อง Despawn แล้ว Respawn เป็น Stage 9 เพื่อให้ Client โหลด WZ โหนด 2220
+     - ป้องกัน Client C++ Exception `0xE06D7363` (`INVALID_GAME_DATA 0x22000006`) อย่างถาวร
+2. **การปลดบล็อก Companion Spawning สำหรับ GM ใน `Char.java`**:
+   - ห้ามมีเงื่อนไข `if (!isGM)` กั้นการเรียก `evan.spawnDragon()` หรือ `kanna.spawnHaku()` หรือ Android ใน `Char.java` (บรรทัด ~4950) เด็ดขาด เพื่อให้ตัวละครทุกประเภทเรียกสัตว์เลี้ยงคู่หูได้ถูกต้อง
+3. **การลงทะเบียน HEXA Magic Debris (22201015) & HEXA Dragon Spark (22200016)**:
+   - สกิล `22201015` คือ HEXA Enhanced Magic Debris ต้องผูกใน `Evan.java` (`getDebrisSkill`, `getMaxDebris`, `createMagicDebrisForceAtom`, `createWreckage`, `handleSkill`) และ `SkillConstants.java` (`isForceAtomSkill`)
+   - สกิลคลาส 6 ของ Mir (`22201011`, `22201007`, `22201003`) ต้องลงทะเบียนใน `SkillConstants.isNoCoolDownAttack()` เพื่อป้องกันปัญหาคูลดาวน์ซ้อนและมานาลดผิดปกติ
 
 ---
 

@@ -191,4 +191,79 @@
    - รวม `maplestory.jar` ตัวล่าสุด, สคริปต์ NPC ทั้งหมด และ `Apply_Patch.bat` คลิกเดียวติดตั้งอัปเดตเซิร์ฟเวอร์ทันที
 
 ---
+
+## 9. แผนงานส่งมอบงานและรายการตรวจสอบเร่งด่วนสำหรับเซสชันถัดไป (Priority Backlog & Investigation Checklist - 13 ตุลาคม 2569)
+
+เอกสารส่งมอบงานสำหรับทีมพัฒนาและ AI Agent ในการสานต่องาน ตรวจสอบ และแก้ไขปัญหาเชิงลึกในเซสชันถัดไป:
+
+### 9.1 Clean Slate Scroll คืนรู (Clean Slate / ใบขาวคืน Upgrade Slot)
+- **ปัญหาที่ลูกค้าแจ้ง**: ลูกค้าแจ้งว่า Clean Slate Scroll (ใบขาวคืนรู) ใช้งานแล้วมีบั๊ก
+- **ขอบเขตการตรวจสอบเชิงลึก (Investigation Target)**:
+  1. ตรวจสอบใน `ScrollHandler.java` (หรือตัวจัดการคำสั่ง `InHeader.USER_UPGRADE_ITEM`):
+     - ตรวจสอบฟังก์ชันการคำนวณ Slot (`Equip.getCslots()`, `Equip.getRslots()`, `Equip.getIslots()`)
+     - ตรวจสอบว่าจำนวน Failed Slots ที่สามารถคืนรูได้คำนวณถูกต้องหรือไม่ (บั๊กไม่ยอมคืนรู, หรือคืนรูเกินเพดานสูงสุด)
+     - ตรวจสอบอัตราความสำเร็จ (Success Rate) เช่น 1%, 5%, 10%, 20%, 100% ว่าคำนวณและหักใบถูกต้องหรือไม่
+     - ตรวจสอบว่าเมื่อคืนรูสำเร็จ มีการส่งแพ็กเก็ตอัปเดตสเตตัสไอเทม (`WvsContext.inventoryOperation` หรือการ Render UI หน้าต่างตีบวก) ครบถ้วนหรือไม่
+  2. รูปแบบบั๊กที่เป็นไปได้:
+     - ใช้แล้วกินใบแต่ไม่คืนรู แม้จะแสดงผลสำเร็จ
+     - หรือคืนรูแล้วค่า Slot ใน Database/Memory ไม่บันทึก ทำให้เมื่อย้ายแมพหรือ Re-login รูที่คืนหายไป
+     - หรือหลุดการเชื่อมต่อตอนกดใช้บนไอเทมบางชนิด (เช่น อุปกรณ์ที่มี Hammer Slot หรือ Zero Lapis/Lazuli)
+
+### 9.2 Bonus Potential Cube (ลูกแก้วศักยภาพโบนัส) ใช้แล้วค้าง
+- **ปัญหาที่ลูกค้าแจ้ง**: เมื่อใช้ Bonus Potential Cube (หรือ Occult Bonus Cube / Master Bonus Cube) ตัวเกมหรือหน้าต่างคิวบ์มีอาการค้าง (Client Freeze / Stalled State)
+- **ขอบเขตการตรวจสอบเชิงลึก (Investigation Target)**:
+  1. ตรวจสอบใน `CubeHandler.java` / `ItemHandler.java` / `InvenHandler.java` (Packet `InHeader.USER_ITEM_RELEASE_REQUEST` หรือ `USER_MEMORIAL_CUBE_OPTION_REQUEST`):
+     - ตรวจสอบขั้นตอนการสุ่มออปชั่นโบนัส (`Equip.setBonusOption()`, `ItemData.getBonusPotentials()`)
+     - ตรวจสอบว่าเซิร์ฟเวอร์ส่งแพ็กเก็ตตอบกลับผลลัพธ์ Cube (`WvsContext.showItemReleaseEffect` หรือแพ็กเก็ตเปิดหน้าต่างเลือกออปชั่นใหม่/เก่า) กลับไปหา Client หรือไม่
+     - หากเซิร์ฟเวอร์ไม่ส่งแพ็กเก็ตตอบกลับ Client จะค้างรอ Response ในสถานะ Waiting
+  2. ตรวจสอบการจัดการเกรดศักยภาพโบนัส (Rare -> Epic -> Unique -> Legendary):
+     - หากสุ่มได้เกรดหรือค่า ID ศักยภาพที่ Client v265 ไม่รู้จัก หรือเกิด Loop ภายใน อาจทำให้ Thread ค้าง
+
+### 9.3 Evan Skill Cooldowns & Overhaul (เจาะลึกเฉพาะคลาส Evan สกิลคูลดาวน์ผิดปกติ)
+- **ปัญหาที่ลูกค้าแจ้ง**: Evan ยังมีปัญหาคูลดาวน์สกิลไม่ถูกต้อง โดยมีสกิล (ทั้ง V-Matrix หรือ HEXA Matrix) ที่สามารถกดรัวๆ ใช้งานได้เรื่อยๆ โดยไม่ติดคูลดาวน์
+- **ขอบเขตการตรวจสอบเชิงลึก (Investigation Target)**:
+  1. **ตรวจสอบสกิล V-Matrix ทั้ง 4 สกิล**:
+     - `400021004` (Dragon Slam / Swift)
+     - `400021045` (Elemental Radiance)
+     - `400021063` (Spiral of Mana)
+     - `400021071` (Imperial Breath)
+     - ตรวจสอบว่าใน `Evan.handleSkill()` และ `Evan.handleAttack()` มีการสั่งเริ่ม Cooldown ผ่าน `chr.setSkillCooldown(skillID, cooldownMs)` หรือ `chr.addSkillCoolTime(skillID, cooldownMs)` หรือไม่
+  2. **ตรวจสอบสกิล HEXA Matrix (Class 6)**:
+     - ตรวจสอบรหัสสกิลทั้งหมดของ Evan คลาส 6 (`22201000` - `22201503`):
+       - `HEXA Mana Burst` (`22201000` - `22201002`)
+       - `HEXA Dragon Flash` (`22201003` - `22201005`)
+       - `HEXA Dragon Dive` (`22201007` - `22200009`)
+       - `HEXA Dragon Breath` (`22201011` - `22200014`)
+       - `HEXA Enhanced Magic Debris` (`22201015`)
+       - `HEXA Dragon Spark` (`22200016`)
+     - สกิลใดที่ผู้เล่นร่ายซ้ำได้โดยไม่ติด Cooldown ตรวจสอบใน `Evan.java` และ `SkillConstants.java` ว่าถูกใส่ไว้ใน `isNoCoolDownAttack()` ผิดตำแหน่งหรือไม่ หรือยังขาดการส่งแพ็กเก็ต `chr.setSkillCooldown()`
+  3. **การจับเวลาและการคำนวณ Cooldown Reduction**:
+     - ตรวจสอบว่าสกิล Return (Return Swift, Return Dive, Return Flame) ส่งผลรีเซ็ตหรือลดคูลดาวน์ผิดพลาดหรือไม่
+
+### 9.4 Evan HEXA Origin Cutscene & Cooldown Synchronization
+- **ปัญหาที่ลูกค้าแจ้ง**: สกิล HEXA Matrix ที่เป็นสกิลโจมตีมีคัทซีน (Origin Skill) ใช้แล้วติดคูลดาวน์คู่กันหรือไม่ ตรวจสอบว่าถูกต้องตามกลไกทางการของเกมหรือไม่
+- **ขอบเขตการตรวจสอบเชิงลึก (Investigation Target)**:
+  1. ตรวจสอบสกิล Origin `22201500` (Zodiac Burst) และ Sub-Skill `22201501`, `22201502`, `22201503`:
+     - ในทางการ (Official v265): Zodiac Burst มีคูลดาวน์ 360 วินาที เมื่อกดใช้ตัวละครจะได้รับสถานะอมตะและแสดงคัทซีน
+     - หากมีสกิลคัทซีนอื่นติดคูลดาวน์ร่วมกัน ให้ตรวจสอบใน `handleSkill()` และ `SkillConstants.getActualSkillIDfromSkillID()` ว่า Sub-Skill Packet ใดไปสั่งติด Cooldown ทับซ้อนกับสกิลอื่นหรือไม่
+
+### 9.5 Starter Lifecycle & Henesys Spawn Bypass (การข้ามเนื้อเรื่องเกิด Henesys บัคหรือไม่)
+- **ปัญหาที่ลูกค้าแจ้ง**: ตรวจสอบว่าการบายพาสเควสต์เปิดตัวเพื่อมาเกิดที่เมือง Henesys (`100000000`) สำหรับ Evan มีอาการบัคหรือไม่
+- **ขอบเขตการตรวจสอบเชิงลึก (Investigation Target)**:
+  1. ตรวจสอบใน `LoginHandler.java` และ `Evan.java` (`setCharCreationStats`, `addItemToNewCharacter`, `handleInitAfterMigrate`):
+     - ตรวจสอบว่าตัวละครสร้างใหม่เกิดที่ Henesys มีอาวุธคทา/ไม้เท้า (Staff/Wand) และ Dragon Document (Secondary Weapon) สวมใส่อยู่หรือไม่
+     - ตรวจสอบว่า SP คลาส 1 แจกถูกต้อง และสกิลพื้นฐานพร้อมใช้งาน
+     - ตรวจสอบว่ามังกร Mir ถูกเสกออกมาเคียงข้างตัวละครตามธรรมชาติ และไม่มีการล็อก UI (`sm.lockUI()`) ค้าง
+
+### 9.6 Full Audit สกิล Evan คลาส 1-4 ทุกมิติ (Roadmap สำหรับวันพรุ่งนี้)
+- **กำหนดการดำเนินงาน**: 13 ตุลาคม 2569
+- **ขอบเขตการตรวจสอบครบทุกมิติ (Comprehensive Audit Checklist)**:
+  1. **1st Job (2210)**: Mana Burst I, Teleport, Magic Guard, Dragon Soul
+  2. **2nd Job (2212)**: Mana Burst II, Wind Circle, Dragon Flash, Dragon Swift, Return Flash/Swift
+  3. **3rd Job (2214)**: Mana Burst III, Thunder Circle, Dragon Dive, Return Dive, Magic Debris, Elemental Reset
+  4. **4th Job (2217)**: Mana Burst IV, Earth Circle, Dragon Breath, Return Breath, Dark Fog, Blessing of the Onyx, Magic Booster, Maple Warrior
+  5. **Fusion Interaction**: การร่ายเวทมนตร์ร่วมกับมังกร (Swift of Wind, Swift of Thunder, Dive of Earth, Dive of Thunder, Breath of Earth, Breath of Wind) และการทิ้งชิ้นส่วน Magic Debris
+
+---
 **จบเอกสารส่งมอบงาน (End of Handoff Document)**
+

@@ -4979,6 +4979,13 @@ public class Char {
             sm.sendAutoEventClock();
             write(ExtraTMSSystem.initField(false, this, extraTMSSystem.magicNumber));
         }, 2500, TimeUnit.MILLISECONDS);
+        if (JobConstants.isEvan(getJob())) {
+            getTimer().addEvent(() -> {
+                if (getJobHandler() instanceof Evan evan) {
+                    evan.spawnDragon();
+                }
+            }, 1000, TimeUnit.MILLISECONDS);
+        }
 
         if (JobConstants.isMoXuan(getJob())) {
             write(WvsContext.sendExtraSystemStack(0, -1639974713, (byte) 246));

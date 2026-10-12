@@ -31,12 +31,18 @@ public class Dragon extends Life {
 
     @Override
     public void broadcastSpawnPacket(Char onlyChar) {
-        getField().broadcast(DragonPool.createDragon(this));
+        if (onlyChar != null) {
+            onlyChar.write(DragonPool.createDragon(this));
+        } else if (getField() != null) {
+            getField().broadcast(DragonPool.createDragon(this));
+        }
     }
 
     @Override
     public void broadcastLeavePacket() {
-        getField().broadcast(DragonPool.removeDragon(this));
+        if (getField() != null) {
+            getField().broadcast(DragonPool.removeDragon(this));
+        }
     }
 
     public int getOwnerId() {
