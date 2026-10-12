@@ -81,8 +81,14 @@ public class Hero extends Warrior {
     public static final int SWORD_ILLUSION_3 = 400011126;
 
     // HEXA Skills
+    public static final int SPIRIT_CALIBUR = 1141500;
+    public static final int SPIRIT_CALIBUR_ATTACK = 1141501;
+    public static final int SPIRIT_CALIBUR_SLASH = 1141502;
+    public static final int HEXA_RAGING_BLOW = 1141000;
+    public static final int HEXA_RAGING_BLOW_ENRAGED = 1141001;
     public static final int HEXA_RISING_RAGE = 1141002;
     public static final int HEXA_BEAM_BLADE = 1141003;
+    public static final int FINAL_BLADE = 1141004;
     public static final int RENDING_EDGE = 1140005;
     public static final int RENDING_EDGE_ = 1140010;
     public static final int HEXA_CRY_VALHALLA = 1141006;
@@ -352,7 +358,7 @@ public class Hero extends Warrior {
                 }
             }
             // Instinctual Combo
-            if (tsm.hasStatBySkillId(COMBO_INSTINCT) && (skillID == 1121008 || skillID == 1120017)) { // Raging Blow
+            if (tsm.hasStatBySkillId(COMBO_INSTINCT) && (skillID == 1121008 || skillID == 1120017 || skillID == HEXA_RAGING_BLOW || skillID == HEXA_RAGING_BLOW_ENRAGED)) { // Raging Blow
                 for (int comboInstinctSkillId : comboInstinctAttack) {
                     chr.write(UserLocal.userBonusAttackRequest(comboInstinctSkillId));
                 }
@@ -514,6 +520,9 @@ public class Hero extends Warrior {
                 || skillID == COMBO_FURY
                 || skillID == COMBO_FURY_DOWN
                 || skillID == PUNCTURE
+                || skillID == HEXA_PUNCTURE
+                || skillID == SPIRIT_CALIBUR_ATTACK
+                || skillID == SPIRIT_CALIBUR_SLASH
                 || skillID == COMBO_INSTINCT_SLASH_DOWN
                 || skillID == COMBO_INSTINCT_SLASH_UP
                 || skillID == COMBO_INSTINCT_SLASH_STRAIGHT;
@@ -537,6 +546,9 @@ public class Hero extends Warrior {
         Option o4 = new Option();
         Field field = chr.getField();
         switch (skillID) {
+            case SPIRIT_CALIBUR:
+                addCombo(getMaxCombo());
+                break;
             case SPIRIT_BLADE:
                 o1.nReason = skillID;
                 //o1.nValue = si.getValue(indiePad, slv);

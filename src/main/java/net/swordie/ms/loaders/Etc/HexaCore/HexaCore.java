@@ -477,6 +477,15 @@ public class HexaCore {
         }
     }
 
+    public static HexaSkillJobCore getJobCore(int jobID) {
+        for (HexaSkillJobCore jobCore : hexaSkillJobCores) {
+            if (jobCore.getJobID() == jobID) {
+                return jobCore;
+            }
+        }
+        return null;
+    }
+
     public static boolean hasSkillCoreByJob(int coreType, int coreID, int jobID) {
         for (HexaSkillJobCore jobCore : hexaSkillJobCores) {
             if (jobCore.getJobID() == jobID) {

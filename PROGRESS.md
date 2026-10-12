@@ -5,6 +5,43 @@ This file tracks all bug fixes, feature implementations, and system optimization
 
 ---
 
+## 📅 [2026-10-12 11:32 น.] Phase 2: Explorer Class 1 (Hero - 112) สมบูรณ์แบบ 100% — เชื่อมต่อ HEXA Matrix, Origin Skill และคำสั่ง !endgame
+
+### 🎯 Scope
+ลงทะเบียนและตรวจสอบสกิลคลาส 6 สาย Explorer อาชีพแรก: **Hero (นักรบดาบใหญ่/ขวานใหญ่ - Job ID 112)** บรรจุสกิล Origin (Spirit Calibur & Ultrasonic Slash) และ HEXA Masteries ครบชุด เชื่อมต่อระบบ Combo Instinct และเมคานิกเกจ Combo Counter พร้อมเชื่อมต่อคำสั่งทดสอบ `!endgame hero` ให้มอบอุปกรณ์ BiS, V-Matrix, และ HEXA Cores ระดับ 30 เต็มระบบ
+
+### 📂 Files Modified
+- [`v214 src/.../Hero.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/warrior/Hero.java)
+- [`v214 src/.../HexaCore.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/loaders/Etc/HexaCore/HexaCore.java)
+- [`v214 src/.../AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **Hero HEXA & Origin Skill Constants & Matrix Alignment**:
+   - ปัญหา: ใน `Hero.java` ขาดการนิยาม Constants สำคัญ ได้แก่ `SPIRIT_CALIBUR` (1141500), `SPIRIT_CALIBUR_ATTACK` (1141501), `SPIRIT_CALIBUR_SLASH` (1141502), `HEXA_RAGING_BLOW` (1141000), `HEXA_RAGING_BLOW_ENRAGED` (1141001), และ `FINAL_BLADE` (1141004)
+   - วิธีแก้: เพิ่ม Constants ครบถ้วนทุกสกิลตามโครงสร้างทางการของ v265 จาก `HexaCore.img.xml` และ `114.xml`
+2. **Combo Instinct (V-Skill) Seamless Trigger with HEXA Raging Blow**:
+   - ปัญหา: ใน `Hero.handleAttack()`, การตรวจสอบสกิล Combo Instinct ตรวจสอบเฉพาะ Raging Blow คลาส 4 (`1121008` และ `1120017`) ทำให้เมื่อผู้เล่นอัปเกรดเป็น HEXA Raging Blow (`1141000` / `1141001`) จะไม่เกิดการโจมตีโบนัสรอยแยกมิติ (Combo Instinct Rifts)
+   - วิธีแก้: เพิ่ม `skillID == HEXA_RAGING_BLOW || skillID == HEXA_RAGING_BLOW_ENRAGED` ในเงื่อนไขการทริกเกอร์ `comboInstinctAttack` ส่งผลให้ฟันเร็วต่อเนื่องและเกิดรอยแยกมิติ 100%
+3. **Hero Origin Combo Maximize & Spam Prevention**:
+   - ใน `Hero.handleSkill()`: เพิ่ม `case SPIRIT_CALIBUR: addCombo(getMaxCombo());` เพื่อให้เมื่อร่าย Spirit Calibur ตัวละครจะได้รับ Combo Orbs เต็มแม็กซ์ (11 ลูก) ทันที
+   - ใน `isComboIgnoreSkill()`: เพิ่ม `HEXA_PUNCTURE`, `SPIRIT_CALIBUR_ATTACK`, และ `SPIRIT_CALIBUR_SLASH` เพื่อป้องกันการสแปมบวกเกจซ้ำซ้อนขณะอนิเมชันคัทซีน
+4. **Universal HEXA Core Query via `HexaCore.getJobCore(jobID)`**:
+   - สร้างเมธอด `HexaCore.getJobCore(int jobID)` ใน `HexaCore.java` เพื่อให้สามารถดึงข้อมูล Core ทั้งหมดของแต่ละอาชีพ (Activate / Mastery / Enforce / Common) ได้โดยตรงจาก WZ
+5. **Full Testing Automation in `!endgame hero`**:
+   - ใน `AdminCommands.setupEndgame()`:
+     - มอบอาวุธ Arcane Umbra Two-handed Sword (`1402259`)
+     - มอบไอเทมโล่/เหรียญรอง BiS: Princess No's Medal (`1352206`)
+     - มอบ Mitra Warrior Emblem (`1190555`) และเซ็ตเกราะ Arcane Umbra ครบชุด
+     - ปลดล็อกและอัปเกรด HEXA Cores คลาส 6 ทุกคอร์ (Core 10000000, 10000052, 20000000, 20000050, 20000100, 20000146, 30000000-30000003, 40000000 Sol Janus) เป็นเลเวล 30 เต็ม พร้อมมอบสกิลพิเศษ Enraged Raging Blow (`1141001`) และ Spirit Calibur Action (`1141501`) เลเวล 30
+     - ส่งแพ็กเก็ต `WvsContext.hexaSkillsUpdate(chr)` อัปเดต UI หน้าจอ HEXA Matrix ทันที
+
+### 🧪 Verification & Deployment
+- คอมไพล์ผ่าน Maven OpenJDK 21: `BUILD SUCCESS` (0 errors, total time: 1m 20s)
+- ดีพลอย Fat JAR: `Server263/maplestory.jar` (~138.64 MB)
+- สร้างไฟล์แพตช์อัปเดตแบบเบา: [`Patches/Server263_Patch_20261012_1129.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches) ขนาด 121.61 MB
+
+---
+
 ## 📅 [2026-10-12 11:18 น.] ปรับปรุงระบบสกิลคลาส 6 ให้ครอบคลุมทุกอาชีพ และแก้ปัญหาสถานะ OriginDebuff / Freeze (Universal 6th Job Origin Engine)
 
 ### 🎯 Scope

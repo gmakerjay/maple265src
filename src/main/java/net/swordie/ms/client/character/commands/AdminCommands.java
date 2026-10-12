@@ -23,6 +23,7 @@ import net.swordie.ms.client.character.skills.info.SkillInfo;
 import net.swordie.ms.client.character.skills.matrix.MatrixCore;
 import net.swordie.ms.loaders.Etc.VCore.VCore;
 import net.swordie.ms.loaders.Etc.VCore.VCoreData;
+import net.swordie.ms.loaders.Etc.HexaCore.HexaCore;
 import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
 import net.swordie.ms.client.character.skills.temp.TemporaryStatBase;
 import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
@@ -2703,7 +2704,12 @@ public class AdminCommands {
         int[] thiefArmors   = {1004811, 1053066, 1073161, 1082698, 1102943, 1152199};
         int[] pirateArmors  = {1004812, 1053067, 1073162, 1082699, 1102944, 1152200};
 
-        if (JobConstants.isKhali(job)) {
+        if (JobConstants.isHero(job)) {
+            weaponId = 1402259; // Arcane Umbra Two-handed Sword
+            secondaryId = 1352206; // Princess No's Medal (Hero BiS Secondary)
+            emblemId = 1190555; // Mitra Warrior Emblem
+            armors = warriorArmors;
+        } else if (JobConstants.isKhali(job)) {
             weaponId = 1404018; // Arcane Umbra Chakram
             secondaryId = 1354033; // Infinite Hex Seeker
             emblemId = 1191113; // Gold Guardian Emblem
@@ -2842,12 +2848,26 @@ public class AdminCommands {
             }
         }
 
-        // Clean up any improperly injected 6th Job skills from character skill tree
-        List<Skill> skillsToRemove = chr.getSkills().stream()
-                .filter(s -> s.getSkillId() >= 100000000 && (s.getSkillId() % 100000 / 10000 == 4))
-                .toList();
-        for (Skill s : skillsToRemove) {
-            chr.removeSkill(s.getSkillId());
+        // 6. Initialize HEXA Matrix & Grant Class HEXA Skills (Lv.30)
+        try {
+            HexaCore.HexaSkillJobCore jobCore = HexaCore.getJobCore(job);
+            if (jobCore != null) {
+                List<Integer> allCores = new ArrayList<>();
+                allCores.addAll(jobCore.getActivateSkills());
+                allCores.addAll(jobCore.getMasterySkills());
+                allCores.addAll(jobCore.getEnforceSkills());
+                allCores.addAll(jobCore.getCommonSkills());
+                for (int coreId : allCores) {
+                    chr.setHexaSkill(coreId, 30);
+                }
+                chr.write(WvsContext.hexaSkillsUpdate(chr));
+            }
+            if (JobConstants.isHero(job)) {
+                chr.addSkill(1141001, 30, 30); // HEXA Raging Blow (Enraged)
+                chr.addSkill(1141501, 30, 30); // Spirit Calibur (Continuous Slash)
+            }
+        } catch (Exception e) {
+            chr.chatMessage(SpeakerChannel, "[Endgame] Hexa warning: " + e.getMessage());
         }
 
         // 7. Add Sol Erda Energy & Fragments (Massive amounts for thorough HEXA testing)
@@ -2875,7 +2895,7 @@ public class AdminCommands {
         giveTestItem(chr, 2000005, 5000);
         chr.addMoney(10_000_000_000L);
 
-        chr.chatMessage(SpeakerChannel, "[End-Game Booster] Complete! Lv. 260 | Class 1-4 Maxed | Sol Erda x1,000 | Fragments x30,000 | Nodes x3,000 | 10B Mesos | Arcane Umbra Gear Delivered");
+        chr.chatMessage(SpeakerChannel, "[End-Game Booster] Complete! Lv. 260 | Class 1-4 Maxed | HEXA Matrix & Origin Maxed | Sol Erda x1,000 | Fragments x30,000 | Nodes x3,000 | 10B Mesos | Arcane Umbra Gear Delivered");
     }
 
     private static void giveTestEquip(Char chr, int equipId) {
