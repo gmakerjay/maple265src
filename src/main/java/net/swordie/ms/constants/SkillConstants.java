@@ -2324,6 +2324,11 @@ public class SkillConstants {
             // Dark Knight 6th Job Origin Finisher
             case 1341503:
                 return 1341502; // Dark Halidom
+            // Fire/Poison 6th Job Sub-Skills
+            case 2141002:
+                return 2141000; // HEXA Flame Sweep Extra
+            case 2141505:
+                return 2141504; // Immortal Flame Sub
             default:
                 // Universal 6th Job Origin Sub-Skill Redirection (xxx41501-xxx41599 -> xxx41500)
                 int subOrigin = skillID % 100000;

@@ -90,7 +90,11 @@ public class FirePoison extends Magician {
     public static final int HEXA_MEGIDDO_FLAME_MANUAL = 2141010;
     public static final int HEXA_MEGIDDO_FLAME_AUTO = 2141011;
     public static final int HEXA_MEGIDDO_FLAME_EXPLOSION = 2141016;
+    public static final int HEXA_FLAME_SWEEP_EXTRA = 2141002;
+    public static final int INFERNAL_VENOM = 2141500;
     public static final int INFERNAL_VENOM_ICON = 2141501;
+    public static final int IMMORTAL_FLAME = 2141504;
+    public static final int IMMORTAL_FLAME_SUB = 2141505;
 
     private int megiddoFlameCount = 0;
     private boolean megiddoArmedForInstantEx = false;
@@ -163,6 +167,10 @@ public class FirePoison extends Magician {
             case HEXA_INFERNO_AURA:
             case DOT_PUNISHER:
             case HEXA_FLAME_SWEEP:
+            case HEXA_FLAME_SWEEP_GIANT:
+            case HEXA_FLAME_SWEEP_EXTRA:
+            case INFERNAL_VENOM:
+            case IMMORTAL_FLAME:
                 bi = BurnedInfo.createBurnInfo(chr, skillID, slv, damageDot);
                 mts.createAndAddBurnedInfo(mob, bi, skillID);
                 break;
@@ -261,6 +269,7 @@ public class FirePoison extends Magician {
                 o1.rOption = skillID;
                 tsm.sendStat(FlameSweep, o1);
                 break;
+            case INFERNAL_VENOM:
             case INFERNAL_VENOM_ICON:
                 if (!tsm.hasStat(SixthDotBasedBuff)) {
                     o1.nOption = 10;
@@ -418,7 +427,7 @@ public class FirePoison extends Magician {
         }
         if (tsm.hasStat(WizardIgnite)) {
             int igniteSkillID = chr.hasSkill(HEXA_IGNITE) ? HEXA_IGNITE : IGNITE;
-            int igniteAASkillID = chr.hasSkill(HEXA_IGNITE) ? IGNITE_AA : IGNITE_AA; // TODO: HEXA_IGNITE_AA
+            int igniteAASkillID = chr.hasSkill(HEXA_IGNITE) ? HEXA_IGNITE_AA : IGNITE_AA;
             SkillInfo igniteInfo = SkillData.getSkillInfoById(igniteAASkillID);
             Skill skill = chr.getSkill(igniteSkillID);
             int slv = skill.getCurrentLevel();
@@ -558,11 +567,24 @@ public class FirePoison extends Magician {
                     getExplodeShootObjList().clear();
                 }
                 for (AffectedArea poisonMist : chr.getField().getAffectedAreas()) {
-                    if (poisonMist.getSkillID() == POISON_MIST && poisonMist.getCharID() == chr.getId()) {
+                    if ((poisonMist.getSkillID() == POISON_MIST || poisonMist.getSkillID() == HEXA_POISON_MIST) && poisonMist.getCharID() == chr.getId()) {
                         poisonMist.setLinkingSkillID(skillID);
                         chr.getField().removeLife(poisonMist);
                     }
                 }
+                break;
+            case INFERNAL_VENOM:
+                chr.heal(chr.getMaxHP());
+                chr.healMP(chr.getMaxMP());
+                if (!tsm.hasStat(SixthDotBasedBuff)) {
+                    o1.nOption = 10;
+                    o1.rOption = INFERNAL_VENOM_ICON;
+                    o1.tOption = 20;
+                    tsm.sendStat(SixthDotBasedBuff, o1);
+                }
+                break;
+            case IMMORTAL_FLAME:
+                chr.heal(chr.getMaxHP() / 2);
                 break;
             case EPIC_ADVENTURE:
                 o1.nValue = si.getValue(indieDamR, slv);

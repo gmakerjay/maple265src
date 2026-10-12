@@ -5,6 +5,46 @@ This file tracks all bug fixes, feature implementations, and system optimization
 
 ---
 
+## 📅 [2026-10-12 11:55 น.] Phase 2: Explorer Class 4 (Fire/Poison Arch Mage - 212) สมบูรณ์แบบ 100% — เชื่อมต่อ Infernal Venom, Immortal Flame และคำสั่ง !endgame
+
+### 🎯 Scope
+ลงทะเบียนและตรวจสอบสกิลคลาส 6 สาย Explorer อาชีพที่ 4: **Fire/Poison Arch Mage (จอมเวทไฟ/พิษ - Job ID 212)** บรรจุสกิล Origin (Infernal Venom & Ascent Skill: Immortal Flame) และ HEXA Masteries ครบชุด (HEXA Flame Sweep, HEXA Flame Sweep Giant, HEXA Flame Sweep Extra, HEXA Flame Haze, HEXA Poison Mist, HEXA Mist Eruption, HEXA Inferno Aura, HEXA Ignite, HEXA Ignite AA, HEXA Ifrit, HEXA Creeping Toxin, HEXA Creeping Toxin Extra, HEXA Meteor Shower, HEXA Meteor Shower FA, HEXA Megiddo Flame Manual/Auto/Explosion) เชื่อมต่อระบบ Fervent Drain / Elemental Drain, Ignite AA และคำสั่งทดสอบ `!endgame fp` หรือ `!endgame firepoison` ให้มอบอาวุธ BiS Arcane Umbra Staff, Princess No's Poison Orb, และ HEXA Cores ระดับ 30 เต็มระบบ
+
+### 📂 Files Modified
+- [`v214 src/.../FirePoison.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/magician/FirePoison.java)
+- [`v214 src/.../SkillConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`v214 src/.../AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **Infernal Venom Origin & Immortal Flame Ascent Integration**:
+   - ปัญหา: เดิมยังขาด Constants และการรองรับ `INFERNAL_VENOM` (`2141500`), `IMMORTAL_FLAME` (`2141504`), และ `IMMORTAL_FLAME_SUB` (`2141505`) ส่งผลให้การกดใช้ Origin ไม่เกิดการฟื้นฟูเลือด/มานาเต็ม และไม่เปิดบัฟ `SixthDotBasedBuff` (ดาเมจตามจำนวน DoT)
+   - วิธีแก้: ใน `FirePoison.handleSkill()`, เพิ่ม `case INFERNAL_VENOM:` ให้ฮีล HP/MP 100% และมอบสถานะ `SixthDotBasedBuff` (ระยะเวลา 20 วินาที) และ `case IMMORTAL_FLAME:` ให้ฟื้นฟูพลังชีวิต 50%
+2. **BurnedInfo & Fervent Drain DoT Registration**:
+   - ปัญหา: สกิลคลาส 6 ใหม่ เช่น `HEXA_FLAME_SWEEP_GIANT` (`2141001`), `HEXA_FLAME_SWEEP_EXTRA` (`2141002`), `INFERNAL_VENOM`, และ `IMMORTAL_FLAME` ยังไม่ได้ลงทะเบียนใน `handleDebuffOnMob()` ทำให้มอนสเตอร์ไม่ติดสถานะ Burn/DoT ซึ่งจำเป็นอย่างยิ่งในการเพิ่ม Stack ของ Elemental Drain
+   - วิธีแก้: บรรจุสกิลทั้งหมดเข้าสู่สวิตช์สร้าง `BurnedInfo` ใน `handleDebuffOnMob()` ทุกครั้งที่โจมตีถูกเป้าหมาย
+3. **HEXA Poison Mist Eruption Cleanup**:
+   - ปัญหา: ใน `handleSkill()`, การกดระเบิดหมอกพิษ (`MIST_ERUPTION` / `HEXA_MIST_ERUPTION`) ลบเฉพาะหมอกพิษรหัสเดิม (`POISON_MIST`) แต่ไม่ลบหมอกคลาส 6 (`HEXA_POISON_MIST` - `2141004`)
+   - วิธีแก้: ขยายเงื่อนไขการค้นหา AffectedArea ให้ครอบคลุมทั้ง `POISON_MIST` และ `HEXA_POISON_MIST`
+4. **HEXA Ignite Auto-Activation**:
+   - ปัญหา: เมื่อมีสกิล `HEXA_IGNITE` เมธอด `applyIgniteOnMob()` ยังสร้างอาณาเขตไฟของคลาส 4 เดิม (`IGNITE_AA`)
+   - วิธีแก้: เปลี่ยนการสร้างพื้นไฟเป็น `HEXA_IGNITE_AA` (`2140008`) เมื่อตัวละครมีสกิล `HEXA_IGNITE`
+5. **Sub-Skill Redirection in SkillConstants**:
+   - ปัญหา: การโจมตีต่อเนื่องของ Flame Sweep Extra (`2141002`) และ Immortal Flame Sub (`2141505`) เป็นสกิลที่ซ่อนอยู่ใน WZ (`invisible = 1`)
+   - วิธีแก้: เพิ่มการจับคู่ `case 2141002: return 2141000;` และ `case 2141505: return 2141504;` ใน `SkillConstants.getActualSkillIDfromSkillID()`
+6. **Full Testing Automation in `!endgame fp`**:
+   - ใน `AdminCommands.setupEndgame()`:
+     - มอบอาวุธระดับเทพ: Arcane Umbra Staff (`1382265`)
+     - มอบไอเทมลูกแก้วพิษรอง BiS: Princess No's Poison Orb (`1352236`)
+     - มอบ Mitra Magician Emblem (`1190557`) และเซ็ตเกราะ Arcane Umbra Mage ครบ 6 ชิ้น
+     - ปลดล็อกและอัปเกรด HEXA Cores คลาส 6 ทุกคอร์ (Core 10000003, 10000055, 20000003, 20000053, 20000103, 20000149, 30000012-30000015, 40000000 Sol Janus) เลเวล 30 เต็ม พร้อมมอบสกิลเสริมครบถ้วนทุกสกิล (`2141001`, `2141002`, `2141004`, `2140008`, `2141011`, `2140013`, `2141015`, `2141016`, `2141501`, `2141505`)
+
+### 🧪 Verification & Deployment
+- คอมไพล์ผ่าน Maven OpenJDK 21: `BUILD SUCCESS` (0 errors, total time: 1m 17s)
+- ดีพลอย Fat JAR: `Server263/maplestory.jar` (~138.64 MB)
+- สร้างไฟล์แพตช์อัปเดตแบบเบา: [`Patches/Server263_Patch_20261012_1154.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches) ขนาด 121.61 MB
+
+---
+
 ## 📅 [2026-10-12 11:50 น.] Phase 2: Explorer Class 3 (Dark Knight - 132) สมบูรณ์แบบ 100% — เชื่อมต่อ Dead Space, Dark Halidom และคำสั่ง !endgame
 
 ### 🎯 Scope

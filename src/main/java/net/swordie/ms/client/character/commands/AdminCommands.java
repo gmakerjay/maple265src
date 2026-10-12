@@ -2719,6 +2719,11 @@ public class AdminCommands {
             secondaryId = 1352226; // Princess No's Flower Chain (Dark Knight BiS Secondary)
             emblemId = 1190555; // Mitra Warrior Emblem
             armors = warriorArmors;
+        } else if (JobConstants.isFirePoison(job)) {
+            weaponId = 1382265; // Arcane Umbra Staff
+            secondaryId = 1352236; // Princess No's Poison Orb (F/P BiS Secondary)
+            emblemId = 1190557; // Mitra Magician Emblem
+            armors = mageArmors;
         } else if (JobConstants.isKhali(job)) {
             weaponId = 1404018; // Arcane Umbra Chakram
             secondaryId = 1354033; // Infinite Hex Seeker
@@ -2891,6 +2896,17 @@ public class AdminCommands {
                 chr.addSkill(1341009, 30, 30); // HEXA Evil Eye Shock Shoot
                 chr.addSkill(1341501, 30, 30); // Dead Space Attack
                 chr.addSkill(1341503, 30, 30); // Dark Halidom Attack
+            } else if (JobConstants.isFirePoison(job)) {
+                chr.addSkill(2141001, 30, 30); // HEXA Flame Sweep Giant
+                chr.addSkill(2141002, 30, 30); // Flame Sweep Extra
+                chr.addSkill(2141004, 30, 30); // HEXA Poison Mist
+                chr.addSkill(2140008, 30, 30); // HEXA Ignite AA
+                chr.addSkill(2141011, 30, 30); // HEXA Megiddo Flame Auto
+                chr.addSkill(2140013, 30, 30); // HEXA Meteor Shower FA
+                chr.addSkill(2141015, 30, 30); // HEXA Creeping Toxin Extra
+                chr.addSkill(2141016, 30, 30); // HEXA Megiddo Flame Explosion
+                chr.addSkill(2141501, 30, 30); // Infernal Venom Icon
+                chr.addSkill(2141505, 30, 30); // Immortal Flame Sub
             }
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] Hexa warning: " + e.getMessage());
