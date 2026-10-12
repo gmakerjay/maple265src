@@ -363,6 +363,7 @@ public class Server {
     }
 
     public static void main(String[] args) {
+        System.setProperty("python.console.encoding", "UTF-8");
         get().init();
     }
 

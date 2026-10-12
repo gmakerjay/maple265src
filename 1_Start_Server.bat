@@ -233,7 +233,7 @@ echo ===========================================================================
 echo.
 
 cd /d "%~dp0"
-"%JAVA_EXE%" -Duser.language=en -Duser.country=US --enable-preview -server -Xms1G -Xmx4G -jar "%SERVER_JAR%"
+"%JAVA_EXE%" -Duser.language=en -Duser.country=US -Dfile.encoding=UTF-8 -Dpython.console.encoding=UTF-8 --enable-preview -server -Xms1G -Xmx4G -jar "%SERVER_JAR%"
 
 if %ERRORLEVEL% NEQ 0 (
     echo.
