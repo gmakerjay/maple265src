@@ -3,6 +3,31 @@
 This file tracks all bug fixes, feature implementations, and system optimizations across sessions.
 **Rule (AGENTS.md #4)**: Every agent MUST record new progress here and in `.agents/skills/maplestory-bug-knowledge/SKILL.md` after completing any modification.
 
+## 📅 [2026-10-12 13:24 น.] Server Sanitization, Full Clean Database Reset & Jython UTF-8 Console Optimization
+
+### 🎯 Scope
+ทำความสะอาดแพ็กเกจแจกจ่ายหลัก `Server263` ทั้งระบบแบบ Zero-State Clean, ล้างและนำเข้าฐานข้อมูล MariaDB `vietmaple` ใหม่หมดจด (0 ไอดี, 0 ตัวละคร, 110 ตารางสมบูรณ์), Clean Recompile `maplestory.jar` สดใหม่, และแก้ไขข้อผิดพลาด Jython `UnsupportedCharsetException: cp65001` ให้ใช้ UTF-8 โดยตรง
+
+### 📂 Files Modified
+- [`v214 src/.../Server.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/Server.java)
+- [`Server263/1_Start_Server.bat`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/1_Start_Server.bat)
+- [`v214 src/1_Start_Server.bat`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/1_Start_Server.bat)
+- [`Server263/maplestory.jar`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/maplestory.jar)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **Jython cp65001 Console Warning Resolution**:
+   - ปัญหา: บน Windows ที่รัน Command Prompt ด้วย Code Page UTF-8 (`cp65001`) ฝั่ง Jython (Python Engine สำหรับสคริปต์ NPC/เควสต์) จะแจ้งเตือน `WARNING: console: Failed to install '': java.nio.charset.UnsupportedCharsetException: cp65001.` เนื่องจาก Java NIO มาตรฐานไม่รู้จัก alias `cp65001`
+   - วิธีแก้: ใน `Server.main()`, เพิ่ม `System.setProperty("python.console.encoding", "UTF-8");` ก่อนการโหลดคลาส และใน `1_Start_Server.bat` เพิ่มแฟล็ก JVM `-Dfile.encoding=UTF-8 -Dpython.console.encoding=UTF-8` เพื่อบังคับให้ Jython ใช้ UTF-8 ทันที ไม่เกิด Warning กวนใจอีกต่อไป
+2. **Fresh Zero-State Database Reset**:
+   - นำเข้า `backup.sql` และรัน `patch_v265_schema.sql` สู่ฐานข้อมูล MariaDB Portable พอร์ต `33066`
+   - ผลการตรวจสอบ: `accounts_count = 0`, `characters_count = 0`, `total_tables = 110` ตาราง สะอาดหมดจด 100%
+3. **Distribution Package Sanitization (`Server263`)**:
+   - ลบ `mariadb/my.ini` และ `mariadb/data/my.ini` เพื่อป้องกันการจำ Hardcoded Path
+   - เคลียร์แคช `$py.class` และล็อกใน `logs/`
+   - ย้ายไฟล์ RAR เก่าออกมาไว้ที่รูท โฟลเดอร์ `Server263` พร้อมสำหรับการบีบอัดเป็นไฟล์ ZIP ตัวเต็ม
+
+---
+
 ## 📅 [2026-10-12 13:03 น.] Phase 2: Explorer Class 15 (Cannoneer - 532) สมบูรณ์แบบ 100% — ปิดฉากสาย Explorer ครบทั้ง 15 อาชีพอย่างยิ่งใหญ่! Super Cannon Explosion, Barrel of Monkeys และคำสั่ง !endgame
 
 ### 🎯 Scope
