@@ -2450,6 +2450,18 @@ public class SkillConstants {
             case 5141507:
             case 5141508:
                 return 5141505; // Unleashed Dragon Attacks
+            // Corsair 6th Job Sub-Skills
+            case 5241001:
+                return 5241000; // HEXA Rapid Fire Shootout Mode
+            case 5241003:
+                return 5241002; // HEXA Broadside Summon
+            case 5241006:
+                return 5241005; // Condemnation -> HEXA Brain Scrambler
+            case 5241011:
+            case 5241013:
+                return 5241010; // HEXA Scurvy Summons Subs
+            case 5241504:
+                return 5241503; // Quickdraw Dreadnought Attack
             default:
                 // Universal 6th Job Origin Sub-Skill Redirection (xxx41501-xxx41599 -> xxx41500)
                 int subOrigin = skillID % 100000;

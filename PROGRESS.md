@@ -3,6 +3,40 @@
 This file tracks all bug fixes, feature implementations, and system optimizations across sessions.
 **Rule (AGENTS.md #4)**: Every agent MUST record new progress here and in `.agents/skills/maplestory-bug-knowledge/SKILL.md` after completing any modification.
 
+## 📅 [2026-10-12 12:58 น.] Phase 2: Explorer Class 14 (Corsair - 522) สมบูรณ์แบบ 100% — เรือรบประจัญบาน Battleship Dreadnought, Quickdraw และคำสั่ง !endgame
+
+### 🎯 Scope
+ลงทะเบียนและตรวจสอบสกิลคลาส 6 สาย Explorer อาชีพที่ 14: **Corsair (คอร์แซร์ / จอมพลเรือปืนคู่ - Job ID 522)** อาชีพที่สองของกลุ่ม Pirate Trio บรรจุสกิล Origin (Battleship Dreadnought & Ascent Skill: Quickdraw Dreadnought) และ HEXA Masteries ครบชุด (HEXA Rapid Fire, HEXA Brain Scrambler / Headshot, HEXA Eight-Legs Easton, HEXA Nautilus Strike, HEXA Ugly Bomb, HEXA Target Lock, HEXA Broadside, HEXA All Aboard) เชื่อมต่อระบบ Origin Absolute Bind/Debuff, Dreadnought Cutscene Broadcast, Quickdraw Extra Attacks, และคำสั่งทดสอบ `!endgame corsair` หรือ `!endgame sair` ให้มอบอาวุธ BiS Arcane Umbra Pistol, Princess No's Falcon Eye, และ HEXA Cores ระดับ 30 เต็มระบบ
+
+### 📂 Files Modified
+- [`v214 src/.../Corsair.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/pirate/Corsair.java)
+- [`v214 src/.../SkillConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`v214 src/.../AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **Battleship Dreadnought Origin & Quickdraw Dreadnought Integration**:
+   - ปัญหา: ใน `Corsair.java`, ขาดการจัดการสกิล Origin `BATTLESHIP_DREADNOUGHT` (`5241500`), Attacks (`5241501`, `5241502`), `QUICKDRAW_DREADNOUGHT` (`5241503`), และ `QUICKDRAW_DREADNOUGHT_ATTACK` (`5241504`)
+   - วิธีแก้: ใน `handleSkill()`, เพิ่ม `case BATTLESHIP_DREADNOUGHT:` มอบสถานะอมตะ `IndieNotDamaged` (7 วินาที) และส่งแพ็กเก็ตเอฟเฟกต์คัตซีน `UserLocal.showHexaSkillEff(chr)` ทั่วแมพ
+2. **Origin Absolute Bind & Origin Debuff Handling**:
+   - ปัญหา: ใน `handleAttack()`, การโจมตีด้วยสกิล Origin ยังไม่มอบสถานะดีบัฟพิเศษของคลาส 6
+   - วิธีแก้: เพิ่มเงื่อนไขตรวจสอบ `BATTLESHIP_DREADNOUGHT` และ sub-skills `5241501-5241502` เพื่อมอบสถานะ `MobStat.Freeze` (10 วินาที Absolute Bind) และ `MobStat.OriginDebuff` (20 วินาที) ให้กับศัตรูทุกตัวที่ถูกโจมตีด้วย `EnumMap<MobStat, Option>`
+3. **Sub-Skill Redirection in SkillConstants**:
+   - ปัญหา: สกิลลูกเสริมของ Corsair เช่น `HEXA Rapid Fire FA` (`5241001`), `HEXA Headshot Bonus` (`5241003`), `Easton Extra Strike` (`5241006`), `Target Lock Subs` (`5241011`, `5241013`), และ `Quickdraw Dreadnought Attack` (`5241504`) เป็น invisible skills ใน WZ
+   - วิธีแก้: เพิ่ม sub-skill mapping ใน `SkillConstants.getActualSkillIDfromSkillID()` เพื่อให้เซิร์ฟเวอร์ดึงค่าความเสียหายและคุณสมบัติจาก parent skill ได้ 100%
+4. **Full Testing Automation in `!endgame corsair`**:
+   - ใน `AdminCommands.setupEndgame()`:
+     - มอบอาวุธระดับเทพ: Arcane Umbra Pistol (`1492235`)
+     - มอบ Secondary BiS: Princess No's Falcon Eye (`1352916`)
+     - มอบ Mitra Pirate Emblem (`1190559`) และชุดเกราะ Arcane Umbra Pirate ครบ 6 ชิ้น
+     - ปลดล็อกและอัปเกรด HEXA Cores คลาส 6 ทุกคอร์ (Core 10000013, 10000065, 20000013, 20000063, 20000113, 20000159, 30000052-30000055, 40000000 Sol Janus) เลเวล 30 เต็ม พร้อมมอบสกิลเสริม (`5241001`, `5241003`, `5241006`, `5241011`, `5241013`, `5241501`, `5241502`, `5241504`)
+
+### 🧪 Verification & Deployment
+- คอมไพล์ผ่าน Maven OpenJDK 21: `BUILD SUCCESS` (0 errors, total time: 1m 10s)
+- ดีพลอย Fat JAR: `Server263/maplestory.jar` (~138.64 MB)
+- หมายเหตุ Patch: รวบรวมทำไฟล์แพตช์ ZIP ครั้งเดียวเมื่อครบ 15 อาชีพตามความประสงค์ของผู้ใช้
+
+---
+
 ## 📅 [2026-10-12 12:50 น.] Phase 2: Explorer Class 13 (Buccaneer - 512) สมบูรณ์แบบ 100% — เปิดฉากกลุ่ม Pirate Trio เชื่อมต่อ Liberator, Unleashed Dragon และคำสั่ง !endgame
 
 ### 🎯 Scope

@@ -2879,6 +2879,11 @@ public class AdminCommands {
             secondaryId = 1352906; // Princess No's Skull Armor
             emblemId = 1190559; // Mitra Pirate Emblem
             armors = pirateArmors;
+        } else if (JobConstants.isCorsair(job)) {
+            weaponId = 1492235; // Arcane Umbra Pistol
+            secondaryId = 1352916; // Princess No's Falcon Eye
+            emblemId = 1190559; // Mitra Pirate Emblem
+            armors = pirateArmors;
         } else {
             if (JobConstants.isWarriorEquipJob(job)) {
                 weaponId = 1402259;
@@ -3051,6 +3056,15 @@ public class AdminCommands {
                 chr.addSkill(5141506, 30, 30); // Unleashed Dragon Attack 1
                 chr.addSkill(5141507, 30, 30); // Unleashed Dragon Attack 2
                 chr.addSkill(5141508, 30, 30); // Unleashed Dragon Attack 3
+            } else if (JobConstants.isCorsair(job)) {
+                chr.addSkill(5241001, 30, 30); // HEXA Rapid Fire Shootout Mode
+                chr.addSkill(5241003, 30, 30); // HEXA Broadside Summon
+                chr.addSkill(5241006, 30, 30); // Condemnation
+                chr.addSkill(5241011, 30, 30); // HEXA Scurvy Summons Atom
+                chr.addSkill(5241013, 30, 30); // HEXA All Aboard Shoot
+                chr.addSkill(5241501, 30, 30); // Battleship Dreadnought Attack 1
+                chr.addSkill(5241502, 30, 30); // Battleship Dreadnought Attack 2
+                chr.addSkill(5241504, 30, 30); // Quickdraw Dreadnought Attack
             }
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] Hexa warning: " + e.getMessage());

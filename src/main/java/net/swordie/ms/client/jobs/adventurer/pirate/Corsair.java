@@ -6,6 +6,7 @@ import net.swordie.ms.client.character.info.HitInfo;
 import net.swordie.ms.client.character.skills.GuidedBullet;
 import net.swordie.ms.client.character.skills.*;
 import net.swordie.ms.client.character.skills.info.AttackInfo;
+import net.swordie.ms.client.character.skills.info.MobAttackInfo;
 import net.swordie.ms.client.character.skills.info.SkillInfo;
 import net.swordie.ms.client.character.skills.info.SkillUseInfo;
 import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
@@ -18,6 +19,7 @@ import net.swordie.ms.enums.MoveAbility;
 import net.swordie.ms.enums.TSIndex;
 import net.swordie.ms.life.Summon;
 import net.swordie.ms.life.mob.Mob;
+import net.swordie.ms.life.mob.MobStat;
 import net.swordie.ms.loaders.SkillData;
 import net.swordie.ms.util.Rect;
 import net.swordie.ms.util.Util;
@@ -82,6 +84,13 @@ public class Corsair extends Pirate {
     public static final int HEXA_SIEGE_BOMBER = 5241015;
     public static final int HEXA_NAUTILUS_STRIKE = 5241018; //Special Attack
 
+    // Origin & Ascent (6th Job)
+    public static final int BATTLESHIP_DREADNOUGHT = 5241500;
+    public static final int BATTLESHIP_DREADNOUGHT_ATTACK_1 = 5241501;
+    public static final int BATTLESHIP_DREADNOUGHT_ATTACK_2 = 5241502;
+    public static final int QUICKDRAW_DREADNOUGHT = 5241503;
+    public static final int QUICKDRAW_DREADNOUGHT_ATTACK = 5241504;
+
     public Corsair(Char chr) {
         super(chr);
     }
@@ -111,6 +120,26 @@ public class Corsair extends Pirate {
         boolean hasHitMobs = !attackInfo.mobAttackInfo.isEmpty();
         int slv = attackInfo.slv;
         if (hasHitMobs) {
+            if (skillID == BATTLESHIP_DREADNOUGHT || skillID == BATTLESHIP_DREADNOUGHT_ATTACK_1 || skillID == BATTLESHIP_DREADNOUGHT_ATTACK_2) {
+                Option oOrigin1 = new Option();
+                Option oOrigin2 = new Option();
+                oOrigin1.nOption = 1;
+                oOrigin1.rOption = skillID;
+                oOrigin1.tOption = 10;
+                oOrigin2.nOption = 1;
+                oOrigin2.rOption = skillID;
+                oOrigin2.tOption = 20;
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob == null || mob.getHp() <= 0) {
+                        continue;
+                    }
+                    EnumMap<MobStat, Option> originStats = new EnumMap<>(MobStat.class);
+                    originStats.put(MobStat.Freeze, oOrigin1);
+                    originStats.put(MobStat.OriginDebuff, oOrigin2);
+                    mob.getTemporaryStat().addStatOptions(mob, originStats);
+                }
+            }
             activateQuickdraw(attackInfo);
         }
         Option o1 = new Option();
@@ -382,6 +411,15 @@ public class Corsair extends Pirate {
                 o1 = tsm.getOption(EnhanceHeadShot);
                 o1.nOption = 0;
                 tsm.sendStat(EnhanceHeadShot, o1);
+                break;
+            case BATTLESHIP_DREADNOUGHT:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
+                tsm.sendStat(IndieNotDamaged, o1);
+                chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
+                break;
+            case QUICKDRAW_DREADNOUGHT:
                 break;
         }
     }
