@@ -41,6 +41,7 @@ import net.swordie.ms.client.jobs.legend.Evan;
 import net.swordie.ms.client.jobs.legend.Phantom;
 import net.swordie.ms.client.jobs.nova.AngelicBuster;
 import net.swordie.ms.client.jobs.nova.Kaiser;
+import net.swordie.ms.client.jobs.resistance.BattleMage;
 import net.swordie.ms.client.jobs.resistance.Blaster;
 import net.swordie.ms.client.jobs.resistance.Xenon;
 import net.swordie.ms.client.jobs.resistance.demon.DemonAvenger;
@@ -711,26 +712,65 @@ public class SkillHandler {
         int size = inPacket.decodeInt();
         int skillId = inPacket.decodeInt();
         int size2 = inPacket.decodeInt();
+
         for (int i = 0; i < size2; i++) {
             int skillId2 = inPacket.decodeInt();
             int forceAtomKey = inPacket.decodeInt();
-            int unk = inPacket.decodeInt();
             Position position = inPacket.decodePositionInt();
             chr.getJobHandler().handleGuidedForceAtomCollision(forceAtomKey, skillId2, position);
         }
+
         for (int i = 0; i < size; i++) {
             int forceAtomKey = inPacket.decodeInt();
             byte unk = inPacket.decodeByte();
             int mobObjId = inPacket.decodeInt();
             int createTime = inPacket.decodeInt();
-            int ownerId = inPacket.decodeInt(); // sometimes also the mobId (?)
-            int unk2 = inPacket.decodeInt();
+            int ownerId = inPacket.decodeInt();
             Position position = inPacket.decodePositionInt();
-            if (skillId == 0) {
-                byte unkk = inPacket.decodeByte(); //new sometime after 207
-                skillId = inPacket.decodeInt();
+            byte success = inPacket.decodeByte();
+            int skillId2 = inPacket.decodeInt();
+
+            ForceAtom fa = chr.getForceAtomByKey(forceAtomKey);
+            int forceAtomType = fa != null && fa.getForceAtomEnum() != null ? fa.getForceAtomEnum().getForceAtomType() : 0;
+
+            if (skillId == BattleMage.GRIM_HARVEST) {
+                if (inPacket.getUnreadAmount() >= 4) {
+                    inPacket.decodeInt();
+                }
             }
-            chr.getJobHandler().handleForceAtomCollision(forceAtomKey, skillId, mobObjId, position, inPacket);
+
+            if (skillId != DemonAvenger.NETHER_SHIELD_ATOM && skillId != Phantom.LUCK_OF_THE_DRAW_ATOM) {
+                if ((skillId != NightWalker.SHADOW_BAT_FROM_MOB_ATOM || success != 0) && forceAtomType != 33) {
+                    if (forceAtomType == 37 || forceAtomType == 38 || forceAtomType == 44 || forceAtomType == 45) {
+                        if (inPacket.getUnreadAmount() >= 4) {
+                            inPacket.decodeInt();
+                        }
+                    } else if (forceAtomType == 32) { // BladeFall
+                        if (inPacket.getUnreadAmount() >= 16) {
+                            int bladeFallSkillId = inPacket.decodeInt();
+                            Position bladeFallPosition = inPacket.decodePosition();
+                            inPacket.decodeInt();
+                            int bladeFallOption = inPacket.decodeInt();
+                        }
+                    }
+                } else {
+                    if (inPacket.getUnreadAmount() >= 12) {
+                        int ownerId2 = inPacket.decodeInt();
+                        Position position2 = inPacket.decodePositionInt();
+                    }
+                }
+            } else {
+                if (inPacket.getUnreadAmount() >= 4) {
+                    int ownerId2 = inPacket.decodeInt();
+                }
+            }
+
+            int finalSkillId = skillId2 != 0 ? skillId2 : skillId;
+            chr.getJobHandler().handleForceAtomCollision(forceAtomKey, finalSkillId, mobObjId, position, inPacket);
+        }
+
+        if (inPacket.getUnreadAmount() >= 4) {
+            inPacket.decodeInt();
         }
     }
 

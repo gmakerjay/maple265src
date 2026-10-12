@@ -3,6 +3,38 @@
 This file tracks all bug fixes, feature implementations, and system optimizations across sessions.
 **Rule (AGENTS.md #4)**: Every agent MUST record new progress here and in `.agents/skills/maplestory-bug-knowledge/SKILL.md` after completing any modification.
 
+## 📅 [2026-10-12 14:06 น.] Fix USER_FORCE_ATOM_COLLISION Packet Decoding & Guided Force Atom Null Safety
+
+### 🎯 Scope
+แก้ไขปัญหาข้อผิดพลาด `ArrayIndexOutOfBoundsException: Index 110 out of bounds for length 110` ในแพ็กเก็ต opcode `USER_FORCE_ATOM_COLLISION [442 / 0x01BA]` เมื่อตัวละครใช้สกิลที่มี Force Atom เช่น Night Lord HEXA Assassin's Mark (`4141004`) ชนโดนมอนสเตอร์ ปรับปรุงโครงสร้างการถอดรหัสแพ็กเก็ต (Packet Decoding) ให้ตรงกับมาตรฐาน Client v265 อย่างสมบูรณ์ 100% พร้อมเพิ่มระบบ Null-Safety ให้กับ Guided Force Atom Collision
+
+### 📂 Files Modified
+- [`SkillHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/user/SkillHandler.java)
+- [`Job.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/Job.java)
+- [`Server263/maplestory.jar`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/maplestory.jar)
+- [`Patches/Server263_Patch_20261012_1404.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_20261012_1404.zip)
+
+### 🛠️ Issues Identified & Fixes Applied
+1. **Packet Decoding Structure Alignment for v265**:
+   - ปัญหา: เมื่อมี Force Atom พุ่งชนเป้าหมายในเกม เซิร์ฟเวอร์จะ throw Exception:
+     `java.lang.ArrayIndexOutOfBoundsException: Index 110 out of bounds for length 110` ที่ `SkillHandler.handleForceAtomCollision`
+   - สาเหตุเชิงเทคนิค:
+     - ในลูป `size2` (Guided Collisions): โค้ดเดิมมีการ decode `int unk` เกินมา 4 ไบต์ ทำให้ offset ตำแหน่ง position เลื่อนไป 4 ไบต์ต่อไอเทม
+     - ในลูป `size` (Force Atom Collisions): โค้ดเดิม decode `int unk2` ก่อน `position` เกินมาอีก 4 ไบต์ และใส่เงื่อนไข `if (skillId == 0)` ครอบ `byte success` และ `int skillId2` ทำให้เมื่อ `skillId != 0` ไม่มีการ decode 2 ฟิลด์นี้ เกิด Packet Misalignment อย่างรุนแรงจนอ่านเลยขนาด Buffer 110 ไบต์
+   - วิธีแก้: ใน [`SkillHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/user/SkillHandler.java), ปรับปรุงโครงสร้างการ decode ให้ตรงกับโครงสร้างจริงของ v265:
+     - ลูป `size2`: `skillId2` (int) -> `forceAtomKey` (int) -> `position` (PositionInt)
+     - ลูป `size`: `forceAtomKey` (int) -> `unk` (byte) -> `mobObjId` (int) -> `createTime` (int) -> `ownerId` (int) -> `position` (PositionInt) -> `success` (byte) -> `skillId2` (int)
+     - เสริมการตรวจสอบ `inPacket.getUnreadAmount()` ในกรณี job-specific extensions (เช่น Grim Harvest, BladeFall ฯลฯ)
+     - เคลียร์ trailing int (-1 / tick) ท้ายแพ็กเก็ตให้อ่านครบถ้วนพอดี 108 ไบต์
+2. **Guided Force Atom Null-Safety**:
+   - ใน [`Job.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/Job.java), เพิ่มเงื่อนไข `if (forceAtom != null)` ใน `handleGuidedForceAtomCollision()` ป้องกันข้อผิดพลาด `NullPointerException` ในกรณี Force Atom หมดอายุหรือถูกลบไปก่อน
+3. **Compilation & Deployment**:
+   - รัน Maven Package สำเร็จ `BUILD SUCCESS` (maplestory.jar ~138.65 MB)
+   - Deploy ไปยัง `v214 src/maplestory.jar`, `Server263/maplestory.jar`, และ Root `maplestory.jar`
+   - สร้าง Incremental Patch `Server263_Patch_20261012_1404.zip` (121.60 MB) พร้อมใช้งาน
+
+---
+
 ## 📅 [2026-10-12 13:24 น.] Server Sanitization, Full Clean Database Reset & Jython UTF-8 Console Optimization
 
 ### 🎯 Scope

@@ -3129,11 +3129,13 @@ public abstract class Job {
         ForceAtom forceAtom = chr.getForceAtomByKey(faKey);
         switch (skillId) {
             case GUIDED_ARROW:
-                if (forceAtom.getCurRecreationCount(faKey) < forceAtom.getMaxRecreationCount(faKey)) {
-                    forceAtom.incrementCurRecreationCount(faKey);
-                } else {
-                    tsm.removeStatsBySkill(skillId);
-                    chr.removeForceAtomByKey(faKey);
+                if (forceAtom != null) {
+                    if (forceAtom.getCurRecreationCount(faKey) < forceAtom.getMaxRecreationCount(faKey)) {
+                        forceAtom.incrementCurRecreationCount(faKey);
+                    } else {
+                        tsm.removeStatsBySkill(skillId);
+                        chr.removeForceAtomByKey(faKey);
+                    }
                 }
                 break;
         }
