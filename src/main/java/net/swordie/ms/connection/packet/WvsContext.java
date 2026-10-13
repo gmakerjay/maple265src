@@ -3230,8 +3230,8 @@ public class WvsContext {
         outPacket.encodeInt(1);
         outPacket.encodeInt(0);
         outPacket.encodeByte(0);
-        outPacket.encodeInt(cube.getItemId());
-        outPacket.encodeShort(cube.getBagIndex());
+        outPacket.encodeInt(cube != null ? cube.getItemId() : 0);
+        outPacket.encodeShort(cube != null ? cube.getBagIndex() : 0);
         outPacket.encodeLong(equipSN);
         outPacket.encodeInt(equip.getItemId());
         outPacket.encodeInt(equip.getInvType().getVal() == EQUIPPED.getVal() ? -equip.getBagIndex() : equip.getBagIndex());

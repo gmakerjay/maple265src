@@ -480,8 +480,10 @@ public class ItemHandler {
 
             if (itemID == ItemConstants.VIOLET_CUBE) {
                 CubeHandler.useVioletCube(chr, inPacket);
-            } else {
+            } else if (inPacket.getUnreadAmount() > 0) {
                 CubeHandler.handleCubeAll(chr, item, inPacket);
+            } else {
+                chr.dispose();
             }
 
         } else if (ItemConstants.isNebuliteDiffuser(itemID)) {

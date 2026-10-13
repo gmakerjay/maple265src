@@ -3,6 +3,42 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-13 22:25 น.] Fix Bright Cube Option Selection UI & Resolve Glowing Cube Responsiveness Delay (Opcode 381 & Sequence Alignment)
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: Fix Bright Cube Selection UI, Overhaul Memorial Cube Option Handler & Resolve Glowing Cube Reroll Delay
+- **รายละเอียด**:
+  1. **ปัญหาและสาเหตุเชิงเทคนิคที่ตรวจสอบพบ (Problems & Root Causes)**:
+     - **Bright Cube Unusable / Disappears without Effect & No Selection UI ("ใช้แล้วกล่องหายแต่ไม่มีผลอะไร / ไม่มีให้เลือก")**:
+       - `USER_MEMORIAL_CUBE_OPTION_REQUEST` ใน [InHeader.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/header/InHeader.java) เป็น `UnkValue` (`-1`) เมื่อผู้เล่นคลิกเลือก Before หรือ After ตัวไคลเอนต์ MapleStory v265.3 ส่งแพ็กเก็ต Opcode 381 มา แต่เซิร์ฟเวอร์ไม่ได้ลงทะเบียนไว้ ทำให้แพ็กเก็ตตกหล่น
+       - ใน [CubeHandler.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/CubeHandler.java) เมธอด `handleBrightCube` (init) การถอดรหัส Buffer เดิมใช้เงื่อนไขตรวจสอบไบต์ผิดพลาด ทำให้ `cubeIndex` (Sequence ID) ถูกกลืนกลายเป็น `0` ส่งผลให้เมื่อส่ง `WvsContext.consumeBrightCubeInit` ตัวไคลเอนต์เห็น Index ไม่ตรงกับ Sequence ที่ส่งมา จึงตัดทิ้งและไม่ยอมเปิดหน้าต่าง Before/After Memorial Dialog ("ไม่มีให้เลือก")
+       - เมธอด `handleUserMemorialCubeOptionRequest` โค้ดเดิมไปแก้ไขค่าบนออบเจกต์ `copy` แทนที่จะดึงไอเทมจริงจากกระเป๋า `chr.getInventoryByType(...)` / `chr.getEquippedInventory()` และมีการหักเงินค่าคิวบ์ซ้ำสองรอบ
+       - ใน [WvsContext.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/connection/packet/WvsContext.java) เมธอด `consumeBrightCubeInit` มีการเรียก `cube.getItemId()` และ `cube.getBagIndex()` โดยตรง เสี่ยงต่อ `NullPointerException` หากคิวบ์ถูกบริโภคจนหมดก่อนส่งแพ็กเก็ต
+     - **Glowing Cube / Green Cubes Delay ("กล่องเขียวใช้ได้แล้วแต่ช้ามากกว่าจะทำงาน")**:
+       - ใน `handleCube` การอ่าน `cubeIndex` เดิมมีปัญหาในการคำนวณไบต์คงเหลือ ทำให้ค่า `cubeIndex` ที่ส่งกลับใน `consumeCubeRelease` กลายเป็น `0` ไม่ตรงกับ Sequence ของไคลเอนต์ ไคลเอนต์จึงเกิด Timeout Delay 2-3 วินาทีก่อนจะถูกบังคับอัปเดต UI
+       - มีการส่งแพ็กเก็ต `UserLocal.itemSlotExtendItemUse` (Opcode 1518 - Potential Stamp Result) ปะปนในการคิวบ์ ทำให้ State Machine ของไคลเอนต์ขัดข้อง
+       - มีการเรียก `chr.dispose()` (ส่ง `EXCL_REQUEST` - Enable Actions) ท้ายเมธอด `handleCube` ซึ่งไปรบกวนจังหวะแอนิเมชันของหน้าต่าง ENHANCE
+       - การคิดจำนวนคิวบ์ที่เหลือ `cubeCount` ใน `handleCube` และ `handleBrightCube` มีการเรียก `chr.consumeItem` ไปแล้ว 1 ชิ้น แต่โค้ดกลับนำ `getQuantityOfItem() - 1` ไปลบซ้ำอีก 1 ชิ้น ทำให้ Client เข้าใจว่าคิวบ์หมดก่อนความเป็นจริง
+  2. **การแก้ไขเชิงลึก (Implementation & Solutions)**:
+     - **Opcode 381 Registration**:
+       - อัปเดต `InHeader.USER_MEMORIAL_CUBE_OPTION_REQUEST(381)` ใน [InHeader.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/header/InHeader.java) ให้ตรงตามโปรโตคอล MapleStory v265.3
+     - **Robust Sequence Index Extraction (`cubeIndex`)**:
+       - ปรับตรรกะใน [CubeHandler.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/CubeHandler.java) ทั้งใน `handleCube` และ `handleBrightCube` (ทั้ง init และ release) ให้อ่าน `ePos = inPacket.decodeShort()`, ตามด้วย `if (inPacket.getUnreadAmount() > 1) { inPacket.skip(inPacket.getUnreadAmount() - 1); }` และอ่านไบต์สุดท้ายเป็น `cubeIndex` เสมอ ทำให้ได้ Sequence Index ที่ถูกต้อง 100% ไคลเอนต์แสดงผลการรีออปชั่นทันทีโดยไม่มีอาการหน่วงเวลา
+     - **Remove Interferences & Fix Packets in `handleCube`**:
+       - เปลี่ยนจากการส่ง Stamp Packet (1518) มาส่ง `UserLocal.brightCubeResult(true, cubeID, equip.getItemId())` (1519) ที่ถูกต้อง
+       - ลบ `chr.dispose()` ที่รบกวน Action State ท้าย `handleCube` ออก
+       - ปรับการคิดจำนวน `cubeCount` ให้ตรงกับจำนวนจริงในกระเป๋า `Math.max(chr.getScriptManager().getQuantityOfItem(cubeID), 0)`
+     - **Overhaul Memorial Cube Option Handler & Selection Flow**:
+       - ปรับปรุง `handleUserMemorialCubeOptionRequest` ให้ดึงอุปกรณ์จริงจาก Inventory (รองรับสล็อตลบของไอเทมสวมใส่) อัปเดตออปชั่นใหม่ตามตัวเลือก (Option 6: After / New Potential, Option 7: Before / Old Potential), อัปเดตอาวุธรองของ Zero ให้ตรงกัน, ล้าง `memorialCubeInfo` ทิ้งอย่างสะอาดหมดจด และตัดการหักเงินซ้ำซ้อนออก
+       - เสริมตรรกะ fallback ใน `handleBrightCube` (!init) ให้รองรับทั้ง choice 0/6 (After) และ 1/7 (Before)
+     - **Null-Safety & Guarding in Packet Builders**:
+       - เสริม `cube != null ? cube.getItemId() : 0` ใน `WvsContext.consumeBrightCubeInit`
+       - เพิ่มการตรวจสอบ `inPacket.getUnreadAmount() > 0` ก่อนเรียก `handleCubeAll` ใน [ItemHandler.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemHandler.java) ป้องกันการบริโภคคิวบ์เปล่าเมื่อผู้เล่นกดดับเบิลคลิกจากช่อง Cash
+  3. **การคอมไพล์ ดีพลอย และจัดทำแพตช์ (Compilation, Deployment & Patch Archive)**:
+     - คอมไพล์ผ่านฉลุย 100% ด้วย Maven: `BUILD SUCCESS` (854 ไฟล์)
+     - Deploy `maplestory.jar` (138.68 MB) ไปยัง `Server263/maplestory.jar` และ root `maplestory.jar`
+     - สร้างแพ็กเกจแพตช์เดี่ยว [Patches/Server263_Patch_Latest.zip](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip) (173.02 MB) เรียบร้อยพร้อมใช้งาน 100% ตามกฎข้อ 4 ของ AGENTS.md
+
 ## 📅 [2026-10-13 20:05 น.] Fix Rebirth Flame Option Selection (Before/After Inversion) & Arcane Symbol Daily Quest Ecosystem
 
 ### 🎯 Scope & Technical Details

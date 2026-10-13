@@ -228,45 +228,45 @@ public class CubeHandler {
             chr.dispose();
             return;
         }
-        Equip equip = memorialCubeInfo.getEquip();
-        Equip zeroEquip = null;
+        Equip copy = memorialCubeInfo.getEquip();
+        if (copy == null) {
+            chr.dispose();
+            return;
+        }
+        InvType invType = copy.getInvType() == EQUIPPED ? EQUIPPED : EQUIP;
+        Equip equip = (Equip) chr.getInventoryByType(invType).getItemBySlot(copy.getBagIndex());
+        if (equip == null) {
+            equip = (Equip) chr.getEquippedInventory().getItemBySlot(copy.getBagIndex());
+            if (equip == null) {
+                equip = (Equip) chr.getEquippedInventory().getItemBySlot(-copy.getBagIndex());
+            }
+        }
         if (equip == null) {
             chr.dispose();
             return;
         }
+        Equip zeroEquip = null;
         if (JobConstants.isZero(chr.getJob()) && ItemConstants.isLongOrBigSword(equip.getItemId())) {
             zeroEquip = (Equip) chr.getEquipInventory().getItemBySlot(-11);
-            if (zeroEquip == null) {
-                chr.chatMessage(SystemNotice, "Đã xảy ra lỗi không xác định.");
-                chr.dispose();
-                return;
-            }
         }
         switch (chooseOption) {
-            case 6: //Is Choose Current Potential.
+            case 6: // Choose Current / After (New Potential)
+                equip.setOptions(copy.getOptions());
                 equip.updateToChar(chr);
                 if (zeroEquip != null) {
-                    zeroEquip.setOptions(equip.getOptions());
+                    zeroEquip.setOptions(copy.getOptions());
                     zeroEquip.updateToChar(chr);
                 }
                 break;
-            case 7: //Is Choose Before Potential.
+            case 7: // Choose Before (Old Potential)
                 equip.setOptions(memorialCubeInfo.getOldPotentials());
                 equip.updateToChar(chr);
                 if (zeroEquip != null) {
-                    zeroEquip.setOptions(equip.getOptions());
+                    zeroEquip.setOptions(memorialCubeInfo.getOldPotentials());
                     zeroEquip.updateToChar(chr);
                 }
                 break;
         }
-
-        long cost = ItemConstants.getMesoCubingCost(equip.getrLevel());
-        if (cost > chr.getMoney()) {
-            chr.chatMessage("You don't have enough mesos.");
-            chr.dispose();
-            return;
-        }
-        chr.deductMoney(cost);
         chr.setMemorialCubeInfo(null);
         chr.dispose();
     }
@@ -422,8 +422,8 @@ public class CubeHandler {
             return;
         }
         int ePos = inPacket.decodeShort();
-        if (inPacket.getUnreadAmount() >= 2 && (inPacket.getUnreadAmount() == 2 || inPacket.getUnreadAmount() == 3)) {
-            inPacket.decodeShort(); // high word if ePos was 4-byte int
+        if (inPacket.getUnreadAmount() > 1) {
+            inPacket.skip(inPacket.getUnreadAmount() - 1);
         }
         byte cubeIndex = inPacket.getUnreadAmount() > 0 ? inPacket.decodeByte() : 0;
 
@@ -489,17 +489,16 @@ public class CubeHandler {
             chr.consumeItem(cubeID, 1);
         }
         giveCubePieces(chr, cubeID);
-        int cubeCount = Math.max(chr.getScriptManager().getQuantityOfItem(cubeID) - 1, 0);
+        int cubeCount = Math.max(chr.getScriptManager().getQuantityOfItem(cubeID), 0);
         if (bonus) {
             equip.resetHiddenOptionBonus(hiddenValue);
         } else {
             equip.setHiddenOptionBase(hiddenValue, 0);
         }
         equip.releaseOptions(bonus, cubeID);
-        chr.write(UserLocal.itemSlotExtendItemUse(true, cubeID, equip.getItemId()));
+        chr.write(UserLocal.brightCubeResult(true, cubeID, equip.getItemId()));
         equip.updateToChar(chr);
         chr.write(WvsContext.consumeCubeRelease(cubeIndex, equip.getId(), cubeCount, cubeType));
-        chr.dispose();
     }
 
     protected static void handleBrightCube(Char chr, Item cube, InPacket inPacket, ItemGrade itemGradeMax, boolean bonus, boolean init) {
@@ -509,8 +508,8 @@ public class CubeHandler {
                 return;
             }
             int ePos = inPacket.decodeShort();
-            if (inPacket.getUnreadAmount() >= 2 && (inPacket.getUnreadAmount() == 2 || inPacket.getUnreadAmount() == 3)) {
-                inPacket.decodeShort(); // high word if ePos was 4-byte int
+            if (inPacket.getUnreadAmount() > 1) {
+                inPacket.skip(inPacket.getUnreadAmount() - 1);
             }
             byte cubeIndex = inPacket.getUnreadAmount() > 0 ? inPacket.decodeByte() : 0;
             int cubeID = cube != null ? cube.getItemId() : 0;
@@ -574,7 +573,7 @@ public class CubeHandler {
                 chr.consumeItem(cubeID, 1);
             }
             giveCubePieces(chr, cubeID);
-            int cubeCount = Math.max(chr.getScriptManager().getQuantityOfItem(cubeID) - 1, 0);
+            int cubeCount = Math.max(chr.getScriptManager().getQuantityOfItem(cubeID), 0);
             var copy = equip.deepCopy();
             if (bonus) {
                 copy.resetHiddenOptionBonus(hiddenValue);
@@ -600,9 +599,20 @@ public class CubeHandler {
                 }
                 var copy = memorialCubeInfo.getEquip();
                 if (copy != null) {
-                    Equip equip = (Equip) chr.getInventoryByType(copy.getInvType()).getItemBySlot(copy.getBagIndex());
-                    if (equip != null && result == 0) {
-                        equip.setOptions(copy.getOptions());
+                    InvType invType = copy.getInvType() == EQUIPPED ? EQUIPPED : EQUIP;
+                    Equip equip = (Equip) chr.getInventoryByType(invType).getItemBySlot(copy.getBagIndex());
+                    if (equip == null) {
+                        equip = (Equip) chr.getEquippedInventory().getItemBySlot(copy.getBagIndex());
+                        if (equip == null) {
+                            equip = (Equip) chr.getEquippedInventory().getItemBySlot(-copy.getBagIndex());
+                        }
+                    }
+                    if (equip != null) {
+                        if (result == 0 || result == 6) {
+                            equip.setOptions(copy.getOptions());
+                        } else {
+                            equip.setOptions(memorialCubeInfo.getOldPotentials());
+                        }
                         equip.updateToChar(chr);
                     }
                 }
@@ -610,6 +620,9 @@ public class CubeHandler {
             if (chr.getMemorialCubeInfo() != null) {
                 chr.getMemorialCubeInfo().setEquip(null);
                 chr.setMemorialCubeInfo(null);
+            }
+            if (inPacket.getUnreadAmount() > 1) {
+                inPacket.skip(inPacket.getUnreadAmount() - 1);
             }
             byte releaseIdx = inPacket.getUnreadAmount() > 0 ? inPacket.decodeByte() : 0;
             chr.write(WvsContext.consumeBrightCubeRelease(releaseIdx));
