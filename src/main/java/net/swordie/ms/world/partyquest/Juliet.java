@@ -16,7 +16,7 @@ public class Juliet implements PartyQuest {
 
     private final ScriptManagerImpl sm;
     private final Char chr;
-    private final Party party;
+    private Party party;
     private final int entryQuest = 1205;
 
     public Juliet(Char chr) {
@@ -65,9 +65,13 @@ public class Juliet implements PartyQuest {
                             "\r\n#i1122118# #z1122118#\r\n(Can be traded for 1 #b#z1122116##k and 1 #b#z1122117##k)");
                     break;
                 case 1:
-                    if (party == null) {
-                        sm.sendSayOkay("You have to be in a #bparty#k to enter the Juliet Party Quest. Now go find some friends!");
-                    } else if (!party.isLeader(chr)) {
+                    Party currentParty = chr.getParty();
+                    if (currentParty == null) {
+                        currentParty = Party.createNewParty(chr, chr.getName() + "'s Party");
+                        chr.setParty(currentParty);
+                    }
+                    this.party = currentParty;
+                    if (!party.isLeader(chr)) {
                         sm.sendSayOkay("If you want to try the quest, please tell the #bleader of your party#k to talk to me.");
                     } else if (sm.checkPartyForPQ()) {
                         if (isPartyEligible((short) 70, (short) 275, party)) {

@@ -4,9 +4,10 @@ import net.swordie.ms.client.character.Char;
 import net.swordie.ms.client.social.Party.Party;
 import net.swordie.ms.client.social.Party.PartyMember;
 import net.swordie.ms.constants.GameConstants;
+import net.swordie.ms.constants.WzConstants;
 import net.swordie.ms.enums.UIType;
 import net.swordie.ms.scripts.ScriptManagerImpl;
-import net.swordie.ms.world.field.Instance;
+import net.swordie.ms.world.field.Field;
 
 public class DragonRider implements PartyQuest {
 
@@ -33,18 +34,23 @@ public class DragonRider implements PartyQuest {
     @Override
     public void start() {
         sm.setSpeakerID(9020016);
-        int selection = sm.sendNext("#e<Nhi½m vî nhóm: Cïåi rÓng>#n\r\nGiúp mØt ông già ra ngoài, «ïæc không? Ðánh b¢i Dragon Rider và mang l¢i hÆa b¾nh cho Leafre!\r\n\r\n#b" +
-                "#L0#1. BïÜc vào Crimson Sky Dock. (C¬p «Ø 150+ / nhóm ít nh¬t 3 ngïßi)#l\r\n" +
-                "#L1#2. Tìm nhóm.#l\r\n" +
-                "#L2#3. Tôi muÑn t¾m hiºu thêm#l\r\n" +
-                "#L3#4. Tôi cÆn «i «ïæc bao nhiêu lïæt nøa hôm nay?#l#k");
+        int selection = sm.sendNext("#e<Party Quest: Dragon Rider>#n\r\nHelp an old man out, will you? Defeat the Dragon Rider and restore peace to Leafre!\r\n\r\n#b" +
+                "#L0#1. Enter Crimson Sky Dock (Lv. 150+, Solo or Party)#l\r\n" +
+                "#L1#2. Find a party.#l\r\n" +
+                "#L2#3. Tell me more about this quest.#l\r\n" +
+                "#L3#4. How many more attempts do I have today?#l#k");
         switch (selection) {
             case 0:
+                Party party = chr.getParty();
                 if (party == null) {
-                    sm.sendSayOkay("Hãy tạo nhóm để tiếp tục.");
+                    party = Party.createNewParty((byte) 0, chr.getName() + "'s Party", chr.getWorld());
+                    party.addPartyMember(chr);
+                    chr.setParty(party);
                 } else if (!party.isLeader(chr)) {
-                    sm.sendSayOkay("in hãy để người lãnh đạo nhóm của bạn nói chuyện với tôi.");
-                } else if (sm.checkPartyForPQ()) {
+                    sm.sendSayOkay("Please tell the leader of your party to talk to me.");
+                    return;
+                }
+                if (sm.checkPartyForPQ()) {
                     if (isPartyEligible((short) 150, (short) 275, party)) {
                         if (sm.checkAttempt(entryQuest, party)) {
                             sm.warpInstanceIn(chr, GameConstants.DRAGON_RIDER_FIRST_STAGE, true);
@@ -54,10 +60,10 @@ public class DragonRider implements PartyQuest {
                             sm.addAttempt(entryQuest, party);
                             return;
                         } else {
-                            sm.sendSayOkay("MØt trong nhøng thành viên trong nhóm «» hªt lïæt vào nhi½m vî nóm này.");
+                            sm.sendSayOkay("One or more party members have reached the daily maximum attempts.");
                         }
                     } else {
-                        sm.sendSayOkay("Ai «ó trong nhóm cça b¢n không «¢t c¬p 150 chïa. B¢n ph¡i «¢t c¬p 150 ho¶c cao hÛn!");
+                        sm.sendSayOkay("Someone in your party has not reached Lv. 150. You must be Lv. 150 or higher to enter!");
                     }
                 }
                 break;
@@ -65,7 +71,7 @@ public class DragonRider implements PartyQuest {
                 sm.openUI(UIType.UI_PARTY_INVITATION);
                 break;
             case 2:
-                sm.sendSayOkay("Vào #bCrimson Sky Doorway#k và t¾m hiºu danh tính cça #rCïåi rÓng#k. S÷ dîng k¸ n£ng #bFlying#k «º bay vút qua b®u trßi và «uÖi theo lë Wyvern «º t¾m h¤n.\r\n #e- C¬p «Ø#n: 150 trä lên #r(C¬p «Ø khuyªn nghÅ: 150 - 169)#k\r\n#e- GiÜi h¢n thßi gian#n: 30 phút\r\n#e- Ngïßi chÛi#n: 3-6 \r\n#e- Yêu c®u#n: K¸ n£ng bay");
+                sm.sendSayOkay("Enter the #bCrimson Sky Doorway#k and uncover the identity of the #rDragon Rider#k. Soar through the sky and take down Wyverns!\r\n #e- Level:#n 150 or higher #r(Recommended: 150 - 200)#k\r\n#e- Time Limit:#n 20 minutes\r\n#e- Players:#n 1 - 6 (Solo or Party)");
                 break;
             case 3:
                 int count = 5;
@@ -79,7 +85,7 @@ public class DragonRider implements PartyQuest {
 
     @Override
     public void exit() {
-        if (sm.sendAskYesNo("Bạn có muốn rút lui không?")) {
+        if (sm.sendAskYesNo("Do you want to leave the Dragon Rider Party Quest?")) {
             sm.setAchieveRatio(0, false);
             sm.warpInstanceOut(chr, 910002000);
         }
@@ -87,15 +93,20 @@ public class DragonRider implements PartyQuest {
 
     @Override
     public void event() {
-        if (sm.getFieldID() == 240080400) {
-            sm.warpParty(sm.getFieldID() + 100, party);
-        } else {
-            Instance instance = party.getInstance();
-            int stage = (sm.getFieldID() % 1000) / 100;
-            if (instance.hasProperty("escape" + stage + "clear")) {
-                sm.warpParty(sm.getFieldID() + 100, party);
+        Field field = chr.getField();
+        if (field.getId() == 240080500) { // Final Stage
+            if (field.getMobs().isEmpty()) {
+                clear(chr);
             } else {
-                sm.chat("Chïa thº tiªp tîc, h»y hoàn thành màn này «».");
+                sm.chat("Defeat the Dragon Rider to restore peace!");
+            }
+        } else {
+            if (field.getMobs().isEmpty()) {
+                sm.showEffectToField(WzConstants.EFFECT_PQ_CLEAR);
+                sm.playSound(WzConstants.EFFECT_PQ_SOUND_CLEAR, true);
+                sm.warpParty(field.getId() + 100, party);
+            } else {
+                sm.chat("Please eliminate all enemies before moving to the next stage.");
             }
         }
     }
@@ -109,6 +120,11 @@ public class DragonRider implements PartyQuest {
 
     @Override
     public void clear(Char chr) {
+        ScriptManagerImpl sm = chr.getScriptManager();
+        sm.showEffectToField(WzConstants.EFFECT_PQ_CLEAR);
+        sm.playSound(WzConstants.EFFECT_PQ_SOUND_CLEAR, true);
+        sm.givePQRewards(party);
+        end(chr);
     }
 
     @Override

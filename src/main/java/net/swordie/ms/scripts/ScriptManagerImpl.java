@@ -2522,8 +2522,9 @@ public class ScriptManagerImpl implements ScriptManager {
     public boolean checkPartyForPQ() {
         Party party = chr.getParty();
         if (party == null) {
-            chat("You are not in a party.");
-            return false;
+            party = Party.createNewParty((byte) 0, chr.getName() + "'s Party", chr.getWorld());
+            party.addPartyMember(chr);
+            chr.setParty(party);
         } else if (!isPartyLeader()) {
             chat("You are not the party leader.");
             return false;
@@ -2532,6 +2533,7 @@ public class ScriptManagerImpl implements ScriptManager {
         Char leader = chr.getWorld().getCharById(party.getPartyLeaderID());
         if (leader == null) {
             chat("Your party leader is offline.");
+            return false;
         } else {
             int fieldID = leader.getField().getId();
             for (PartyMember pm : party.getMembers()) {
@@ -2543,8 +2545,8 @@ public class ScriptManagerImpl implements ScriptManager {
                 }
             }
         }
-        if (count < 2) {
-            chat("Please ensure that a minimum of 2 people in your party are online and on the same map as your party leader.");
+        if (count < 1) {
+            chat("Please ensure that you are on the same map as your party leader.");
             return false;
         }
         return true;
@@ -3224,54 +3226,100 @@ public class ScriptManagerImpl implements ScriptManager {
     }
 
     public boolean rectangleStages(int stage) {
-        int correctAnswer = 0;
+        Party party = getParty();
+        if (party == null) {
+            return true;
+        }
+        Instance instance = party.getInstance();
+        boolean isSolo = party.getOnlineChars().size() <= 1;
+
         if (stage == 2) {
-            int[][] answers = {{0, 1, 1, 1}, {1, 0, 1, 1}, {1, 1, 0, 1}, {1, 1, 1, 0}};
-            int[] answer = answers[(int) Math.floor(Math.random() * answers.length)];
-            int[] playerPlacement = {0, 0, 0, 0};
             Rect[] areas = {new Rect(-971, -132, -948, 42), new Rect(-800, -143, -772, 40),
                     new Rect(-662, -138, -636, 37), new Rect(-522, -142, -493, 33)};
-            for (Char pm : getParty().getOnlineChars()) {
+            if (isSolo) {
+                for (Rect area : areas) {
+                    if (area.hasPositionInside(chr.getPosition())) {
+                        return true;
+                    }
+                }
+                chr.chatScriptMessage("Hang on any one of the 4 ropes, then check with Cloto!");
+                return false;
+            }
+
+            int[][] answers = {{0, 1, 1, 1}, {1, 0, 1, 1}, {1, 1, 0, 1}, {1, 1, 1, 0}};
+            int answerIdx;
+            if (instance != null && instance.hasProperty("kpq2answer_idx")) {
+                answerIdx = (int) instance.getProperty("kpq2answer_idx");
+            } else {
+                answerIdx = (int) Math.floor(Math.random() * answers.length);
+                if (instance != null) {
+                    instance.addProperty("kpq2answer_idx", answerIdx);
+                }
+            }
+            int[] answer = answers[answerIdx];
+            int[] playerPlacement = {0, 0, 0, 0};
+            for (Char pm : party.getOnlineChars()) {
                 for (int i = 0; i < areas.length; i++) {
                     if (areas[i].hasPositionInside(pm.getPosition())) {
                         playerPlacement[i] += 1;
                     }
                 }
             }
+            int correctAnswer = 0;
             for (int i = 0; i < answer.length; i++) {
                 if (playerPlacement[i] == answer[i]) {
                     correctAnswer++;
                 }
             }
-            if (correctAnswer == 3) {
+            if (correctAnswer == 4) {
                 return true;
             } else {
-                chr.chatScriptMessage("You currently selected " + correctAnswer + " correct rope(s).");
+                chr.chatScriptMessage("Incorrect combination! " + correctAnswer + " rope(s) match.");
             }
         } else if (stage == 3) {
-            int[][] answers = {{0, 0, 1, 1, 1}, {0, 1, 0, 1, 1}, {0, 1, 1, 0, 1}, {0, 1, 1, 1, 0}, {1, 0, 0, 1, 1},
-                    {1, 0, 1, 0, 1}, {1, 0, 1, 1, 0}, {1, 1, 0, 0, 1}, {1, 1, 0, 1, 0}, {1, 1, 1, 0, 0}};
-            int[] answer = answers[(int) Math.floor(Math.random() * answers.length)];
-            int[] playerPlacement = {0, 0, 0, 0, 0, 0};
             Rect[] areas = {new Rect(608, -185, 737, -125), new Rect(780, -120, 918, -66),
                     new Rect(969, -183, 1096, -122), new Rect(880, -243, 1005, -186),
                     new Rect(698, -243, 826, -18)};
-            for (Char pm : getParty().getOnlineChars()) {
+            if (isSolo) {
+                for (Rect area : areas) {
+                    if (area.hasPositionInside(chr.getPosition())) {
+                        return true;
+                    }
+                }
+                chr.chatScriptMessage("Stand on any one of the platforms, then check with Cloto!");
+                return false;
+            }
+
+            int[][] answers = {{0, 0, 1, 1, 1}, {0, 1, 0, 1, 1}, {0, 1, 1, 0, 1}, {0, 1, 1, 1, 0}, {1, 0, 0, 1, 1},
+                    {1, 0, 1, 0, 1}, {1, 0, 1, 1, 0}, {1, 1, 0, 0, 1}, {1, 1, 0, 1, 0}, {1, 1, 1, 0, 0}};
+            int answerIdx;
+            if (instance != null && instance.hasProperty("kpq3answer_idx")) {
+                answerIdx = (int) instance.getProperty("kpq3answer_idx");
+            } else {
+                answerIdx = (int) Math.floor(Math.random() * answers.length);
+                if (instance != null) {
+                    instance.addProperty("kpq3answer_idx", answerIdx);
+                }
+            }
+            int[] answer = answers[answerIdx];
+            int[] playerPlacement = {0, 0, 0, 0, 0};
+            for (Char pm : party.getOnlineChars()) {
                 for (int i = 0; i < areas.length; i++) {
                     if (areas[i].hasPositionInside(pm.getPosition())) {
                         playerPlacement[i] += 1;
                     }
                 }
             }
+            int correctAnswer = 0;
             for (int i = 0; i < answer.length; i++) {
                 if (playerPlacement[i] == answer[i]) {
                     correctAnswer++;
                 }
             }
-            if (correctAnswer == 3) {
+            if (correctAnswer == 5) {
                 return true;
             } else {
-                chr.chatScriptMessage("You currently selected " + correctAnswer + " correct platform(s).");
+                chr.chatScriptMessage("Incorrect combination! " + correctAnswer + " platform(s) match.");
             }
         }
         return false;

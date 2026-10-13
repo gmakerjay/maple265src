@@ -12,7 +12,7 @@ public class Escape implements PartyQuest {
 
     private final ScriptManagerImpl sm;
     private final Char chr;
-    private final Party party;
+    private Party party;
     private final int entryQuest = 1215;
 
     public Escape(Char chr) {
@@ -46,9 +46,13 @@ public class Escape implements PartyQuest {
                     sm.sendSayOkay("You're braver than you seem. Follow me, I'll show you to the Aerial Prison.");
                     sm.warp(GameConstants.ESCAPE_ENTRANCE_MAP);
                 } else {
-                    if (party == null) {
-                        sm.sendSayOkay("You have to be in a #bparty#k to enter the Escape Party Quest. Now go find some friends!");
-                    } else if (!party.isLeader(chr)) {
+                    Party currentParty = chr.getParty();
+                    if (currentParty == null) {
+                        currentParty = Party.createNewParty(chr, chr.getName() + "'s Party");
+                        chr.setParty(currentParty);
+                    }
+                    this.party = currentParty;
+                    if (!party.isLeader(chr)) {
                         sm.sendSayOkay("If you want to try the quest, please tell the #bleader of your party#k to talk to me.");
                     } else if (sm.checkPartyForPQ()) {
                         if (isPartyEligible((short) 120, (short) 275, party)) {

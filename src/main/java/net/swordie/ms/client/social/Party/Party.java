@@ -284,6 +284,12 @@ public class Party implements Encodable {
         return party;
     }
 
+    public static Party createNewParty(Char chr, String name) {
+        Party party = createNewParty((byte) 0, name, chr.getWorld());
+        party.addPartyMember(chr);
+        return party;
+    }
+
     public void addPartyMember(Char chr) {
         if (isFull()) {
             return;

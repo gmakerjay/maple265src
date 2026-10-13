@@ -53,9 +53,12 @@ public class MoonBunny implements PartyQuest {
                     if (sm.getFieldID() != GameConstants.MOON_BUNNY_ENTRANCE_MAP) {
                         sm.warp(GameConstants.MOON_BUNNY_ENTRANCE_MAP);
                     } else {
+                        Party party = chr.getParty();
                         if (party == null) {
-                            sm.sendSayOkay("You have to be in a #bparty#k to enter the Moon Bunny Party Quest. Now go find some friends!");
-                        } else if (!party.isLeader(chr)) {
+                            party = Party.createNewParty(chr, chr.getName() + "'s Party");
+                            chr.setParty(party);
+                        }
+                        if (!party.isLeader(chr)) {
                             sm.sendSayOkay("If you want to try the quest, please tell the #bleader of your party#k to talk to me.");
                         } else if (sm.checkPartyForPQ()) {
                             if (isPartyEligible((short) 70, (short) 275, party)) {
@@ -119,20 +122,22 @@ public class MoonBunny implements PartyQuest {
 
     @Override
     public void event() {
-        if (chr.getField().getOnFirstUserEnter().equals("moonrabbit_mapEnter")) {
-            startEvent = chr.getTimer().addEvent(this::initMoonBunny, 2000);
+        if (startEvent != null) {
+            startEvent.cancel(false);
         }
+        startEvent = chr.getTimer().addFixedRateEvent(this::initMoonBunny, 1000, 3000, false);
     }
 
     public void event(int parentID) {
-        if (party.isLeader(chr)) {
+        Party party = chr.getParty();
+        if (party != null && party.isLeader(chr)) {
             if (sm.getReactorState(parentID) == 0) {
                 sm.consumeItem(GameConstants.PRIMROSE_SEED);
                 sm.showWeatherNoticeToField("One of the seeds has been placed.", WeatherEffNoticeType.RiceCakePQ, 3000);
                 sm.increaseReactorState(parentID, 0);
                 sm.increaseReactorState(GameConstants.MOON_REACTOR, 0);
                 if (sm.getReactorState(GameConstants.MOON_REACTOR) == 6) {
-                    sm.showWeatherNoticeToField("Moon Bunnies can knead the dough only when they're not attacked! Collect 80 Moon Bunny's Rice Cakes!", WeatherEffNoticeType.RiceCakePQ, 7000);
+                    sm.showWeatherNoticeToField("Moon Bunnies can knead the dough only when they're not attacked! Collect Moon Bunny's Rice Cakes!", WeatherEffNoticeType.RiceCakePQ, 7000);
                     sm.setAchieveRatio(25);
                     sm.spawnMob(GameConstants.MOON_BUNNY, -190, -187, false);
 
@@ -171,18 +176,20 @@ public class MoonBunny implements PartyQuest {
 
     public void initMoonBunny() {
         Party party = chr.getParty();
-        if (party.getInstance() == null || !party.getInstance().hasProperty("Moon Bunny")) {
-            startEvent.cancel(false);
+        if (party == null || party.getInstance() == null || !party.getInstance().hasProperty("Moon Bunny")) {
+            if (startEvent != null) {
+                startEvent.cancel(false);
+            }
             return;
         }
         Field field = chr.getField();
         if (!isAdded) {
             switch (stage) {
                 case 0:
-                    for (MobGen mobGen : mobGens) {
-                        if (stage1Mobs.contains(mobGen.getMob().getTemplateId())) {
-                            field.addLife(mobGen);
-                        }
+                    int[] pigX = {-350, -250, -150, -50, 50, 150, 250, 350};
+                    for (int x : pigX) {
+                        sm.spawnMob(9300058, x, -187, false);
+                        sm.spawnMob(9300059, x + 30, -187, false);
                     }
                     isAdded = true;
                     break;
@@ -192,19 +199,27 @@ public class MoonBunny implements PartyQuest {
                             mob.remove();
                         }
                     }
-                    for (MobGen mobGen : mobGens) {
-                        if (stage1Mobs.contains(mobGen.getMob().getTemplateId())) {
-                            field.removeLife(mobGen);
-                        } else if (stage2Mobs.contains(mobGen.getMob().getTemplateId())) {
-                            field.addLife(mobGen);
-                        }
-                    }
                     isAdded = true;
                     break;
             }
-        } else if (isAdded && stage == 1) {
-            if (!sm.hasMobById(GameConstants.MOON_BUNNY)) {
-                end(chr);
+        } else {
+            if (stage == 0) {
+                long pigCount = field.getMobs().stream().filter(m -> stage1Mobs.contains(m.getTemplateId())).count();
+                if (pigCount < 4) {
+                    sm.spawnMob(9300058, -200, -187, false);
+                    sm.spawnMob(9300059, 200, -187, false);
+                }
+            } else if (stage == 1) {
+                if (!sm.hasMobById(GameConstants.MOON_BUNNY)) {
+                    end(chr);
+                } else {
+                    long attackMobCount = field.getMobs().stream().filter(m -> stage2Mobs.contains(m.getTemplateId())).count();
+                    if (attackMobCount < 6) {
+                        sm.spawnMob(9300062, -450, -187, false);
+                        sm.spawnMob(9300063, 400, -187, false);
+                        sm.spawnMob(9300064, -350, -187, false);
+                    }
+                }
             }
         }
     }

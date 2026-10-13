@@ -3,6 +3,63 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-13 17:05 น.] Full Party Quest System Porting & Dual-Mode Architecture (100% Solo Offline & LAN Multiplayer Support)
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: Complete Party Quest Overhaul, TMS Reference Porting, Dual-Mode (Solo / LAN Multiplayer) Engine Architecture, and Bug Fixes
+- **รายละเอียด**:
+  1. **ปัญหาและความต้องการของผู้ใช้ (Problem & Requirements)**:
+     - ผู้ใช้ต้องการให้ระบบ Party Quest (PQ) สามารถเล่นได้สมบูรณ์ทั้งแบบ **"คนเดียว (Solo / 1 Player Offline-friendly)"** และแบบ **"เล่นกับเพื่อนผ่าน LAN / Multiplayer"** ได้อย่างราบรื่น ไม่มีข้อความบล็อกห้ามเข้าเพราะคนไม่พอ และไม่มีการติดบั๊กที่ต้องอาศัยผู้เล่นหลายคนเหยียบแท่น/ปีนเชือก
+     - ตรวจสอบความสมบูรณ์ของ Party Quests เดิมในเซิร์ฟเวอร์ และดึงข้อมูลอ้างอิงจากคลัง TMS (`TMS277_REF_NomainSource/tms273/`) มาพอร์ตและแก้ไขจุดบกพร่อง
+  2. **ผลการสำรวจและสาเหตุเชิงเทคนิคที่ตรวจสอบพบ (Investigation & Root Causes)**:
+     - **Hardcoded Party Blocker**: ใน [ScriptManagerImpl.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/scripts/ScriptManagerImpl.java) เมธอด `checkPartyForPQ()` มีโค้ดบังคับ `if (count < 2)` ทำให้ทุก Party Quest ที่เรียกใช้เมธอดนี้จะบล็อกผู้เล่นคนเดียวทันที
+     - **Random Re-generation Bug**: ใน [ScriptManagerImpl.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/scripts/ScriptManagerImpl.java) เมธอด `rectangleStages(stage)` ทุกครั้งที่หัวหน้าปาร์ตี้กดคุยกับ NPC ตัวโค้ดจะสุ่มคำตอบใหม่ (`Randomizer.rand(0, combos.length - 1)`) เสมอ ทำให้ผู้เล่นไม่มีทางผ่านได้เลยเนื่องจากตำแหน่งคำตอบเปลี่ยนไปทุกครั้งที่กดตรวจ
+     - **Moon Bunny Zero Mob Spawn**: ใน [MoonBunny.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/MoonBunny.java) ตัวแปร `mobGens` ถูกประกาศไว้เป็น List ว่างเปล่าและไม่เคยถูกใส่ข้อมูล ทำให้หมู (Pigs) ในด่าน 0 ไม่เกิด ผู้เล่นจึงไม่สามารถหาเมล็ด Primrose Seeds ได้ และตัวตรวจจับเวลากระตุ้นเพียงครั้งเดียว ไม่มีการเกิดของมอนสเตอร์เวฟโจมตี Moon Bunny ในด่าน 1
+     - **Kerning PQ Stage 4 Block & Mob Missing**: ใน [FirstTimeTogether.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/FirstTimeTogether.java) ด่าน 4 ไม่มีการเรียกเสกมอนสเตอร์ และไม่มีเงื่อนไขผ่านด่านสำหรับผู้เล่นคนเดียว
+     - **Dragon Rider Broken Progression**: ใน [DragonRider.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/DragonRider.java) มีการ Copy-paste โค้ดจาก `Escape.java` มาใช้ property `"escape" + stage + "clear"` ซึ่งไม่มีอยู่จริงใน Dragon Rider และบทสนทนาเป็นภาษาเวียดนามทั้งหมด
+     - **Ludibrium PQ Stubbed**: โค้ด `party2_enter.py` มีเพียงข้อความบล็อกห้ามเข้าเพราะปาร์ตี้ไม่ถึง 3 คน และยังไม่มีคลาส `Ludibrium.java` ในระบบ Party Quest Core
+  3. **การแก้ไขและการพอร์ตเชิงลึก (Implementation & Porting Details)**:
+     - **Core Solo & Auto-Party Engine**:
+       - [ScriptManagerImpl.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/scripts/ScriptManagerImpl.java):
+         - ปรับ `checkPartyForPQ()`: หากผู้เล่นยังไม่มีปาร์ตี้ ระบบจะสร้างปาร์ตี้ Solo อัตโนมัติ (`Party.createNewParty`) และปรับเงื่อนไขขั้นต่ำเป็น `count < 1` ปลดล็อกให้เล่นคนเดียวได้ 100%
+         - แก้ไข `rectangleStages(stage)`: จดจำค่าคำตอบ `kpq2answer_idx` และ `kpq3answer_idx` ลงใน `Instance` เพื่อไม่ให้สลับคำตอบ และเพิ่มโหมด Solo ตรวจจับว่าผู้เล่นยืนอยู่บนแท่น/เชือกที่ถูกต้องข้อใดข้อหนึ่งก็สามารถผ่านด่านได้ทันที
+       - [Party.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/social/Party/Party.java):
+         - เพิ่มเมธอดสะดวก `createNewParty(Char chr, String name)` ที่เชื่อมต่อกับ World, บันทึกผู้นำปาร์ตี้, และซิงค์ลง SQL ฐานข้อมูลอัตโนมัติ
+     - **Ludibrium Party Quest (Dimensional Crack) Full Port**:
+       - บรรจุ `PartyQuestType.LUDIBRIUM(2)` ลงใน [PartyQuestType.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/enums/social/Party/PartyQuestType.java)
+       - เชื่อมต่อใน [PartyQuestManager.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/PartyQuestManager.java)
+       - สร้าง [Ludibrium.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/Ludibrium.java) โดยอ้างอิงตรรกะจาก TMS (`pq_party2.js` & `party2_play.js`):
+         - รองรับทั้ง Solo (1 คน) และ LAN Party (2-6 คน)
+         - Stage 1 (`922010100`): รวบรวมบัตรผ่าน (Solo: 5 ใบ, Party: 20 ใบ) จาก Ratz/Black Ratz
+         - Stage 2 (`922010400`): ห้องมืดมิติพิศวง รวบรวมบัตรผ่าน (Solo: 4 ใบ, Party: 14 ใบ)
+         - Stage 3 (`922010600`): กล่องมิติและพอร์ทัลกระโดดขึ้นสู่ยอดหอคอย
+         - Stage 4 (`922010700`): ปราบ Shadow Eyes / Chronos และเก็บ Dimensional Passes
+         - Stage 5 (`922010800`): ปริศนาคณิตศาสตร์และแท่นยืน
+         - Stage Final (`922010900`): บอส Alishar (`9300012`) ดรอป Dimensional Key (`4001023`) มอบของรางวัล EXP/PQ และส่งต่อไปห้องโบนัส
+         - Bonus Map (`922011000`): ทุบกล่องรับไอเทมโบนัส (Scrolls, Bamboo Hat, Potions, Ores)
+       - ปรับปรุงสคริปต์ NPC [party2_enter.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/party2_enter.py) และ [party2_play.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/party2_play.py)
+     - **Moon Bunny (Henesys PQ) Fixed**:
+       - [MoonBunny.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/MoonBunny.java):
+         - สั่งเกิดหมู (Pigs 9300058 / Ribbon Pigs 9300059) ในด่าน 0 ตามพิกัดอย่างสมบูรณ์
+         - ใช้ `addFixedRateEvent` รันลูปตรวจจับและเสกเวฟมอนสเตอร์ (9300062, 9300063, 9300064) เข้าโจมตี Moon Bunny ในด่าน 1
+         - ปรับสคริปต์เสือโคร่ง [moonrabbit_tiger.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/moonrabbit_tiger.py): ต้องการ Rice Cake เพียง 10 ชิ้นสำหรับ Solo และ 20 ชิ้นสำหรับ Party
+     - **First Time Together (Kerning PQ) Fixed**:
+       - [FirstTimeTogether.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/FirstTimeTogether.java):
+         - ด่าน 1: โหมด Solo หัวหน้าเก็บคูปอง 5 ใบผ่านได้ทันที
+         - ด่าน 4: เสกมอนสเตอร์ Curse Eye (`9305204`) 12 ตัว และตรวจจับการกำจัดมอนสเตอร์/คูปองเพื่อปลดล็อกประตู
+         - ด่าน 5: ปรับปรุงบทสนทนา King Slime และระบบมอบของรางวัล
+     - **Dragon Rider (Dragon Rider PQ) Fixed**:
+       - [DragonRider.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/DragonRider.java):
+         - แปลภาษาเวียดนามทั้งหมดเป็นภาษาอังกฤษ
+         - แก้ไขระบบตรวจจับผ่านด่านด้วย `field.getMobs().isEmpty()` ตามแบบฉบับ TMS `party_dragon_rider.js`
+     - **Universal Solo Auto-Party**:
+       - ปรับปรุง [Escape.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/Escape.java), [LordPirate.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/LordPirate.java), [Romeo.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/Romeo.java), และ [Juliet.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/Juliet.java) ให้สร้างปาร์ตี้อัตโนมัติหากผู้เล่นคนเดียวกดคุย
+  4. **การคอมไพล์ ดีพลอย และจัดทำแพตช์ (Compilation, Deployment & Patch Archive)**:
+     - คอมไพล์ Java Core ผ่านฉลุย 100%: `BUILD SUCCESS` (854 ไฟล์) ด้วย OpenJDK 21 & Maven
+     - ดีพลอย `maplestory.jar` (138.68 MB) ไปยัง `Server263/maplestory.jar`, `root/maplestory.jar`, และ `v214 src/maplestory.jar`
+     - ซิงค์ไฟล์สคริปต์ NPC ทั้งหมดไปยัง `Server263/data/scripts/npc/`
+     - สร้างแพ็กเกจแพตช์เดี่ยวตามกฎเหล็ก `Patches/Server263_Patch_Latest.zip` (172.98 MB) สมบูรณ์ 100%
+
 ## 📅 [2026-10-13 16:15 น.] Comprehensive Server Console Log Optimization & Junk Log Elimination (Silence Telemetry Callstacks, Clean Disconnects & Multilingual Standardization)
 
 ### 🎯 Scope & Technical Details

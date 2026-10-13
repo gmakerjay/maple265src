@@ -19,6 +19,7 @@ public class PartyQuestManager {
         return switch (partyQuestType) {
             case MOON_BUNNY -> new MoonBunny(chr);
             case FIRST_TIME_TOGETHER -> new FirstTimeTogether(chr);
+            case LUDIBRIUM -> new Ludibrium(chr);
             case TANGYOON_COOKING -> new TangyoonCooking(chr);
             case DIMENSION_INVASION -> new DimensionInvasion(chr);
             case NETT_PYRAMID -> new DefenseEvent(chr);

@@ -43,9 +43,12 @@ public class FirstTimeTogether implements PartyQuest {
                 if (sm.getFieldID() != GameConstants.FIRST_TIME_TOGETHER_ENTRANCE_MAP) {
                     sm.warp(GameConstants.FIRST_TIME_TOGETHER_ENTRANCE_MAP);
                 } else {
+                    Party party = chr.getParty();
                     if (party == null) {
-                        sm.sendSayOkay("You have to be in a #bparty#k to enter the First Time Together Party Quest. Now go find some friends!");
-                    } else if (!party.isLeader(chr)) {
+                        party = Party.createNewParty(chr, chr.getName() + "'s Party");
+                        chr.setParty(party);
+                    }
+                    if (!party.isLeader(chr)) {
                         sm.sendSayOkay("If you want to try the quest, please tell the #bleader of your party#k to talk to me.");
                     } else if (sm.checkPartyForPQ()) {
                         if (isPartyEligible((short) 70, (short) 275, party)) {
@@ -103,16 +106,10 @@ public class FirstTimeTogether implements PartyQuest {
                         sm.invokeAfterDelay(2000, "showWeatherNoticeToField", "Find the 3 platforms that can open the door to the next stage!", WeatherEffNoticeType.KerningPQ);
                         break;
                     case 4:
-                        for (Char chr : party.getOnlineChars()) {
-                            if (!chr.hasQuestCompleted(5952)) {
-                                chr.getScriptManager().startQuest(5952);
-                            }
-                            if (!chr.hasQuestCompleted(5979)) {
-                                chr.getScriptManager().startQuest(5979);
-                            }
+                        for (int i = 0; i < 12; i++) {
+                            sm.spawnMob(9305204, Randomizer.rand(-400, 400), -435, false);
                         }
-                        sm.invokeAfterDelay(2000, "showWeatherNoticeToField", "Activate the mark and collect numbers to complete this number!" + instance.getProperty("kpq4answer"), WeatherEffNoticeType.KerningPQ);
-                        sm.invokeAfterDelay(8000, "showWeatherNoticeToField", "Target Number: " + instance.getProperty("kpq4answer"), WeatherEffNoticeType.KerningPQ, 0);
+                        sm.invokeAfterDelay(2000, "showWeatherNoticeToField", "Defeat the monsters to clear this stage!", WeatherEffNoticeType.KerningPQ);
                         break;
                     case 5:
                         sm.spawnMob(9305205, 0, -435, false);
@@ -127,34 +124,49 @@ public class FirstTimeTogether implements PartyQuest {
                         if (instance.hasProperty("kpq" + stage + "clear")) {
                             sm.sendNext("Please hurry on to the next stage, the portal opened!");
                         } else {
-                            byte numPasses = (byte) sm.getPartySize();
                             if (party.isLeader(chr)) {
-                                if (instance.hasProperty("kpq" + stage + "leader_preamble")) {
-                                    if (sm.hasItem(4001008, numPasses)) {
-                                        sm.consumeItem(4001008);
-                                        WUK_clearStage(stage);
-                                        break;
+                                if (party.getMembers().size() <= 1) { // Solo mode
+                                    if (instance.hasProperty("kpq" + stage + "leader_preamble")) {
+                                        if (sm.hasItem(4001007, 5)) {
+                                            sm.consumeItem(4001007, 5);
+                                            WUK_clearStage(stage);
+                                            break;
+                                        } else {
+                                            sm.sendSayOkay("Solo Challenger! Defeat Ligators and collect 5 #bCoupons#k (#i4001007#).");
+                                        }
                                     } else {
-                                        sm.sendSayOkay("I'm sorry, but you are short on the number of passes. You need to give me the right number of passes. It should be the number of members of your party minus the leader which is #b" + numPasses + " passes#k to clear the stage. Tell your party members to solve the questions, gather up the passes, and give them to you.");
+                                        sm.sendNext("Welcome to the 1st Stage! Since you are challenging solo, please defeat Ligators and bring me 5 #bCoupons#k to clear the stage. Good luck!");
+                                        instance.addProperty("kpq" + stage + "leader_preamble", sm.getField());
                                     }
-                                } else {
-                                    sm.sendNext("Hello and welcome to the first stage. As you can see, this place is full of Ligators. Each Ligator will drop one #bcoupon#k when defeated. Each party member, except the party leader, must come talk to me and then bring me the exact number of #bcoupons#k that i ask for. Once everyone #bcompletes their invididual missions#k the party can move on to the next stage. Good luck!");
-                                    instance.addProperty("kpq" + stage + "leader_preamble", sm.getField());
+                                } else { // Multiplayer Party mode
+                                    byte numPasses = (byte) Math.max(1, sm.getPartySize() - 1);
+                                    if (instance.hasProperty("kpq" + stage + "leader_preamble")) {
+                                        if (sm.hasItem(4001008, numPasses)) {
+                                            sm.consumeItem(4001008, numPasses);
+                                            WUK_clearStage(stage);
+                                            break;
+                                        } else {
+                                            sm.sendSayOkay("I'm sorry, but you are short on the number of passes. You need to give me " + numPasses + " passes to clear the stage.");
+                                        }
+                                    } else {
+                                        sm.sendNext("Hello and welcome to the first stage. As you can see, this place is full of Ligators. Each Ligator will drop one #bcoupon#k when defeated. Each party member, except the party leader, must come talk to me and then bring me the exact number of #bcoupons#k that i ask for. Once everyone completes their individual missions the party can move on to the next stage. Good luck!");
+                                        instance.addProperty("kpq" + stage + "leader_preamble", sm.getField());
+                                    }
                                 }
                             } else {
                                 if (instance.hasProperty("kpq" + stage + "member_preamble")) {
-                                    sm.sendNext("Here's the question:\r\n Collect the same number of coupons as the minimum level required to advance to third job advancement.");
+                                    sm.sendNext("Here's the question:\r\n Collect 10 coupons from the Ligators.");
                                     if (sm.hasItem(4001008, 1)) {
                                         sm.sendSayOkay("Please give the pass to your leader.");
-                                    } else if (sm.hasItem(4001007, numPasses)) {
+                                    } else if (sm.hasItem(4001007, 10)) {
                                         sm.sendNext("That's the right answer! For that you have just received a #bpass#k. Please hand it to the leader of the party.");
-                                        sm.consumeItem(4001007, numPasses);
+                                        sm.consumeItem(4001007, 10);
                                         sm.giveItem(4001008, 1);
                                     } else {
-                                        sm.sendSayOkay("I'm sorry, but that is not the right answer! Please have the correct number of coupons in your inventory.");
+                                        sm.sendSayOkay("I'm sorry, but you need 10 coupons! Please collect more coupons from Ligators.");
                                     }
                                 } else {
-                                    sm.sendNext("Hello and welcome to the first stage. As you can see, this place is full of Ligators. Each Ligator will drop one #bcoupon#k when defeated. Each party member, except the party leader, must come talk to me and then bring me the exact number of #bcoupons#k that i ask for. Once everyone #bcompletes their invididual missions#k the party can move on to the next stage. Good luck!");
+                                    sm.sendNext("Hello and welcome to the first stage. As you can see, this place is full of Ligators. Each Ligator will drop one #bcoupon#k when defeated. Each party member, except the party leader, must come talk to me and then bring me the exact number of #bcoupons#k that i ask for. Once everyone completes their individual missions the party can move on to the next stage. Good luck!");
                                     instance.addProperty("kpq" + stage + "member_preamble", sm.getField());
                                 }
                             }
@@ -168,7 +180,6 @@ public class FirstTimeTogether implements PartyQuest {
                             String nthText = stage == 2 ? "2nd" : "3rd";
                             String nthObj = stage == 2 ? "ropes" : "platforms";
                             String nthVerb = stage == 2 ? "hang" : "stand";
-                            String nthPos = stage == 2 ? "hang on the ropes too low" : "stand too close to the edges";
                             if (party.isLeader(chr)) {
                                 if (instance.hasProperty("kpq" + stage + "leader_preamble")) {
                                     if (sm.rectangleStages(stage)) {
@@ -178,7 +189,7 @@ public class FirstTimeTogether implements PartyQuest {
                                     }
                                     break;
                                 } else {
-                                    sm.sendNext("Welcome to the " + nthText + " stage. Next to me, you'll see a number of " + nthObj + ". Out of these " + nthObj + ", #b3 are connected to the portal that sends you to the next stage#k. All you need to do is have #b3 party members OR 3 items find the correct " + nthObj + " and " + nthVerb + " on them.#k\r\nBUT, it doesn't count as an answer if you " + nthPos + "; please be near the middle of the " + nthObj + " to be counted as a correct answer. Also, only 3 members of your party are allowed on the " + nthObj + ". Once they are " + nthVerb + "ing on them, the leader of the party must #bdouble-click me to check and see if the answer's correct or not#k. Now, find the right " + nthObj + " to " + nthVerb + " on!");
+                                    sm.sendNext("Welcome to the " + nthText + " stage. Out of these " + nthObj + ", find the right combination and " + nthVerb + " on them. (Solo players can " + nthVerb + " on any one " + nthObj.substring(0, nthObj.length() - 1) + " to clear!) Double-click me when you are ready!");
                                     instance.addProperty("kpq" + stage + "leader_preamble", sm.getField());
                                 }
                             } else {
@@ -189,6 +200,19 @@ public class FirstTimeTogether implements PartyQuest {
                     case 4:
                         if (instance.hasProperty("kpq" + stage + "clear")) {
                             sm.sendNext("Please hurry on to the next stage, the portal opened!");
+                        } else {
+                            if (party.isLeader(chr)) {
+                                boolean mobsDead = sm.getField().getMobs().isEmpty();
+                                if (mobsDead || sm.hasItem(4001008, 1) || sm.hasItem(4001007, 5)) {
+                                    if (sm.hasItem(4001008, 1)) sm.consumeItem(4001008, 1);
+                                    if (sm.hasItem(4001007, 5)) sm.consumeItem(4001007, 5);
+                                    WUK_clearStage(stage);
+                                } else {
+                                    sm.sendSayOkay("Defeat all monsters in this stage (or collect 5 coupons) to unlock the final gate to King Slime!");
+                                }
+                            } else {
+                                sm.sendSayOkay("Please have the party leader talk to me.");
+                            }
                         }
                         break;
                     case 5:
@@ -199,7 +223,7 @@ public class FirstTimeTogether implements PartyQuest {
                                 clear(chr);
                                 break;
                             } else {
-                                sm.sendNext("Hello. Welcome to the 5th and final stage. Walk around the map and you'll be able to find Boss monsters. Defeat all of them, gather up #bthe passes#k, and please get them to me. Once you earn your pass, the leader of your party will collect them, and then get them to me once the #bpasses#k are gathered up. The monsters may be familiar to you, but they may be much stronger than you think, so please be careful. Good luck!");
+                                sm.sendNext("Hello. Welcome to the 5th and final stage. Defeat King Slime and talk to me to complete the quest!");
                             }
                         }
                         break;

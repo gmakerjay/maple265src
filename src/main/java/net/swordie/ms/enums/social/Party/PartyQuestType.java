@@ -6,6 +6,7 @@ public enum PartyQuestType {
 
     MOON_BUNNY(0),
     FIRST_TIME_TOGETHER(1),
+    LUDIBRIUM(2),
     DIMENSION_INVASION(3),
     //EVOLUTION_SYSTEM(4),
     NETT_PYRAMID(5),
