@@ -2701,24 +2701,9 @@ public class AdminCommands {
             } catch (Exception ignored) {}
         }
 
-        // 4.5. Initialize Matrix Slots & V Matrix & Grant Class V-Skills
+        // 4.5. Initialize Matrix Slots & V Matrix (Zero Skill Injection - player opens Nodestones naturally)
         try {
             chr.initMatrixSlots();
-            List<VCoreData> jobNodes = VCore.getNodesForJob(job);
-            if (jobNodes != null) {
-                Set<Integer> existingCoreIDs = new HashSet<>();
-                for (MatrixCore mc : chr.getMatrixCore()) {
-                    existingCoreIDs.add(mc.getCoreID());
-                }
-                for (VCoreData vd : jobNodes) {
-                    if (vd.getType() == VCore.SKILL && !existingCoreIDs.contains(vd.getCoreID())) {
-                        int s1 = (vd.getConnectSkills() != null && !vd.getConnectSkills().isEmpty()) ? vd.getConnectSkills().get(0) : 0;
-                        MatrixCore mc = new MatrixCore(chr.getId(), vd.getCoreID(), s1, 0, 0);
-                        mc.setSkillLevel(25);
-                        chr.addMatrixCore(mc);
-                    }
-                }
-            }
             chr.write(WvsContext.updateVMatrix(chr, true, MatrixUpdateType.Update.getVal(), 0));
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] Matrix warning: " + e.getMessage());
@@ -3000,20 +2985,9 @@ public class AdminCommands {
             }
         }
 
-        // 6. Initialize HEXA Matrix & Grant Class HEXA Skills (Lv.30)
+        // 6. Initialize HEXA Matrix (Zero Skill Injection - player unlocks HEXA skills naturally with Sol Erda)
         try {
-            HexaCore.HexaSkillJobCore jobCore = HexaCore.getJobCore(job);
-            if (jobCore != null) {
-                List<Integer> allCores = new ArrayList<>();
-                allCores.addAll(jobCore.getActivateSkills());
-                allCores.addAll(jobCore.getMasterySkills());
-                allCores.addAll(jobCore.getEnforceSkills());
-                allCores.addAll(jobCore.getCommonSkills());
-                for (int coreId : allCores) {
-                    chr.setHexaSkill(coreId, 30);
-                }
-                chr.write(WvsContext.hexaSkillsUpdate(chr));
-            }
+            chr.write(WvsContext.hexaSkillsUpdate(chr));
             if (JobConstants.isEvan(job)) {
                 if (chr.getJobHandler() instanceof net.swordie.ms.client.jobs.legend.Evan evan) {
                     evan.spawnDragon();

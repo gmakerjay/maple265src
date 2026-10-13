@@ -3,6 +3,43 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-13 14:48 น.] Core Standards & Admin Command Policy Realignment: TMS Reference Audit, Test-First Deployment, Full Git Sync, and Zero-Skill-Injection `!endgame`
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: Project Memory & Operational Standards Overhaul (`AGENTS.md` & `SKILL.md`) and Admin `!endgame` Refactoring to Zero Skill Injection
+- **รายละเอียด**:
+  1. **ปัญหาที่พบและความต้องการปรับปรุง (Problem & User Requirements)**:
+     - กฎเดิมใน `AGENTS.md` และการทำงานมีหลายจุดที่ไม่ตรงกับสเปคที่แท้จริงของผู้ใช้:
+       1) การพอร์ตจาก TMS จำเป็นต้องตอกย้ำว่าเป็นคลังความรู้อ้างอิง (Reference) สำหรับสูตรคำนวณและระบบที่สมบูรณ์เท่านั้น และต้องตรวจสอบ ID ทุกครั้ง ห้ามก๊อปปี้ ID มาตรงๆ
+       2) การสร้างไฟล์แพตช์ (Deploy Patch) ต้องผ่านการทดสอบในเกมก่อนเสมอ ไม่สร้างแพตช์ก่อนทดสอบเพื่อไม่ให้เสียเวลา
+       3) การ Push Git ต้อง Push ทุกไฟล์เสมอรวมทั้งไฟล์เอกสาร เพื่อให้ทุกเครื่องที่ pull ทำงานไปในทิศทางเดียวกัน 100%
+       4) คำสั่ง `!endgame` ใน `AdminCommands.java` เดิมมีการยัดแกนสกิล V-Matrix และเลเวลสกิลคลาส 6 HEXA ลงไปในตัวละครโดยตรง ซึ่งเสี่ยงต่อการเกิดบัค สกิลหลอน ซ้ำซ้อน หรือค้าง ผู้ใช้ต้องการให้มอบเฉพาะเลเวล, ของใช้สำหรับเปิด Matrix, อุปกรณ์ BiS และเงิน ให้ผู้เล่นกดหินและอัปแต้มเองตามธรรมชาติ
+  2. **การปรับปรุงและวิธีแก้ (Implementation)**:
+     - **ปรับปรุงมาตรฐานใน [`AGENTS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/AGENTS.md) และ [`SKILL.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/.agents/skills/maplestory-bug-knowledge/SKILL.md)**:
+       - **หมวด 4**: กำหนดนโยบาย Test-First Policy ต้องทดสอบในเกมให้ผ่านก่อนทำไฟล์แพตช์ และรักษามาตรฐานแพตช์ไฟล์เดี่ยว `Server263_Patch_Latest.zip`
+       - **หมวด 6**: ปรับปรุงกฎ `!endgame` สู่มาตรฐาน Strict Zero-Skill-Injection Policy ห้ามเรียก `chr.addSkill`, `chr.setHexaSkill` หรือ `mc.setSkillLevel` โดยเด็ดขาด
+       - **หมวด 7**: บัญญัติกฎเหล็ก Push Everything Policy บังคับ Git Push ทุกไฟล์รวมถึงเอกสารทั้งหมด (`PROGRESS.md`, `AGENTS.md`, ฯลฯ)
+       - **หมวด 8**: ระบุบทบาท TMS เป็น Reference สำหรับสูตรคำนวณและ Mechanics พร้อมกฎเหล็ก Strict ID Audit ห้ามคัดลอก ID มาตรงๆ เด็ดขาด
+     - **ปรับปรุงโค้ด [`AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)**:
+       - ลบโค้ดการยัดแกนสกิล V-Matrix (`mc.setSkillLevel(25)` / `addMatrixCore`) ออกจาก `setupEndgame`
+       - ลบโค้ดการยัดเลเวลสกิลคลาส 6 (`chr.setHexaSkill(coreId, 30)`) ออกจาก `setupEndgame`
+       - คงการมอบเลเวล 260, ค่า AP, ขยายช่องเก็บของ 128 ช่อง, เควสต์คลาส 5/6, Nodestones x3,000, Exp Nodestones x20, Sol Erda Energy x1,000, Sol Erda Fragments x30,000, ยา Power Elixir x3,000, เงิน 10B Mesos, และอุปกรณ์ Arcane Umbra + Princess No ครบชุด
+     - **คอมไพล์และตรวจสอบความถูกต้อง**:
+       - รันคอมไพล์ Maven ด้วย JDK 21: `BUILD SUCCESS` (853 source files, 0 errors)
+       - Deploy `maplestory.jar` (~138.67 MB) ไปยัง `v214 src/`, `Server263/`, และ Root ครบถ้วน
+  3. **ผลลัพธ์ (Outcome)**:
+     - มาตรฐานเอกสารและการปฏิบัติงานของ AI และทีมพัฒนาสอดคล้องกับสเปคของผู้ใช้ 100%
+     - คำสั่ง `!endgame` สะอาด ปลอดภัย ปราศจากบัคสกิลซ้อนทับหรือหลอน 100%
+     - รหัสและเอกสารถูกเตรียมพร้อมสำหรับ Git Push ครบทุกไฟล์
+
+### 📂 Files Modified
+- [`AGENTS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/AGENTS.md)
+- [`v214 src/AGENTS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/AGENTS.md)
+- [`.agents/skills/maplestory-bug-knowledge/SKILL.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/.agents/skills/maplestory-bug-knowledge/SKILL.md)
+- [`AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+- [`v214 src/PROGRESS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/PROGRESS.md)
+- [`PROGRESS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS.md)
+
 ## 📅 [2026-10-13 14:02 น.] Patch Consolidation & Deployment: Unified Single All-in-One Distribution Package
 
 ### 🎯 Scope & Technical Details
