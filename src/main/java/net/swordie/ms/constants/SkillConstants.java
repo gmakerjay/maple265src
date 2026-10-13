@@ -1055,6 +1055,8 @@ public class SkillConstants {
             case 22141011:
             case 22141012:
             case 400021046:
+            case 400020046: // Wyrmking's Breath
+            case 400020051: // Ludicrous Speed
             case 400021012:
             case 400021013:
             case 400021014:
@@ -1068,11 +1070,16 @@ public class SkillConstants {
             case 22201007: // HEXA Dragon Dive
             case 22200008: // HEXA Earth Dive
             case 22200009: // HEXA Thunder Dive
+            case 22201008: // HEXA Earth Dive (alt)
+            case 22201009: // HEXA Thunder Dive (alt)
             case 22201010: // HEXA Wind Circle
             case 22201011: // HEXA Dragon Breath
             case 22200012: // HEXA Earth Breath
             case 22200013: // HEXA Earth Breath
             case 22200014: // HEXA Wind Breath
+            case 22201012: // HEXA Earth Breath (alt)
+            case 22201013: // HEXA Earth Breath (alt)
+            case 22201014: // HEXA Wind Breath (alt)
             case 500061041: // HEXA Elemental Barrage
             case 500061042:
             case 500061043:
@@ -2650,8 +2657,13 @@ public class SkillConstants {
                 return 22201011; // HEXA Dragon Breath
             case 22201501: // Zodiac Burst Attack
                 return 22201500; // Zodiac Burst
+            case 22201502: // United Horizons (Root Skill)
+                return 22201502;
             case 22201503: // United Horizons Resonance Attack
                 return 22201502; // United Horizons
+            case 400020046: // Wyrmking's Breath
+            case 400020051: // Ludicrous Speed
+                return 400021046; // Dragon Slam
             case 400021013:
             case 400021014:
             case 400021015:
@@ -2749,9 +2761,14 @@ public class SkillConstants {
             case 22201005: // HEXA Wind Flash
             case 22200008: // HEXA Earth Dive
             case 22200009: // HEXA Thunder Dive
+            case 22201008: // HEXA Earth Dive (alt)
+            case 22201009: // HEXA Thunder Dive (alt)
             case 22200012: // HEXA Earth Breath
             case 22200013: // HEXA Earth Breath
             case 22200014: // HEXA Wind Breath
+            case 22201012: // HEXA Earth Breath (alt)
+            case 22201013: // HEXA Earth Breath (alt)
+            case 22201014: // HEXA Wind Breath (alt)
                 return true;
             default:
                 return false;

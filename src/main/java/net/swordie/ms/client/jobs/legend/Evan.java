@@ -351,7 +351,7 @@ public class Evan extends Job {
                     true, mobID, getDebrisSkill(), forceAtomInfo, new Rect(), 0, 300,
                     life.getPosition(), getDebrisSkill(), life.getPosition(), 0));
         }
-        chr.write(FieldPacket.delWreckage(chr, field.getWreckageByChrId(chr.getId())));
+        field.removeWreckage(chr, field.getWreckageByChrId(chr.getId()));
     }
 
     private void createWreckage(AttackInfo attackInfo, int skillID) {
@@ -423,14 +423,17 @@ public class Evan extends Job {
                 break;
             case 22140022:
             case 22200009: // HEXA Thunder Dive
+            case 22201009: // HEXA Thunder Dive (alt)
                 attackInfo.attackActionType = 6;
                 break;
             case 22140015:
             case 22200008: // HEXA Earth Dive
+            case 22201008: // HEXA Earth Dive (alt)
                 attackInfo.attackActionType = 7;
                 break;
             case 22170067:
             case 22200014: // HEXA Wind Breath
+            case 22201014: // HEXA Wind Breath (alt)
                 attackInfo.attackActionType = 8;
                 break;
             case 22171063:
@@ -444,6 +447,8 @@ public class Evan extends Job {
             case 22170066:
             case 22200012: // HEXA Earth Breath
             case 22200013:
+            case 22201012: // HEXA Earth Breath (alt)
+            case 22201013:
                 attackInfo.attackActionType = 11;
                 break;
         }
@@ -696,6 +701,23 @@ public class Evan extends Job {
     @Override
     public void handleInitAfterMigrate(Char chr) {
         spawnDragon();
+        if (chr.getLevel() < 30) {
+            ScriptManagerImpl sm = chr.getScriptManager();
+            for (int qid = 22000; qid <= 22015; qid++) {
+                sm.completeQuestNoRewards(qid);
+            }
+            sm.completeQuestNoRewards(22100);
+            sm.completeQuestNoRewards(22101);
+            sm.completeQuestNoRewards(22102);
+            sm.levelUntil(30);
+            sm.setJob(JobConstants.JobEnum.EVAN2.getJobId());
+            sm.addSPJobAdv(JobConstants.JobEnum.EVAN1.getJobId(), 5);
+            sm.addSPJobAdv(JobConstants.JobEnum.EVAN2.getJobId(), 3);
+            sm.giveAndEquip(1382003); // Lv 30 Staff (Wizard Staff)
+            sm.giveAndEquip(1352941); // Lv 30 Secondary (Dragon Master's Document)
+            sm.warp(FieldConstants.HOME_MAP);
+            spawnDragon();
+        }
         super.handleInitAfterMigrate(chr);
     }
 
@@ -837,12 +859,9 @@ public class Evan extends Job {
                 chr.setSkillCooldown(cdSkill, slv);
                 return 1;
             }
-            case DRAGON_SLAM -> {
-                chr.setSkillCooldown(DRAGON_SLAM, chr.getSkillLevel(DRAGON_SLAM));
-                return 1;
-            }
-            case WYRMKINGS_BREATH -> {
-                chr.setSkillCooldown(WYRMKINGS_BREATH, chr.getSkillLevel(WYRMKINGS_BREATH));
+            case DRAGON_SLAM, WYRMKINGS_BREATH, LUDICROUS_SPEED -> {
+                int slv = Math.max(1, chr.getSkillLevel(DRAGON_SLAM));
+                chr.setSkillCooldown(DRAGON_SLAM, slv);
                 return 1;
             }
             case ELEMENTAL_RADIANCE -> {
