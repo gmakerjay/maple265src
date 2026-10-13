@@ -2824,12 +2824,26 @@ public class ScriptManagerImpl implements ScriptManager {
             return quantity;
         } else {
             Item sampleItem = ItemData.getItemDeepCopy(id);
+            if (sampleItem == null) {
+                return 0;
+            }
             InvType invType = sampleItem.getInvType();
-            List<Item> items = chr.getInventoryByType(invType).getItems();
-            for (Item item : items) {
-                if (item != null) {
-                    if (item.getItemId() == id) {
+            Inventory defaultInv = chr.getInventoryByType(invType);
+            if (defaultInv != null) {
+                for (Item item : defaultInv.getItems()) {
+                    if (item != null && item.getItemId() == id) {
                         quantity += item.getQuantity();
+                    }
+                }
+            }
+            if (quantity == 0) {
+                for (Inventory otherInv : Arrays.asList(chr.getConsumeInventory(), chr.getCashInventory(), chr.getEtcInventory(), chr.getInstallInventory())) {
+                    if (otherInv != null && otherInv != defaultInv) {
+                        for (Item item : otherInv.getItems()) {
+                            if (item != null && item.getItemId() == id) {
+                                quantity += item.getQuantity();
+                            }
+                        }
                     }
                 }
             }

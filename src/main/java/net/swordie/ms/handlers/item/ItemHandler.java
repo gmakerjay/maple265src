@@ -476,40 +476,12 @@ public class ItemHandler {
             function.updateToChar(chr);
             chr.consumeItem(itemID, 1);
 
-        } else if (ItemConstants.isCube(itemID)) {
+        } else if (ItemConstants.isCube(itemID) || ItemConstants.isBonusCube(itemID) || ItemConstants.isSpecialCube(itemID)) {
 
             if (itemID == ItemConstants.VIOLET_CUBE) {
                 CubeHandler.useVioletCube(chr, inPacket);
             } else {
-                if (itemID == ItemConstants.GLOWING_CUBE) {
-                    CubeHandler.handleCube(chr, item.getItemId(), 0, inPacket, ItemGrade.Legendary, false);
-                } else if (itemID == ItemConstants.BRIGHT_CUBE) {
-                    CubeHandler.handleBrightCube(chr, item, inPacket, ItemGrade.Legendary, true, true);
-                } else {
-                    chr.chatMessage("This item has been removed from the game.");
-                    chr.consumeItem(item);
-                }
-            }
-
-        } else if (ItemConstants.isSpecialCube(itemID)) {
-
-            // 5062100 : 8th Anniversary Miracle Cube
-            // 5062103 : Octacular Miracle Cube
-            // 5062101 : Tot's Trial Miracle Cube
-            chr.chatMessage("This item has been removed from the game.");
-            chr.consumeItem(item);
-
-        } else if (ItemConstants.isBonusCube(itemID)) {
-
-            if (itemID == ItemConstants.BONUS_BRIGHT_CUBE_1 || itemID == ItemConstants.BONUS_BRIGHT_CUBE_2) {
-                CubeHandler.handleBrightCube(chr, item, inPacket, ItemGrade.Legendary, true, true);
-            } else if (itemID == ItemConstants.BONUS_GLOWING_CUBE) {
-                CubeHandler.handleCube(chr, itemID, 0, inPacket, ItemGrade.Legendary, true);
-            } else {
-                // 5062500 : Bonus Potential Cube
-                // 5062501 : [Special] Bonus Potential Cube
-                chr.chatMessage("This item has been removed from the game.");
-                chr.consumeItem(item);
+                CubeHandler.handleCubeAll(chr, item, inPacket);
             }
 
         } else if (ItemConstants.isNebuliteDiffuser(itemID)) {

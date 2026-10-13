@@ -6232,9 +6232,19 @@ public class Char {
         Item proto = ItemData.getItemDeepCopy(id);
         if (proto == null) return;
         Inventory inv = getInventoryByType(proto.getInvType());
-        Item item = inv.getItemByItemID(id);
+        Item item = inv != null ? inv.getItemByItemID(id) : null;
         if (item != null) {
             consumeItem(item, quantity);
+            return;
+        }
+        for (Inventory otherInv : Arrays.asList(getConsumeInventory(), getCashInventory(), getEtcInventory(), getInstallInventory())) {
+            if (otherInv != null && otherInv != inv) {
+                item = otherInv.getItemByItemID(id);
+                if (item != null) {
+                    consumeItem(item, quantity);
+                    return;
+                }
+            }
         }
     }
 

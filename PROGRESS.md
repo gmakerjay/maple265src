@@ -3,6 +3,36 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-13 19:40 น.] Fix Cube Option Reroll System, Resolve Packet Decoding Underflow & Support All Cube Types (Bonus Potential, Red, Black, Miracle)
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: Fix Cube Option Reroll System, Resolve Packet Decoding Buffer Underflow & Support All Cube Types (Bonus Potential Cubes, Red, Black, Miracle)
+- **รายละเอียด**:
+  1. **ปัญหาและสาเหตุเชิงเทคนิคที่ตรวจสอบพบ (Problems & Root Causes)**:
+     - **Buffer Underflow / IndexOutOfBoundsException ใน `handleCube`**: ใน [CubeHandler.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/CubeHandler.java) เมธอด `handleCube` เรียก `int ePos = inPacket.decodeInt();` แต่แพ็กเก็ตจากหน้าต่าง ENHANCE (`USER_CONSUME_CUBE_ITEM_USE_REQUEST`, opcode 367) ตัวไคลเอนต์ MapleStory v265 ส่ง `nEquipPos` มาเป็น `short` (2 ไบต์) เมื่อเซิร์ฟเวอร์พยายามอ่าน 4 ไบต์จาก Buffer ที่เหลือเพียง 2 ไบต์ Netty จึงโยน `IndexOutOfBoundsException` ส่งผลให้ตัวเซิร์ฟเวอร์หยุดการทำงานกลางคัน ไม่ส่งผลลัพธ์กลับไปยัง Client หน้าต่าง UI จึงค้างและไม่รีออปชั่น
+     - **Negative Skip Bug**: เมื่อข้อมูลใน InPacket ถูกอ่านหมด (`unreadAmount == 0`), คำสั่ง `inPacket.skip(inPacket.getUnreadAmount() - 1);` จะพยายามข้าม `-1` ไบต์ ซึ่งโยน `IllegalArgumentException: length -1`
+     - **Missing Cube Types ใน `handleCubeAll`**: เมธอด `handleCubeAll` ไม่มี case รองรับ `5062500` (`BONUS_POTENTIAL_CUBE`), `5062501` (`SPECIAL_BONUS_POTENTIAL_CUBE`), `5062009` (`RED_CUBE`), `5062010` (`BLACK_CUBE`), และ Miracle Cubes (`5062000-5062006`) ทำให้คิวบ์เหล่านี้ตกไปที่ `default:` และไม่ทำงาน
+     - **Cash Inventory False Overwrite**: ใน `handleUserCashCubeItemUseRequest` มีเงื่อนไข Whitelist ที่ไม่รวม `5062500`, `5062009`, `5062010` ทำให้คิวบ์ที่อยู่ใน Cash Inventory ถูกแทนที่ด้วยช่องจาก Consume Inventory ซึ่งกลายเป็น `null`
+     - **Cash Item Deletion Stub ใน `ItemHandler`**: ใน [ItemHandler.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemHandler.java) โค้ดเดิมเขียน stub ว่า `"This item has been removed from the game."` และลบไอเทมทิ้ง (`chr.consumeItem(item)`) สำหรับคิวบ์ที่ไม่ใช่ Glowing/Bright
+     - **Inventory Cross-Lookup Failure**: ใน [Char.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java) เมธอด `consumeItem(int id, int quantity)` และ [ScriptManagerImpl.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/scripts/ScriptManagerImpl.java) เมธอด `getQuantityOfItem(int id)` หากคิวบ์ถูกเก็บในช่องที่ไม่ตรงกับ default inventory type ของ WZ (เช่น คิวบ์แคชที่แจกใส่ช่อง Use หรือคิวบ์ Use ในช่อง Cash) เซิร์ฟเวอร์จะมองไม่เห็นไอเทม
+  2. **การแก้ไขเชิงลึก (Implementation & Solutions)**:
+     - **Safe Dynamic Packet Decoding**: ปรับปรุงการถอดรหัส `ePos` และ `cubeIndex` ใน [CubeHandler.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/CubeHandler.java) (`handleCube` และ `handleBrightCube`) ให้อ่านเป็น `decodeShort()` อย่างปลอดภัย รองรับทั้ง 2, 3, 4, 5 ไบต์ และตรวจสอบ `unreadAmount > 0` ก่อนอ่าน `cubeIndex` กำจัด Buffer Underflow และ Negative Skip Bug 100%
+     - **Equip Slot Auto-Fallback**: รองรับทั้งสล็อตบวกและสล็อตลบ (`ePos < 0`) ในการดึงอุปกรณ์ที่สวมใส่อยู่ (`getEquippedInventory()`) พร้อมเรียก `chr.dispose()` เมื่อเสร็จสิ้นกระบวนการเพื่อให้ไคลเอนต์ปลดล็อก Action พร้อมกดรีออปชั่นครั้งต่อไปได้ทันที
+     - **All Cube Types Integration**: บรรจุคิวบ์ทุกชนิดเข้า `handleCubeAll` ครบถ้วน:
+       - Bonus Potential Cube (`5062500`), Special Bonus Potential Cube (`5062501`) -> `handleCube(chr, item, itemID, 0, inPacket, ItemGrade.Legendary, true)`
+       - Red Cube (`5062009`) -> `handleCube(chr, item, itemID, 0, inPacket, ItemGrade.Legendary, false)`
+       - Black Cube (`5062010`) -> `handleBrightCube(chr, item, inPacket, ItemGrade.Legendary, false, true)`
+       - Miracle Cubes (`5062000-5062006`) -> `handleCube` ตามระดับ ItemGrade
+       - เพิ่ม Whitelist ใน Memorial Selection Confirmation สำหรับ `BLACK_CUBE`
+       - เพิ่ม Fallback ให้ `ItemConstants.isBonusCube()` และ `ItemConstants.isCube()`
+     - **Dual Cash/Consume Support**: ปรับ `handleUserConsumeCubeItemUserRequest` และ `handleUserCashCubeItemUseRequest` ให้ค้นหาไอเทมทั้งใน Consume และ Cash Inventory อย่างครบถ้วน
+     - **Remove Deletion Stubs**: ปรับ [ItemHandler.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemHandler.java) ให้นำคิวบ์ทั้งหมดส่งตรงไปยัง `CubeHandler.handleCubeAll` โดยไม่ลบไอเทมทิ้ง
+     - **Multi-Inventory Fallback**: เพิ่ม fallback ใน [Char.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java) และ [ScriptManagerImpl.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/scripts/ScriptManagerImpl.java) ให้ค้นหาข้ามช่อง Inventory ได้อย่างแม่นยำ
+  3. **การคอมไพล์ ดีพลอย และจัดทำแพตช์ (Compilation, Deployment & Patch Archive)**:
+     - คอมไพล์ Java Core ผ่านฉลุย 100%: `BUILD SUCCESS` (854 ไฟล์) ด้วย OpenJDK 21 & Maven
+     - ดีพลอย `maplestory.jar` (138.68 MB) ไปยัง `Server263/maplestory.jar`, `root/maplestory.jar`, และ `v214 src/maplestory.jar`
+     - สร้างแพ็กเกจแพตช์อัปเดตเดี่ยว [Patches/Server263_Patch_Latest.zip](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip) (173.01 MB) สำเร็จ 100% ตามกฎข้อ 4 ของ AGENTS.md
+
 ## 📅 [2026-10-13 18:35 น.] Comprehensive Party Quest Audit, Crash Prevention, Logic Fixes & Dual-Mode Enhancements
 
 ### 🎯 Scope & Technical Details

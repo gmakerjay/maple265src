@@ -293,20 +293,12 @@ public class CubeHandler {
                 pos = inPacket.decodeInt();
             }
             item = chr.getCashInventory().getItemBySlot(pos);
-            if (item == null || (!ItemConstants.SOLID_CUBES.contains(item.getItemId())
-                    && !ItemConstants.MYSTICAL_CUBES.contains(item.getItemId())
-                    && !ItemConstants.HARD_CUBES.contains(item.getItemId())
-                    && !ItemConstants.BRIGHT_CUBES.contains(item.getItemId())
-                    && !ItemConstants.BONUS_MYSTICAL_CUBES.contains(item.getItemId())
-                    && !ItemConstants.BONUS_BRIGHT_CUBES.contains(item.getItemId())
-                    && item.getItemId() != ItemConstants.GLOWING_CUBE
-                    && item.getItemId() != ItemConstants.BRIGHT_CUBE
-                    && item.getItemId() != ItemConstants.KARMA_BONUS_GLOWING_CUBE
-                    && item.getItemId() != ItemConstants.BONUS_GLOWING_CUBE
-                    && item.getItemId() != ItemConstants.BONUS_BRIGHT_CUBE_1
-                    && item.getItemId() != ItemConstants.VIOLET_CUBE
-                    && item.getItemId() != ItemConstants.BONUS_BRIGHT_CUBE_2)) {
+            if (item == null) {
                 item = chr.getConsumeInventory().getItemBySlot(pos);
+            }
+            if (item == null) {
+                chr.dispose();
+                return;
             }
             handleCubeAll(chr, item, inPacket);
         } else {
@@ -319,32 +311,59 @@ public class CubeHandler {
         inPacket.decodeInt(); // tick
         int pos = inPacket.decodeShort();
         var item = chr.getConsumeInventory().getItemBySlot(pos);
+        if (item == null) {
+            item = chr.getCashInventory().getItemBySlot(pos);
+        }
+        if (item == null && pos < 0) {
+            item = chr.getConsumeInventory().getItemBySlot(Math.abs(pos));
+            if (item == null) {
+                item = chr.getCashInventory().getItemBySlot(Math.abs(pos));
+            }
+        }
+        if (item == null) {
+            chr.dispose();
+            return;
+        }
         handleCubeAll(chr, item, inPacket);
     }
 
     public static void handleCubeAll(Char chr, Item item, InPacket inPacket) {
         if (item == null) {
+            chr.dispose();
             return;
         }
         var itemID = item.getItemId();
         switch (itemID) {
             case ItemConstants.GLOWING_CUBE:
-                handleCube(chr, itemID, 0, inPacket, ItemGrade.Legendary, false);
+            case ItemConstants.RED_CUBE:
+                handleCube(chr, item, itemID, 0, inPacket, ItemGrade.Legendary, false);
                 break;
             case ItemConstants.BRIGHT_CUBE:
+            case ItemConstants.BLACK_CUBE:
                 handleBrightCube(chr, item, inPacket, ItemGrade.Legendary, false, true);
                 break;
             case ItemConstants.BONUS_GLOWING_CUBE:
             case ItemConstants.KARMA_BONUS_GLOWING_CUBE:
-                handleCube(chr, itemID, 0, inPacket, ItemGrade.Legendary, true);
+            case ItemConstants.BONUS_POTENTIAL_CUBE:
+            case ItemConstants.SPECIAL_BONUS_POTENTIAL_CUBE:
+                handleCube(chr, item, itemID, 0, inPacket, ItemGrade.Legendary, true);
                 break;
             case ItemConstants.BONUS_BRIGHT_CUBE_1:
             case ItemConstants.BONUS_BRIGHT_CUBE_2:
                 handleBrightCube(chr, item, inPacket, ItemGrade.Legendary, true, true);
                 break;
+            case ItemConstants.MIRACLE_CUBE:
+            case ItemConstants.PREMIUM_MIRACLE_CUBE:
+                handleCube(chr, item, itemID, 0, inPacket, ItemGrade.Unique, false);
+                break;
+            case ItemConstants.SUPER_MIRACLE_CUBE:
+            case ItemConstants.REVOLUTIONARY_MIRACLE_CUBE:
+            case ItemConstants.PLATINUM_MIRACLE_CUBE:
+                handleCube(chr, item, itemID, 0, inPacket, ItemGrade.Legendary, false);
+                break;
             default:
                 if (ItemConstants.MYSTICAL_CUBES.contains(itemID)) {
-                    handleCube(chr, itemID, 0, inPacket, ItemGrade.Epic, false);
+                    handleCube(chr, item, itemID, 0, inPacket, ItemGrade.Epic, false);
                 } else if (ItemConstants.HARD_CUBES.contains(itemID)) {
                     int cubeType = switch (itemID) {
                         case 2710044 -> 1;
@@ -353,16 +372,23 @@ public class CubeHandler {
                         case 2710029 -> 4;
                         default -> 0;
                     };
-                    handleCube(chr, itemID, cubeType, inPacket, ItemGrade.Unique, false);
+                    handleCube(chr, item, itemID, cubeType, inPacket, ItemGrade.Unique, false);
                 } else if (ItemConstants.SOLID_CUBES.contains(itemID)) {
-                    handleCube(chr, itemID, 0, inPacket, ItemGrade.Legendary, false);
+                    handleCube(chr, item, itemID, 0, inPacket, ItemGrade.Legendary, false);
                 } else if (ItemConstants.BRIGHT_CUBES.contains(itemID)) {
                     handleBrightCube(chr, item, inPacket, ItemGrade.Legendary, false, true);
                 } else if (ItemConstants.BONUS_MYSTICAL_CUBES.contains(itemID)) {
-                    handleCube(chr, itemID, 0, inPacket, ItemGrade.Epic, true);
+                    handleCube(chr, item, itemID, 0, inPacket, ItemGrade.Epic, true);
                 } else if (ItemConstants.BONUS_BRIGHT_CUBES.contains(itemID)) {
                     handleBrightCube(chr, item, inPacket, ItemGrade.Legendary, true, true);
+                } else if (ItemConstants.isBonusCube(itemID)) {
+                    handleCube(chr, item, itemID, 0, inPacket, ItemGrade.Legendary, true);
+                } else if (ItemConstants.isCube(itemID)) {
+                    handleCube(chr, item, itemID, 0, inPacket, ItemGrade.Legendary, false);
+                } else {
+                    chr.dispose();
                 }
+                break;
         }
     }
 
@@ -380,16 +406,37 @@ public class CubeHandler {
         int cubeID = inPacket.decodeInt();
         short uPos = inPacket.decodeShort();
         var item = chr.getConsumeInventory().getItemBySlot(uPos);
+        if (item == null) {
+            item = chr.getCashInventory().getItemBySlot(uPos);
+        }
         handleBrightCube(chr, item, inPacket, ItemGrade.Legendary, true, true);
     }
 
-    protected static void handleCube(Char chr, int cubeID, int cubeType, InPacket inPacket, ItemGrade itemGradeMax, boolean bonus) {
-        int ePos = inPacket.decodeInt();
-        inPacket.skip(inPacket.getUnreadAmount() - 1);
+    public static void handleCube(Char chr, int cubeID, int cubeType, InPacket inPacket, ItemGrade itemGradeMax, boolean bonus) {
+        handleCube(chr, null, cubeID, cubeType, inPacket, itemGradeMax, bonus);
+    }
+
+    public static void handleCube(Char chr, Item cube, int cubeID, int cubeType, InPacket inPacket, ItemGrade itemGradeMax, boolean bonus) {
+        if (inPacket.getUnreadAmount() == 0) {
+            chr.dispose();
+            return;
+        }
+        int ePos = inPacket.decodeShort();
+        if (inPacket.getUnreadAmount() >= 2 && (inPacket.getUnreadAmount() == 2 || inPacket.getUnreadAmount() == 3)) {
+            inPacket.decodeShort(); // high word if ePos was 4-byte int
+        }
+        byte cubeIndex = inPacket.getUnreadAmount() > 0 ? inPacket.decodeByte() : 0;
+
         InvType invType = ePos < 0 ? EQUIPPED : EQUIP;
         Equip equip = (Equip) chr.getInventoryByType(invType).getItemBySlot(ePos);
+        if (equip == null && ePos < 0) {
+            equip = (Equip) chr.getEquippedInventory().getItemBySlot(ePos);
+            if (equip == null) {
+                equip = (Equip) chr.getEquippedInventory().getItemBySlot(-ePos);
+            }
+        }
         if (equip == null) {
-            chr.chatMessage(SystemNotice, "Đã xảy ra lỗi không xác định.");
+            chr.chatMessage(SystemNotice, "An unknown error has occurred.");
             chr.dispose();
             return;
         }
@@ -436,7 +483,11 @@ public class CubeHandler {
             return;
         }
         chr.deductMoney(cost);
-        chr.consumeItem(cubeID, 1);
+        if (cube != null) {
+            chr.consumeItem(cube, 1);
+        } else {
+            chr.consumeItem(cubeID, 1);
+        }
         giveCubePieces(chr, cubeID);
         int cubeCount = Math.max(chr.getScriptManager().getQuantityOfItem(cubeID) - 1, 0);
         if (bonus) {
@@ -447,18 +498,32 @@ public class CubeHandler {
         equip.releaseOptions(bonus, cubeID);
         chr.write(UserLocal.itemSlotExtendItemUse(true, cubeID, equip.getItemId()));
         equip.updateToChar(chr);
-        chr.write(WvsContext.consumeCubeRelease(inPacket.decodeByte(), equip.getId(), cubeCount, cubeType));
+        chr.write(WvsContext.consumeCubeRelease(cubeIndex, equip.getId(), cubeCount, cubeType));
+        chr.dispose();
     }
 
     protected static void handleBrightCube(Char chr, Item cube, InPacket inPacket, ItemGrade itemGradeMax, boolean bonus, boolean init) {
         if (init) {
+            if (inPacket.getUnreadAmount() == 0) {
+                chr.dispose();
+                return;
+            }
             int ePos = inPacket.decodeShort();
-            int cubeID = cube.getItemId();
-            inPacket.skip(inPacket.getUnreadAmount() - 1);
+            if (inPacket.getUnreadAmount() >= 2 && (inPacket.getUnreadAmount() == 2 || inPacket.getUnreadAmount() == 3)) {
+                inPacket.decodeShort(); // high word if ePos was 4-byte int
+            }
+            byte cubeIndex = inPacket.getUnreadAmount() > 0 ? inPacket.decodeByte() : 0;
+            int cubeID = cube != null ? cube.getItemId() : 0;
             InvType invType = ePos < 0 ? EQUIPPED : EQUIP;
             Equip equip = (Equip) chr.getInventoryByType(invType).getItemBySlot(ePos);
+            if (equip == null && ePos < 0) {
+                equip = (Equip) chr.getEquippedInventory().getItemBySlot(ePos);
+                if (equip == null) {
+                    equip = (Equip) chr.getEquippedInventory().getItemBySlot(-ePos);
+                }
+            }
             if (equip == null) {
-                chr.chatMessage(SystemNotice, "Đã xảy ra lỗi không xác định.");
+                chr.chatMessage(SystemNotice, "An unknown error has occurred.");
                 chr.dispose();
                 return;
             }
@@ -503,7 +568,11 @@ public class CubeHandler {
                 return;
             }
             chr.deductMoney(cost);
-            chr.consumeItem(cubeID, 1);
+            if (cube != null) {
+                chr.consumeItem(cube, 1);
+            } else {
+                chr.consumeItem(cubeID, 1);
+            }
             giveCubePieces(chr, cubeID);
             int cubeCount = Math.max(chr.getScriptManager().getQuantityOfItem(cubeID) - 1, 0);
             var copy = equip.deepCopy();
@@ -515,15 +584,16 @@ public class CubeHandler {
             copy.releaseOptions(bonus, cubeID);
             chr.setMemorialCubeInfo(new MemorialCubeInfo(copy, equip.getOptions(), cubeID));
             chr.write(UserLocal.brightCubeResult(true, cubeID, copy.getItemId()));
-            chr.write(WvsContext.consumeBrightCubeInit(inPacket.decodeByte(), cubeCount, cube, equip.getId(), copy, bonus));
+            chr.write(WvsContext.consumeBrightCubeInit(cubeIndex, cubeCount, cube, equip.getId(), copy, bonus));
         } else {
-            int result = inPacket.decodeInt();
+            int result = inPacket.getUnreadAmount() >= 4 ? inPacket.decodeInt() : (inPacket.getUnreadAmount() >= 2 ? inPacket.decodeShort() : 0);
             var memorialCubeInfo = chr.getMemorialCubeInfo();
             if (memorialCubeInfo != null) {
                 int cubeID = memorialCubeInfo.getCubeItemID();
                 if (!ItemConstants.BRIGHT_CUBES.contains(cubeID)
                         && !ItemConstants.BONUS_BRIGHT_CUBES.contains(cubeID)
                         && cubeID != ItemConstants.BRIGHT_CUBE
+                        && cubeID != ItemConstants.BLACK_CUBE
                         && cubeID != ItemConstants.BONUS_BRIGHT_CUBE_1
                         && cubeID != ItemConstants.BONUS_BRIGHT_CUBE_2) {
                     return;
@@ -541,8 +611,8 @@ public class CubeHandler {
                 chr.getMemorialCubeInfo().setEquip(null);
                 chr.setMemorialCubeInfo(null);
             }
-            inPacket.skip(inPacket.getUnreadAmount() - 1);
-            chr.write(WvsContext.consumeBrightCubeRelease(inPacket.decodeByte()));
+            byte releaseIdx = inPacket.getUnreadAmount() > 0 ? inPacket.decodeByte() : 0;
+            chr.write(WvsContext.consumeBrightCubeRelease(releaseIdx));
             chr.dispose();
         }
     }
