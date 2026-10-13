@@ -3,6 +3,40 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-13 13:18 น.] Patch System Enhancement: Dual-Package Incremental Patches (Server Runner & Localhost Client 1-Click Installer)
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: Dual-Package Incremental Patch Creation (Server Runner + Standalone Localhost Client Installer)
+- **รายละเอียด**:
+  1. **ปัญหาที่พบ (Problem)**:
+     - ไฟล์ `Localhost.dll` ในโฟลเดอร์ Steam (`depot_216151`) เป็นเวอร์ชันเก่าจากวันที่ 5 ตุลาคม 2026 (MD5: `20608BFE...`) เกิดการ Crash หลุดทันทีเมื่อเปิดเกมเนื่องจาก Memory Assertion Error (`ZXString` / `StringPool` refcount check)
+     - ระบบเดิมสร้างไฟล์ Patch แพ็ครวมทั้งเซิร์ฟเวอร์ขนาดใหญ่ (~122 MB) ทำให้ผู้ใช้ที่ต้องการแจกจ่ายเฉพาะไฟล์เชื่อมต่อ Client ให้เพื่อนหรือผู้เล่นอื่นต้องแยกไฟล์เองด้วยตนเอง
+     - ผู้ใช้ต้อง Copy-Paste ไฟล์ Localhost ลงในโฟลเดอร์ตัวเกมด้วยตนเอง ซึ่งอาจเกิด Human Error ลืมก๊อปปี้ หรือวางผิดโฟลเดอร์
+  2. **การปรับปรุงและวิธีแก้ (Enhancement & Implementation)**:
+     - **ฝั่ง Client Patch (Localhost)**:
+       - อัปเดต `Localhost.dll` ตัวล่าสุด (MD5: `C9D118CC0F1E45EE7B7C7C7AAB676EC1`) ที่แก้ปัญหา Memory Crash และ Socket Redirect สมบูรณ์
+       - สร้างสคริปต์ [`Install_Client_Patch.bat`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/Client_Patch_Files/Install_Client_Patch.bat) ติดตั้งแบบ 1-Click อัตโนมัติ: มีระบบค้นหาโฟลเดอร์ติดตั้ง MapleStory v265 อัตโนมัติ (Steam Depot, Steam Common, Nexon, D:, E:) สำรองไฟล์เดิม และอัปเดตไฟล์ให้เสร็จสรรพ
+       - ซิงค์ไฟล์ชุดแพตช์ล่าสุดลงในโฟลเดอร์ Steam Depot ของเครื่องปัจจุบันโดยตรงเรียบร้อย
+     - **ฝั่ง Server Runner Patch (ตัวรันเซิร์ฟเวอร์)**:
+       - อัปเกรดเครื่องมือสร้างแพตช์ [`tools/create_patch.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/create_patch.py) ให้สร้างไฟล์แพตช์ 2 แพ็กเกจพร้อมกัน:
+         1. **Server Runner Patch**: `Patches/Server263_Patch_Latest.zip` (122.47 MB) บรรจุ `maplestory.jar`, `server.properties`, สคริปต์รันเซิร์ฟเวอร์, `data/scripts/` (รวมเควสต์ Evan `q22133s.py`), `data/resources/`, `Client_Patch_Files/`, และ `Apply_Patch.bat`
+         2. **Standalone Client Patch**: `Patches/Client_Patch_Latest.zip` (329.3 KB) มีเฉพาะไฟล์ฝั่ง Client พร้อม `Install_Client_Patch.bat` สำหรับส่งต่อให้ผู้เล่นดาวน์โหลดไปแตกไฟล์ทับตัวเกมได้ทันที
+       - ปรับปรุง `Apply_Patch.bat` ให้ตรวจหาและถามผู้ใช้ว่าต้องการอัปเดต Localhost Client Patch ลงโฟลเดอร์ตัวเกม MapleStory ด้วยหรือไม่ในขั้นตอนเดียว
+  3. **ผลลัพธ์ (Outcome)**:
+     - ตัวรันเซิร์ฟเวอร์และตัวเชื่อมต่อ Localhost ได้รับการปรับปรุงเป็นเวอร์ชันล่าสุด 100%
+     - ได้ไฟล์แพตช์สำเร็จรูปพร้อมใช้งานและแจกจ่ายในโฟลเดอร์ [`Patches/`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/):
+       - [`Server263_Patch_Latest.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip) (ตัวรันเซิร์ฟเวอร์)
+       - [`Client_Patch_Latest.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Client_Patch_Latest.zip) (ตัวเชื่อมต่อ Localhost)
+
+### 📂 Files Modified / Created
+- [`Server263/Client_Patch_Files/Install_Client_Patch.bat`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/Client_Patch_Files/Install_Client_Patch.bat)
+- [`Server263/Client_Patch_Files/วิธีใช้งาน_สำหรับนำไปวางเครื่องอื่น.txt`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/Client_Patch_Files/วิธีใช้งาน_สำหรับนำไปวางเครื่องอื่น.txt)
+- [`tools/create_patch.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/create_patch.py)
+- [`Patches/Server263_Patch_Latest.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip)
+- [`Patches/Client_Patch_Latest.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Client_Patch_Latest.zip)
+- [`v214 src/PROGRESS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/PROGRESS.md)
+- [`PROGRESS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS.md)
+
 ## 📅 [2026-10-13 12:57 น.] 74062d2d — Evan Mir Hatching & Skill UI Evolution Fix: Revamped Quest Synchronization, Level-up Advancement Overhaul, and Missing Quest Script Implementation
 
 ### 🎯 Scope & Technical Details
