@@ -86,7 +86,7 @@ public class DataPrinter {
     }
 
     public static void send(String name, final String s, boolean line) {
-        if (name != null && (name.contains("Exception") || name.contains("Error") || name.contains("error") || name.contains("hack.txt") || name.contains("Scripts.txt"))) {
+        if (name != null && !CLIENT_ERROR.equals(name) && (name.contains("Exception") || name.contains("Error") || name.contains("error") || name.contains("hack.txt") || name.contains("Scripts.txt"))) {
             System.err.println("[" + name + "] " + s);
         }
         writeToFile(name, s, line);

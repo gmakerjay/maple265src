@@ -3,6 +3,47 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-13 16:15 น.] Comprehensive Server Console Log Optimization & Junk Log Elimination (Silence Telemetry Callstacks, Clean Disconnects & Multilingual Standardization)
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: Complete Server Console Log Optimization, Junk/Spam Log Elimination, Client Crash Telemetry Silencing, and Professional Log Standardization
+- **รายละเอียด**:
+  1. **ปัญหาและความต้องการของผู้ใช้ (Problem & Requirements)**:
+     - ผู้ใช้พบข้อความล็อกขยะ (Junk logs) ในหน้าต่างคอนโซลเซิร์ฟเวอร์จำนวนมากที่รบกวนสายตาและทำให้ตรวจสอบข้อผิดพลาดจริงได้ยาก:
+       - ดัมพ์ Callstack ยาวเป็นร้อยบรรทัดเมื่อเกมส่งรายงาน Crash เก่า: `[API In] | REQUEST_TOKEN_X64... VERSION|26503|DATETIME|... _SymGetLineFromAddr Error : 7e DosHdr is NULL...`
+       - ข้อความภาษาเวียดนามสแปมเมื่อผู้เล่นเลือกตัวละคร/เปลี่ยน Channel/ปิดเกม เช่น `[ChannelInactive] Client 127.0.0.1 đang chọn nhân vật / kênh / thế giới nhưng bị mất kết nối.` และ `[IP: 127.0.0.1] đã ngắt kết nối với máy chủ.`
+       - ข้อความภาษาเวียดนามเมื่อล็อกอิน/สมัครไอดีผ่าน API: `đăng nhập thành công...`, `đăng ký thành công...`
+       - ข้อความการนับคอนเนกชันที่พิมพ์ซ้ำๆ: `Online(s): 0`, `[127.0.0.1] Loaded.`
+       - งานเบื้องหลัง Cleaner ดัมพ์ข้อความทุก 500ms เมื่อไอเทมที่พื้นหมดอายุ: `[Cleaner] Đã dọn dẹp ... vật phẩm đã rớt trong các bản đồ.`
+  2. **สาเหตุเชิงเทคนิคที่ตรวจสอบพบ (Technical Analysis & Root Causes)**:
+     - **Client Crash Dump Flooding**: ใน [`LoginHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/LoginHandler.java) เมื่อได้รับ `InHeader.EXCEPTION_LOG` โค้ดเดิมมีการทำ `System.out.println(str)` ซ้ำ และใน [`DataPrinter.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/util/DataPrinter.java) บรรทัด 89 เช็ค `name.contains("Error")` ทำให้ชื่อไฟล์ `Client_Error.txt` ไปกระตุ้นให้พิมพ์ทั้งบัฟเฟอร์ขนาดกว่า 6 KB ลง `System.err.println` ส่งผลให้หน้าจอคอนโซลเต็มไปด้วย Callstack ของเกม
+     - **Transition Disconnect Spam**: ใน [`Client.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/Client.java) ฟังก์ชัน `handleChannelInactive` มี switch-case ดักสถานะตอนเปลี่ยน World/Channel และพิมพ์ภาษาเวียดนามทุกครั้งที่ตัดการเชื่อมต่อจาก Login Server เพื่อไปต่อ Channel Server ซึ่งเป็นพฤติกรรมปกติของเกม ไม่ใช่ข้อผิดพลาด
+     - **Cleaner Loop Spam**: ใน [`Server.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/Server.java) ตัวลูปจับเวลาตรวจเช็คไอเทมตกพื้นทุก 500 มิลลิวินาที (วินาทีละ 2 ครั้ง) และพิมพ์ข้อความภาษาเวียดนามทุกครั้งที่มีของตกพื้นหายไป
+     - **API In Packet Dump**: ใน [`ApiHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/connection/api/ApiHandler.java) ทุกแพ็กเก็ตที่เข้ามาถูกพิมพ์ลงคอนโซลด้วยคำนำหน้า `[API In]` ตลอดเวลา
+  3. **การแก้ไขเชิงลึก (Implementation & Fixes)**:
+     - [`LoginHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/LoginHandler.java):
+       - ปิดการ `System.out.println` ข้อมูล Callstack ลงคอนโซล โดยบันทึกลงไฟล์ `logs/<date>/Client_Error.txt` อย่างปลอดภัย และพิมพ์ข้อความสรุปบรรทัดเดียวเฉพาะเมื่อเปิด `ServerConfig.DEBUG_MODE`
+       - ซ่อนข้อความ `[IP] Loaded.` ให้อยู่ใต้เงื่อนไข `DEBUG_MODE`
+       - แปลงข้อความเปลี่ยนแชนเนลและล็อกอินเป็นภาษาอังกฤษที่กระชับและเป็นมืออาชีพ
+     - [`DataPrinter.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/util/DataPrinter.java):
+       - ยกเว้น `CLIENT_ERROR` ออกจากการพิมพ์ `System.err.println` ไม่ให้ดัมพ์ไบนารีและสตริงแอสกีของเกมลงคอนโซล
+     - [`Client.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/Client.java):
+       - ลบ switch-case ภาษาเวียดนามใน `handleChannelInactive` และแปลงเป็นการบันทึกสถานะเรียบร้อยแบบเงียบ (หรือแสดงเฉพาะเมื่อเปิด `DEBUG_MODE`)
+       - แปลงข้อความ Disconnect ทั่วไปเป็น `[Network] IP ... disconnected from server.`
+     - [`Server.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/Server.java):
+       - ห่อหุ้มงานทำความสะอาดเบื้องหลัง (Cleaner timer สำหรับ Character, Field, และ Dropped Items) ให้อยู่ใต้ `ServerConfig.DEBUG_MODE`
+     - [`ChannelHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/connection/netty/ChannelHandler.java):
+       - ห่อหุ้มข้อความ `Online(s): ...` ให้อยู่ใต้ `ServerConfig.DEBUG_MODE`
+     - [`ApiHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/connection/api/ApiHandler.java) & [`ApiRequestHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/ApiRequestHandler.java):
+       - ซ่อน `[API In]` เว้นแต่เปิด `DEBUG_MODE` หรือ `PACKET_LOG`
+       - ปรับข้อความล็อกอินและสมัครไอดีเป็น `[API Login] Account '...' authenticated successfully...` และ `[API Register] New account '...' registered successfully...`
+  4. **การทดสอบและผลลัพธ์ (Testing & Verification)**:
+     - ทำการคอมไพล์ Java Server Core ผ่านฉลุย: `BUILD SUCCESS` บน OpenJDK 21
+     - ดีพลอย `maplestory.jar` ไปยัง `Server263/` และ root
+     - รันเซิร์ฟเวอร์ทดสอบและยิง API Packet Tests ผ่านครบ 100%
+     - ตรวจสอบคอนโซลเซิร์ฟเวอร์: คอนโซลเงียบ สะอาด เป็นระเบียบ 100% ไม่มีข้อความภาษาเวียดนาม ไม่มี Callstack รกจอ และไม่มีข้อความ Cleaner สแปม
+     - บิลด์แพตช์อัปเดตเดี่ยว `Patches/Server263_Patch_Latest.zip` (172.97 MB) สำเร็จ
+
 ## 📅 [2026-10-13 15:52 น.] Modern WPF Launcher & Full Packet Compatibility Implementation (Opcode 101, 102, 103, LAN Architecture, Dynamic Hook & Zero-Config IP)
 
 ### 🎯 Scope & Technical Details

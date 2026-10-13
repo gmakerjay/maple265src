@@ -35,7 +35,9 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
     public void channelActive(ChannelHandlerContext chc) throws Exception {
         super.channelActive(chc);
         Server.get().getChannels().add(chc.channel());
-        System.out.println(STR."Online(s): \{Server.get().getChannels().size()}");
+        if (ServerConfig.DEBUG_MODE) {
+            System.out.println(STR."Online(s): \{Server.get().getChannels().size()}");
+        }
     }
 
     @Override
@@ -45,7 +47,9 @@ public class ChannelHandler extends SimpleChannelInboundHandler<InPacket> {
             c.handleChannelInactive();
         }
         Server.get().getChannels().remove(chc.channel());
-        System.out.println(STR."Online(s): \{Server.get().getChannels().size()}");
+        if (ServerConfig.DEBUG_MODE) {
+            System.out.println(STR."Online(s): \{Server.get().getChannels().size()}");
+        }
     }
 
     @Override

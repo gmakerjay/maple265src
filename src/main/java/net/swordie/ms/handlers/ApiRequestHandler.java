@@ -92,7 +92,7 @@ public class ApiRequestHandler {
                 final int token = getTokenPacked(user.getId());
                 Server.get().addAuthToken(token, user.getId());
                 c.write(ApiResponse.tokenRequestResult(ApiTokenResultType.Success, token));
-                DataPrinter.send(DataPrinter.LOGIN, String.format("[IP: %s] đăng nhập thành công tài khoản %s và có token: %d.", c.getIP(), name, token));
+                DataPrinter.send(DataPrinter.LOGIN, String.format("[API Login] Account '%s' authenticated successfully from IP %s (Token: %d)", name, c.getIP(), token));
             }
         } else {
             c.write(ApiResponse.tokenRequestResult(ApiTokenResultType.InvalidUserPassCombination, 0));
@@ -142,7 +142,7 @@ public class ApiRequestHandler {
             user.setPic(BCrypt.hashpw("111111", BCrypt.gensalt(ServerConstants.BCRYPT_ITERATIONS)));
             user.setEmail(email);
             user.insertUserToSQL();
-            DataPrinter.send(DataPrinter.REGISTER, String.format("[IP: %s] đăng ký thành công tài khoản %s, Email %s.", c.getIP(), name, email));
+            DataPrinter.send(DataPrinter.REGISTER, String.format("[API Register] New account '%s' registered successfully from IP %s (Email: %s)", name, c.getIP(), email));
         }
         c.write(ApiResponse.createAccountResult(acr));
     }

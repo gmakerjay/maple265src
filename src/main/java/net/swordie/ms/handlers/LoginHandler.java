@@ -87,7 +87,9 @@ public class LoginHandler {
 
     @Handler(op = InHeader.CLIENT_LOADING_TIME_LOG)
     public static void handleClientLoadingTimeLong(Client c, InPacket inPacket) {
-        System.out.printf("[%s] Loaded.%n", c.getIP());
+        if (ServerConfig.DEBUG_MODE) {
+            System.out.printf("[%s] Client loaded.%n", c.getIP());
+        }
     }
 
     @Handler(op = InHeader.USE_AUTH_SERVER)
@@ -244,7 +246,7 @@ public class LoginHandler {
                 return;
             }
             if (isBannedMachine) {
-                DataPrinter.send(DataPrinter.LOGIN, "Thông tin tài khoản " + user.getName() + " đã từng hoặc địa chỉ máy bị khoá tài khoản!");
+                DataPrinter.send(DataPrinter.LOGIN, "[Login Warning] Account " + user.getName() + " machine HWID matches banned record.");
             }
             if (ServerConfig.ADMIN_LOGIN && user.getAccountType() != AccountType.Admin) {
                 c.write(WvsContext.broadcastMsg(BroadcastMsg.popUpMessage("The server is undergoing maintenance. Please try again later.")));
@@ -282,13 +284,9 @@ public class LoginHandler {
             c.write(new OutPacket(OutHeader.CLIENT_ALIVE));
             cleanupPendingDeletions(c, c.getAccount());
             c.write(Login.selectWorldResult(c.getUser(), c.getAccount(), code, channel, "normal", true));
-            DataPrinter.send(DataPrinter.LOGIN, "Thông tin tài khoản " + user.getName()
-                    + " | IP: " + c.getIP()
-                    + " | OS: " + osName
-                    + " | Ram: " + ram + " MB"
-                    + " | CPU: " + cpuName
-                    + " | Machine ID: " + Util.readableByteArray(machineID)
-            );
+            DataPrinter.send(DataPrinter.LOGIN, "[World Select] Account '" + user.getName()
+                    + "' connected to Channel " + channel
+                    + " | IP: " + c.getIP());
         } else {
             c.write(Login.selectCharacterResult(LoginType.UnauthorizedUser, (byte) 0, 0, 0));
         }
@@ -864,7 +862,7 @@ public class LoginHandler {
             user.setClientState(Client.LOGIN_TRANSITION);
             user.updateUserClientStateToSQL();
             c.write(Login.checkPasswordResult(true, null, user));
-            DataPrinter.send(DataPrinter.LOGIN, "Thông tin tài khoản " + user.getName() + " | IP: " + c.getIP());
+            DataPrinter.send(DataPrinter.LOGIN, "[Login] Account '" + user.getName() + "' connected from " + c.getIP());
             Char chr = null;
             if (user.getLastCharID() != 0) {
                 chr = account.getCharById(user.getLastCharID());
@@ -934,57 +932,10 @@ public class LoginHandler {
     @Handler(op = InHeader.EXCEPTION_LOG)
     public static void handleExceptionLog(Client c, InPacket inPacket) {
         String str = Util.toStringFromAscii(inPacket.getData());
-        System.out.println(str + "\r\n");
-
-        try {
-            String packet = str.split("[]]")[1].substring(12); // skip everything up until the opcode
-            byte[] fullPacketArr = Util.getByteArrayByString(packet);
-            short op = (short) ((fullPacketArr[0] & 0xFF) + ((fullPacketArr[1] & 0xFF) << 8));
-            byte[] packetData = new byte[fullPacketArr.length - 2];
-            System.arraycopy(fullPacketArr, 2, packetData, 0, packetData.length);
-            OutHeader header = OutHeader.getOutHeaderByOp(op);
-
-            String msg = String.format("Exception log: [%s], %d/0x%X\t| %s\r\n Full String: %s", header, op, op, Util.readableByteArray(packetData), str);
-            StringBuilder sb = new StringBuilder();
-
-            if (header == OutHeader.TEMPORARY_STAT_SET || header == OutHeader.REMOTE_SET_TEMPORARY_STAT || header == OutHeader.USER_ENTER_FIELD) {
-                inPacket = new InPacket(packetData);
-                if (header == OutHeader.REMOTE_SET_TEMPORARY_STAT) {
-                    inPacket.decodeInt(); // chr id
-                } else if (header == OutHeader.USER_ENTER_FIELD) {
-                    inPacket.decodeInt();
-                    inPacket.decodeInt();
-                    inPacket.decodeString();
-                    inPacket.decodeString(); // parent name, deprecated
-                    // guild
-                    inPacket.decodeString();
-                    inPacket.decodeShort();
-                    inPacket.decodeByte();
-                    inPacket.decodeShort();
-                    inPacket.decodeByte();
-                    // end guild
-                    inPacket.decodeByte();
-                    inPacket.decodeInt();
-                    inPacket.decodeInt();
-                    inPacket.decodeInt();
-                    inPacket.decodeInt();
-                    inPacket.decodeByte();
-                }
-                for (int i = 0; i < CharacterTemporaryStat.length; i++) {
-                    int mask = inPacket.decodeInt();
-                    for (CharacterTemporaryStat cts : CharacterTemporaryStat.values()) {
-                        if (cts.getPos() == i && (cts.getVal() & mask) != 0) {
-                            String stat = String.format("Contained stat %s", cts);
-                            sb.append(stat);
-                        }
-                    }
-                }
-            }
-
-            msg = msg + "\r\n" + sb;
-            System.out.println(msg);
-        } catch (Exception ignored) {
+        if (ServerConfig.DEBUG_MODE) {
+            System.out.println("[Client Report] Received client exception report from " + c.getIP() + " (saved to logs/)");
         }
+        DataPrinter.send(DataPrinter.CLIENT_ERROR, str, true);
     }
 
     @Handler(op = InHeader.WVS_CRASH_CALLBACK)

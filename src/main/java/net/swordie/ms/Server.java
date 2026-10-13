@@ -452,7 +452,9 @@ public class Server {
                         }
                     }
                     GlobalTimerManager.managedCharacterTimers.remove(entry.getKey());
-                    System.out.println("[Cleaner] Đã dọn dẹp timer cho nhân vật không tồn tại: " + entry.getKey());
+                    if (ServerConfig.DEBUG_MODE) {
+                        System.out.println("[Cleaner] Cleaned timer for offline character: " + entry.getKey());
+                    }
                 }
             }
             for (Map.Entry<Integer, CopyOnWriteArrayList<ScheduledFuture<?>>> entry : GlobalTimerManager.managedFieldTimers.entrySet()) {
@@ -463,7 +465,9 @@ public class Server {
                         }
                     }
                     GlobalTimerManager.managedFieldTimers.remove(entry.getKey());
-                    System.out.println("[Cleaner] Đã dọn dẹp timer cho bản đồ không có người chơi: " + entry.getKey());
+                    if (ServerConfig.DEBUG_MODE) {
+                        System.out.println("[Cleaner] Cleaned timer for empty field: " + entry.getKey());
+                    }
                 }
             }
         }, 30, 30, TimeUnit.MINUTES, true);
@@ -481,8 +485,8 @@ public class Server {
             for (Char chr : getChars().values()) {
                 chr.update(now);
             }
-            if (count > 0) {
-                System.out.println("[Cleaner] Đã dọn dẹp " + count + " vật phẩm đã rớt trong các bản đồ.");
+            if (count > 0 && ServerConfig.DEBUG_MODE) {
+                System.out.println("[Cleaner] Cleaned " + count + " expired dropped item(s)");
             }
         }, 5000, 500, TimeUnit.MILLISECONDS, true);
         //clearUnUsedFields();

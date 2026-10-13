@@ -164,30 +164,11 @@ public class Client extends NettyClient {
     }
 
     public void handleChannelInactive() {
-        System.out.printf("[ChannelInactive] Client %s: Current state: %s, Next state: %s.%n", getIP(), getState(currentState), getState(nextState));
-        if (nextState != NONE) {
-            System.out.println("[ChannelInactive] Client " + getIP() + " đã ngắt kết nối trong quá trình chuyển trạng thái.");
-        } else {
-            switch (currentState) {
-                case IN_FIELD:
-                case IN_CASH_SHOP:
-                case IN_AUCTION_HOUSE:
-                    System.out.println("[ChannelInactive] Client " + getIP() + " đang ở trạng thái ổn định, đã đăng nhập. Đang thực hiện đăng xuất hoàn toàn.");
-                    finalizeSession();
-                    break;
-                case LOGOUT:
-                case NONE:
-                    System.out.println("[ChannelInactive] Client " + getIP() + " chưa đăng nhập. Không cần hành động nào.");
-                    break;
-                case LOGIN_TRANSITION:
-                    System.out.println("[ChannelInactive] Client " + getIP() + " đang chọn nhân vật / kênh / thế giới nhưng bị mất kết nối.");
-                    finalizeSession();
-                    break;
-                default:
-                    System.out.printf("[ChannelInactive] Client " + getIP() + " đang trong trạng thái hiện tại chưa được xử lý %d. Đang thực hiện đăng xuất an toàn.", getState(currentState));
-                    finalizeSession();
-                    break;
-            }
+        if (ServerConfig.DEBUG_MODE) {
+            System.out.printf("[Network] Client %s disconnected (State: %s)%n", getIP(), getState(currentState));
+        }
+        if (currentState == IN_FIELD || currentState == IN_CASH_SHOP || currentState == IN_AUCTION_HOUSE || currentState == LOGIN_TRANSITION || nextState != NONE) {
+            finalizeSession();
         }
     }
 
@@ -258,7 +239,7 @@ public class Client extends NettyClient {
                 user.setCurrentChr(null);
             }
             if (ServerConfig.IP_LOG) {
-                DataPrinter.send(DataPrinter.LOGIN, String.format("[IP: %s] đã ngắt kết nối với máy chủ.", getIP()));
+                DataPrinter.send(DataPrinter.LOGIN, String.format("[Network] IP %s disconnected from server.", getIP()));
             }
             return;
         }
@@ -312,7 +293,7 @@ public class Client extends NettyClient {
                 Char other = tradeRoom.getOtherChar(chr.getId());
                 if (other != null) { // không thể xảy ra nhưng cho chắc
                     other.write(MiniroomPacket.cancelTrade());
-                    other.chatMessage("Đối tác giao dịch của bạn đã ngắt kết nối.");
+                    other.chatMessage("Your trading partner has disconnected.");
                 }
             }
             if (chr.getShop() != null) {
@@ -330,7 +311,7 @@ public class Client extends NettyClient {
                 chr.getScriptManager().stopEvents();
             }
             chr.getAvatarData().getCharacterStat().setLastLogout(FileTime.currentTime());
-            chr.chatPopup("Bạn đã ngắt kết nối khỏi máy chủ.");
+            chr.chatPopup("You have been disconnected from the server.");
         }
         if (getNextState() == NONE) {
             this.currentState = LOGOUT;
@@ -358,7 +339,7 @@ public class Client extends NettyClient {
         Server.get().removeChar(charID);
         setChr(null);
         if (ServerConfig.IP_LOG) {
-            DataPrinter.send(DataPrinter.LOGIN, String.format("[IP: %s] đã ngắt kết nối với máy chủ.", getIP()));
+            DataPrinter.send(DataPrinter.LOGIN, String.format("[Network] IP %s disconnected from server.", getIP()));
         }
     }
 
