@@ -3,6 +3,50 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-13 12:25 น.] aa01393 — Evan In-Depth Re-Analysis & Comprehensive Fixes: United Horizons Skill Redirection Collision, Dragon Slam V-Matrix Follow-up Mapping & Cooldowns, Magic Debris Memory Leak Removal, and Starter Lifecycle Step 3
+
+### 🎯 Scope & Technical Details
+1. **แก้ปัญหาการ Collision ของ United Horizons (`22201502`) ใน `SkillConstants.getActualSkillIDfromSkillID()`**:
+   - **ปัญหาที่พบ (Problem)**: สกิล HEXA Active ลำดับที่สองของ Evan คือ United Horizons (`22201502`, Core 10000074) ถูกตีความเป็น Finisher Sub-skill ของ Zodiac Burst (`22201500`) โดยในกรณี Default ของ `getActualSkillIDfromSkillID()` มีคำสั่ง `(skillID > 22201500 && skillID <= 22201599)` ส่งผลให้ `22201502` ถูกรีไดเรกต์กลับไปเป็น `22201500`
+   - **สาเหตุเชิงลึก (Technical Root Cause)**: เมื่อ `22201502` ถูกรีไดเรกต์เป็น `22201500` การเช็คคูลดาวน์ผ่าน `chr.hasSkillOnCooldown()` และการคำนวณแดเมจจะไปดึงเลเวลและคูลดาวน์ 360 วินาทีของ Zodiac Burst มาทับคูลดาวน์ 240 วินาทีของ United Horizons ทำให้ไม่สามารถกดใช้ United Horizons ได้อย่างเป็นอิสระ
+   - **วิธีแก้ (Fix)**: เพิ่ม `case 22201502: return 22201502;` ดักไว้ก่อนเคสรีไดเรกต์ และกำหนดให้ท่าโจมตีสะท้อน `22201503` (United Horizons Resonance Attack) ชี้กลับหา `22201502` อย่างถูกต้อง 100%
+
+2. **แก้ปัญหาสกิลลูกของ Dragon Slam (`400021046`) ขาดหายใน `SkillConstants` และ `handleSetCoolDownSkill`**:
+   - **ปัญหาที่พบ (Problem)**: ท่าต่อเนื่องของ Dragon Slam คือ Wyrmking's Breath (`400020046`) และ Ludicrous Speed (`400020051`) ไม่มีการแมปกลับสู่ Root Skill `400021046`
+   - **สาเหตุเชิงลึก (Technical Root Cause)**: ผู้เล่นถือครองโหนด V-Matrix รหัส `400021046` แต่ไม่มีรหัส `400020046` ในตัวละคร เมื่อมังกรโจมตีต่อเนื่อง เซิร์ฟเวอร์อ่านเลเวลสกิลเป็น 0 และใน `Evan.handleSetCoolDownSkill()` มีการสั่ง `chr.setSkillCooldown(WYRMKINGS_BREATH, chr.getSkillLevel(WYRMKINGS_BREATH))` ซึ่งได้ค่าเลเวลเป็น 0 ทำให้คูลดาวน์ไม่ทำงานหรือติดขัด
+   - **วิธีแก้ (Fix)**:
+     - แมป `case 400020046, 400020051 -> return 400021046;` ใน `getActualSkillIDfromSkillID()`
+     - ลงทะเบียน `400020046` และ `400020051` ใน `isEvanForceSkill()` ป้องกัน Packet Offset Shift ใน `AttackHandler`
+     - รวมเคสคูลดาวน์ใน `Evan.handleSetCoolDownSkill()`: `case DRAGON_SLAM, WYRMKINGS_BREATH, LUDICROUS_SPEED -> chr.setSkillCooldown(DRAGON_SLAM, Math.max(1, chr.getSkillLevel(DRAGON_SLAM)));`
+
+3. **แก้บั๊ก Memory Leak และเศษ Debris ไม่ยอมเกิดใหม่ใน `Evan.createMagicDebrisForceAtom()`**:
+   - **ปัญหาที่พบ (Problem)**: หลังจากกดใช้ Magic Debris (`22141017` / `22170070` / `22201015`) ระเบิดเศษชิ้นส่วนแล้ว เมื่อผู้เล่นโจมตีด้วย Fusion Skill ต่อเนื่อง เศษ Debris ใหม่กลับไม่ยอมดรอปขึ้นมาทันที
+   - **สาเหตุเชิงลึก (Technical Root Cause)**: เดิมโค้ดเรียกเพียง `chr.write(FieldPacket.delWreckage(chr, field.getWreckageByChrId(chr.getId())));` ซึ่งเป็นการส่งแพ็กเก็ตแจ้งเตือนไปยัง Client เฉพาะตัวผู้เล่น แต่ไม่ได้ลบ Life Object ของ Wreckage ออกจากหน่วยความจำของ `Field` เซิร์ฟเวอร์ ทำให้ `chr.getField().getWreckage().size() < getMaxDebris()` ยังคงมองว่ามีเศษหินเต็มจำนวน และไม่ยอมเสกเศษใหม่จนกว่าจะหมดเวลา 30 วินาที
+   - **วิธีแก้ (Fix)**: เปลี่ยนมาเรียก `field.removeWreckage(chr, field.getWreckageByChrId(chr.getId()));` ซึ่งจะทำการบรอดคาสต์แพ็กเก็ตลบวัตถุแก่ทุกคนในแมพ, ยกเลิก Schedule Timer, และลบ Wreckage Life ออกจากฟิลด์ทันที ทำให้สามารถสะสม Debris ชุดใหม่ได้ทันทีอย่างไร้รอยต่อ
+
+4. **เพิ่มรหัส Alternative Actions ของ HEXA Dragon Skills ใน `isEvanForceSkill`, `isEvanFusionSkill`, และ `handleDragonSkillEffect`**:
+   - เพิ่มรหัสย่อย `22201008` (HEXA Earth Dive alt), `22201009` (HEXA Thunder Dive alt), `22201012/22201013` (HEXA Earth Breath alt), `22201014` (HEXA Wind Breath alt) เข้าสู่:
+     - `SkillConstants.isEvanForceSkill()`: ป้องกันไคลเอนต์อ่านข้อมูลข้ามไบต์หลุด alignment
+     - `SkillConstants.isEvanFusionSkill()`: มั่นใจว่าการโจมตีจากทุก Sub-action ID จะทำการเสก Magic Debris ลงพื้นได้เสมอ
+     - `Evan.handleDragonSkillEffect()`: กำหนดค่า `attackActionType` เพื่อให้แอนิเมชันของ Mir ถูกบรอดคาสต์สู่ผู้เล่นคนอื่นในแมพอย่างถูกต้องสมบูรณ์
+
+5. **เติมเต็ม Starter Lifecycle Step 3 สำหรับตัวละคร Evan ใหม่ใน `handleInitAfterMigrate()`**:
+   - ตรวจสอบพบว่า Evan มีเพียง Step 1 และ Step 2 แต่ยังขาด Step 3 ใน `handleInitAfterMigrate(Char chr)` ต่างจากอาชีพฮีโร่อื่นๆ
+   - เพิ่มเงื่อนไข `if (chr.getLevel() < 30)`: สำเร็จเควสต์บทนำฟาร์ม 22000-22015 และเควสต์ไข่มังกร 22100-22102, ปรับเลเวลเป็น 30, เปลี่ยนอาชีพเป็น 2nd Job (2212), แจกแต้ม SP คลาส 1 (+5) และคลาส 2 (+3), สวมใส่อาวุธ Wizard Staff (`1382003`) และ Secondary Dragon Master's Document (`1352941`), และวาร์ปสู่ Henesys พร้อมเสก Mir อย่างปลอดภัย
+
+### 📂 Files Modified
+- [`Evan.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Evan.java)
+- [`SkillConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`v214 src/PROGRESS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/PROGRESS.md)
+- [`PROGRESS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS.md)
+
+### 🧪 Verification & Deployment
+- **Maven Compile**: `BUILD SUCCESS` (853 files, 0 errors)
+- **Maven Package**: `BUILD SUCCESS` (`maplestory-219.5-jar-with-dependencies.jar` 138.67 MB)
+- **Artifact Deployment**: ซิงค์ไฟล์ `maplestory.jar` สู่ `v214 src/`, Root, และ `Server263/`
+- **Incremental Patch**: สร้างแพ็กเกจแพตช์ล่าสุด `Patches/Server263_Patch_20261013_1223.zip` พร้อม `Apply_Patch.bat`
+- **Rule Compliance**: `Server263/` ปราศจากไฟล์ซอร์สโค้ดและเครื่องมือ Maven 100%
+
 ## 📅 [2026-10-13 11:55 น.] Cross-Version Porting Standard, AGENTS.md Section 8, Disk Space Recovery (+18.87 GB), and Asset Audit Tool (tools/audit_tms_asset.py)
 
 ### 🎯 Scope & Technical Details
