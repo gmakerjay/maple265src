@@ -2678,17 +2678,25 @@ public class AdminCommands {
             chr.chatMessage(SpeakerChannel, "[Endgame] Inventory warning: " + e.getMessage());
         }
 
-        // 4.2 If Evan, complete job advancement quests (22100 - 22103) so Mir hatches and evolves to Adult Dragon in Skill UI
+        // 4.2 If Evan, complete true revamped job advancement quests & dragon evolution quests
+        // so Mir hatches and evolves to Adult Dragon in the Skill Window UI
         if (JobConstants.isEvan(job)) {
             try {
-                for (int q = 22100; q <= 22103; q++) {
-                    chr.completeQuest(q);
-                    OutPacket qp = new OutPacket(OutHeader.MESSAGE);
-                    qp.encodeByte(QUEST_RECORD_MESSAGE.getVal());
-                    qp.encodeInt(q);
-                    qp.encodeByte(2);
-                    qp.encodeFT(FileTime.currentTime());
-                    chr.write(qp);
+                int[] evanQuests = {
+                        // Intro story, egg finding, and incubator
+                        22000, 22001, 22002, 22003, 22004, 22005, 22006, 22007, 22008, 22009, 22010, 22011,
+                        // Job advancement 1st - 4th (22130 = Mir Hatches!, 22131 = Mir Sheds Eggshell, 22132 = Adolescent, 22133 = Adult Onyx Dragon)
+                        22130, 22131, 22132, 22133,
+                        // Dragon awakening and communications
+                        22500, 22501, 22502, 22503, 22504, 22505, 22506, 22507, 22508, 22509, 22510, 22511, 22512,
+                        // Dragon mounts
+                        22400, 22404, 22414, 22415
+                };
+                for (int q : evanQuests) {
+                    chr.completeQuest(q, true);
+                }
+                if (!chr.hasSkill(20011293)) {
+                    chr.addSkill(20011293, 1, 1);
                 }
             } catch (Exception ignored) {}
         }

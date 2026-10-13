@@ -703,12 +703,13 @@ public class Evan extends Job {
         spawnDragon();
         if (chr.getLevel() < 30) {
             ScriptManagerImpl sm = chr.getScriptManager();
-            for (int qid = 22000; qid <= 22015; qid++) {
+            for (int qid = 22000; qid <= 22011; qid++) {
                 sm.completeQuestNoRewards(qid);
             }
-            sm.completeQuestNoRewards(22100);
-            sm.completeQuestNoRewards(22101);
-            sm.completeQuestNoRewards(22102);
+            sm.completeQuestNoRewards(22130);
+            sm.completeQuestNoRewards(22131);
+            sm.completeQuestNoRewards(22500);
+            sm.giveSkill(20011293); // Back to Nature
             sm.levelUntil(30);
             sm.setJob(JobConstants.JobEnum.EVAN2.getJobId());
             sm.addSPJobAdv(JobConstants.JobEnum.EVAN1.getJobId(), 5);
@@ -726,9 +727,13 @@ public class Evan extends Job {
         super.handleLevelUp(level);
         switch (level) {
             case 10:
-                chr.setJob(2210);
-                chr.setStatAndSendPacket(Stat.job, 2210);
-                chr.addSpToSpecificJob((short) 2210, 3);
+                chr.setJob(2200);
+                chr.setStatAndSendPacket(Stat.job, 2200);
+                chr.completeQuest(22130, true);
+                chr.addSpToSpecificJob((short) 2200, 5);
+                if (!chr.hasSkill(20011293)) {
+                    chr.addSkill(20011293, 1, 1);
+                }
                 spawnDragon();
                 break;
             case 20: {
@@ -739,6 +744,7 @@ public class Evan extends Job {
             case 30:
                 chr.setJob(2212);
                 chr.setStatAndSendPacket(Stat.job, 2212);
+                chr.completeQuest(22131, true);
                 chr.addSpToSpecificJob((short) 2210, 2);
                 chr.addSpToSpecificJob((short) 2212, 3);
                 spawnDragon();
@@ -752,6 +758,7 @@ public class Evan extends Job {
             case 60:
                 chr.setJob(2214);
                 chr.setStatAndSendPacket(Stat.job, 2214);
+                chr.completeQuest(22132, true);
                 chr.addSpToSpecificJob((short) 2212, 1);
                 chr.addSpToSpecificJob((short) 2214, 3);
                 spawnDragon();
@@ -782,6 +789,7 @@ public class Evan extends Job {
             case 100:
                 chr.setJob(2217);
                 chr.setStatAndSendPacket(Stat.job, 2217);
+                chr.completeQuest(22133, true);
                 chr.addSpToSpecificJob((short) 2214, 2);
                 chr.addSpToSpecificJob((short) 2217, 3);
                 spawnDragon();
