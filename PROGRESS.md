@@ -3,6 +3,39 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-13 13:25 น.] Workspace Root Directory Architecture Cleanup & Comprehensive Organization
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: Complete Workspace Cleanup, Root Folder Reorganization, and Launcher Portability Hardening
+- **รายละเอียด**:
+  1. **ปัญหาที่พบ (Problem)**:
+     - โฟลเดอร์ Root (`C:\Users\admin\Documents\MapleStory_Server_Runner`) มีไฟล์กระจัดกระจายรวมกันถึง 72 ไฟล์ ทำให้ยากต่อการค้นหาและดูแลรักษา
+     - มีไฟล์ SQL สคริปต์ย่อยยุคเก่า (`InitColumn_*.sql`, `InitTable_*.sql`, `InitTables_*.sql`, `InitValue_*.sql`, `ModifyValue_*.sql`, `AIO.sql`) กองอยู่ที่ Root รวม 42 ไฟล์ ทั้งที่มีสำเนาเก็บอยู่ใน `Server263/sql/` อยู่แล้ว
+     - มีไฟล์ Python สำหรับ Audit และ JSON รายงานผลการสแกนทักษะสกิลในอดีตกระจัดกระจายอยู่ที่ Root รวม 17 ไฟล์
+     - มีโฟลเดอร์ขยะว่างเปล่า `client/` (มีเพียง `.DepotDownloader` เปล่า)
+     - ไฟล์สคริปต์ `Create_Account.bat` และ `Import_Database.bat` ที่ Root มีโค้ดเขียนทับซ้อนและพยายามเรียก `mariadb` ที่ Root โดยตรง ซึ่งอาจ Error หากไม่มีโฟลเดอร์ `mariadb` อยู่ที่ Root
+  2. **การจัดระเบียบและวิธีแก้ (Reorganization & Implementation)**:
+     - **จัดเก็บหมวดหมู่ฐานข้อมูล (SQL Migration Scripts)**:
+       - รวบรวมไฟล์ SQL ย่อยทั้ง 42 ไฟล์ ย้ายเข้าไปจัดเก็บไว้อย่างเป็นระเบียบในโฟลเดอร์ [`sql/`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/sql/)
+       - คงเหลือเฉพาะไฟล์ฐานข้อมูลหลัก [**`backup.sql`**](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/backup.sql) ไว้ที่ Root สำหรับการ Import ฐานข้อมูลเริ่มต้น
+     - **จัดเก็บหมวดหมู่เครื่องมือตรวจเช็ค (Audit & Analysis Tools)**:
+       - สร้างโฟลเดอร์ [`tools/audit/`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/audit/) และย้ายไฟล์ Python Script และ JSON Audit Reports ทั้ง 17 ไฟล์เข้าไปจัดเก็บรวมไว้ด้วยกันอย่างเป็นหมวดหมู่
+     - **ล้างโฟลเดอร์ชั่วคราว (Dead Folder Cleanup)**:
+       - ลบโฟลเดอร์ `client/` ที่ว่างเปล่าทิ้งอย่างปลอดภัย
+     - **ยกระดับความ Portable ของสคริปต์ที่ Root (Launcher Portability Hardening)**:
+       - ปรับปรุง [`Create_Account.bat`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Create_Account.bat) และ [`Import_Database.bat`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Import_Database.bat) ที่ Root ให้ทำหน้าที่เป็น Smart Redirection ชี้เข้าสู่ `Server263` อัตโนมัติ (มาตรฐานเดียวกับ `1_Start_Server.bat`, `3_Stop_Server.bat`, และ `4_Server_Control_Panel.bat`) ทำให้เรียกใช้ MariaDB Engine และ Environment ของ `Server263` ได้ทันที 100% ไม่ว่าจะรันจากโฟลเดอร์ไหน
+  3. **ผลลัพธ์ (Outcome)**:
+     - โฟลเดอร์ Root ลดจำนวนไฟล์จาก 72 ไฟล์ เหลือเพียง **14 ไฟล์หลัก และ 10 โฟลเดอร์ที่เป็นระบบระเบียบ สะอาดตา และค้นหาง่าย 100%**
+     - โครงสร้างโปรเจกต์มีความเป็นสัดส่วนชัดเจนตามมาตรฐาน Enterprise
+
+### 📂 Files Modified / Reorganized
+- [`Create_Account.bat`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Create_Account.bat) (Smart Redirection to Server263)
+- [`Import_Database.bat`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Import_Database.bat) (Smart Redirection to Server263)
+- [`sql/`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/sql/) (Consolidated 42 migration SQL files)
+- [`tools/audit/`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/audit/) (Consolidated 17 audit scripts and reports)
+- [`v214 src/PROGRESS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/PROGRESS.md)
+- [`PROGRESS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS.md)
+
 ## 📅 [2026-10-13 13:18 น.] Patch System Enhancement: Dual-Package Incremental Patches (Server Runner & Localhost Client 1-Click Installer)
 
 ### 🎯 Scope & Technical Details
