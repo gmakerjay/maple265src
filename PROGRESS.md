@@ -3,6 +3,53 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-13 12:57 น.] 74062d2d — Evan Mir Hatching & Skill UI Evolution Fix: Revamped Quest Synchronization, Level-up Advancement Overhaul, and Missing Quest Script Implementation
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: Evan Mir Hatching & Evolution in Skill Window UI (K Window), Fix Normal Play Progression & Endgame Admin Command
+- **รายละเอียด**:
+  1. **ปัญหาที่พบ (Problem)**:
+     - ในหน้าต่างสกิล (Skill UI - [K]) ของอาชีพ Evan มังกร Mir แสดงผลเป็นไข่ที่ยังไม่ฟัก แม้จะทำการเสกตัวละครด้วยคำสั่ง `!endgame` แล้วก็ตาม ในขณะที่มังกร Mir ในฟิลด์/แมพเติบโตเป็นตัวเต็มวัยตามปกติ
+     - ในการเล่นปกติ พบว่าผู้เล่นไม่สามารถเปลี่ยนเป็นคลาส 4 ได้ (Quest 22133 ขาดสคริปต์) และเมื่อเลเวล 10 โค้ดเดิมกำหนด Job เป็น 2210 (ซึ่งไม่มีข้อมูลสกิลใน WZ v265) แทนที่จะเป็น 2200
+  2. **สาเหตุเชิงลึกทางเทคนิค (Technical Root Cause)**:
+     - **Native Client Binary Check**: จากการตรวจสอบโค้ดภาษาเครื่อง (Disassembly) ของ `MapleStory.exe` ใน v265 พบว่าการเรนเดอร์โมเดลมังกร Mir ในหน้าต่างสกิลถูกผูกไว้กับฟังก์ชัน `CQuestMan::IsQuestCompleted()` โดยไคลเอนต์ตรวจสอบเควสต์ `22007`, `22011` และโดยเฉพาะอย่างยิ่ง **Quest ID 22130** (Evan 1st Job Advancement - Mir Hatches!)
+     - หากเควสต์ `22130` ยังไม่สำเร็จ (`state != 2`) ไคลเอนต์จะบังคับเรนเดอร์โมเดล "ไข่มังกร (Dragon Egg)" ในหน้าต่าง UI เสมอ และหากมีเควสต์ `22131` (คลาส 2 - สลัดเปลือกไข่), `22132` (คลาส 3 - วัยรุ่น), `22133` (คลาส 4 - โตเต็มวัย) ไคลเอนต์จึงจะพัฒนาแอนิเมชันของ Mir ไปตามลำดับ
+     - **คำสั่ง `!endgame` เดิม**: ใน [`AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java) มีการวนลูปคอมพลีตเควสต์รหัสโบราณ `22100 - 22103` (ซึ่งเป็นเควสต์ยุค 10 คลาสที่มีสถานะ `blocked=1` ใน WZ v265) ทำให้ตัวละครที่ผ่านคำสั่ง `!endgame` ไม่เคยได้รับสถานะความสำเร็จของเควสต์ `22130 - 22133` เลย ส่งผลให้ไคลเอนต์แสดงภาพเป็นไข่มังกรตลอดเวลา
+     - **การเล่นปกติ (Normal Play)**: มังกรในแมพโตจริง 100% เพราะถูกผูกไว้กับ `handleLevelUp` ทุกระดับเลเวล (10, 30, 60, 100, 260) แต่ในหน้าต่างสกิล มังกรจะไม่ออกจากไข่หากเควสต์เปลี่ยนคลาส Revamp (22130 - 22133) ไม่ได้รับการบันทึกสถานะ
+  3. **วิธีแก้และการ Refactor (Fix & Implementation)**:
+     - **Refactor เฉพาะอาชีพ Evan เท่านั้น**:
+       - แก้ไข [`AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java) ในส่วน `setupEndgame`: ปรับปรุงบล็อก `isEvan(job)` ให้คอมพลีตเควสต์ Revamp ครบถ้วน ได้แก่:
+         - เควสต์บทนำและฟักไข่: `22000 - 22011`
+         - เควสต์เปลี่ยนคลาส Revamp: `22130` (คลาส 1 - ไข่ฟัก), `22131` (คลาส 2 - สลัดเปลือก), `22132` (คลาส 3 - มังกรวัยรุ่น), `22133` (คลาส 4 - มังกรโตเต็มวัย)
+         - เควสต์ปลุกพลังมังกร: `22500 - 22512`
+         - เควสต์สกิลขี่มังกร: `22400`, `22404`, `22414`, `22415`
+         - มอบสกิลกลับบ้าน `20011293` (Back to Nature)
+       - แก้ไข [`Evan.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Evan.java):
+         - ใน `handleInitAfterMigrate(Char chr)`: ทำการคอมพลีตเควสต์ `22000 - 22011`, `22130`, `22131`, `22500` และมอบสกิล `20011293`
+         - ใน `handleLevelUp(short level)`:
+           - เลเวล 10: แก้ไขจาก `job = 2210` เป็น `job = 2200` (Evan 1st Job ที่ถูกต้องตาม WZ v265), สำเร็จเควสต์ `22130` (มังกรฟักออกจากไข่ทันทีทั้งในแมพและหน้าต่างสกิล), มอบ SP +5 และสกิล `20011293`
+           - เลเวล 30: สำเร็จเควสต์ `22131` (มังกรสลัดเปลือกไข่)
+           - เลเวล 60: สำเร็จเควสต์ `22132` (มังกรวัยรุ่น)
+           - เลเวล 100: สำเร็จเควสต์ `22133` (มังกร Onyx เต็มวัย)
+       - สร้างสคริปต์เควสต์คลาส 4 [`q22133s.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/data/scripts/quest/q22133s.py) และ [`v214 src/data/scripts/quest/q22133s.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/quest/q22133s.py) รองรับการเปลี่ยนคลาส 4 อย่างสมบูรณ์
+  4. **ผลลัพธ์ (Outcome)**:
+     - เมื่อใช้คำสั่ง `!endgame` หรือ `!endgame evan`: หน้าต่างสกิล (K) จะแสดงมังกร Mir ตัวเต็มวัยที่ออกจากไข่แล้ว 100% สอดคล้องกับมังกรที่บินตามในฟิลด์
+     - สำหรับผู้เล่นที่เล่นปกติ ตั้งแต่เลเวล 10 ขึ้นไป มังกรจะฟักออกจากไข่ในหน้าต่างสกิลทันที และวิวัฒนาการไปตามระดับเลเวล 10 -> 30 -> 60 -> 100 อย่างสมบูรณ์
+
+### 📂 Files Modified
+- [`Evan.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Evan.java)
+- [`AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)
+- [`q22133s.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/data/scripts/quest/q22133s.py)
+- [`v214 src/PROGRESS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/PROGRESS.md)
+- [`PROGRESS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS.md)
+
+### 🧪 Verification & Deployment
+- **Maven Compile**: `BUILD SUCCESS` (853 files, 0 errors)
+- **Maven Package**: `BUILD SUCCESS` (`maplestory-219.5-jar-with-dependencies.jar` 138.67 MB)
+- **Artifact Deployment**: ซิงค์ไฟล์ `maplestory.jar` สู่ `v214 src/`, Root, และ `Server263/`
+- **Incremental Patch**: สร้างแพ็กเกจแพตช์ล่าสุด `Patches/Server263_Patch_20261013_1256.zip` (122.47 MB) พร้อม `Apply_Patch.bat`
+- **Rule Compliance**: `Server263/` ปราศจากไฟล์ซอร์สโค้ดและเครื่องมือ Maven 100% และไม่มีการแก้ไขอาชีพอื่นนอกเหนือจาก Evan
+
 ## 📅 [2026-10-13 12:25 น.] aa01393 — Evan In-Depth Re-Analysis & Comprehensive Fixes: United Horizons Skill Redirection Collision, Dragon Slam V-Matrix Follow-up Mapping & Cooldowns, Magic Debris Memory Leak Removal, and Starter Lifecycle Step 3
 
 ### 🎯 Scope & Technical Details
