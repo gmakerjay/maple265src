@@ -26,7 +26,7 @@ public class HungryMuto implements PartyQuest {
 
     private final ScriptManagerImpl sm;
     private final Char chr;
-    private final Party party;
+    private Party party;
     private final int entryQuest = 34222;
     public final int[][] recipes = {
             {4034959, 0, 1, 130000, 45000},
@@ -79,7 +79,8 @@ public class HungryMuto implements PartyQuest {
 
     private boolean isPartyEligible(short lowLevel, short highLevel, Party party) {
         for (PartyMember member : party.getMembers()) {
-            if (member.getLevel() < lowLevel || member.getLevel() > highLevel || !member.getChr().hasQuestCompleted(34218)) {
+            boolean reqQuest = !net.swordie.ms.ServerConfig.BOSS_UNLOCK_PREQUESTS && !member.getChr().hasQuestCompleted(34218);
+            if (member.getLevel() < lowLevel || member.getLevel() > highLevel || reqQuest) {
                 return false;
             }
         }
@@ -131,9 +132,13 @@ public class HungryMuto implements PartyQuest {
                             + "\r\n"
                             + "#L1#Hard#l"
                             + "#k");
-                    if (party == null) {
-                        sm.sendSayOkay("You have to be in a #bparty#k to enter the Hungry Muto Party Quest. Now go find some friends!");
-                    } else if (!party.isLeader(chr)) {
+                    Party currentParty = chr.getParty();
+                    if (currentParty == null) {
+                        currentParty = Party.createNewParty(chr, chr.getName() + "'s Party");
+                        chr.setParty(currentParty);
+                    }
+                    this.party = currentParty;
+                    if (!party.isLeader(chr)) {
                         sm.sendSayOkay("If you want to try the quest, please tell the #bleader of your party#k to talk to me.");
                     } else if (sm.checkPartyForPQ() && (response == 1 || response == 0)) {
                         if (isPartyEligible((short) 210, (short) 275, party)) {

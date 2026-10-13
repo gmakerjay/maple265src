@@ -15,7 +15,7 @@ public class AlienVisitor implements PartyQuest {
 
     private final ScriptManagerImpl sm;
     private final Char chr;
-    private final Party party;
+    private Party party;
     private final int entryQuest = 17206;
     private final long RANK_S_EXP = 5720000;
     private final long RANK_A_EXP = 4630000;
@@ -40,19 +40,19 @@ public class AlienVisitor implements PartyQuest {
     @Override
     public void start() {
         if (sm.getFieldID() == GameConstants.ALIEN_VISITOR_ENTRANCE_MAP) {
-            int selection = sm.sendNext("MØt tö trïßng kÿ l¢ «ang phát ra tö bên trong tàu vë trî! Tôi c®n mØt ngïßi m¢nh m³ «º thûc hi½n mØt sÑ thí nghi½m.\r\n\r\n" +
+            int selection = sm.sendNext("A strange magnetic field is emanating from inside the spaceship! I need a brave adventurer to conduct some vital research.\r\n\r\n" +
                     "#b" +
-                    "#L0#HÇi v¹ vî vi½c.#l\r\n" +
-                    "#L1##eVào tàu vë trî.#n#l\r\n" +
-                    "#L2#Tìm nhóm.#l\r\n" +
+                    "#L0#Ask about the mission.#l\r\n" +
+                    "#L1##eEnter the spaceship.#n#l\r\n" +
+                    "#L2#Find a party.#l\r\n" +
                     "#k");
             switch (selection) {
                 case 0:
-                    sm.sendNext("Mîc tiêu cça Alien Visitor là giúp tôi «ánh b¢i nhøng ngïßi ngoài hành tinh «» rÛi xuÑng g®n Maple World, «Óng thßi làm «i¹u «ó càng nhanh càng tÑt «º nh±n thêm ph®n thïäng.\r\n" +
-                            "#e- C¬p:#n 200 ho¶c cao hÛn #r(C¬p «Ø thích hæp: 200-249)#k\r\n" +
-                            "#e- Thßi gian:#n 5 phút/màn\r\n" +
-                            "#e- SÑ ngïßi tÑi «a:#n 4\r\n" +
-                            "#e- Ph®n thïäng:#n" +
+                    sm.sendNext("The goal of Alien Visitor is to defeat the extraterrestrials that crashed near Maple World. Clear them as fast as possible to earn top rank rewards!\r\n" +
+                            "#e- Level:#n 200 or higher #r(Recommended: 200 - 249)#k\r\n" +
+                            "#e- Time Limit:#n 5 min per stage\r\n" +
+                            "#e- Max Players:#n 1 - 4 (Solo or Party)\r\n" +
+                            "#e- Rewards:#n" +
                             "\r\n#i1113038# #z1113038#\r\n" +
                             "#i1122256# #z1122256#\r\n" +
                             "#i1032191# #z1032191#\r\n" +
@@ -60,15 +60,19 @@ public class AlienVisitor implements PartyQuest {
                             "#i1003893# #z1003893#");
                     break;
                 case 1:
-                    if (party == null) {
-                        sm.sendSayOkay("Hãy tạo nhóm để tiếp tục.\r\nPlease create a party before going in.");
-                    } else if (!party.isLeader(chr)) {
-                        sm.sendSayOkay("Vui lÆng «º trïäng nhóm cça b¢n nói chuy½n vÜi tôi.\r\nPlease have your party leader talk to me.");
+                    Party currentParty = chr.getParty();
+                    if (currentParty == null) {
+                        currentParty = Party.createNewParty(chr, chr.getName() + "'s Party");
+                        chr.setParty(currentParty);
+                    }
+                    this.party = currentParty;
+                    if (!party.isLeader(chr)) {
+                        sm.sendSayOkay("Please have your party leader talk to me.");
                     } else if (sm.checkPartyForPQ()) {
                         if (isPartyEligible((short) 200, (short) 275, party)) {
                             if (sm.checkAttempt(entryQuest, party)) {
-                                if (sm.sendNext("Nªu b¢n «» s§n sàng, h»y bïÜc ra ánh sáng!\r\n\r\n#b#L0#Vào tàu vë trî.#l#k") == 0) {
-                                    sm.sendNext("1. B¢n ph¡i «ánh b¢i 180 quái v±t ho¶c trùm trïÜc khi hªt giß.\r\n2. B¢n ph¡i #e#bhoàn thành#k#n 5 giai «o¢n «º nh±n «ïæc kinh nghi½m.\r\n\r\n«öng quên nhøng «iºm ch¾a khoá nøa nhé!");
+                                if (sm.sendNext("If you are ready, step into the light!\r\n\r\n#b#L0#Enter the spaceship.#l#k") == 0) {
+                                    sm.sendNext("1. You must defeat 180 monsters or the stage boss before time runs out.\r\n2. Complete all 5 stages to receive rank evaluations and bonus EXP.\r\n\r\nGood luck out there!");
                                     for (Char player : chr.getParty().getOnlineChars()) {
                                         player.setVisitorStageResult(new HashMap<>());
                                     }
@@ -79,10 +83,10 @@ public class AlienVisitor implements PartyQuest {
                                     return;
                                 }
                             } else {
-                                sm.sendSayOkay("MØt trong nhøng thành viên trong nhóm «» hªt lïæt vào nhi½m vî nóm này.");
+                                sm.sendSayOkay("One or more party members reached daily maximum attempt.");
                             }
                         } else {
-                            sm.sendSayOkay("Ai «ó trong nhóm cça b¢n không «¢t c¬p 200 chïa. B¢n ph¡i «¢t c¬p 200 ho¶c cao hÛn!");
+                            sm.sendSayOkay("Someone in your party has not reached Lv. 200. You must be Lv. 200 or higher!");
                         }
                     }
                     break;
@@ -226,22 +230,22 @@ public class AlienVisitor implements PartyQuest {
                         }
                     }
                 }
-                sm.sendNext("Kªt qu¡ xªp h¢ng khách truy c±p cça b¢n:\r\n" +
-                        "#eMàn 1:#n " + stage1Icon + "\r\n\r\n" +
-                        "#eMàn 2:#n " + stage2Icon + "\r\n\r\n" +
-                        "#eMàn 3:#n " + stage3Icon + "\r\n\r\n" +
-                        "#eMàn 4:#n " + stage4Icon + "\r\n\r\n" +
-                        "#eMàn 5:#n " + stage5Icon + "\r\n\r\n" +
-                        "#eTÖng kinh nghi½m nh±n «ïæc:#n #r" + Util.getNumberFormat(totalEXP) +
+                sm.sendNext("Your Alien Visitor performance rating:\r\n" +
+                        "#eStage 1:#n " + stage1Icon + "\r\n\r\n" +
+                        "#eStage 2:#n " + stage2Icon + "\r\n\r\n" +
+                        "#eStage 3:#n " + stage3Icon + "\r\n\r\n" +
+                        "#eStage 4:#n " + stage4Icon + "\r\n\r\n" +
+                        "#eStage 5:#n " + stage5Icon + "\r\n\r\n" +
+                        "#eTotal EXP gained:#n #r" + Util.getNumberFormat(totalEXP) +
                         "#k");
             }
-            if (sm.sendAskYesNo("Theo các t¾nh nguy½n viên khác, mØt sinh v±t trùm quü hiªm l¢i xu¬t hi½n.\r\n#bB¢n có muÑn ra khÇi nÛi này không?#k")) {
+            if (sm.sendAskYesNo("According to the outpost researchers, a rare boss creature has been spotted.\r\n#bWould you like to exit to the research camp?#k")) {
                 sm.giveExpNoAffectedByExpRate(totalEXP);
                 chr.getVisitorStageResult().clear();
                 sm.warp(GameConstants.ALIEN_VISITOR_ENTRANCE_MAP);
             }
         } else {
-            if (sm.sendAskYesNo("Theo các t¾nh nguy½n viên khác, mØt sinh v±t trùm quü hiªm l¢i xu¬t hi½n.\r\n#bB¢n có muÑn ra khÇi nÛi này không?#k")) {
+            if (sm.sendAskYesNo("According to the outpost researchers, a rare boss creature has been spotted.\r\n#bWould you like to exit to the research camp?#k")) {
                 sm.warpInstanceOut(chr, GameConstants.ALIEN_VISITOR_EXT_MAP);
             }
         }
@@ -268,10 +272,10 @@ public class AlienVisitor implements PartyQuest {
                     instance.setTimeout(5 * 60, true);
                 }
             } else {
-                sm.chat("Cánh cÖng «» «óng!");
+                sm.chat("The portal is still locked! Defeat the required enemies first.");
             }
         } else {
-            sm.sendSayOkay("Ch¿ #bTrïäng nhóm cça b¢n#k mÜi có thº vào cÖng!");
+            sm.sendSayOkay("Only your #bparty leader#k can operate the portal!");
         }
     }
 

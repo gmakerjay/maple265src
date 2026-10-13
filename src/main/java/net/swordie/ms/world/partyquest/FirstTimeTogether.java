@@ -68,6 +68,7 @@ public class FirstTimeTogether implements PartyQuest {
                         }
                     }
                 }
+                break;
             case 1:
                 int count = 5;
                 if (chr.hasQuest(entryQuest)) {

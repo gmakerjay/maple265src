@@ -19,7 +19,7 @@ public class XerxesInChryse implements PartyQuest {
 
     private final ScriptManagerImpl sm;
     private final Char chr;
-    private final Party party;
+    private Party party;
     private final int entryQuest = 1314;
     private List<Mob> mobs = new ArrayList<>();
     private List<ScheduledFuture> mobTimers = new ArrayList<>();
@@ -50,9 +50,13 @@ public class XerxesInChryse implements PartyQuest {
                 "#L3#Check on your remaining challenges for the day.#l#k");
         switch (selection) {
             case 0:
-                if (party == null) {
-                    sm.sendSayOkay("You can't enter without being in a party. Try again after joining a party.");
-                } else if (!party.isLeader(chr)) {
+                Party currentParty = chr.getParty();
+                if (currentParty == null) {
+                    currentParty = Party.createNewParty(chr, chr.getName() + "'s Party");
+                    chr.setParty(currentParty);
+                }
+                this.party = currentParty;
+                if (!party.isLeader(chr)) {
                     sm.sendSayOkay("If you want to try the quest, please tell the #bleader of your party#k to talk to me.");
                 } else if (sm.checkPartyForPQ()) {
                     if (isPartyEligible((short) 110, (short) 275, party)) {

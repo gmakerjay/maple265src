@@ -19,7 +19,7 @@ public class DimensionInvasion implements PartyQuest {
 
     private final ScriptManagerImpl sm;
     private final Char chr;
-    private final Party party;
+    private Party party;
     private final int entryQuest = 1322;
 
     private byte wave = 0;
@@ -46,9 +46,13 @@ public class DimensionInvasion implements PartyQuest {
         int selection = sm.sendNext("Some creeps from Maple World have invaded Grandis. We need to find out who it is, and shut them down.\r\n\r\n#b#L0#Enter Dimension Invasion#l\r\n#L1#Claim Items#l\r\n#L2#What's Dimension Invasion?#l\r\n#L3#How many times have i participated in Dimension Invasion?#l");
         switch (selection) {
             case 0:
-                if (party == null) {
-                    sm.sendSayOkay("It's a warzone in there, not a playground. I need a small group, four or less, to infilltrate the region and shut down their offenses from behind. Just get your party together and talk to me when you're ready.");
-                } else if (!party.isLeader(chr)) {
+                Party currentParty = chr.getParty();
+                if (currentParty == null) {
+                    currentParty = Party.createNewParty(chr, chr.getName() + "'s Party");
+                    chr.setParty(currentParty);
+                }
+                this.party = currentParty;
+                if (!party.isLeader(chr)) {
                     sm.sendSayOkay("If you want to try the quest, please tell the #bleader of your party#k to talk to me.");
                 } else if (sm.checkPartyForPQ()) {
                     if (isPartyEligible((short) 140, (short) 275, party)) {

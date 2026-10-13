@@ -115,7 +115,16 @@ public class Escape implements PartyQuest {
                 sm.playSound(WzConstants.EFFECT_PQ_SOUND_CLEAR, true);
                 sm.showClearStageExpWindowToParty(sm.getPQExp());
                 sm.setAchieveRatio((stage == 3 || stage == 6) ? (stage * 10 + 10) : (stage * 10));
-                sm.invokeAfterDelay(2000, "warpParty", sm.getFieldID() + 100, party);
+                if (sm.getFieldID() == 921160700) {
+                    sm.givePQRewards(party);
+                    for (Char player : party.getOnlineChars()) {
+                        player.addItemToInventory(4001534, 1);
+                    }
+                    sm.setAchieveRatio(100);
+                    sm.invokeAfterDelay(2000, "warpParty", GameConstants.ESCAPE_ENTRANCE_MAP, party);
+                } else {
+                    sm.invokeAfterDelay(2000, "warpParty", sm.getFieldID() + 100, party);
+                }
             }
         }
     }

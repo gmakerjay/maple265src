@@ -52,10 +52,10 @@ public class Romeo implements PartyQuest {
                     "#k");
             switch (selection) {
                 case 0:
-                    sm.sendNext("I, Romeo, am deeply in love with Romeo, and I know he loves me too. The problem is, I am in Zenumist Society, and Juliet is under Alcadno Society, so we are not meant to be together...");
+                    sm.sendNext("I, Romeo, am deeply in love with Juliet, and I know she loves me too. The problem is, I am in Zenumist Society, and Juliet is under Alcadno Society, so we are not meant to be together...");
                     sm.sendSay("What you should know is that it wasn't always like this. That is why we would like nothing more than to serve as a bridge between Zenumist and Alcadno and contribute towards peace between these two societies.");
                     sm.sendSay("We have tried our best, but unfortunately, Magatia is currently #bon the verge of a full-fledged war#k. That is because a while ago, the #bpower source of both Zenumist and Alcadno went missing#k. Both societies are now blaming one another for this incident, and it is getting worse by the day.");
-                    sm.sendSay("I recently received a tip from an anonymous source that it is actually a deed of a #b3rd person#k, totally unrelated to this. In order to prevent this civil war of Magatia and have my love for Romeo fully blossom, we must find that #b3rd person#k and stop that person from destroying this great tower.");
+                    sm.sendSay("I recently received a tip from an anonymous source that it is actually a deed of a #b3rd person#k, totally unrelated to this. In order to prevent this civil war of Magatia and have my love for Juliet fully blossom, we must find that #b3rd person#k and stop that person from destroying this great tower.");
                     sm.sendSay("Show your bravery, and help defend the peace in Magatia!\r\n" +
                             "#e- Level:#n 70 or higher #r(Recommended Level: 70-119)#k\r\n" +
                             "#e- Time Limit:#n 20 min\r\n" +
@@ -63,6 +63,7 @@ public class Romeo implements PartyQuest {
                             "#e- Reward:#n" +
                             "\r\n#i1122116# #z1122116#\r\n(Can be obtained from #bRomeo#k once you collect #r20#k #b#z4001159##k.)" +
                             "\r\n#i1122118# #z1122118#\r\n(Can be traded for 1 #b#z1122116##k and 1 #b#z1122117##k)");
+                    break;
                 case 1:
                     Party currentParty = chr.getParty();
                     if (currentParty == null) {

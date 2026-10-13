@@ -3,6 +3,44 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-13 18:35 น.] Comprehensive Party Quest Audit, Crash Prevention, Logic Fixes & Dual-Mode Enhancements
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: Complete Party Quest Overhaul, Crash Prevention, Porting & Bug Fixes for Solo & Multiplayer Play
+- **รายละเอียด**:
+  1. **ปัญหาและสาเหตุเชิงเทคนิคที่ตรวจสอบพบ (Problems & Root Causes)**:
+     - **PartyQuestType Byte Collision**: ใน [PartyQuestType.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/enums/social/Party/PartyQuestType.java) พบว่า `XERXES_CHRYSE` และ `LORD_PIRATE` ใช้ค่า byte ซ้ำกันคือ `(9)` ทำให้เวลาเซิร์ฟเวอร์เปิดเควสต์ประเภทหนึ่ง จะไปทับซ้อนกับอีกประเภทหนึ่ง
+     - **Escape PQ Map Crash**: ใน [Escape.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/Escape.java) ด่าน 7 (ปราบบอส Ani `921160700`) เมื่อปราบบอสสำเร็จ โค้ดพยายามวาร์ปปาร์ตี้ไปที่แมป `921160800` ซึ่งไม่มีอยู่ใน WZ ส่งผลให้เซิร์ฟเวอร์แจ้ง Error และผู้เล่นหลุด
+     - **Switch Fallthrough Bug**: ใน [Romeo.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/Romeo.java) และ [FirstTimeTogether.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/FirstTimeTogether.java) ขาดคำสั่ง `break;` ใน `case 0:` ทำให้เวลากดคุยตัวเลือกจะตกลงไปทำงานใน `case 1:` ทันที
+     - **Kenta In Danger Entry Inversion & Missing Scripts**: ใน [KentaInDanger.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/KentaInDanger.java) ตรรกะตรวจสอบโควตาเขียนกลับข้าง `if (!sm.checkAttempt(entryQuest, party))` ทำให้ผู้เล่นทั่วไปไม่สามารถเข้าได้เลย และไม่มีโค้ดควบคุมด่านใน `event()` รวมถึงไม่มีพอร์ทัลสคริปต์ก้าวหน้าด่าน `kenta_nextStage.py` และ `kenta_out00.py`
+     - **Lord Pirate Guon Drop-to-Exit & Solo Marks Requirement**: ใน [LordPirate.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/LordPirate.java) เมธอด `event()` มีบล็อก `else { exit(); }` ทำให้ผู้เล่นที่กดคุยกับ NPC Guon ในด่านกลาง (0, 2, 3, 4) จะถูกบังคับถามออกจากเรือทันที และจำนวน Mark ที่ต้องใช้ (30 ชิ้น) สูงเกินไปสำหรับผู้เล่นคนเดียว
+     - **Tangyoon Cooking Entrance Loop**: ใน [TangyoonCooking.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/TangyoonCooking.java) เมื่อกดเริ่มทำอาหาร เซิร์ฟเวอร์วาร์ปผู้เล่นกลับมาที่แมปทางเข้าเดิม `912080000` แทนที่จะเป็นห้องครัว `912080100` และสคริปต์ `tangyoon_end.py` บังคับถามยอมแพ้ทันทีที่คุย
+     - **Alien Visitor Mojibake Text**: [AlienVisitor.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/AlienVisitor.java) มีข้อความภาษาเวียดนามที่เสียหาย (Mojibake) เกือบทั้งไฟล์
+     - **Hungry Muto Prequest Block**: ใน [HungryMuto.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/HungryMuto.java) บังคับต้องจบเควสต์ 34218 โดยไม่ตรวจสอบคอนฟิก `BOSS_UNLOCK_PREQUESTS`
+  2. **แนวทางการแก้ไขและการปรับปรุง (Implementation & Solutions)**:
+     - **Enum ID Re-alignment**: ปรับ [PartyQuestType.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/enums/social/Party/PartyQuestType.java) จัดเรียง byte ID ใหม่แบบไม่ซ้ำกัน (Lord Pirate = 10, Dragon Rider = 11, Kenta = 12, Romeo = 13, Juliet = 14, Alien Visitor = 15)
+     - **Escape Crash Fix**: ปรับ [Escape.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/Escape.java) ให้มอบของรางวัลบอส Ani พร้อม Prison Guard Key (`4001534`) และวาร์ปกลับสู่ `GameConstants.ESCAPE_ENTRANCE_MAP` (`921160000`) ป้องกันเซิร์ฟเวอร์แครช 100%
+     - **Switch Logic Fix**: ใส่ `break;` ให้ถูกต้องใน [Romeo.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/Romeo.java) และ [FirstTimeTogether.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/FirstTimeTogether.java)
+     - **Kenta in Danger Overhaul**:
+       - [KentaInDanger.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/KentaInDanger.java): แก้ไข `checkAttempt` ให้เป็น `true` ปกติ, เพิ่ม Solo Auto-Party, ปรับปรุงข้อความตรวจสอบเลเวล 160-275, และพัฒนาฟังก์ชัน `event()` ครบทั้ง 4 Stage โดยใน Stage 4 จะเสก Pianus (`8520000`) และมอบ Pianus Scale (`4001535`) x2 เมื่อชนะ
+       - สร้างสคริปต์พอร์ทัล [kenta_nextStage.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/portal/kenta_nextStage.py) ตรวจจับการกำจัดมอนสเตอร์เพื่อก้าวหน้าสู่ด่านถัดไป และ [kenta_out00.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/portal/kenta_out00.py) สำหรับพอร์ทัลออก
+       - สร้างสคริปต์ NPC [kentaPQ_out.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/kentaPQ_out.py) สำหรับ NPC Kenta ในถ้ำ Pianus
+     - **Lord Pirate Solo Scaling & Safe Guon Talk**:
+       - [LordPirate.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/LordPirate.java): สเกล Mark อัตโนมัติ (10 ชิ้นสำหรับ Solo, 30 ชิ้นสำหรับ Multiplayer), เพิ่มคำแนะนำภารกิจในด่าน 0, 2, 3, 4 แทนการบังคับออก, ใส่ Null Check ป้องกัน Instance Null, และแก้คำผิด "Aerial Prison" -> "Lord Pirate's ship"
+     - **Tangyoon Cooking Kitchen Fix & Interaction**:
+       - [TangyoonCooking.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/TangyoonCooking.java): แก้ไขแมปวาร์ปไปยัง `TANGYOON_COOKING_MAIN_STAGE` (`912080100`), เพิ่ม Solo Auto-Party และการนับสิทธิ์ประจำวัน, พัฒนาเมนูทำอาหาร เสกวัตถุดิบทำอาหาร (`9300827`), และส่งมอบอาหารรับใบรับรองเชฟ (`4033668`)
+       - [tangyoon_end.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/tangyoon_end.py): ปรับ `typeEnter` เป็น `2` เพื่อให้เรียก `event()` ทำอาหารได้
+     - **Alien Visitor Localization & Auto-Party**:
+       - [AlienVisitor.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/AlienVisitor.java): แปลภาษาเวียดนามที่เสียหายเป็นภาษาอังกฤษสากลทั้งหมด ทั้งบทสนทนา, สรุปอันดับ Rank S/A/B/C/F, ข้อความพอร์ทัล, และเพิ่ม Solo Auto-Party
+     - **Hungry Muto, Dimension Invasion, Xerxes, DefenseEvent Auto-Party**:
+       - ปรับปรุง [HungryMuto.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/HungryMuto.java) ให้ข้ามเควสต์ 34218 เมื่อ `ServerConfig.BOSS_UNLOCK_PREQUESTS` เปิดใช้งาน และเพิ่ม Solo Auto-Party
+       - ปรับปรุง [DimensionInvasion.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/DimensionInvasion.java), [XerxesInChryse.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/XerxesInChryse.java), และ [DefenseEvent.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/DefenseEvent.java) ให้สร้างปาร์ตี้ Solo อัตโนมัติเมื่อกดคุย
+  3. **การคอมไพล์ ดีพลอย และจัดทำแพตช์ (Compilation, Deployment & Patch Archive)**:
+     - คอมไพล์ Java Core ผ่านฉลุย 100%: `BUILD SUCCESS` (854 ไฟล์) ด้วย OpenJDK 21 & Maven
+     - ดีพลอย `maplestory.jar` (138.68 MB) ไปยัง `Server263/maplestory.jar`, `root/maplestory.jar`, และ `v214 src/maplestory.jar`
+     - ซิงค์ไฟล์สคริปต์ทั้งหมดไปยัง `Server263/data/scripts/`
+     - สร้างแพ็กเกจแพตช์อัปเดตเดี่ยว [Patches/Server263_Patch_Latest.zip](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip) (173.01 MB) สำเร็จ 100% ตามกฎข้อ 4 ของ AGENTS.md
+
 ## 📅 [2026-10-13 17:05 น.] Full Party Quest System Porting & Dual-Mode Architecture (100% Solo Offline & LAN Multiplayer Support)
 
 ### 🎯 Scope & Technical Details

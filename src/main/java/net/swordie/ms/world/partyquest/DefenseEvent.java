@@ -32,7 +32,7 @@ public class DefenseEvent implements PartyQuest {
 
     private final ScriptManagerImpl sm;
     private final Char chr;
-    private final Party party;
+    private Party party;
     private final int entryQuest = 1211;
     private int wave;
     private int life;
@@ -102,12 +102,16 @@ public class DefenseEvent implements PartyQuest {
                             "#L0##bEasy Mode#k #r(Lv. 80 - 109)#k#l\r\n" +
                             "#L1##bHard Mode#k #r(Lv. 80 - 109)#k#l");
                     if (mode == 0 || mode == 1) {
-                        if (party == null) {
-                            sm.sendSayOkay("You have to be in a #bparty#k to enter the Nett Pyramid. Now go find some friends!");
-                        } else if (!party.isLeader(chr)) {
+                        Party currentParty = chr.getParty();
+                        if (currentParty == null) {
+                            currentParty = Party.createNewParty(chr, chr.getName() + "'s Party");
+                            chr.setParty(currentParty);
+                        }
+                        this.party = currentParty;
+                        if (!party.isLeader(chr)) {
                             sm.sendSayOkay("If you want to try the quest, please tell the #bleader of your party#k to talk to me.");
                         } else if (sm.checkPartyForPQ()) {
-                            if (isPartyEligible((short) 80, (short) 109, party)) {
+                            if (isPartyEligible((short) 80, (short) 275, party)) {
                                 if (sm.checkAttempt(entryQuest, party)) {
                                     sm.warpInstanceIn(chr, GameConstants.NETT_PYRAMID_MAIN_MAP, true);
                                     sm.setInstanceTime(GameConstants.NETT_PYRAMID_TIME, GameConstants.NETT_PYRAMID_MAIN_MAP, false);
@@ -119,7 +123,7 @@ public class DefenseEvent implements PartyQuest {
                                     sm.sendSayOkay("One or more party members reached daily maximum attempt.");
                                 }
                             } else {
-                                sm.sendSayOkay("One or more party members are below level 80 or higher than level 109.");
+                                sm.sendSayOkay("One or more party members are below level 80 or higher than level 275.");
                             }
                         }
                     }

@@ -14,12 +14,12 @@ public enum PartyQuestType {
     TANGYOON_COOKING(7),
     HUNGRY_MUTO(8),
     XERXES_CHRYSE(9),
-    LORD_PIRATE(9),
-    DRAGON_RIDER(10),
-    KENTA_IN_DANGER(11),
-    ROMEO(12),
-    JULIET(13),
-    ALIEN_VISITOR(14),
+    LORD_PIRATE(10),
+    DRAGON_RIDER(11),
+    KENTA_IN_DANGER(12),
+    ROMEO(13),
+    JULIET(14),
+    ALIEN_VISITOR(15),
     ;
 
     private final byte val;

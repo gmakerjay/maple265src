@@ -44,7 +44,7 @@ public class LordPirate implements PartyQuest {
         switch (selection) {
             case 0:
                 if (sm.getFieldID() != GameConstants.LORD_PIRATE_ENTRANCE_MAP) {
-                    sm.sendSayOkay("You're braver than you seem. Follow me, I'll show you to the Aerial Prison.");
+                    sm.sendSayOkay("You're braver than you seem. Follow me, I'll show you to the Lord Pirate's ship.");
                     sm.warp(GameConstants.LORD_PIRATE_ENTRANCE_MAP);
                 } else {
                     Party currentParty = chr.getParty();
@@ -69,7 +69,7 @@ public class LordPirate implements PartyQuest {
                                 sm.sendSayOkay("One or more party members reached daily maximum attempt.");
                             }
                         } else {
-                            sm.sendSayOkay("One or more party members are below level 130 or higher than level 255.");
+                            sm.sendSayOkay("One or more party members are below level 130 or higher than level 275.");
                         }
                     }
                 }
@@ -112,13 +112,20 @@ public class LordPirate implements PartyQuest {
 
     @Override
     public void event() {
-        int stage = (sm.getFieldID() % 1000) / 100;
-        int requireCount = 30;
+        if (party == null) {
+            return;
+        }
+        int fieldId = sm.getFieldID();
+        int stage = (fieldId % 1000) / 100;
+        int requireCount = (party.getMembers().size() <= 1) ? 10 : 30;
         int ROOKIE_PIRATE_MARK = 4001120; // Stage 0
         int RISING_PIRATE_MARK = 4001121; // Stage 1
         int VETERAN_PIRATE_MARK = 4001122; // Stage 2
         Instance instance = party.getInstance();
-        if (sm.getFieldID() == 925100100) {
+        if (instance == null) {
+            return;
+        }
+        if (fieldId == 925100100) {
             if (party.isLeader(chr)) {
                 if (instance.hasProperty("lordpirate" + stage + "clear")) {
                     sm.sendNext("Make your way through the portal on the right");
@@ -143,7 +150,7 @@ public class LordPirate implements PartyQuest {
             } else {
                 sm.sendSayOkay("Please, have your party leader speak to me.");
             }
-        } else if (sm.getFieldID() == 925100500) {
+        } else if (fieldId == 925100500) {
             if (!sm.hasMobsInField() && !instance.hasProperty("lordpirate" + stage + "clear")) {
                 if (party.isLeader(chr)) {
                     sm.sendNext("You have done us a great favour, what ever can we do to repay you?");
@@ -160,12 +167,15 @@ public class LordPirate implements PartyQuest {
                     sm.consumeItem(4001121, sm.getQuantityOfItem(4001121)); // Rising Pirate Mark
                     sm.consumeItem(4001122, sm.getQuantityOfItem(4001122)); // Veteran Pirate Mark
                 }
-                sm.invokeAfterDelay(2000, "warpParty", 925100700, party);
+                sm.invokeAfterDelay(2000, "warpParty", GameConstants.LORD_PIRATE_EXIT, party);
             } else {
                 sm.sendSayOkay("Please get rid of the Captain!");
             }
         } else {
-            exit();
+            int choice = sm.sendNext("Keep pushing forward! Defeat the pirates and open the path ahead.\r\n\r\n#b#L0#I will keep fighting!#l\r\n#L1#I want to leave this ship.#l#k");
+            if (choice == 1) {
+                exit();
+            }
         }
     }
 
