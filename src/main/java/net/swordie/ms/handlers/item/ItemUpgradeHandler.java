@@ -92,23 +92,15 @@ public class ItemUpgradeHandler {
                 } else if (itemName.contains("abyssal")) {
                     flameType = FlameType.Abyssal;
                 } else {
-                    String msg = String.format("Người chơi %d sử dụng vật phẩm trái phép (id %d) để cường hoá trang bị. OPCode : %d",
-                            chr.getId(), flameID, InHeader.USER_MEMORIAL_EX_UPGRADE_ITEM_USE_REQUEST.getValue());
-                    DataPrinter.send(DataPrinter.AUTOBAN_WARNING, msg);
-                    chr.write(WvsContext.blackFlameOfResurrectionModifed());
-                    chr.dispose();
-                    return;
+                    flameType = FlameType.Powerful;
                 }
-                if (flameType == FlameType.Powerful || flameType == FlameType.Eternal) {
-                    short tier = equip.flame(flameType);
-                    chr.write(WvsContext.blackFlameOfResurrectionModifed(1, equip, equip, flameID, tier));
-                    chr.createQuestWithQRValue(QuestConstants.FLAME_QR, "flameid=" + flameID + ";epos="+eqpPosition+";ex="+equip.getExGradeOption()+";tier="+tier+";eid="+equip.getId());
-                } else {
-                    Equip equipCopy = equip.deepCopy();
-                    short tier = equipCopy.flame(flameType);
-                    chr.write(WvsContext.blackFlameOfResurrectionModifed(1, equip, equipCopy, flameID, tier));
-                    chr.createQuestWithQRValue(QuestConstants.FLAME_QR, "flameid=" + flameID + ";epos="+eqpPosition+";ex="+equipCopy.getExGradeOption()+";tier="+tier+";eid="+equip.getId());
-                }
+                Equip equipCopy = equip.deepCopy();
+                short tier = equipCopy.flame(flameType);
+                long oldEx = equip.getExGradeOption();
+                long newEx = equipCopy.getExGradeOption();
+                chr.write(WvsContext.blackFlameOfResurrectionModifed(1, equip, equipCopy, flameID, tier));
+                chr.createQuestWithQRValue(QuestConstants.FLAME_QR,
+                        "flameid=" + flameID + ";epos=" + eqpPosition + ";oldex=" + oldEx + ";newex=" + newEx + ";tier=" + tier + ";eid=" + equip.getId());
                 chr.consumeItem(flameID, 1);
             }
         }
@@ -117,16 +109,23 @@ public class ItemUpgradeHandler {
 
     @Handler(op = InHeader.USER_MEMORIAL_EX_UPGRADE_ITEM_OPTION_REQUEST)
     public static void handleMemorialExUpgradeItemOptionRequest(Char chr, InPacket inPacket) {
-        inPacket.decodeInt(); // -1
+        int choice = inPacket.decodeInt(); // 0/7/-1 = Before (Keep previous), 1/6 = After (Apply new)
         short equipBagIndex = 0;
         long SN = 0;
-        long exGradeOption = 0;
+        long oldEx = 0;
+        long newEx = 0;
         try {
             equipBagIndex = Short.parseShort(chr.getQRValueByKey(QuestConstants.FLAME_QR, "epos"));
             SN = Long.parseLong(chr.getQRValueByKey(QuestConstants.FLAME_QR, "eid"));
-            exGradeOption = Long.parseLong(chr.getQRValueByKey(QuestConstants.FLAME_QR, "ex"));
+            String oldExStr = chr.getQRValueByKey(QuestConstants.FLAME_QR, "oldex");
+            String newExStr = chr.getQRValueByKey(QuestConstants.FLAME_QR, "newex");
+            if (newExStr == null || newExStr.isEmpty()) {
+                newExStr = chr.getQRValueByKey(QuestConstants.FLAME_QR, "ex"); // fallback to legacy qr
+            }
+            oldEx = oldExStr != null && !oldExStr.isEmpty() ? Long.parseLong(oldExStr) : 0;
+            newEx = newExStr != null && !newExStr.isEmpty() ? Long.parseLong(newExStr) : 0;
         } catch (Exception e) {
-            chr.chatPopup("Đã xảy ra lỗi không xác định.");
+            chr.chatPopup("An unknown error occurred.");
             chr.write(WvsContext.blackFlameOfResurrectionModifed());
             chr.dispose();
             return;
@@ -134,12 +133,21 @@ public class ItemUpgradeHandler {
         InvType invType = equipBagIndex < 0 ? EQUIPPED : EQUIP;
         Equip equip = (Equip) chr.getInventoryByType(invType).getItemBySN(SN);
         if (equip == null) {
-            chr.chatPopup("Đã xảy ra lỗi không xác định.");
+            chr.chatPopup("An unknown error occurred.");
             chr.write(WvsContext.blackFlameOfResurrectionModifed());
             chr.dispose();
             return;
         }
-        equip.flame(exGradeOption);
+        // choice: 1 = After (Select New), 6 = After (Current)
+        // choice: 0 = Before (Keep Previous), 7 = Before, -1 = Cancel
+        boolean selectAfter = (choice == 1 || choice == 6);
+        if (selectAfter) {
+            equip.flame(newEx);
+            chr.chatMessage(SystemNotice, "You selected the new bonus stats.");
+        } else {
+            equip.flame(oldEx);
+            chr.chatMessage(SystemNotice, "You kept the previous bonus stats.");
+        }
         equip.saveToSQL();
         equip.updateToChar(chr);
         chr.write(WvsContext.blackFlameOfResurrectionModifed());

@@ -5,23 +5,26 @@ OLLIE = 3003530
 reqMob = 500
 
 sm.setSpeakerID(OLLIE)
-sm.sendNext("Bạn đây rồi!")
+sm.sendNext("There you are!")
 sm.setPlayerAsSpeaker()
-sm.sendSay("Chuyện gì vậy, Ollie?")
+sm.sendSay("What's going on, Ollie?")
 sm.setSpeakerID(OLLIE)
-sm.sendSay("Chúng tôi nhận được lệnh từ Bộ Tư lệnh. Họ muốn chúng tôi bắt đầu #bnghiên cứu về Esfera#k.")
+sm.sendSay("We received orders from Command. They want us to conduct #bresearch on Esfera#k.")
 sm.setPlayerAsSpeaker()
-sm.sendSay("Nghiên cứu?")
+sm.sendSay("Research?")
 sm.setSpeakerID(OLLIE)
-sm.sendSay("Có! Nghiên cứu này là #rsăn quái vật#k để xem xét những thay đổi trong khu vực.")
-if sm.sendAskAccept("Sẽ rất tuyệt nếu bạn có thể giúp chúng tôi, #h0#. Tất nhiên, chúng tôi sẽ cung cấp những phần thưởng mà bạn sẽ thấy rất hữu ích."):
+sm.sendSay("Yes! This research involves #rhunting monsters#k to examine changes in the region.")
+if sm.sendAskAccept("It would be wonderful if you could help us, #h0#. Of course, we'll provide rewards that you will find very useful."):
     if sm.hasQuestCompleted(35731) or sm.hasQuestCompleted(36772): # [Labyrinth of Suffering] Source of Suffering
         reqMob = 100
     elif sm.hasQuestCompleted(35632): # [Moonbridge] Clear Path
         reqMob = 300
-    if sm.sendAskAccept("Xin chào! Tôi có lệnh điều tra ngày hôm nay. Đánh bại " + str(reqMob) + " quái vật xung quanh khu vực #bEsfera#k."):
+    if sm.sendAskAccept("Hello! I have an investigation order for today. Defeat " + str(reqMob) + " monsters in the #bEsfera#k area."):
         sm.completeQuest(parentID)
         sm.setQRValueByKey(parentID, "date", time.strftime("%y/%m/%d"))
+        sm.removeQuest(38471)
+        sm.removeQuest(38472)
+        sm.removeQuest(38473)
         if reqMob == 100:
             sm.startQuest(38471)
         elif reqMob == 300:
@@ -29,10 +32,10 @@ if sm.sendAskAccept("Sẽ rất tuyệt nếu bạn có thể giúp chúng tôi,
         else:
             sm.startQuest(38473)
         sm.setSpeakerID(OLLIE)
-        sm.sendNext("Hãy đến gặp tôi sau khi bạn hoàn tất yêu cầu nhiệm vụ. Đừng quên quay lại #r#etrước nửa đêm#n#k nhé!\r\nBây giờ là #r#e" + str(sm.getCurrentTime()))
+        sm.sendNext("Please return to me once you have finished the mission. Don't forget to report back #r#ebefore midnight#n#k!\r\nCurrent time is #r#e" + str(sm.getCurrentTime()) + "#k.")
     else:
         sm.setSpeakerID(OLLIE)
-        sm.sendNext("Có vẻ như bạn vẫn chưa sẵn sàng. Hãy cho tôi biết khi nào bạn sẵn sàng nhé.")
+        sm.sendNext("It looks like you're not ready yet. Please let me know when you're ready.")
 else:
     sm.setSpeakerID(OLLIE)
-    sm.sendNext("Có vẻ như bạn vẫn chưa sẵn sàng. Hãy cho tôi biết khi nào bạn sẵn sàng nhé.")
+    sm.sendNext("It looks like you're not ready yet. Please let me know when you're ready.")

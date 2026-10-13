@@ -241,8 +241,15 @@ public class AccountQuest {
             // should never return null, as this method should only be called when this quest indeed has this mob
             if (qpmr.getCurrentCount() < qpmr.getRequiredCount()) {
                 qpmr.incCurrentCount(1);
-                setQrValue(String.valueOf(qpmr.getCurrentCount()));
-                setQRValueToProperties();
+                if (getMobReqs().size() > 1) {
+                    StringBuilder sb = new StringBuilder();
+                    for (QuestProgressMobRequirement req : getMobReqs()) {
+                        sb.append(String.format("%03d", req.getCurrentCount()));
+                    }
+                    setQrValue(sb.toString());
+                } else {
+                    setQrValue(String.valueOf(qpmr.getCurrentCount()));
+                }
             }
         } else {
             DataPrinter.send(DataPrinter.EXCEPTION_CAUGHT, "Unable to handle monster killed, quest ID: " + getQRKey() + " on monster ID: " + mobID);

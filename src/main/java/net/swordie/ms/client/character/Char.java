@@ -10905,12 +10905,15 @@ public class Char {
     }
 
     private void handleSymbolQuest(int[] preQuestIds, int checkQuestID, int endQuestID, String renewMessage) {
-        boolean allPrequelsCompleted = true;
+        boolean allPrequelsCompleted = ServerConfig.BOSS_UNLOCK_PREQUESTS;
         Account acc = getAccount();
-        for (int preQuestId : preQuestIds) {
-            if (!hasQuestCompleted(preQuestId)) {
-                allPrequelsCompleted = false;
-                break; // Stop checking once one is found to be incomplete
+        if (!allPrequelsCompleted) {
+            allPrequelsCompleted = true;
+            for (int preQuestId : preQuestIds) {
+                if (!hasQuestCompleted(preQuestId)) {
+                    allPrequelsCompleted = false;
+                    break; // Stop checking once one is found to be incomplete
+                }
             }
         }
         if (allPrequelsCompleted) {
@@ -13128,40 +13131,62 @@ public class Char {
     }
 
     public void handleMobKillForQuest(Mob mob) {
+        if (mob == null) return;
         int mobID = mob.getTemplateId();
-        final Collection<Integer> mobQuests = mob.getQuests();;
-        for (int questID : mobQuests) {
-            if (QuestConstants.isAccountQuest(questID)) {
-                AccountQuest q = getAccount().getQuestById(questID);
-                if (q != null && !q.isComplete(this)) {
-                    q.handleMobKill(mobID);
-                    write(WvsContext.questRecordMessage(q));
-                    write(WvsContext.questWorldShareMessage(q));
-                }
-            } else {
-                Quest q = getQuestById(questID);
-                if (q != null && !q.isComplete(this)) {
-                    q.handleMobKill(mobID);
-                    write(WvsContext.questRecordMessage(q));
+        Set<Integer> handledQuests = new HashSet<>();
+
+        final Collection<Integer> mobQuests = mob.getQuests();
+        if (mobQuests != null) {
+            for (int questID : mobQuests) {
+                if (QuestConstants.isAccountQuest(questID)) {
+                    AccountQuest q = getAccount().getQuestById(questID);
+                    if (q != null && !q.isComplete(this)) {
+                        q.handleMobKill(mobID);
+                        write(WvsContext.questRecordMessage(q));
+                        write(WvsContext.questWorldShareMessage(q));
+                        handledQuests.add(questID);
+                    }
+                } else {
+                    Quest q = getQuestById(questID);
+                    if (q != null && !q.isComplete(this)) {
+                        q.handleMobKill(mobID);
+                        write(WvsContext.questRecordMessage(q));
+                        handledQuests.add(questID);
+                    }
                 }
             }
         }
-        final Collection<AccountQuest> accQuests = getAccount().getQuests().values();
+        final Collection<AccountQuest> accQuests = getAccount().getQuestsInProgress();
         for (AccountQuest q : accQuests) {
-            if (q != null && !q.isComplete(this) && q.hasMobReq(9101025)) {
-                if (Math.abs(mob.getLevel() - getLevel()) <= 20) {
-                    q.handleMobKill(9101025);
+            if (q != null && !handledQuests.contains(q.getQRKey()) && !q.isComplete(this)) {
+                if (q.hasMobReq(9101025)) {
+                    if (Math.abs(mob.getLevel() - getLevel()) <= 20) {
+                        q.handleMobKill(9101025);
+                        write(WvsContext.questRecordMessage(q));
+                        write(WvsContext.questWorldShareMessage(q));
+                        handledQuests.add(q.getQRKey());
+                    }
+                } else if (q.hasMobReq(mobID) || (mob.getParentMobSet() != null && q.getMobReqs().stream().anyMatch(r -> mob.getParentMobSet().contains(r.getMobID())))) {
+                    q.handleMobKill(mobID);
                     write(WvsContext.questRecordMessage(q));
                     write(WvsContext.questWorldShareMessage(q));
+                    handledQuests.add(q.getQRKey());
                 }
             }
         }
-        final Collection<Quest> quests = getQuests().values();
+        final Collection<Quest> quests = getQuestsInProgress();
         for (Quest q : quests) {
-            if (q != null && !q.isComplete(this) && q.hasMobReq(9101025)) {
-                if (Math.abs(mob.getLevel() - getLevel()) <= 20) {
-                    q.handleMobKill(9101025);
+            if (q != null && !handledQuests.contains(q.getQRKey()) && !q.isComplete(this)) {
+                if (q.hasMobReq(9101025)) {
+                    if (Math.abs(mob.getLevel() - getLevel()) <= 20) {
+                        q.handleMobKill(9101025);
+                        write(WvsContext.questRecordMessage(q));
+                        handledQuests.add(q.getQRKey());
+                    }
+                } else if (q.hasMobReq(mobID) || (mob.getParentMobSet() != null && q.getMobReqs().stream().anyMatch(r -> mob.getParentMobSet().contains(r.getMobID())))) {
+                    q.handleMobKill(mobID);
                     write(WvsContext.questRecordMessage(q));
+                    handledQuests.add(q.getQRKey());
                 }
             }
         }

@@ -5,19 +5,22 @@ TREE_SPIRITS = 3003322
 reqMob = 500
 
 sm.setSpeakerID(TREE_SPIRITS)
-sm.sendNext("Bạn nghe thấy tiếng thì thầm của các Linh hồn Cây cối trong gió. Liệu họ có cần bạn giúp đỡ một lần nữa không?.")
+sm.sendNext("You hear the whispers of the Tree Spirits on the gentle breeze. They seem to need your help once again.")
 sm.setPlayerAsSpeaker()
-sm.sendSay("Tôi cũng nghe thấy...Có chuyện gì vậy?")
+sm.sendSay("I hear them too... What is happening?")
 sm.setSpeakerID(TREE_SPIRITS)
-sm.sendSay("Hãy giúp mang lại sự cân bằng cho khu rừng Arcana trong Grove of the Spirit Tree.")
-if sm.sendAskAccept("Sẽ rất tuyệt nếu bạn có thể giúp chúng tôi, #h0#. Tất nhiên, chúng tôi sẽ cung cấp những phần thưởng mà bạn sẽ thấy rất hữu ích."):
+sm.sendSay("Please help restore balance and harmony to the forest of Arcana around the Spirit Tree.")
+if sm.sendAskAccept("It would be wonderful if you could help us, #h0#. Of course, we'll provide rewards that you will find very useful."):
     if sm.hasQuestCompleted(37871): # [Esfera] Mirrors in Mirrors
         reqMob = 100
     elif sm.hasQuestCompleted(34272): # [Morass] The Swamp Remains
         reqMob = 300
-    if sm.sendAskAccept("Xin chào! Tôi có nhiệm vụ cho bạn ngày hôm nay. Đánh bại " + str(reqMob) + " quái vật xung quanh khu vực #bArcana#k."):
+    if sm.sendAskAccept("Hello! I have a task for you today. Defeat " + str(reqMob) + " monsters in the #bArcana#k area."):
         sm.completeQuest(parentID)
         sm.setQRValueByKey(parentID, "date", time.strftime("%y/%m/%d"))
+        sm.removeQuest(38463)
+        sm.removeQuest(38464)
+        sm.removeQuest(38465)
         if reqMob == 100:
             sm.startQuest(38463)
         elif reqMob == 300:
@@ -25,10 +28,10 @@ if sm.sendAskAccept("Sẽ rất tuyệt nếu bạn có thể giúp chúng tôi,
         else:
             sm.startQuest(38465)
         sm.setSpeakerID(TREE_SPIRITS)
-        sm.sendNext("Hãy đến gặp tôi sau khi bạn hoàn tất yêu cầu nhiệm vụ. Đừng quên quay lại #r#etrước nửa đêm#n#k nhé!\r\nBây giờ là #r#e" + str(sm.getCurrentTime()))
+        sm.sendNext("Please return to me once you have finished the mission. Don't forget to report back #r#ebefore midnight#n#k!\r\nCurrent time is #r#e" + str(sm.getCurrentTime()) + "#k.")
     else:
         sm.setSpeakerID(TREE_SPIRITS)
-        sm.sendNext("Có vẻ như bạn vẫn chưa sẵn sàng. Hãy cho tôi biết khi nào bạn sẵn sàng nhé.")
+        sm.sendNext("It looks like you're not ready yet. Please let me know when you're ready.")
 else:
     sm.setSpeakerID(TREE_SPIRITS)
-    sm.sendNext("Có vẻ như bạn vẫn chưa sẵn sàng. Hãy cho tôi biết khi nào bạn sẵn sàng nhé.")
+    sm.sendNext("It looks like you're not ready yet. Please let me know when you're ready.")

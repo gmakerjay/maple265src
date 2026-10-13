@@ -3,6 +3,39 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-13 20:05 น.] Fix Rebirth Flame Option Selection (Before/After Inversion) & Arcane Symbol Daily Quest Ecosystem
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: Fix Rebirth Flame Before/After Option Selection & Complete Arcane River Symbol Daily Quest System Overhaul
+- **รายละเอียด**:
+  1. **ปัญหาและสาเหตุเชิงเทคนิคที่ตรวจสอบพบ (Problems & Root Causes)**:
+     - **Rebirth Flame Before/After Inversion Bug**: ใน [ItemUpgradeHandler.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemUpgradeHandler.java) เมธอด `handleMemorialExUpgradeItemUseRequest` สุ่มออปชั่นใหม่แล้วแก้ไขค่า `equip.flame(exGradeOption)` ลงในไอเทมจริงทันทีตั้งแต่ก่อนผู้เล่นจะกดเลือก และใน `handleMemorialExUpgradeItemOptionRequest` ทำการ decode packet แต่ทิ้งค่า `choice` และเรียก `equip.flame(exGradeOption)` ซ้ำด้วยออปชั่นใหม่อย่างไม่มีเงื่อนไข ทำให้ไม่ว่าผู้เล่นจะกดเลือก "Before" (เก็บออปชั่นเดิม) หรือ "After" (เอาออปชั่นใหม่) ผลลัพธ์จะกลายเป็นออปชั่นใหม่ (After) เสมอ
+     - **Mob Kill Tracking Dead สำหรับ QuestCountGroup**: เควสต์ประจำวัน Arcane River ยุคใหม่ (v265 / Savior / New Age) เช่น Vanishing Journey (38450), Chu Chu (38454), Lachelein (38458), Arcana (38462), Morass (38466), Esfera (38470) มอนสเตอร์ในเควสต์ไม่ได้ระบุ Mob ID เดี่ยวๆ แต่ระบุเป็น `QuestCountGroup` (เช่น 9101238, 9101239 ฯลฯ) ซึ่งมอนสเตอร์ในแมปจะเก็บ Group ID นี้ไว้ใน `mob.getParentMobSet()` แต่ใน [Char.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java) เมธอด `handleMobKillForQuest` มีการเช็คเฉพาะ `mob.getQuests()` และฮาร์ดโค้ด `9101025` ทำให้การกำจัดมอนสเตอร์ใน Arcane River ทั้งหมด ไม่ถูกนับเข้าเควสต์ประจำวันเลย
+     - **QR Value Wipe Bug ใน `AccountQuest` & `Quest`**: ใน [AccountQuest.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/AccountQuest.java) และ [Quest.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/quest/Quest.java) มีการเรียก `setQRValueToProperties()` ซึ่งแปลงและล้างค่า `qrValue` กลายเป็นค่าว่าง `""` เพราะเควสต์นับจำนวนมอนสเตอร์จะเก็บตัวเลขจำนวนตัวใน `qrValue` ไม่ได้เก็บเป็นคีย์คู่คุณสมบัติ (Key-Value Properties)
+     - **Pre-quest Block ใน `Char.handleSymbolQuest`**: เซิร์ฟเวอร์บังคับเช็คเควสต์เนื้อเรื่องหลัก `chr.isQuestCompleted(...)` โดยไม่มี fallback สำหรับ `ServerConfig.BOSS_UNLOCK_PREQUESTS`
+     - **ขาดสคริปต์ไอเทม Arcane Symbol Selector Coupon (`consume_2635509.py`)**: เควสต์ประจำวัน v265 มอบกล่องสุ่ม/เลือกสัญลักษณ์ `2635509` แต่เซิร์ฟเวอร์ยังไม่มีสคริปต์รองรับการกดใช้งานไอเทมนี้
+     - **ขาดสคริปต์ NPC ประจำเมือง Arcane River**: NPC ประจำเมืองสำหรับส่งเควสต์สัญลักษณ์ (Rona `3003104`, Lyck `3003152`, Gray Mask `3003209`, Small Spirit `3003322`, Jean `3003432`, Ollie `3003530`) ยังไม่มีสคริปต์รองรับการรับและส่งเควสต์ประจำวัน
+  2. **การแก้ไขเชิงลึก (Implementation & Solutions)**:
+     - **Rebirth Flame Before/After Selection**:
+       - ใน [ItemUpgradeHandler.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemUpgradeHandler.java) เมธอด `handleMemorialExUpgradeItemUseRequest`: ทำการโคลนไอเทม `equipCopy = equip.deepCopy()`, คำนวณ `oldEx` และ `newEx`, บันทึกทั้ง 2 ค่าลงใน `QuestConstants.FLAME_QR` บนตัวละครโดยยังไม่แตะต้อง `equip` ตัวจริง
+       - เมธอด `handleMemorialExUpgradeItemOptionRequest`: อ่าน `choice = inPacket.decodeInt()`; หาก `choice == 1 || choice == 6` (After) ให้นำ `newEx` มาอัปเกรดไอเทม; หาก `choice == 0 || choice == 7 || choice == -1` (Before) ให้นำ `oldEx` ดั้งเดิมมาใส่คงเดิม จากนั้นส่งแพ็กเก็ตยืนยันผลลัพธ์และเอฟเฟกต์อย่างถูกต้อง 100%
+     - **QuestCountGroup Mob Kill Tracking**:
+       - ปรับปรุง [Char.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java) ใน `handleMobKillForQuest` ให้ค้นหาเควสต์ที่กำลังดำเนินอยู่ทั้ง `AccountQuest` และ `Quest` ปกติ โดยตรวจสอบเงื่อนไข `q.hasMobReq(mobID)` หรือ `mob.getParentMobSet().contains(reqMobID)` (`QuestCountGroup`) ทำให้การตีดวงวิญญาณและมอนสเตอร์ใน Arcane River ทุกเมืองนับจำนวนตัวก้าวหน้าเควสต์ 600 ตัวได้อย่างถูกต้องสมบูรณ์
+     - **QR Value Preservation**:
+       - แก้ไข [AccountQuest.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/AccountQuest.java) และ [Quest.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/quest/Quest.java) ลบการเรียก `setQRValueToProperties()` ที่ล้างค่าทิ้ง และจัดฟอร์แมตตัวเลข `qrValue` (เช่น `001`, `600`) อย่างแม่นยำ
+     - **Symbol Pre-quest Bypass**:
+       - ปรับปรุง [Char.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java) ใน `handleSymbolQuest` ให้รองรับการปลดล็อกรับเควสต์รายวันได้ทันทีเมื่อ `ServerConfig.BOSS_UNLOCK_PREQUESTS` เป็นจริง
+     - **Arcane Symbol Selector Coupon Script**:
+       - สร้างสคริปต์ [consume_2635509.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/item/consume_2635509.py) สำหรับไอเทมคูปอง `2635509` ให้ผู้เล่นสามารถเลือกรับ Arcane Symbol ชนิดใดก็ได้ (Vanishing Journey, Chu Chu, Lachelein, Arcana, Morass, Esfera) พร้อมระบุจำนวนที่ต้องการเปิดใช้งานได้ทันที
+     - **Town NPC & Daily Quest Scripts**:
+       - สร้างและอัปเดตสคริปต์ NPC ประจำเมือง Arcane River ครบ 6 เมือง: [3003104.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/3003104.py) (Rona), [3003152.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/3003152.py) (Lyck), [3003209.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/3003209.py) (Gray Mask), [3003322.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/3003322.py) (Small Spirit), [3003432.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/3003432.py) (Jean), [3003530.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/3003530.py) (Ollie)
+       - อัปเดตสคริปต์เริ่มเควสต์ `q38450s.py`, `q38454s.py`, `q38458s.py`, `q38462s.py`, `q38466s.py`, `q38470s.py` เคลียร์สถานะเควสต์ค้างและเปิดรับภารกิจกำจัดมอนสเตอร์ 600 ตัวได้อย่างราบรื่น
+       - ซิงค์สคริปต์ทั้งหมดลงทั้ง `v214 src/data/scripts/` และ `Server263/data/scripts/`
+  3. **การคอมไพล์ ดีพลอย และจัดทำแพตช์ (Compilation, Deployment & Patch Archive)**:
+     - คอมไพล์ Java Core ผ่านฉลุย 100%: `BUILD SUCCESS` (854 ไฟล์) ด้วย OpenJDK 21 & Maven
+     - ดีพลอย `maplestory.jar` (138.68 MB) ไปยัง `Server263/maplestory.jar`, `root/maplestory.jar`, และ `v214 src/maplestory.jar`
+     - สร้างแพ็กเกจแพตช์อัปเดตเดี่ยว [Patches/Server263_Patch_Latest.zip](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip) (173.02 MB) สำเร็จ 100% ตามกฎข้อ 4 ของ AGENTS.md
+
 ## 📅 [2026-10-13 19:40 น.] Fix Cube Option Reroll System, Resolve Packet Decoding Underflow & Support All Cube Types (Bonus Potential, Red, Black, Miracle)
 
 ### 🎯 Scope & Technical Details
