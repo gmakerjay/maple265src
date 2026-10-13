@@ -1,0 +1,53 @@
+using System;
+using System.Text;
+
+namespace v232.Launcher.WPF.Models
+{
+    public class InPacket
+    {
+        public const int BufferSize = 65536;
+        public byte[] buf = new byte[BufferSize];
+        public byte[] bufData = new byte[BufferSize];
+        public byte[] lenBuf = new byte[4];
+        public int len = -1;
+        public int curLen;
+        public int lenBufPtr;
+        public int readPtr;
+
+        public byte readByte()
+        {
+            int num = (int)this.bufData[this.readPtr];
+            ++this.readPtr;
+            return (byte)num;
+        }
+
+        public byte[] readBytes(int len)
+        {
+            byte[] numArray = new byte[len];
+            for (int index = 0; index < len; ++index)
+                numArray[index] = this.bufData[this.readPtr++];
+            return numArray;
+        }
+
+        public short readShort()
+        {
+            int num = (int)(short)((int)this.bufData[this.readPtr] + ((int)this.bufData[this.readPtr + 1] << 8));
+            this.readPtr += 2;
+            return (short)num;
+        }
+
+        public int readInt()
+        {
+            int num = (int)this.bufData[this.readPtr] + ((int)this.bufData[this.readPtr + 1] << 8) + ((int)this.bufData[this.readPtr + 2] << 16) + ((int)this.bufData[this.readPtr + 3] << 24);
+            this.readPtr += 4;
+            return num;
+        }
+
+        public string readString()
+        {
+            short num = this.readShort();
+            // The server encodes strings as UTF-8 with a byte-count prefix.
+            return Encoding.UTF8.GetString(this.readBytes((int)num), 0, (int)num);
+        }
+    }
+}

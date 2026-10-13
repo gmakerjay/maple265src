@@ -1,0 +1,41 @@
+KonoMS Launcher - changes
+==========================
+
+UI
+- Sci-fi HUD redesign, no left rail, top nav (HOME / PLAY / ACCOUNT)
+- Animated background: MOTION / CINEMATIC / OFF, choice saved
+- Gear moved from header to bottom-left; settings popup opens above it
+- Settings page + nav tab deleted, all options moved into the gear popup
+- Home: removed transmissions, server open, events and Discord cards
+- Home: added TOP OPERATIVES (top 3 characters by level) and WALLET (NX/DP/VP)
+- Unused operative rows hidden instead of showing placeholders
+- Credits: removed Community + Discord link, added "Modifications done by Iskono"
+- App icon set to maplestorydb-logo, logo used in header and loading screen
+- Footer version now read from the assembly
+
+Audio
+- BGM with on/off switch and volume slider, saved to bgm.cfg
+
+Branding / build
+- server_info.txt (IP, launcher name, slogan, tagline, launch panel,
+  launch description, footer text) embedded at build time
+- Edit server_info.txt, run built.bat, press 1 - no code changes needed
+- built.bat: 1 = build, 0 = exit, then optional copy to the client folder
+- Every visible piece of text comes from server_info.txt: window title,
+  header, hero, play page, footer note, dialogs, temp file name
+- The only value not from server_info.txt is the footer version number,
+  it always comes from the launcher assembly version
+
+Server
+- New API 103 REQUEST_ACCOUNT_DATA_X64: cash balances + top 3 characters
+- Token authenticated, so no password is sent and no other account can be queried
+
+Fixes
+- Gear popup painted under the page content, now on top of everything
+- BGM never played, the media element was collapsed
+- BGM failed when two launchers were open, temp file is now per process
+- Packet strings decoded as ASCII, now UTF-8 (non-ASCII character names)
+- Receive buffer raised from 256 to 1024 bytes
+- Header XAML typo that broke the build, and the temporary crash logger
+- Settings gear toggled nothing when the player had no source, now logged
+  to %APPDATA%\KonoMSLauncher\launcher.log

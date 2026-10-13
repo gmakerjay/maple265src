@@ -1,0 +1,13 @@
+# ---------------------------------------------------------------
+#  server_info
+#  Edit any value below, then run built.bat and press 1.
+#  The values are compiled into the launcher, no code changes needed.
+# ---------------------------------------------------------------
+
+IP: 127.0.0.1
+Launcher name: GMS265
+Slogan: GMS-V-265-Private Server
+Tagline: Every hero begins as a dot on the grid.
+Launch panel: CLAXON TERMINAL
+Launch description: Launches MapleStory.exe with an authentication token and injects the authhook.
+Footer text: Modified from the V232 Swordie-Launcher

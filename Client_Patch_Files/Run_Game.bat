@@ -26,15 +26,19 @@ if not exist "Localhost.dll" (
     exit /b 1
 )
 
-if not exist "Launcher.exe" (
+set "LAUNCHER_BIN="
+if exist "%~dp0gms265 Launcher.exe" set "LAUNCHER_BIN=%~dp0gms265 Launcher.exe"
+if not defined LAUNCHER_BIN if exist "%~dp0Launcher.exe" set "LAUNCHER_BIN=%~dp0Launcher.exe"
+
+if not defined LAUNCHER_BIN (
     color 0C
-    echo [ERROR] Launcher.exe not found in this folder!
+    echo [ERROR] Launcher executable not found in this folder!
     pause
     exit /b 1
 )
 
-echo [START] Launching MapleStory with Localhost Hook...
+echo [START] Launching MapleStory Launcher...
 echo.
-start "" "%~dp0Launcher.exe"
+start "" "!LAUNCHER_BIN!"
 
 exit /b 0

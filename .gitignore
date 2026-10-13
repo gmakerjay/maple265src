@@ -7,8 +7,12 @@ out/
 *.jar
 *.war
 *.ear
+# Launcher build output
+launcher/bin/
+launcher/obj/
+*.suo
+*.user
 
-# IDE & Editor
 .idea/
 .vscode/
 *.iml
