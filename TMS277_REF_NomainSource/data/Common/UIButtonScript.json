@@ -1,0 +1,41 @@
+{
+  "1257": {
+    "1207": "expand/guild_support"
+  },
+  "1922": {
+    "2001": "expand/soul_erda_booster",
+    "2002": "expand/soul_erda_bonus",
+    "2003": "expand/soul_erda_piece_bonus",
+    "2005": "expand/soul_erda_bonus_plus",
+    "2006": "expand/soul_erda_piece_bonus_plus"
+  },
+  "1455": {
+    "3010": "expand/combat_info_help"
+  },
+  "1481": {
+    "1103": "expand/epic_dungeon_help",
+    "1205": "expand/epic_dungeon_help"
+  },
+  "1462": {
+    "2021": "expand/hallow_camila/hallow_camila_help",
+    "2022": "expand/hallow_camila/hallow_camila_close",
+    "2023": "expand/hallow_camila/hallow_camila_daily",
+    "2024": "expand/hallow_camila/hallow_camila_r0",
+    "2025": "expand/hallow_camila/hallow_camila_r1",
+    "2026": "expand/hallow_camila/hallow_camila_r2",
+    "2027": "expand/hallow_camila/hallow_camila_r3",
+    "2028": "expand/hallow_camila/hallow_camila_r4",
+    "2029": "expand/hallow_camila/hallow_camila_r5",
+    "2030": "expand/hallow_camila/hallow_camila_r6",
+    "2031": "expand/hallow_camila/hallow_camila_r7",
+    "2032": "expand/hallow_camila/hallow_camila_r8",
+    "2033": "expand/hallow_camila/hallow_camila_r9",
+    "2044": "expand/hallow_camila/hallow_shop"
+  },
+  "1405": {
+    "1001": "expand/punch_king_rank_help"
+  },
+  "1571": {
+    "1003": "expand/monster_park/extreme_help"
+  }
+}

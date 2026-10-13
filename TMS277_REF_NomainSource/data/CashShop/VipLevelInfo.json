@@ -1,0 +1,50 @@
+[
+  {
+    "level": 0,
+    "calcDay": -1,
+    "keepDay": -1,
+    "point": 50000,
+    "keep": -1,
+    "rate": 20
+  },
+  {
+    "level": 1,
+    "calcDay": 100,
+    "keepDay": -1,
+    "point": 150000,
+    "keep": -1,
+    "rate": 20
+  },
+  {
+    "level": 2,
+    "calcDay": 100,
+    "keepDay": 100,
+    "point": 675000,
+    "keep": 225000,
+    "rate": 30
+  },
+  {
+    "level": 3,
+    "calcDay": 100,
+    "keepDay": 100,
+    "point": 3675000,
+    "keep": 1000000,
+    "rate": 40
+  },
+  {
+    "level": 4,
+    "calcDay": -1,
+    "keepDay": 100,
+    "point": -1,
+    "keep": 5000000,
+    "rate": 50
+  },
+  {
+    "level": 5,
+    "calcDay": -1,
+    "keepDay": -1,
+    "point": -1,
+    "keep": -1,
+    "rate": 50
+  }
+]

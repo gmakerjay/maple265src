@@ -1,0 +1,20 @@
+[
+  {
+    "itemId": 5002665,
+    "count": 1,
+    "prob": 10,
+    "broadcast": true
+  },
+  {
+    "itemId": 5002666,
+    "count": 1,
+    "prob": 10,
+    "broadcast": true
+  },
+  {
+    "itemId": 5002667,
+    "count": 1,
+    "prob": 10,
+    "broadcast": true
+  }
+]

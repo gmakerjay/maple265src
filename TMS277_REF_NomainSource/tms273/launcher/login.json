@@ -1,0 +1,49 @@
+{
+  "tms_Attack_": false,
+  "ban_gameid": false,
+  "crcbypass": false,
+  "crcaddress": "",
+  "limitBreakList": [],
+  "msg": "Hi",
+  "gameid": "100001",
+  "ServerType": "1",
+  "MapleVersion": "273",
+  "MapleType": "7",
+  "LoginPort": 25856,
+  "ServerName": "tms",
+  "ServerAddress": "172.31.166.163",
+  "ClientTitle": "MapleStory",
+  "WebButtonUrl": "",
+  "WebButtonDCUrl": "",
+  "WebButton1Url": "",
+  "WebButton2Url": "",
+  "CheckDll": false,
+  "ClientSkinConfig": "",
+  "NewsLabelTetle": "",
+  "limitBreak": 0,
+  "DownloadList": [],
+  "ClientMaxNumber": 1,
+  "ClientFileMd5Info": [],
+  "ShopServer": {
+    "InstanceId": "tms-shop",
+    "address": "172.31.166.163",
+    "port": 9000
+  },
+  "AuctionServer": {
+    "InstanceId": "tms-auction",
+    "address": "172.31.166.163",
+    "port": 9020
+  },
+  "DistributedServer": {
+    "Game0": {
+      "InstanceId": "tms-game0",
+      "address": "172.31.166.163",
+      "port": 9002
+    },
+    "Game1": {
+      "InstanceId": "tms-game1",
+      "address": "172.31.166.163",
+      "port": 9003
+    }
+  }
+}

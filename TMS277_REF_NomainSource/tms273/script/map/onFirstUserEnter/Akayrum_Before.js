@@ -1,0 +1,11 @@
+// Created by MetaMS
+// ID:[272020210]
+// MapName:阿卡伊農的祭壇
+
+let event = stage.getEvent("boss_akayrum_normal");
+if (event != null && event.getVariable("npc") == null) {
+        event.setVariable("npc", true);
+        map.spawnNpc(2144010, 320, -190, 1);
+        usr.uol("Voice.img/akayrum/2").value(100).playExclSoundWithDownBGM();
+        map.blowWeather(5120056, "無法區分勇氣和魯莽的人們呀。 如果不要命的話，就儘管過來吧！ 呵呵。", 5);
+}

@@ -1,0 +1,251 @@
+{
+  "0": {
+    "mesoCost": 641000,
+    "balanceCost": 9,
+    "noCurseCost": 27,
+    "success": 9500,
+    "keep": 50,
+    "down": 0,
+    "cursed": 0
+  },
+  "1": {
+    "mesoCost": 961000,
+    "balanceCost": 9,
+    "noCurseCost": 27,
+    "success": 9000,
+    "keep": 100,
+    "down": 0,
+    "cursed": 0
+  },
+  "2": {
+    "mesoCost": 1281000,
+    "balanceCost": 9,
+    "noCurseCost": 27,
+    "success": 8500,
+    "keep": 150,
+    "down": 0,
+    "cursed": 0
+  },
+  "3": {
+    "mesoCost": 1601000,
+    "balanceCost": 9,
+    "noCurseCost": 27,
+    "success": 8500,
+    "keep": 150,
+    "down": 0,
+    "cursed": 0
+  },
+  "4": {
+    "mesoCost": 1921000,
+    "balanceCost": 9,
+    "noCurseCost": 27,
+    "success": 8000,
+    "keep": 200,
+    "down": 0,
+    "cursed": 0
+  },
+  "5": {
+    "mesoCost": 2241000,
+    "balanceCost": 9,
+    "noCurseCost": 27,
+    "success": 7500,
+    "keep": 250,
+    "down": 0,
+    "cursed": 0
+  },
+  "6": {
+    "mesoCost": 2561000,
+    "balanceCost": 9,
+    "noCurseCost": 27,
+    "success": 7000,
+    "keep": 300,
+    "down": 0,
+    "cursed": 0
+  },
+  "7": {
+    "mesoCost": 2881000,
+    "balanceCost": 9,
+    "noCurseCost": 27,
+    "success": 6500,
+    "keep": 350,
+    "down": 0,
+    "cursed": 0
+  },
+  "8": {
+    "mesoCost": 3201000,
+    "balanceCost": 9,
+    "noCurseCost": 27,
+    "success": 6000,
+    "keep": 400,
+    "down": 0,
+    "cursed": 0
+  },
+  "9": {
+    "mesoCost": 25932100,
+    "balanceCost": 12,
+    "noCurseCost": 36,
+    "success": 5500,
+    "keep": 450,
+    "down": 0,
+    "cursed": 0
+  },
+  "10": {
+    "mesoCost": 74033450,
+    "balanceCost": 15,
+    "noCurseCost": 45,
+    "success": 5000,
+    "keep": 500,
+    "down": 0,
+    "cursed": 0
+  },
+  "11": {
+    "mesoCost": 122134800,
+    "balanceCost": 18,
+    "noCurseCost": 54,
+    "success": 3000,
+    "keep": 550,
+    "down": 0,
+    "cursed": 0
+  },
+  "12": {
+    "mesoCost": 179126900,
+    "balanceCost": 21,
+    "noCurseCost": 63,
+    "success": 2500,
+    "keep": 600,
+    "down": 0,
+    "cursed": 0
+  },
+  "13": {
+    "mesoCost": 236119000,
+    "balanceCost": 24,
+    "noCurseCost": 72,
+    "success": 2000,
+    "keep": 650,
+    "down": 0,
+    "cursed": 0
+  },
+  "14": {
+    "mesoCost": 293111100,
+    "balanceCost": 27,
+    "noCurseCost": 81,
+    "success": 1500,
+    "keep": 700,
+    "down": 0,
+    "cursed": 0
+  },
+  "15": {
+    "mesoCost": 350103200,
+    "balanceCost": 30,
+    "noCurseCost": 90,
+    "success": 1000,
+    "keep": 595,
+  "down": 0,
+    "cursed": 0
+  },
+  "16": {
+    "mesoCost": 407095300,
+    "balanceCost": 33,
+    "noCurseCost": 99,
+    "success": 300,
+    "keep": 0,
+   "down": 0,
+    "cursed": 0
+  },
+  "17": {
+    "mesoCost": 464087400,
+    "balanceCost": 36,
+    "noCurseCost": 108,
+    "success": 300,
+    "keep": 0,
+   "down": 0,
+    "cursed": 0
+  },
+  "18": {
+    "mesoCost": 521080000,
+    "balanceCost": 39,
+    "noCurseCost": 117,
+    "success": 300,
+    "keep": 0,
+  "down": 0,
+    "cursed": 0
+  },
+  "19": {
+    "mesoCost": 672612800,
+    "balanceCost": 42,
+    "noCurseCost": 126,
+    "success": 300,
+    "keep": 0,
+    "down": 0,
+    "cursed": 0
+  },
+  "20": {
+    "mesoCost": 824145600,
+    "balanceCost": 45,
+    "noCurseCost": 135,
+    "success": 300,
+    "keep": 350,
+ "down": 0,
+    "cursed": 0
+  },
+  "21": {
+    "mesoCost": 975678400,
+    "balanceCost": 48,
+    "noCurseCost": 144,
+    "success": 300,
+    "keep": 0,
+   "down": 0,
+    "cursed": 0
+  },
+  "22": {
+    "mesoCost": 1127211200,
+    "balanceCost": 153,
+    "noCurseCost": 459,
+    "success": 30,
+    "keep": 0,
+ "down": 0,
+    "cursed": 0
+  },
+  "23": {
+    "mesoCost": 1278744000,
+    "balanceCost": 162,
+    "noCurseCost": 486,
+    "success": 20,
+    "keep": 0,
+ "down": 0,
+    "cursed": 0
+  },
+  "24": {
+    "mesoCost": 1430276800,
+    "balanceCost": 171,
+    "noCurseCost": 513,
+    "success": 10,
+    "keep": 0,
+  "down": 0,
+    "cursed": 0
+	
+
+  },
+  "25": {
+    "mesoCost": 1830276800,
+    "balanceCost": 171,
+    "noCurseCost": 513,
+    "success": 10,
+    "keep": 0,
+  "down": 0,
+    "cursed": 0
+	
+
+  },
+  "26": {
+    "mesoCost": 2830276800,
+    "balanceCost": 171,
+    "noCurseCost": 513,
+    "success": 10,
+    "keep": 0,
+  "down": 300,
+    "cursed": 0
+	
+
+  }
+}

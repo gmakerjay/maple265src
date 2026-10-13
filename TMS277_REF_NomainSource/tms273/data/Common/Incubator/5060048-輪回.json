@@ -1,0 +1,344 @@
+[
+  {
+    "prob": 5,
+    "count": 1,
+    "itemId": 1022277,
+    "broadcast": 1
+  },
+  {
+    "prob": 5,
+    "count": 1,
+    "itemId": 1032241,
+    "broadcast": 1
+  },
+  {
+    "prob": 2,
+    "count": 1,
+    "itemId": 2437897,
+    "broadcast": 1
+  },
+  {
+    "prob": 2,
+    "count": 1,
+    "itemId": 1114400,
+    "broadcast": 1
+  },
+  {
+    "prob": 1,
+    "count": 1,
+    "itemId": 1202193,
+    "broadcast": 1
+  },
+  {
+    "prob": 5,
+    "count": 1,
+    "itemId": 5060028,
+    "broadcast": 1
+  },
+  {
+    "prob": 5,
+    "count": 1,
+    "itemId": 1182087,
+    "broadcast": 1
+  },
+  {
+    "prob": 5,
+    "count": 1,
+    "itemId": 1122254,
+    "broadcast": 1
+  },
+  {
+    "prob": 5,
+    "count": 1,
+    "itemId": 1152170,
+    "broadcast": 1
+  },
+  {
+    "prob": 5,
+    "count": 1,
+    "itemId": 4021044,
+    "broadcast": 1
+  },
+  {
+    "prob": 2,
+    "count": 1,
+    "itemId": 1113070,
+    "broadcast": 1
+  },
+  {
+    "prob": 2,
+    "count": 1,
+    "itemId": 1032216,
+    "broadcast": 1
+  },
+  {
+    "prob": 2,
+    "count": 1,
+    "itemId": 1672073,
+    "broadcast": 1
+  },
+  {
+    "prob": 5,
+    "count": 1,
+    "itemId": 1672040,
+    "broadcast": 1
+  },
+  {
+    "prob": 3,
+    "count": 1,
+    "itemId": 1012478,
+    "broadcast": 1
+  },
+  {
+    "prob": 3,
+    "count": 1,
+    "itemId": 1022231,
+    "broadcast": 1
+  },
+  {
+    "prob": 3,
+    "count": 1,
+    "itemId": 1113149,
+    "broadcast": 1
+  },
+  {
+    "prob": 3,
+    "count": 1,
+    "itemId": 2630626,
+    "broadcast": 1
+  },
+  {
+    "prob": 20,
+    "count": 1,
+    "itemId": 4001889,
+    "broadcast": 0
+  },
+  {
+    "prob": 20,
+    "count": 1,
+    "itemId": 4001878,
+    "broadcast": 0
+  },
+  {
+    "prob": 30,
+    "count": 1,
+    "itemId": 2470003,
+    "broadcast": 0
+  },
+  {
+    "prob": 20,
+    "count": 1,
+    "itemId": 2530000,
+    "broadcast": 0
+  },
+  {
+    "prob": 20,
+    "count": 1,
+    "itemId": 2630606,
+    "broadcast": 0
+  },
+  {
+    "prob": 15,
+    "count": 1,
+    "itemId": 2003559,
+    "broadcast": 0
+  },
+  {
+    "prob": 15,
+    "count": 1,
+    "itemId": 2003550,
+    "broadcast": 0
+  },
+  {
+    "prob": 20,
+    "count": 1,
+    "itemId": 2003548,
+    "broadcast": 0
+  },
+  {
+    "prob": 20,
+    "count": 1,
+    "itemId": 2003547,
+    "broadcast": 0
+  },
+  {
+    "prob": 20,
+    "count": 1,
+    "itemId": 2003549,
+    "broadcast": 0
+  },
+  {
+    "prob": 15,
+    "count": 1,
+    "itemId": 2003526,
+    "broadcast": 0
+  },
+  {
+    "prob": 17,
+    "count": 1,
+    "itemId": 2003540,
+    "broadcast": 0
+  },
+  {
+    "prob": 17,
+    "count": 1,
+    "itemId": 2003544,
+    "broadcast": 0
+  },
+  {
+    "prob": 17,
+    "count": 1,
+    "itemId": 2003546,
+    "broadcast": 0
+  },
+  {
+    "prob": 17,
+    "count": 1,
+    "itemId": 2003542,
+    "broadcast": 0
+  },
+  {
+    "prob": 17,
+    "count": 1,
+    "itemId": 2003525,
+    "broadcast": 0
+  },
+  {
+    "prob": 17,
+    "count": 1,
+    "itemId": 2003528,
+    "broadcast": 0
+  },
+  {
+    "prob": 17,
+    "count": 1,
+    "itemId": 2003534,
+    "broadcast": 0
+  },
+  {
+    "prob": 17,
+    "count": 1,
+    "itemId": 2630018,
+    "broadcast": 0
+  },
+  {
+    "prob": 30,
+    "count": 1,
+    "itemId": 2450163,
+    "broadcast": 0
+  },
+  {
+    "prob": 20,
+    "count": 1,
+    "itemId": 2433604,
+    "broadcast": 0
+  },
+  {
+    "prob": 5,
+    "count": 1,
+    "itemId": 2070019,
+    "broadcast": 1
+  },
+  {
+    "prob": 5,
+    "count": 1,
+    "itemId": 2060009,
+    "broadcast": 1
+  },
+  {
+    "prob": 5,
+    "count": 1,
+    "itemId": 2060011,
+    "broadcast": 1
+  },
+  {
+    "prob": 5,
+    "count": 1,
+    "itemId": 2633634,
+    "broadcast": 0
+  },
+  {
+    "prob": 20,
+    "count": 1,
+    "itemId": 4009547,
+    "broadcast": 0
+  },
+  {
+    "prob": 15,
+    "count": 1,
+    "itemId": 4310323,
+    "broadcast": 0
+  },
+  {
+    "prob": 20,
+    "count": 1,
+    "itemId": 2472000,
+    "broadcast": 0
+  },
+  {
+    "prob": 20,
+    "count": 1,
+    "itemId": 2049384,
+    "broadcast": 0
+  },
+  {
+    "prob": 18,
+    "count": 1,
+    "itemId": 2049385,
+    "broadcast": 0
+  },
+  {
+    "prob": 12,
+    "count": 1,
+    "itemId": 2049386,
+    "broadcast": 0
+  },
+  {
+    "prob": 15,
+    "count": 1,
+    "itemId": 2048716,
+    "broadcast": 0
+  },
+  {
+    "prob": 15,
+    "count": 1,
+    "itemId": 2048721,
+    "broadcast": 0
+  },
+  {
+    "prob": 5,
+    "count": 1,
+    "itemId": 2630568,
+    "broadcast": 0
+  },
+  {
+    "prob": 5,
+    "count": 1,
+    "itemId": 2630569,
+    "broadcast": 0
+  },
+  {
+    "prob": 5,
+    "count": 1,
+    "itemId": 2630627,
+    "broadcast": 0
+  },
+  {
+    "prob": 5,
+    "count": 1,
+    "itemId": 2070024,
+    "broadcast": 0
+  },
+  {
+    "prob": 3,
+    "count": 1,
+    "itemId": 1162025,
+    "broadcast": 1
+  },
+  {
+    "prob": 2,
+    "count": 1,
+    "itemId": 1190005,
+    "broadcast": 1
+  }
+]

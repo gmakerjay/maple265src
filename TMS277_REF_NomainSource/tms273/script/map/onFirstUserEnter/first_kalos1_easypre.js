@@ -1,0 +1,11 @@
+// Created by MetaMS
+// ID:[410006020]
+// MapName:激戰的摩天塔
+
+let event = stage.getEvent("boss_kalos_easy");
+if (event != null && event.getVariable("boss1") == null) {
+        event.setVariable("boss1", false);
+        map.spawnMob(8881010, 0, 398);
+        map.spawnMob(8881011, 0, 398);
+        map.startEvent();
+}

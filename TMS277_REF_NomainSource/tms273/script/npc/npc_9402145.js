@@ -1,0 +1,1 @@
+stage.openShop(9402145)

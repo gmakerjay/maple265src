@@ -103,10 +103,16 @@ public class ExtendSP {
     }
 
     public void setSpToJobLevel(int jobLevel, int sp) {
+        boolean found = false;
         for (SPSet spSet : spSet) {
             if (spSet.getJobLevel() == jobLevel) {
                 spSet.setSp(sp);
+                found = true;
+                break;
             }
+        }
+        if (!found) {
+            spSet.add(new SPSet((byte) jobLevel, sp));
         }
     }
 

@@ -5,6 +5,7 @@ import net.swordie.ms.client.Client;
 import net.swordie.ms.client.character.Char;
 import net.swordie.ms.client.character.CharacterStat;
 import net.swordie.ms.client.character.info.HitInfo;
+import net.swordie.ms.client.character.quest.Quest;
 import net.swordie.ms.client.character.skills.ForceAtom;
 import net.swordie.ms.client.character.skills.Option;
 import net.swordie.ms.client.character.skills.Skill;
@@ -31,6 +32,7 @@ import net.swordie.ms.constants.FieldConstants;
 import net.swordie.ms.loaders.ItemData;
 import net.swordie.ms.loaders.SkillData;
 import net.swordie.ms.scripts.ScriptManagerImpl;
+import net.swordie.ms.util.FileTime;
 import net.swordie.ms.util.Position;
 import net.swordie.ms.util.Rect;
 import net.swordie.ms.util.Util;
@@ -112,8 +114,10 @@ public class Evan extends Job {
     public static final int DRAGON_BREATH = 22171063;
     public static final int ZODIAC_BURST = 22201500;
     public static final int ZODIAC_BURST_ATTACK = 22201501;
-    public static final int ZODIAC_BURST_FINISHER = 22201502;
-    public static final int ZODIAC_BURST_FINISHER_ATTACK = 22201503;
+    public static final int UNITED_HORIZONS = 22201502;
+    public static final int UNITED_HORIZONS_ATTACK = 22201503;
+    public static final int ZODIAC_BURST_FINISHER = UNITED_HORIZONS; // alias
+    public static final int ZODIAC_BURST_FINISHER_ATTACK = UNITED_HORIZONS_ATTACK; // alias
     public static final int HEXA_ELEMENTAL_BARRAGE = 500061041;
 
     private int prevSkill = 0;
@@ -212,23 +216,17 @@ public class Evan extends Job {
         boolean hasHitMobs = !attackInfo.mobAttackInfo.isEmpty();
         int slv = attackInfo.slv;
         handleDragonSkillEffect(attackInfo, skillID);
-        if (skillID == ZODIAC_BURST || skillID == ZODIAC_BURST_ATTACK || skillID == ZODIAC_BURST_FINISHER || skillID == ZODIAC_BURST_FINISHER_ATTACK) {
-            if (skillID == ZODIAC_BURST_FINISHER || skillID == ZODIAC_BURST_FINISHER_ATTACK) {
-                if (chr.hasSkillOnCooldown(ZODIAC_BURST)) {
-                    return;
-                }
+        if (skillID == ZODIAC_BURST || skillID == ZODIAC_BURST_ATTACK) {
+            if (!chr.hasSkillOnCooldown(ZODIAC_BURST)) {
                 chr.addSkillCooldown(ZODIAC_BURST, 360 * 1000);
-                chr.addSkillCooldown(ZODIAC_BURST_FINISHER, 360 * 1000);
-                tsm.removeStatsBySkill(ZODIAC_BURST);
-            } else if (skillID == ZODIAC_BURST) {
-                if (chr.hasSkillOnCooldown(ZODIAC_BURST)) {
-                    return;
-                }
-                chr.addSkillCooldown(ZODIAC_BURST, 360 * 1000);
+            }
+        } else if (skillID == UNITED_HORIZONS || skillID == UNITED_HORIZONS_ATTACK) {
+            if (!chr.hasSkillOnCooldown(UNITED_HORIZONS)) {
+                chr.addSkillCooldown(UNITED_HORIZONS, 240 * 1000);
             }
         }
         if (hasHitMobs) {
-            if (skillID == ZODIAC_BURST || skillID == ZODIAC_BURST_ATTACK || skillID == ZODIAC_BURST_FINISHER || skillID == ZODIAC_BURST_FINISHER_ATTACK) {
+            if (skillID == ZODIAC_BURST || skillID == ZODIAC_BURST_ATTACK || skillID == UNITED_HORIZONS || skillID == UNITED_HORIZONS_ATTACK) {
                 Option oOrigin1 = new Option();
                 Option oOrigin2 = new Option();
                 oOrigin1.nOption = 1;
@@ -258,9 +256,13 @@ public class Evan extends Job {
             boolean isElementalBarrage = skillID == ELEMENTAL_BARRAGE || (skillID >= 400021013 && skillID <= 400021015);
             boolean isHexaElementalBarrage = skillID == HEXA_ELEMENTAL_BARRAGE || (skillID >= 500061042 && skillID <= 500061045);
             if (isElementalBarrage || isHexaElementalBarrage) {
+                int rootSkill = isHexaElementalBarrage ? HEXA_ELEMENTAL_BARRAGE : ELEMENTAL_BARRAGE;
+                if (!chr.hasSkillOnCooldown(rootSkill)) {
+                    int slv2 = Math.max(1, chr.getSkillLevel(rootSkill));
+                    chr.setSkillCooldown(rootSkill, slv2);
+                }
                 Option o1 = new Option();
                 Option o2 = new Option();
-                int rootSkill = isHexaElementalBarrage ? HEXA_ELEMENTAL_BARRAGE : ELEMENTAL_BARRAGE;
                 si = SkillData.getSkillInfoById(rootSkill);
                 if (si == null) {
                     si = SkillData.getSkillInfoById(ELEMENTAL_BARRAGE);
@@ -603,6 +605,17 @@ public class Evan extends Job {
                 chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
                 chr.addSkillCooldown(ZODIAC_BURST, 360 * 1000);
                 break;
+            case UNITED_HORIZONS:
+                if (chr.hasSkillOnCooldown(UNITED_HORIZONS)) {
+                    return;
+                }
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 5;
+                tsm.sendStat(IndieNotDamaged, o1);
+                chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
+                chr.addSkillCooldown(UNITED_HORIZONS, 240 * 1000);
+                break;
             case HEROS_WILL_EVAN:
                 tsm.removeAllDebuffs();
                 break;
@@ -630,8 +643,8 @@ public class Evan extends Job {
     public void setCharCreationStats(Char chr) {
         super.setCharCreationStats(chr);
         CharacterStat cs = chr.getAvatarData().getCharacterStat();
-        cs.setPosMap(FieldConstants.HENESYS_ID);
-        cs.setJob(JobConstants.JobEnum.EVAN1.getJobId()); // 2210
+        cs.setPosMap(100030100); // Utah's House - Small Attic (จุดเกิดดั้งเดิมของ Evan)
+        cs.setJob(JobConstants.JobEnum.EVAN1.getJobId()); // 2210 (Evan 1st Job)
         cs.setLevel(10);
         cs.setStr(4);
         cs.setDex(4);
@@ -643,6 +656,16 @@ public class Evan extends Job {
         cs.setMaxMp(500);
         cs.getExtendSP().addSpToJobLevel(1, 5);
         chr.getAvatarData().getAvatarLook().setJob(JobConstants.JobEnum.EVAN1.getJobId());
+        // ปลดล็อคเควสต์บทนำฟาร์มล่วงหน้าเพื่อป้องกันบั๊กเควสต์ที่ไม่มีไฟล์สคริปต์
+        for (int qid = 22000; qid <= 22015; qid++) {
+            Quest q = new Quest(chr.getId(), qid, QuestStatus.Completed);
+            q.setCompletedTime(FileTime.currentTime());
+            chr.getQuests().put(qid, q);
+        }
+        // ปลดล็อคเควสต์กำเนิดมังกร 1st Job (22100) เพื่อให้ Mir ฟักออกจากไข่ในหน้าต่าง UI ทันที
+        Quest qMir = new Quest(chr.getId(), 22100, QuestStatus.Completed);
+        qMir.setCompletedTime(FileTime.currentTime());
+        chr.getQuests().put(22100, qMir);
     }
 
     @Override
@@ -672,13 +695,6 @@ public class Evan extends Job {
 
     @Override
     public void handleInitAfterMigrate(Char chr) {
-        if (chr.getLevel() <= 10) {
-            ScriptManagerImpl sm = chr.getScriptManager();
-            for (int qid = 22000; qid <= 22015; qid++) {
-                sm.completeQuestNoRewards(qid);
-            }
-            sm.warp(FieldConstants.HENESYS_ID);
-        }
         spawnDragon();
         super.handleInitAfterMigrate(chr);
     }
@@ -814,9 +830,11 @@ public class Evan extends Job {
                 chr.setSkillCooldown(HEROIC_MEMORIES_EVAN, chr.getSkillLevel(HEROIC_MEMORIES_EVAN));
                 return 1;
             }
-            case ELEMENTAL_BARRAGE, HEXA_ELEMENTAL_BARRAGE -> {
+            case ELEMENTAL_BARRAGE, 400021013, 400021014, 400021015,
+                 HEXA_ELEMENTAL_BARRAGE, 500061042, 500061043, 500061044, 500061045 -> {
                 int cdSkill = chr.hasSkill(HEXA_ELEMENTAL_BARRAGE) ? HEXA_ELEMENTAL_BARRAGE : ELEMENTAL_BARRAGE;
-                chr.setSkillCooldown(cdSkill, chr.getSkillLevel(cdSkill));
+                int slv = Math.max(1, chr.getSkillLevel(cdSkill));
+                chr.setSkillCooldown(cdSkill, slv);
                 return 1;
             }
             case DRAGON_SLAM -> {
@@ -835,9 +853,12 @@ public class Evan extends Job {
                 chr.setSkillCooldown(SPIRAL_OF_MANA, chr.getSkillLevel(SPIRAL_OF_MANA));
                 return 1;
             }
-            case ZODIAC_BURST, ZODIAC_BURST_ATTACK, ZODIAC_BURST_FINISHER, ZODIAC_BURST_FINISHER_ATTACK -> {
+            case ZODIAC_BURST, ZODIAC_BURST_ATTACK -> {
                 chr.addSkillCooldown(ZODIAC_BURST, 360 * 1000);
-                chr.addSkillCooldown(ZODIAC_BURST_FINISHER, 360 * 1000);
+                return 1;
+            }
+            case UNITED_HORIZONS, UNITED_HORIZONS_ATTACK -> {
+                chr.addSkillCooldown(UNITED_HORIZONS, 240 * 1000);
                 return 1;
             }
         }

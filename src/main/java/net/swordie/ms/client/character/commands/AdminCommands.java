@@ -10,6 +10,7 @@ import net.swordie.ms.client.character.Char;
 import net.swordie.ms.client.character.ExtendSP;
 import net.swordie.ms.client.character.PortableChair;
 import net.swordie.ms.client.character.items.Equip;
+import net.swordie.ms.client.character.items.Inventory;
 import net.swordie.ms.client.character.items.Item;
 import net.swordie.ms.client.character.items.ItemOption;
 import net.swordie.ms.client.character.quest.Quest;
@@ -2663,6 +2664,35 @@ public class AdminCommands {
             chr.chatMessage(SpeakerChannel, "[Endgame] Quest warning: " + e.getMessage());
         }
 
+        // 4.1 Expand all inventory slots to maximum 128 to prevent overflow
+        try {
+            for (InvType invType : new InvType[]{InvType.EQUIP, InvType.CONSUME, InvType.ETC, InvType.INSTALL}) {
+                Inventory inv = chr.getInventoryByType(invType);
+                if (inv != null) {
+                    inv.setSlots(128);
+                    inv.updateSlotsToSQL();
+                    chr.write(WvsContext.expandInventory(invType.getVal(), (byte) inv.getSlots()));
+                }
+            }
+        } catch (Exception e) {
+            chr.chatMessage(SpeakerChannel, "[Endgame] Inventory warning: " + e.getMessage());
+        }
+
+        // 4.2 If Evan, complete job advancement quests (22100 - 22103) so Mir hatches and evolves to Adult Dragon in Skill UI
+        if (JobConstants.isEvan(job)) {
+            try {
+                for (int q = 22100; q <= 22103; q++) {
+                    chr.completeQuest(q);
+                    OutPacket qp = new OutPacket(OutHeader.MESSAGE);
+                    qp.encodeByte(QUEST_RECORD_MESSAGE.getVal());
+                    qp.encodeInt(q);
+                    qp.encodeByte(2);
+                    qp.encodeFT(FileTime.currentTime());
+                    chr.write(qp);
+                }
+            } catch (Exception ignored) {}
+        }
+
         // 4.5. Initialize Matrix Slots & V Matrix & Grant Class V-Skills
         try {
             chr.initMatrixSlots();
@@ -2686,23 +2716,30 @@ public class AdminCommands {
             chr.chatMessage(SpeakerChannel, "[Endgame] Matrix warning: " + e.getMessage());
         }
 
-        // 5. Max 1st - 4th Job Skills & Populate ExtendSP
+        // 5. Populate ExtendSP / SP so the player can distribute skill points themselves
         try {
             if (JobConstants.isExtendSpJob(job)) {
                 ExtendSP esp = chr.getAvatarData().getCharacterStat().getExtendSP();
-                if (esp != null) {
-                    esp.setSpToJobLevel(1, 65);
-                    esp.setSpToJobLevel(2, 130);
-                    esp.setSpToJobLevel(3, 130);
-                    esp.setSpToJobLevel(4, 255);
-                    Map<Stat, Object> stats = new HashMap<>();
-                    stats.put(Stat.sp, esp);
-                    chr.sendStatsPacket(stats);
+                if (esp == null) {
+                    esp = new ExtendSP();
+                    chr.getAvatarData().getCharacterStat().setExtendSP(esp);
                 }
+                esp.setSpToJobLevel(1, 65);
+                esp.setSpToJobLevel(2, 130);
+                esp.setSpToJobLevel(3, 130);
+                esp.setSpToJobLevel(4, 255);
+                if (JobConstants.isDualBlade(job)) {
+                    esp.setSpToJobLevel(5, 130);
+                    esp.setSpToJobLevel(6, 255);
+                }
+                Map<Stat, Object> stats = new HashMap<>();
+                stats.put(Stat.sp, esp);
+                chr.sendStatsPacket(stats);
+            } else {
+                chr.setStatAndSendPacket(Stat.sp, (260 - 10) * 3);
             }
-            chr.maxSkills();
         } catch (Exception e) {
-            chr.chatMessage(SpeakerChannel, "[Endgame] MaxSkills warning: " + e.getMessage());
+            chr.chatMessage(SpeakerChannel, "[Endgame] SP warning: " + e.getMessage());
         }
 
         int weaponId = 0;
@@ -2969,167 +3006,7 @@ public class AdminCommands {
                 }
                 chr.write(WvsContext.hexaSkillsUpdate(chr));
             }
-            if (JobConstants.isHero(job)) {
-                chr.addSkill(1141001, 30, 30); // HEXA Raging Blow (Enraged)
-                chr.addSkill(1141501, 30, 30); // Spirit Calibur (Continuous Slash)
-            } else if (JobConstants.isPaladin(job)) {
-                chr.addSkill(1241002, 30, 30); // HEXA Divine Judgment Debuff
-                chr.addSkill(1241004, 30, 30); // HEXA Divine Mark
-                chr.addSkill(1241006, 30, 30); // Falling Justice 2
-                chr.addSkill(1241010, 30, 30); // HEXA Heaven's Hammer Impact
-                chr.addSkill(1241501, 30, 30); // Sacred Bastion Tile
-                chr.addSkill(1241502, 30, 30); // Sacred Bastion Extra
-                chr.addSkill(1241503, 30, 30); // Sacred Bastion After Attack
-                chr.addSkill(1241505, 30, 30); // Dominus Oblivion Hit
-            } else if (JobConstants.isDarkKnight(job)) {
-                chr.addSkill(1341002, 30, 30); // Dark Bident
-                chr.addSkill(1341005, 30, 30); // HEXA Enhanced Revenge of the Evil Eye
-                chr.addSkill(1341006, 30, 30); // Evil Eye Punishment
-                chr.addSkill(1341009, 30, 30); // HEXA Evil Eye Shock Shoot
-                chr.addSkill(1341501, 30, 30); // Dead Space Attack
-                chr.addSkill(1341503, 30, 30); // Dark Halidom Attack
-            } else if (JobConstants.isFirePoison(job)) {
-                chr.addSkill(2141001, 30, 30); // HEXA Flame Sweep Giant
-                chr.addSkill(2141002, 30, 30); // Flame Sweep Extra
-                chr.addSkill(2141004, 30, 30); // HEXA Poison Mist
-                chr.addSkill(2140008, 30, 30); // HEXA Ignite AA
-                chr.addSkill(2141011, 30, 30); // HEXA Megiddo Flame Auto
-                chr.addSkill(2140013, 30, 30); // HEXA Meteor Shower FA
-                chr.addSkill(2141015, 30, 30); // HEXA Creeping Toxin Extra
-                chr.addSkill(2141016, 30, 30); // HEXA Megiddo Flame Explosion
-                chr.addSkill(2141501, 30, 30); // Infernal Venom Icon
-                chr.addSkill(2141505, 30, 30); // Immortal Flame Sub
-            } else if (JobConstants.isIceLightning(job)) {
-                chr.addSkill(2241001, 30, 30); // HEXA Chain Lightning Tile
-                chr.addSkill(2241004, 30, 30); // HEXA Blizzard FA
-                chr.addSkill(2241008, 30, 30); // HEXA Thunder Sphere Stay
-                chr.addSkill(2241010, 30, 30); // HEXA Lightning Orb 2
-                chr.addSkill(2241501, 30, 30); // Frozen Lightning Sub 1
-                chr.addSkill(2241503, 30, 30); // Frozen Lightning Sub 2
-                chr.addSkill(2241504, 30, 30); // Frozen Lightning Buff
-                chr.addSkill(2241506, 30, 30); // Parabolic Bolt SA
-            } else if (JobConstants.isBishop(job)) {
-                chr.addSkill(2341001, 30, 30); // HEXA Angel Ray Bonus
-                chr.addSkill(2341003, 30, 30); // HEXA Big Bang Extra
-                chr.addSkill(2341005, 30, 30); // HEXA Triumph Feather Atom
-                chr.addSkill(2341008, 30, 30); // HEXA Angelic Wrath Summon
-                chr.addSkill(2341010, 30, 30); // HEXA Genesis FA
-                chr.addSkill(2341012, 30, 30); // HEXA Heaven's Door Sub
-                chr.addSkill(2341501, 30, 30); // Holy Advent M
-                chr.addSkill(2341502, 30, 30); // Holy Advent L
-                chr.addSkill(2341503, 30, 30); // Holy Advent R
-                chr.addSkill(2341504, 30, 30); // Holy Advent After
-                chr.addSkill(2341508, 30, 30); // Commandment of Heaven Sub
-            } else if (JobConstants.isBowMaster(job)) {
-                chr.addSkill(3141001, 30, 30); // HEXA Hurricane Sub
-                chr.addSkill(3141003, 30, 30); // HEXA Arrow Stream Sub
-                chr.addSkill(3141014, 30, 30); // HEXA Speed Mirage Sub
-                chr.addSkill(3141501, 30, 30); // Ascendant Shadow Sub 1
-                chr.addSkill(3141502, 30, 30); // Ascendant Shadow Sub 2
-                chr.addSkill(3141504, 30, 30); // Flashpoint Sub
-            } else if (JobConstants.isMarksman(job)) {
-                chr.addSkill(3241001, 30, 30); // HEXA Empowered Snipe
-                chr.addSkill(3241002, 30, 30); // HEXA Snipe Extra
-                chr.addSkill(3241003, 30, 30); // Ultimate Snipe
-                chr.addSkill(3241004, 30, 30); // Snipe Sub
-                chr.addSkill(3241006, 30, 30); // HEXA Empowered Piercing
-                chr.addSkill(3241007, 30, 30); // HEXA Ultimate Piercing
-                chr.addSkill(3241008, 30, 30); // Piercing Sub 3
-                chr.addSkill(3241009, 30, 30); // Piercing Sub 4
-                chr.addSkill(3241010, 30, 30); // Piercing Sub 5
-                chr.addSkill(3241011, 30, 30); // Piercing Sub 6
-                chr.addSkill(3241501, 30, 30); // Final Aim Sub
-                chr.addSkill(3241503, 30, 30); // Fatal Trigger Sub
-            } else if (JobConstants.isPathFinder(job)) {
-                chr.addSkill(3341001, 30, 30); // HEXA Cardinal Burst Attack
-                chr.addSkill(3341003, 30, 30); // HEXA Bountiful Burst Sub
-                chr.addSkill(3341005, 30, 30); // HEXA Bountiful Deluge Sub
-                chr.addSkill(3341007, 30, 30); // HEXA Glyph of Impalement Sub
-                chr.addSkill(3341009, 30, 30); // HEXA Cardinal Torrent Sub
-                chr.addSkill(3341011, 30, 30); // HEXA Ancient Astra Sub 1
-                chr.addSkill(3341012, 30, 30); // HEXA Ancient Astra Sub 2
-                chr.addSkill(3341013, 30, 30); // HEXA Ancient Astra Sub 3
-                chr.addSkill(3341014, 30, 30); // HEXA Ancient Astra Sub 4
-                chr.addSkill(3341015, 30, 30); // HEXA Ancient Astra Sub 5
-                chr.addSkill(3341017, 30, 30); // HEXA Combo Assault Sub
-                chr.addSkill(3341501, 30, 30); // Forsaken Relic Sub 1
-                chr.addSkill(3341502, 30, 30); // Forsaken Relic Sub 2
-                chr.addSkill(3341503, 30, 30); // Forsaken Relic Sub 3
-                chr.addSkill(3341504, 30, 30); // Forsaken Relic Sub 4
-            } else if (JobConstants.isNightLord(job)) {
-                chr.addSkill(4140011, 30, 30); // Darkness Shuriken
-                chr.addSkill(4141001, 30, 30); // HEXA Enhanced Quad Star
-                chr.addSkill(4141003, 30, 30); // HEXA Assassin's Mark Sub 1
-                chr.addSkill(4141004, 30, 30); // HEXA Assassin's Mark Sub 2
-                chr.addSkill(4141006, 30, 30); // HEXA Showdown Atom
-                chr.addSkill(4141010, 30, 30); // HEXA Death Star Rampant
-                chr.addSkill(4141501, 30, 30); // Life and Death Attack 1
-                chr.addSkill(4141502, 30, 30); // Life and Death Attack 2
-                chr.addSkill(4141504, 30, 30); // Deep Strike Attack
-            } else if (JobConstants.isShadower(job)) {
-                chr.addSkill(4241001, 30, 30); // HEXA Assassinate Finisher
-                chr.addSkill(4241003, 30, 30); // HEXA Pulverize Finisher
-                chr.addSkill(4241007, 30, 30); // HEXA Enhanced Meso Explosion
-                chr.addSkill(4241008, 30, 30); // HEXA Meso Explosion Atom
-                chr.addSkill(4241009, 30, 30); // HEXA Enhanced Meso Explosion Atom
-                chr.addSkill(4240014, 30, 30); // HEXA Shadow Veil Attack
-                chr.addSkill(4240016, 30, 30); // Covert Edge
-                chr.addSkill(4241018, 30, 30); // Covert Edge Attack
-                chr.addSkill(4241501, 30, 30); // Halve Cut Attack 1
-                chr.addSkill(4241502, 30, 30); // Halve Cut Attack 2
-                chr.addSkill(4241504, 30, 30); // Covetous Darkness FA
-                chr.addSkill(4241506, 30, 30); // Covetous Darkness Sub
-            } else if (JobConstants.isDualBlade(job)) {
-                chr.addSkill(4360006, 30, 30); // Mortality
-                chr.addSkill(4361004, 30, 30); // Fury Jet
-                chr.addSkill(4361501, 30, 30); // Karma Blade Buff
-                chr.addSkill(4361502, 30, 30); // Karma Blade Extra
-                chr.addSkill(4361503, 30, 30); // Karma Blade After Attack
-                chr.addSkill(4361504, 30, 30); // Karma Blade Sub
-                chr.addSkill(4361506, 30, 30); // Yama's Decree Attack
-            } else if (JobConstants.isBuccaneer(job)) {
-                chr.addSkill(5140004, 30, 30); // HEXA Sea Serpent
-                chr.addSkill(5140010, 30, 30); // HEXA Nautilus Strike FA
-                chr.addSkill(5141001, 30, 30); // HEXA Octopunch FA
-                chr.addSkill(5141003, 30, 30); // Super Octopunch FA
-                chr.addSkill(5141006, 30, 30); // HEXA Sea Serpent Rage
-                chr.addSkill(5141008, 30, 30); // HEXA Sea Serpent Burst
-                chr.addSkill(5141013, 30, 30); // HEXA Serpent Scale Burst
-                chr.addSkill(5141014, 30, 30); // HEXA Serpent Scale Rage
-                chr.addSkill(5141501, 30, 30); // Liberator Attack 1
-                chr.addSkill(5141502, 30, 30); // Liberator Attack 2
-                chr.addSkill(5141503, 30, 30); // Liberator Attack 3
-                chr.addSkill(5141504, 30, 30); // Liberator Attack 4
-                chr.addSkill(5141506, 30, 30); // Unleashed Dragon Attack 1
-                chr.addSkill(5141507, 30, 30); // Unleashed Dragon Attack 2
-                chr.addSkill(5141508, 30, 30); // Unleashed Dragon Attack 3
-            } else if (JobConstants.isCorsair(job)) {
-                chr.addSkill(5241001, 30, 30); // HEXA Rapid Fire Shootout Mode
-                chr.addSkill(5241003, 30, 30); // HEXA Broadside Summon
-                chr.addSkill(5241006, 30, 30); // Condemnation
-                chr.addSkill(5241011, 30, 30); // HEXA Scurvy Summons Atom
-                chr.addSkill(5241013, 30, 30); // HEXA All Aboard Shoot
-                chr.addSkill(5241501, 30, 30); // Battleship Dreadnought Attack 1
-                chr.addSkill(5241502, 30, 30); // Battleship Dreadnought Attack 2
-                chr.addSkill(5241504, 30, 30); // Quickdraw Dreadnought Attack
-            } else if (JobConstants.isCannoneer(job)) {
-                chr.addSkill(5341001, 30, 30); // HEXA Cannon Bazooka
-                chr.addSkill(5341003, 30, 30); // HEXA Monkey Mortar Sub 1
-                chr.addSkill(5341004, 30, 30); // HEXA Monkey Mortar Sub 2
-                chr.addSkill(5341007, 30, 30); // HEXA Rolling Rainbow Summon
-                chr.addSkill(5341008, 30, 30); // Max Cannon Rainbow Attack
-                chr.addSkill(5340010, 30, 30); // HEXA Monkey Militia Twin
-                chr.addSkill(5340011, 30, 30); // HEXA Monkey Militia Passive
-                chr.addSkill(5341013, 30, 30); // HEXA Monkey Fury Attack
-                chr.addSkill(5341501, 30, 30); // Super Cannon Explosion Attack
-                chr.addSkill(5341502, 30, 30); // Barrel of Monkeys Attack 1
-                chr.addSkill(5341503, 30, 30); // Barrel of Monkeys Ascent
-            } else if (JobConstants.isEvan(job)) {
-                chr.addSkill(22201501, 30, 30); // Zodiac Burst Attack
-                chr.addSkill(22201502, 30, 30); // United Horizons
-                chr.addSkill(22201503, 30, 30); // United Horizons
-                chr.addSkill(22201015, 30, 30); // HEXA Enhanced Magic Debris
-                chr.addSkill(22200016, 30, 30); // HEXA Dragon Spark
+            if (JobConstants.isEvan(job)) {
                 if (chr.getJobHandler() instanceof net.swordie.ms.client.jobs.legend.Evan evan) {
                     evan.spawnDragon();
                 }
@@ -3158,13 +3035,13 @@ public class AdminCommands {
             }
         }
 
-        // 9. Add Testing Consumables: Nodestones x3,000, Exp Nodestones x500, Power Elixirs x5,000, 10B Mesos
+        // 9. Add Testing Consumables: Nodestones x3,000, Exp Nodestones x20, Power Elixirs x3,000, 10B Mesos
         giveTestItem(chr, 2435719, 3000);
-        giveTestItem(chr, 2437760, 500);
-        giveTestItem(chr, 2000005, 5000);
+        giveTestItem(chr, 2437760, 20); // Exp Nodestones (1 per slot, 20 slots)
+        giveTestItem(chr, 2000005, 3000); // Power Elixirs (1000 per slot, 3 slots)
         chr.addMoney(10_000_000_000L);
 
-        chr.chatMessage(SpeakerChannel, "[End-Game Booster] Complete! Lv. 260 | Class 1-4 Maxed | HEXA Matrix & Origin Maxed | Sol Erda x1,000 | Fragments x30,000 | Nodes x3,000 | 10B Mesos | Arcane Umbra Gear Delivered");
+        chr.chatMessage(SpeakerChannel, "[End-Game Booster] Complete! Lv. 260 | SP Points Ready to Allocate | HEXA Matrix Ready | Sol Erda x1,000 | Fragments x30,000 | Nodes x3,000 | 10B Mesos | Arcane Umbra Gear Delivered");
     }
 
     private static void giveTestEquip(Char chr, int equipId) {

@@ -1,0 +1,551 @@
+[
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1012339,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1022155,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1032162,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1052545,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1072695,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1082490,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1102498,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1112782,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1122216,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1132187,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1152114,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1402184,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1003285,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1003286,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1003287,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1003288,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1003289,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1032108,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1052379,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1052380,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1052381,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1052382,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1052383,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1072549,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1072550,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1072551,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1072552,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1072553,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1082333,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1082334,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1082335,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1082336,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1082337,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1092092,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1092093,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1092094,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1102311,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1122148,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1212018,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1222018,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1302174,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1312073,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1322108,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1332150,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1332151,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1342041,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1362023,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1372101,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1382125,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1402112,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1412072,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1422074,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1432100,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1442137,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1452130,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1462119,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1472142,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1482103,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1492102,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1522021,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    },
+    {
+        "chance": 2000,
+        "endDate": "2079-01-01 00:00:00",
+        "itemId": 1532038,
+        "maxNum": 1,
+        "minNum": 1,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00"
+    }
+]

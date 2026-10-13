@@ -1,0 +1,28 @@
+{
+  "npcId": 9400941,
+  "petTemplateId": 0,
+  "selectNpcItemId": 0,
+  "shopVerNo": 2022092700,
+  "items": [
+    {
+      "itemId": 2000005,
+      "tabIndex": 0,
+      "stock": 0,
+      "period": 0,
+      "potentialGrade": 0,
+      "price": 50,
+      "tokenItemId": 0,
+      "tokenPrice": 0,
+      "pointQuestId": 0,
+      "pointPrice": 0,
+      "showLevMin": 0,
+      "showLevMax": 0,
+      "hide": false,
+      "quantity": 1,
+      "buyLimit": 0,
+      "sellStart": "1900-01-01 00:00:00",
+      "sellEnd": "2079-01-01 00:00:00",
+      "soldItem": null
+    }
+  ]
+}

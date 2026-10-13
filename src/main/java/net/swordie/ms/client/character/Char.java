@@ -12944,14 +12944,14 @@ public class Char {
             getQuests().put(quest.getQRKey(), quest);
             write(WvsContext.questRecordMessage(quest));
             if (quest.getStatus() == Completed) {
-                if (getUser().getAccountType().getVal() != AccountType.Player.getVal()) {
+                if (getUser() != null && getUser().getAccountType() != null && getUser().getAccountType().getVal() != AccountType.Player.getVal()) {
                     chatMessage(SystemNotice, "[Info] Completed quest " + quest.getQRKey());
                 }
                 if (getGuild() != null) {
                     getGuild().addContributionToChar(this, GuildConstants.CONTRIBUTION_PER_QUEST);
                 }
             } else {
-                if (getUser().getAccountType().getVal() != AccountType.Player.getVal()) {
+                if (getUser() != null && getUser().getAccountType() != null && getUser().getAccountType().getVal() != AccountType.Player.getVal()) {
                     chatMessage(SystemNotice, "[Info] Accepted quest " + quest.getQRKey());
                 }
                 if (addRewardsFromWz) {

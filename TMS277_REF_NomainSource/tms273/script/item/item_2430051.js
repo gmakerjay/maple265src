@@ -1,0 +1,1 @@
+stage.applySkillBuff(1221054,10);

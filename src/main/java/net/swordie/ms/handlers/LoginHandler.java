@@ -352,6 +352,7 @@ public class LoginHandler {
         //Character: Create.
         Char chr = new Char(acc.getId(), name, keySettingType, eventNewCharSaleJob, job.getJobId(), curSelectedSubJob,
                 gender, skin, face, hair, items);
+        chr.setUser(acc.getUser());
         chr.setOrderId(acc.generateNewOrderId());
         //Character: Settings.
         chr.setJobHandler(JobManager.getCreationJobById(curSelectedRace, chr));
@@ -368,7 +369,9 @@ public class LoginHandler {
         characterStat.setWorldIdForLog(WORLD_ID);
         characterStat.setMaxFriends(FriendConstant.DEFAULT_FRIEND_SLOT);
         characterStat.setMoney(100000);
-        characterStat.setPosMap(FieldConstants.HENESYS_ID); // All newly created characters spawn in Henesys
+        if (characterStat.getPosMap() == 0) {
+            characterStat.setPosMap(FieldConstants.HENESYS_ID); // Default to Henesys if not specified by class
+        }
         EventNameTag eventNameTag = new EventNameTag(chr.getId(), (byte) -1, (byte) -1, (byte) -1, (byte) -1, (byte) -1,
                 "0000000000", "0000000000", "0000000000", "0000000000", "0000000000");
         chr.addEventNameTag(eventNameTag);

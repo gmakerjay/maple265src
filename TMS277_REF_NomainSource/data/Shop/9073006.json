@@ -1,0 +1,88 @@
+{
+  "npcId": 9073006,
+  "petTemplateId": 0,
+  "selectNpcItemId": 0,
+  "shopVerNo": 2023081400,
+  "items": [
+    {
+      "hide": false,
+      "price": 0,
+      "stock": 0,
+      "itemId": 4001878,
+      "period": 0,
+      "sellEnd": "2079-01-01 00:00:00",
+      "buyLimit": 1000,
+      "quantity": 1,
+      
+      "tabIndex": 0,
+      "sellStart": "1900-01-01 00:00:00",
+      "pointPrice": 0,
+      "showLevMax": 0,
+      "showLevMin": 0,
+      "tokenPrice": 15,
+      "tokenItemId": 4001832,
+      "pointQuestId": 0,
+      "potentialGrade": 0
+    },
+    {
+      "hide": false,
+      "price": 0,
+      "stock": 0,
+      "itemId": 4001889,
+      "period": 0,
+      "sellEnd": "2079-01-01 00:00:00",
+      "buyLimit": 1000,
+      "quantity": 1,
+      
+      "tabIndex": 0,
+      "sellStart": "1900-01-01 00:00:00",
+      "pointPrice": 0,
+      "showLevMax": 0,
+      "showLevMin": 0,
+      "tokenPrice": 15,
+      "tokenItemId": 4001832,
+      "pointQuestId": 0,
+      "potentialGrade": 0
+    },
+    {
+      "hide": false,
+      "price": 0,
+      "stock": 0,
+      "itemId": 4001842,
+      "period": 0,
+      "sellEnd": "2079-01-01 00:00:00",
+      "buyLimit": 1000,
+      "quantity": 1,
+      
+      "tabIndex": 0,
+      "sellStart": "1900-01-01 00:00:00",
+      "pointPrice": 0,
+      "showLevMax": 0,
+      "showLevMin": 0,
+      "tokenPrice": 10,
+      "tokenItemId": 4001832,
+      "pointQuestId": 0,
+      "potentialGrade": 0
+    },
+    {
+      "hide": false,
+      "price": 0,
+      "stock": 0,
+      "itemId": 4001868,
+      "period": 0,
+      "sellEnd": "2079-01-01 00:00:00",
+      "buyLimit": 1000,
+      "quantity": 1,
+      
+      "tabIndex": 0,
+      "sellStart": "1900-01-01 00:00:00",
+      "pointPrice": 0,
+      "showLevMax": 0,
+      "showLevMin": 0,
+      "tokenPrice": 10,
+      "tokenItemId": 4001832,
+      "pointQuestId": 0,
+      "potentialGrade": 0
+    }
+  ]
+}

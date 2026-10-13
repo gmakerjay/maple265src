@@ -64,7 +64,7 @@
   - **ผลลัพธ์อัตโนมัติ**:
     1. ปรับเลเวลตัวละครเป็น 260
     2. สำเร็จเควสต์คลาส 5 (1460-1466) และเควสต์คลาส 6 (1488) ทันที
-    3. แม็กซ์สกิลคลาส 1 - 4 เต็มทุกสกิล (`chr.maxSkills()`)
+    3. มอบแต้ม SP เต็มพิกัดผ่าน ExtendSP และ Stat.sp เพื่อให้ผู้เล่นอัปสกิลคลาส 1 - 4 เองด้วยตนเอง (ห้ามใส่ chr.addSkill หรือ chr.maxSkills ลงใน !endgame)
     4. มอบสกิล V-Matrix คลาส 5 ประจำอาชีพ เลเวล 30 เต็ม
     5. มอบ Origin Skill คลาส 6 (Lv.30) และ HEXA Mastery Skills คลาส 6 ทุกสกิล (Lv.30)
     6. เพิ่มเงิน 2,000,000,000 Mesos
@@ -82,3 +82,40 @@
       - แจกแจงแยกหมวดย่อย ปัญหาที่พบ (Problem) -> สาเหตุเชิงเทคนิค -> วิธีแก้ (Fix/Implementation) -> ผลลัพธ์ (Outcome)
       - ทำ clickable link ไฟล์ที่แก้ไขเสมอ เช่น `[Job.java](file:///...)`
 - **การจัดเก็บเอกสาร**: บันทึกลงใน `v214 src/PROGRESS.md` และซิงค์มาที่ `PROGRESS.md` ในรูทเสมอ เพื่อให้สอดคล้องกันทุกเซสชัน
+
+## 8. มาตรฐานการพอร์ตและตรวจสอบข้อมูลอ้างอิงข้ามเวอร์ชัน (Cross-Version Porting & Strict ID Audit Rules)
+1. **คลังข้อมูลอ้างอิงหลัก (Reference Repository)**:
+   - โฟลเดอร์ `TMS277_REF_NomainSource/tms273/`:
+     - `script/event/`: แมคคานิคบอส 81 ตัว (Kalos, Kaling, Seren, Limbo, Extreme Lotus, Black Mage ฯลฯ)
+     - `script/boss/`: ตารางดรอปและคำนวณของรางวัลบอส (`BOSS_REWARD_APPLY.js`, `boss_crystallize.js`)
+     - `script/ScriptAPI.d.ts`: คัมภีร์นิยามเมธอดของระบบ Script Engine ทั้งหมด (2,067 บรรทัด)
+     - `data/MobReward/`: ข้อมูลอัตราการดรอปของมอนสเตอร์ 1,987 ตัว
+     - `data/Shop/`: สินค้าร้านค้า NPC 169 ร้าน
+2. **กฎเหล็กการตรวจสอบ ID ป้องกันความคลาดเคลื่อน (Strict ID & Asset Audit Policy)**:
+   - ⚠️ **คำเตือนสำคัญ**: ข้อมูลใน `tms273` มาจาก MapleStory ไต้หวันเวอร์ชัน 273 ส่วนเซิร์ฟเวอร์ของเราคือเวอร์ชัน 265 ข้อมูล ID บางประเภทอาจไม่ตรงกัน หรือมีไอเทม/มอนสเตอร์เฉพาะเซิร์ฟเวอร์ไต้หวัน (TMS Exclusive)
+   - **ห้ามคัดลอก ID จาก TMS มาใส่ในโค้ดหรือฐานข้อมูล v265 โดยเด็ดขาดจนกว่าจะผ่านการตรวจสอบ 100%**:
+     - **Mob IDs (มอนสเตอร์และบอส)**:
+       - ต้องตรวจสอบเทียบกับ `Server263/data/wz265/Mob.wz/<MobID>.img.xml` หรือ `Server263/data/wz265/String.wz/Mob.img.xml` ทุกครั้งว่ามีรหัสมอนสเตอร์นั้นอยู่ใน v265 จริงหรือไม่
+       - หากเป็นบอสหลายเฟส (เช่น Kaling / Kalos / Seren) ให้ตรวจเช็คว่าทุก Mob ID ในทุกเฟสมีไฟล์ WZ รองรับในเครื่อง
+     - **Item IDs (ไอเทมและของรางวัล)**:
+       - ต้องตรวจสอบเทียบกับ `Server263/data/wz265/Item.wz/` และ `Character.wz/`
+       - หากพบไอเทม TMS Exclusive (เช่น กล่องสุ่มเฉพาะ หรือไอเทมที่ไม่มีใน v265) ต้องตัดออก หรือแปลงเป็นไอเทมสากลของ v265
+     - **Map IDs (แผนที่และโถงบอส)**:
+       - ต้องตรวจสอบกับ `Server263/data/wz265/Map.wz/Map/Map<X>/<MapID>.img.xml` เพื่อให้แน่ใจว่าผู้เล่นจะไม่ถูกวาร์ปไปแผนที่ว่างเปล่าจนเกิด Error แดงหรือจอดำ
+     - **Reactor IDs & Portal Names**:
+       - ต้องตรวจสอบชื่อพอร์ทัลและ ID แท่นหิน/คริสตัลใน `Server263/data/wz265/Reactor.wz/`
+3. **ขั้นตอนการพอร์ตที่เป็นมาตรฐาน (Standardized Porting Workflow)**:
+   - **Step 1: Automated Asset Audit (สแกนออดิตอัตโนมัติ)**:
+     - ก่อนเริ่มเขียนโค้ด ให้รันสคริปต์ตรวจสอบ IDs ทั้งหมด (Mob, Item, Map) ที่อยู่ในไฟล์ JavaScript นั้น เทียบกับฐานข้อมูล WZ ของ v265 ก่อนเสมอ
+   - **Step 2: Script Logic Translation (แปลงตรรกะ JavaScript เป็น SwordieMS)**:
+     - แมปคำสั่งจาก `ScriptAPI.d.ts` ไปยัง API ของเซิร์ฟเวอร์เรา:
+       - `event.startTimer(name, ms)` ➔ `field.startTimer(sec)` หรือ Event Timer
+       - `stage.changeMap(mapId, portal)` ➔ `chr.warp(mapId, portal)`
+       - `members[i].setReviveCount(count)` ➔ `chr.setDeathCount(count)`
+       - `event.getMap(fieldId).killAllMob()` ➔ `field.killAllMobs()`
+       - `mob.getDataId()` ➔ `mob.getTemplateId()`
+       - `stage.gainItem(itemId, count)` ➔ `chr.addItemToInventory(itemId, count)`
+   - **Step 3: Verification & In-Game Testing**:
+     - ทำการคอมไพล์และทดสอบวาร์ปเข้าบอส ตรวจสอบการเกิดของมอนสเตอร์ เลือดบอส คัตซีน และกลไกผ่านตัวละคร Admin
+   - **Step 4: Update Documentation**:
+     - บันทึกการเปลี่ยนแปลงใน `PROGRESS.md` ทั้ง root และ `v214 src/` พร้อมระบุเวลาเสมอ

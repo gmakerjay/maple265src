@@ -1,0 +1,11 @@
+// Created by MetaMS
+// ID:[350060800]
+// MapName:核心
+// 核心
+
+let event = stage.getEvent("boss_swoo_normal");
+if (event != null && event.getVariable("boss2") == null) {
+        event.setVariable("boss2", false);
+        map.spawnMob(8950101, 515, -16);
+        map.startEvent();
+}

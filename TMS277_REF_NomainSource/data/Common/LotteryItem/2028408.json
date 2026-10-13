@@ -1,0 +1,750 @@
+[
+  {
+    "itemId": 1113123,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113124,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113125,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113126,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113127,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113128,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113099,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113100,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113101,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113103,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113105,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113106,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113107,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113108,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113109,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113110,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113111,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113112,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113114,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113115,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113116,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113117,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113118,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113119,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113120,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+    "itemId": 1113121,
+    "level": 1,
+    "count": 1,
+    "prob": 500,
+    "broadcast": false
+},
+{
+  "itemId": 1113123,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113124,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113125,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113126,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113127,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113128,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113099,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113100,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113101,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113103,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113105,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113106,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113107,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113108,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113109,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113110,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113111,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113112,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113114,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113115,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113116,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113117,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113118,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113119,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113120,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113121,
+  "level": 2,
+  "count": 1,
+  "prob": 60,
+  "broadcast": false
+},
+{
+  "itemId": 1113123,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113124,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113125,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113126,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113127,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113128,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113099,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113100,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113101,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113103,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113104,
+  "level": 3,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113105,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113106,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113107,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113108,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113109,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113110,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113111,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113112,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113114,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113115,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113116,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113117,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113118,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113119,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113120,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113121,
+  "level": 3,
+  "count": 1,
+  "prob": 30,
+  "broadcast": false
+},
+{
+  "itemId": 1113123,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113124,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113125,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113126,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113127,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113128,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113099,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113100,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113101,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113103,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113104,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113105,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113106,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113107,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113108,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113109,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113110,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113111,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113112,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113114,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113115,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113116,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113117,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113118,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113119,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113120,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+},
+{
+  "itemId": 1113121,
+  "level": 4,
+  "count": 1,
+  "prob": 10,
+  "broadcast": false
+}
+
+]
+
+
+
+
+

@@ -1,0 +1,236 @@
+{
+  "startDate": "2023-01-01 00:00:00",
+  "endDate": "2079-01-01 00:00:00",
+  "maxDay": 28,
+  "maxKillCount": 300,
+  "gifts": [
+    {
+      "day": 1,
+      "itemId": 2000005,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 2,
+      "itemId": 2000000,
+      "count": 1,
+      "duration": 2880,
+      "cashIcon": false
+    },
+    {
+      "day": 3,
+      "itemId": 2000001,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 4,
+      "itemId": 2000002,
+      "count": 1,
+      "duration": 2880,
+      "cashIcon": false
+    },
+    {
+      "day": 5,
+      "itemId": 2000003,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 6,
+      "itemId": 2000004,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 7,
+      "itemId": 2000006,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 8,
+      "itemId": 2000007,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 9,
+      "itemId": 2000005,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 10,
+      "itemId": 2000005,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 11,
+      "itemId": 2000005,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 12,
+      "itemId": 2000005,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 13,
+      "itemId": 2000005,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 14,
+      "itemId": 2000005,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 15,
+      "itemId": 2000005,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 16,
+      "itemId": 2000005,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 17,
+      "itemId": 2000005,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 18,
+      "itemId": 2000005,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 19,
+      "itemId": 2000005,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 20,
+      "itemId": 2000005,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 21,
+      "itemId": 2000005,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 22,
+      "itemId": 2000005,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 23,
+      "itemId": 2000005,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 24,
+      "itemId": 2000005,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 25,
+      "itemId": 2000005,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 26,
+      "itemId": 2000005,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 27,
+      "itemId": 2000005,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    },
+    {
+      "day": 28,
+      "itemId": 2000005,
+      "count": 1,
+      "duration": 1440,
+      "cashIcon": false
+    }
+  ],
+  "mvpHolders": [
+    {
+      "day": 1,
+      "bonus": {
+        "minMVPType": 5,
+        "maxMVPType": 8,
+        "rate": 2
+      },
+      "groupBonus": [
+      ]
+    },
+    {
+      "day": 28,
+      "bonus": {
+        "minMVPType": 7,
+        "maxMVPType": 7,
+        "rate": 2
+      },
+      "groupBonus": [
+        {
+          "minMVPType": 7,
+          "maxMVPType": 7,
+          "rate": 2
+        },
+        {
+          "minMVPType": 8,
+          "maxMVPType": 8,
+          "rate": 3
+        }
+      ]
+    }
+  ]
+}

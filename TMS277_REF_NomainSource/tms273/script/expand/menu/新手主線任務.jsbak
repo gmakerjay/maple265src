@@ -1,0 +1,479 @@
+// /*
+//  * Copyright (c) 2025. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+//  */
+
+
+// var {
+//     canBecomeLeader, isRegistedLeader, registeLeader, updateLeaderDeclaration,
+//     updateLeaderScroe, getOrderdLeaderList, shouldGraduation, selectLeaderById,
+//     canRegisteDisciple, registeDisciple, discipleGradution, checkDiscipleBelongToLeader,
+//     selectDiscipleByLeaderId, canChushi
+// } = require('constant/leaderCommon.js');
+// var {getBossEventReal} = require("constant/event");
+
+// const color = require('constant/Color');
+// let nextQuestId = 1;
+// var 任務簡介 = "#fUI/UIWindow2.img/Quest/quest_info/summary_icon/summary#"
+// var 任務獎勵 = "#fUI/UIWindow2.img/Quest/quest_info/summary_icon/reward#"
+// var rewardIcon = "#fUI/UIWindow2.img/QuestIcon/4/0#";
+// var 小雞1 = "#fEffect/CharacterEff/1112908/0/1#";  //彩光3
+// var 小雞 = "#fEffect/CharacterEff.img/1022223/3/0#";
+// var typed = 0;
+// var stepLog = "CustomQuest";//LOG用於記錄當前完成的任務進度
+// var log = require('check_log');
+// var xueren5 = "#fMap/MapHelper.img/weather/LINEFRIENDS_2/4#";
+// var xueren6 = "#fMap/MapHelper.img/weather/WorldRecord2/3#";
+// var xueren7 = "#fMap/MapHelper.img/weather/WorldRecord1/3#";
+// var xueren8 = "#fMap/MapHelper.img/weather/WorldRecord1/0#";
+
+// const 大軍團 = 2439138;
+// const 小軍團 = 2439137;
+// const 萬盟稱號一個月 = 3700660;
+// const 金幣1E = 4001715;
+// const 綠魔方 = 5062500;
+// const 六角魔方 = 5062024;
+// const 唯一魔方 = 5062026;
+// const LCD石頭 = 4001879;
+// const 威爾石頭 = 4001890;
+
+// const QUEST_LIST = [
+//     [],
+//     ["拜師", 1],                    // 2
+//     ["等級達成", 100],              // 1
+//     ["BOSS", '史烏[normal]'],        // 3
+//     ["神秘之力", 180],              // 4
+//     ["通關副本", "新一條龍組隊", 1],         // 5
+//     ["達成聯盟等級", 2000],         // 6
+//     ["等級達成", 200],              // 7
+//     ["突破達到", 1501],                    // 8
+//     ["BOSS", '戴米安[normal]'],        // 9
+//     ["神秘之力", 240],              // 10
+//     ["通關副本", "通關玩具組隊", 1],         // 11
+//     ["達成聯盟等級", 4000],         // 12
+//     ["等級達成", 250],              // 13
+//     ["突破達到", 1510],                    // 14
+//     ["BOSS", '露希妲[normal]'],        // 15
+//     ["神秘之力", 300],              // 16
+//     ["通關副本", "新一條龍組隊", 5],         // 17
+//     ["達成聯盟等級", 6000],         // 18
+//     ["等級達成", 260],              // 19
+//     ["突破達到", 1600],                    // 20
+//     ["BOSS", '威爾[normal]'],        // 21
+//     ["原初之力", 60],              // 22
+//     ["通關副本", "勇士家族任務獎勵", 5],         // 23
+//     ["達成聯盟等級", 8000],         // 24
+//     ["等級達成", 275],              // 19
+//     ["突破達到", 2000],                    // 20
+//     ["BOSS", '戴斯克[normal]'],        // 21
+//     ["原初之力", 150],              // 22
+//     ["通關副本", "勇士家族任務獎勵", 10],         // 23
+//     ["達成聯盟等級", 10000],         // 24
+// ];
+
+// const REWARD_LIST = [
+//     [],
+//     [   // 1 等級
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 2 拜師
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 3 BOSS
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 4 神秘之力
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 5 通關副本
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 6 達成聯盟
+//         ['item', 金幣1E, 5],
+//         ['item', 大軍團, 20],
+//         ['item', 小軍團, 20],
+//         ['item', 綠魔方, 10],
+//         ['item', 六角魔方, 10],
+//         ['item', 唯一魔方, 10],
+//         ['item', LCD石頭, 1],
+//         ['item', 威爾石頭, 1],
+//         ['', '兩條掉落首飾 x 1'],
+//     ],
+//     [   // 7 等級
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 8 拜師
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 9 BOSS
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 10 神秘之力
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 11 通關副本
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 12 達成聯盟
+//         ['item', 金幣1E, 10],
+//         ['item', 大軍團, 40],
+//         ['item', 小軍團, 40],
+//         ['item', 綠魔方, 20],
+//         ['item', 六角魔方, 20],
+//         ['item', 唯一魔方, 10],
+//         ['item', LCD石頭, 2],
+//         ['item', 威爾石頭, 2],
+//         ['', '兩條掉落首飾 x 1'],
+//     ],
+//     [   // 13 達成聯盟
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 14 等級
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 15 拜師
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 16 BOSS
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 17 神秘之力
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 18 通關副本
+//         ['item', 金幣1E, 15],
+//         ['item', 大軍團, 60],
+//         ['item', 小軍團, 60],
+//         ['item', 綠魔方, 30],
+//         ['item', 六角魔方, 30],
+//         ['item', 唯一魔方, 10],
+//         ['item', LCD石頭, 3],
+//         ['item', 威爾石頭, 3],
+//         ['', '兩條掉落首飾 x 1'],
+//     ],
+//     [   // 19 達成聯盟
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 20 等級
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 21 拜師
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 22 BOSS
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 23 神秘之力
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 24 通關副本
+//         ['item', 1182016, 1],
+//         ['item', 金幣1E, 15],
+//         ['item', 大軍團, 80],
+//         ['item', 小軍團, 80],
+//         ['item', 綠魔方, 40],
+//         ['item', 六角魔方, 40],
+//         ['item', 唯一魔方, 25],
+//         ['item', LCD石頭, 4],
+//         ['item', 威爾石頭, 4],
+//     ],
+//     [   // 25 達成聯盟
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 26 等級
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 27 拜師
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 28 BOSS
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 29 神秘之力
+//         ['item', 金幣1E, 1],
+//         ['item', 綠魔方, 5],
+//         ['item', 六角魔方, 5],
+//     ],
+//     [   // 30 通關副本
+//         ['item', 萬盟稱號一個月, 1, 30],
+//         ['item', 金幣1E, 20],
+//         ['item', 大軍團, 200],
+//         ['item', 小軍團, 200],
+//         ['item', 綠魔方, 50],
+//         ['item', 六角魔方, 50],
+//         ['item', 唯一魔方, 50],
+//         ['item', LCD石頭, 10],
+//         ['item', 威爾石頭, 10],
+//     ],
+// ];
+
+
+// function start() {
+//     // 加載賬號任務狀態
+//     loadQuestStatus();
+//     let str = `#fs12#${color.灰}檢測到您有可以領取的獎勵\r\n`;
+//     let list = [];
+//     list.push(['#r繼續主線任務', 0]);
+//     // startQuest();
+//     if (nextQuestId > 6 && log.getEventValue(stage, db, '領取新手掉落首飾1') == 0) {
+//         list.push([`${color.布魯氏藍}領取掉落套 #k(任務6)`, 1, '領取新手掉落首飾1']);
+//     }
+//     if (nextQuestId > 12 && log.getEventValue(stage, db, '領取新手掉落首飾2') == 0) {
+//         list.push([`${color.布魯氏藍}領取掉落套 #k(任務12)`, 2, '領取新手掉落首飾2']);
+//     }
+//     if (nextQuestId > 18 && log.getEventValue(stage, db, '領取新手掉落首飾3') == 0) {
+//         list.push([`${color.布魯氏藍}領取掉落套 #k(任務18)`, 3, '領取新手掉落首飾3']);
+//     }
+//     if (list.length <= 1) {
+//         startQuest();
+//     } else {
+//         for (let i in list) {
+//             str += `#L${i}#${list[i][0]}#l\r\n`;
+//         }
+//         let sel = npc.askMenu(str);
+//         switch (sel) {
+//             case 0:
+//                 startQuest();
+//                 break;
+//             case 1:
+//             case 2:
+//             case 3:
+//                 if (log.getEventValue(stage, db, list[sel][2]) == 0) {
+//                     if (npc.askYesNo(`是否 ${list[sel][0]}\r\n#r賬號限定一次？`) == 1) {
+//                         if (stage.getFreeSlot(1) > 0) {
+//                             log.addEventValue(stage, db, list[sel][2], 1, -1);
+//                             let e = util.makeItem(1112400, 1);
+//                             e.setGrade(20);
+//                             e.setOption1(40656);
+//                             e.setOption2(40656);
+//                             e.setOption3(40656);
+//                             e.setAttribute(8);
+//                             // e.setAccountSharable(true);
+//                             stage.gainItem(e);
+//                             util.broadcastChatMsg(6, " 主線任務 :  " + stage.getCharacterName() + `成功${list[sel][2]}`);
+//                         } else {
+//                             npc.say('背包不足');
+//                         }
+//                         start();
+//                     }
+//                 }
+
+//                 break;
+//         }
+//     }
+
+// }
+
+// function startQuest() {
+//     let str = "\t\t  " + xueren5 + "  #e#r頑皮島-主線任務 " + xueren5 + "\r\n\r\n#n#r";
+//     // // 加載賬號任務狀態
+//     // loadQuestStatus();
+//     if (nextQuestId > QUEST_LIST.length - 1) {
+//         npc.say(str + getTextAllDone());
+//         return;
+//     }
+//     let step1 = getTextForQuest();
+//     if (!step1[1]) {
+//         npc.say(step1[0]);
+//         return;
+//     }
+//     if (npc.askYesNo(step1[0]) == 1) {
+//         completeQuest();
+//     }
+// }
+
+
+// function getTextForQuest() {
+//     const questInfo = QUEST_LIST[nextQuestId];
+//     let questStatus = false;
+//     let str = ``;
+
+//     let str2 = ``;
+//     switch (questInfo[0]) {
+//         case "等級達成":
+//             questStatus = stage.getLevel() >= parseInt(questInfo[1]);
+//             str2 += `請達到角色等級：#r ${questInfo[1]} #k級\r\n`;
+//             break;
+//         case "拜師":
+//             questStatus = true;
+//             // questStatus = shouldGraduation(player) || player.getLevel() > 290;
+//             str2 += `玩家可以找合適的前輩進行拜師,會大大提升遊戲體驗\r\n`;
+//             break;
+//         case "突破達到":
+//             let chaTP = 0
+
+//             chaTP = chaTP ? chaTP : 0;
+//             let myLB = parseInt((parseInt(chaTP) + 1500_0000_0000));
+//             questStatus = myLB >= questInfo[1];
+//             str2 += `達到突破: ${questInfo[1]} 億\r\n`;
+//             str2 += `當前突破: ${formatNumberToMoney(myLB)} \r\n`;
+//             break;
+//         case "BOSS":
+//             questStatus = getBossEventReal(questInfo[1], db, stage) > 0
+//             str2 += `請通關BOSS: #r ${questInfo[1]} #k\r\n`;
+//             break;
+//         case "神秘之力":
+//             let myArc = 0;
+//             for (let i = -1600; i >= -1605; i--) {
+//                 let arcTodrop = stage.getItemBySlot(-6, i);
+//                 if (arcTodrop && arcTodrop.getArc() > 0) {
+//                     myArc += arcTodrop.getArc();
+//                 }
+//             }
+//             questStatus = myArc >= questInfo[1];
+//             str2 += `神秘之力達到(來自神秘徽章): #r ${questInfo[1]} #b(${myArc})#k\r\n`;
+//             if (!questStatus) {
+//                 str2 += `當前神秘之力: #r${myArc}#k\r\n`;
+//             }
+//             break;
+//         case "原初之力":
+//             let myAut = 0;
+//             for (let i = -1700; i >= -1705; i--) {
+//                 let autTodrop = stage.getItemBySlot(-9, i);
+//                 if (autTodrop && autTodrop.getAut() > 0) {
+//                     myAut += autTodrop.getAut();
+//                 }
+//             }
+//             questStatus = myAut >= questInfo[1];
+//             str2 += `原初達到(來自原初徽章): #r ${questInfo[1]} #b(${myAut})#k\r\n`;
+//             if (!questStatus) {
+//                 str2 += `當前原初之力: #r${myAut}#k\r\n`;
+//             }
+//             break;
+//         case "通關副本":
+//             questStatus = log.getEventValue(stage, db, questInfo[1]) >= questInfo[2];
+//             str2 += `通關副本: #r ${questInfo[1]} #k\r\n`;
+//             if (!questStatus) {
+//                 str2 += `當前次數: ${log.getEventValue(stage, db, questInfo[1])} / ${questInfo[2]}\r\n`;
+//             }
+//             break;
+//         case "達成聯盟等級":
+//             questStatus = stage.getMapleUnionUpgradeInfo()[1] > questInfo[1];
+//             str2 += `達成聯盟等級: #r ${questInfo[1]}  #b(${stage.getMapleUnionUpgradeInfo()[1]})#k\r\n`;
+//             break;
+//     }
+//     if (stage.isGm()) {
+//         questStatus = true;
+//     }
+
+//     str += "\t  " + xueren6 + "#d#e 任務進度：#n#b" + (parseInt(nextQuestId) - 1) + " / " + (QUEST_LIST.length - 1) + " #k( " + (questStatus ? "#g可完成#k" : "#r未完成#k") + " ) " + xueren6 + "\r\n\r\n";
+//     str += `${任務簡介}#n#k\r\n`;
+//     str += str2;
+//     str += "" + 任務獎勵 + "#n#k\r\n";
+//     for (var i in REWARD_LIST[nextQuestId]) {
+//         if (REWARD_LIST[nextQuestId][i][0] == 'item') {
+//             str += "#v" + REWARD_LIST[nextQuestId][i][1] + "# #b#z" + REWARD_LIST[nextQuestId][i][1] + "##r * " + REWARD_LIST[nextQuestId][i][2] + (REWARD_LIST[nextQuestId][i][3] ? ` x ${REWARD_LIST[nextQuestId][i][3]}天` : "") + "\r\n";
+//         } else {
+//             str += REWARD_LIST[nextQuestId][i][1] + "\r\n";
+//         }
+//     }
+
+//     return [str, questStatus];
+// }
+
+// function completeQuest() {
+//     let sql = `insert into zsf_主線任務(account_id, player_id, quest_id, time)
+//                values (${stage.getAccountId()}, ${stage.getCharacterId()}, ${nextQuestId}, now());`;
+//     db.insert(sql);
+//     let str = "#r" + xueren5 + `${rewardIcon}\r\n`;
+
+//     for (var i in REWARD_LIST[nextQuestId]) {
+//         if (REWARD_LIST[nextQuestId][i][0] == 'item') {
+//             if (REWARD_LIST[nextQuestId][i][3]) {
+//                 stage.gainItem(REWARD_LIST[nextQuestId][i][1], REWARD_LIST[nextQuestId][i][2], REWARD_LIST[nextQuestId][i][3]);
+//             } else {
+//                 stage.gainItem(REWARD_LIST[nextQuestId][i][1], REWARD_LIST[nextQuestId][i][2]);
+//             }
+//             str += "#v" + REWARD_LIST[nextQuestId][i][1] + "# #b#z" + REWARD_LIST[nextQuestId][i][1] + "##k * " + REWARD_LIST[nextQuestId][i][2] + "\r\n\r\n";
+//         } else {
+//             switch (REWARD_LIST[nextQuestId][i][0]) {
+//             }
+//         }
+//     }
+//     str += "#r點擊確認按鈕返回查看下一個任務。#k";
+//     util.broadcastChatMsg(6, " 主線任務 :  " + stage.getCharacterName() + `完成主線任務-${nextQuestId}`);
+//     npc.say(str);
+//     start();
+// }
+
+// function getTextAllDone() {
+//     return "\r\n#r" + xueren8 + " 恭喜您已經完成所有的任務，請繼續您的冒險島吧！#k";
+// }
+
+// function loadQuestStatus() {
+//     let sql = `select quest_id
+//                from zsf_主線任務
+//                where account_id = ${stage.getAccountId()}
+//                order by quest_id desc
+//                limit 1`;
+//     let results = db.select(sql);
+//     if (results.length > 0) {
+
+//         nextQuestId = parseInt(results[0].get("quest_id")) + 1
+//     }
+// }
+
+// start();
+
+// function formatNumberToMoney(n) {
+//     let isNegative = n < 0;
+//     let str = Math.abs(n).toString();
+//     let result = '';
+//     let counter = 0;
+
+//     for (let i = str.length - 1; i >= 0; i--) {
+//         counter++;
+//         result = str[i] + result;
+//         if (counter % 3 === 0 && i !== 0) {
+//             result = ',' + result;
+//         }
+//     }
+//     return isNegative ? '-' + result : result;
+// }

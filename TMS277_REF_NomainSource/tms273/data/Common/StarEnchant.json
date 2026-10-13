@@ -1,0 +1,227 @@
+{
+  "0": {
+    "mesoCost": 641000,
+    "balanceCost": 9,
+    "noCurseCost": 27,
+    "success": 950,
+    "keep": 50,
+    "down": 0,
+    "cursed": 0
+  },
+  "1": {
+    "mesoCost": 961000,
+    "balanceCost": 9,
+    "noCurseCost": 27,
+    "success": 900,
+    "keep": 100,
+    "down": 0,
+    "cursed": 0
+  },
+  "2": {
+    "mesoCost": 1281000,
+    "balanceCost": 9,
+    "noCurseCost": 27,
+    "success": 850,
+    "keep": 150,
+    "down": 0,
+    "cursed": 0
+  },
+  "3": {
+    "mesoCost": 1601000,
+    "balanceCost": 9,
+    "noCurseCost": 27,
+    "success": 850,
+    "keep": 150,
+    "down": 0,
+    "cursed": 0
+  },
+  "4": {
+    "mesoCost": 1921000,
+    "balanceCost": 9,
+    "noCurseCost": 27,
+    "success": 800,
+    "keep": 200,
+    "down": 0,
+    "cursed": 0
+  },
+  "5": {
+    "mesoCost": 2241000,
+    "balanceCost": 9,
+    "noCurseCost": 27,
+    "success": 750,
+    "keep": 250,
+    "down": 0,
+    "cursed": 0
+  },
+  "6": {
+    "mesoCost": 2561000,
+    "balanceCost": 9,
+    "noCurseCost": 27,
+    "success": 700,
+    "keep": 300,
+    "down": 0,
+    "cursed": 0
+  },
+  "7": {
+    "mesoCost": 2881000,
+    "balanceCost": 9,
+    "noCurseCost": 27,
+    "success": 650,
+    "keep": 350,
+    "down": 0,
+    "cursed": 0
+  },
+  "8": {
+    "mesoCost": 3201000,
+    "balanceCost": 9,
+    "noCurseCost": 27,
+    "success": 600,
+    "keep": 400,
+    "down": 0,
+    "cursed": 0
+  },
+  "9": {
+    "mesoCost": 25932100,
+    "balanceCost": 12,
+    "noCurseCost": 36,
+    "success": 550,
+    "keep": 450,
+    "down": 0,
+    "cursed": 0
+  },
+  "10": {
+    "mesoCost": 74033450,
+    "balanceCost": 15,
+    "noCurseCost": 45,
+    "success": 500,
+    "keep": 500,
+    "down": 0,
+    "cursed": 0
+  },
+  "11": {
+    "mesoCost": 122134800,
+    "balanceCost": 18,
+    "noCurseCost": 54,
+    "success": 450,
+    "keep": 550,
+    "down": 0,
+    "cursed": 0
+  },
+  "12": {
+    "mesoCost": 179126900,
+    "balanceCost": 21,
+    "noCurseCost": 63,
+    "success": 400,
+    "keep": 600,
+    "down": 0,
+    "cursed": 0
+  },
+  "13": {
+    "mesoCost": 236119000,
+    "balanceCost": 24,
+    "noCurseCost": 72,
+    "success": 350,
+    "keep": 650,
+    "down": 0,
+    "cursed": 0
+  },
+  "14": {
+    "mesoCost": 293111100,
+    "balanceCost": 27,
+    "noCurseCost": 81,
+    "success": 300,
+    "keep": 700,
+    "down": 0,
+    "cursed": 0
+  },
+  "15": {
+    "mesoCost": 350103200,
+    "balanceCost": 30,
+    "noCurseCost": 90,
+    "success": 300,
+    "keep": 595,
+    "down": 0,
+    "cursed": 105
+  },
+  "16": {
+    "mesoCost": 407095300,
+    "balanceCost": 33,
+    "noCurseCost": 99,
+    "success": 300,
+    "keep": 0,
+    "down": 560,
+    "cursed": 140
+  },
+  "17": {
+    "mesoCost": 464087400,
+    "balanceCost": 36,
+    "noCurseCost": 108,
+    "success": 300,
+    "keep": 0,
+    "down": 490,
+    "cursed": 210
+  },
+  "18": {
+    "mesoCost": 521080000,
+    "balanceCost": 39,
+    "noCurseCost": 117,
+    "success": 300,
+    "keep": 0,
+    "down": 420,
+    "cursed": 280
+  },
+  "19": {
+    "mesoCost": 672612800,
+    "balanceCost": 42,
+    "noCurseCost": 126,
+    "success": 300,
+    "keep": 0,
+    "down": 420,
+    "cursed": 280
+  },
+  "20": {
+    "mesoCost": 824145600,
+    "balanceCost": 45,
+    "noCurseCost": 135,
+    "success": 300,
+    "keep": 350,
+    "down": 0,
+    "cursed": 350
+  },
+  "21": {
+    "mesoCost": 975678400,
+    "balanceCost": 48,
+    "noCurseCost": 144,
+    "success": 300,
+    "keep": 0,
+    "down": 350,
+    "cursed": 350
+  },
+  "22": {
+    "mesoCost": 1127211200,
+    "balanceCost": 153,
+    "noCurseCost": 459,
+    "success": 30,
+    "keep": 0,
+    "down": 388,
+    "cursed": 582
+  },
+  "23": {
+    "mesoCost": 1278744000,
+    "balanceCost": 162,
+    "noCurseCost": 486,
+    "success": 20,
+    "keep": 0,
+    "down": 392,
+    "cursed": 588
+  },
+  "24": {
+    "mesoCost": 1430276800,
+    "balanceCost": 171,
+    "noCurseCost": 513,
+    "success": 10,
+    "keep": 0,
+    "down": 396,
+    "cursed": 594
+  }
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "itemId": 2000005,
+    "count": 100,
+    "prob": 10,
+    "broadcast": true
+  },
+  {
+    "itemId": 2000000,
+    "count": 1,
+    "prob": 10,
+    "broadcast": false
+  },
+  {
+    "itemId": 2000001,
+    "count": 1,
+    "prob": 10,
+    "broadcast": true
+  },
+  {
+    "itemId": 2000002,
+    "count": 1,
+    "prob": 10,
+    "broadcast": false
+  },
+  {
+    "itemId": 2000003,
+    "count": 1,
+    "prob": 10,
+    "broadcast": true
+  },
+  {
+    "itemId": 2000006,
+    "count": 1,
+    "prob": 10,
+    "broadcast": false
+  }
+]

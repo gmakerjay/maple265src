@@ -1,0 +1,65 @@
+﻿// Created by MetaMS
+// ID:[993240011]
+// MapName:市中心封印區域
+
+
+stage.resetForcedStat();
+dir.setInGameCurNodeEventEnd(true);
+//stage.setTemporarySkillSet(0);
+dir.lockUI().setInGameDirectionMode();
+dir.removeAdditionalEffect();
+eff.blind(true).binary(255).setLayerBlind();
+dir.setStandAloneMode(true);
+eff.uol("BgmED/highMountain_b").changeBGM();
+eff.blind(true).binary(255).setLayerBlind();
+stage.setSpineObjectEffectAlpha("wedge", 0, 0);
+stage.setMapTaggedObjectVisible("on1", false, 0, 0);
+stage.setMapTaggedObjectVisible("on2", false, 0, 0);
+dir.scale(1000).y(407).setCameraZoom();
+let entity_1 = stage.spawnTempNpc(3006702, 186, 444, 1);
+stage.setNpcSpecialAction(entity_1, "summon", 0, false);
+let entity_2 = stage.spawnTempNpc(3006705, 70, 333, 1);
+stage.setNpcSpecialAction(entity_2, "summon", 0, false);
+stage.setNpcActionLayerRelMove(3006705, -112, 32, 0);
+let entity_3 = stage.spawnTempNpc(3006701, -226, 444, 0);
+stage.setNpcSpecialAction(entity_3, "summon", 0, false);
+dir.setVansheeMode(true);
+dir.setDelay(1200);
+eff.duration(1000).setLayerBlind();
+dir.setDelay(800);
+eff.uol("Sound/Skill.img/37101001/Use").volume(100).playSoundEffect();
+stage.setNpcSpecialAction(entity_3, "Skill_2", 0, false);
+dir.setDelay(400);
+stage.setNpcSpecialAction(entity_2, "die", 0, false);
+dir.setDelay(1200);
+eff.uol("Sound/SoundEff.img/BM1/monster/M0_die").volume(100).playSoundEffect();
+stage.setNpcFadeHide(entity_2, 0, 500);
+dir.uol("Effect/HighMountain.img/effect/Tynus_release").duration(-1).x(-110).y(-30).overlay(true).overlayX(-1).npc(true).npcId(entity_2).setEffectPlay();
+dir.setDelay(500);
+dir.setDelay(500);
+dir.setDelay(500);
+usr.uol("Voice12.img/HighMountain/S#11_1.mp3").value(100).playExclSoundWithDownBGM();
+npc.id(3006701).ui(1).noEsc().next().say("#face2#哼，真不像話。");
+usr.uol("Voice12.img/HighMountain/S#11_2.mp3").value(100).playExclSoundWithDownBGM();
+npc.id(3006701).ui(1).noEsc().next().say("#face2#你說是誰對這些傢伙做了什麼？");
+usr.uol("Voice12.img/HighMountain/S#11_3.mp3").value(100).playExclSoundWithDownBGM();
+npc.id(3006701).ui(1).noEsc().next().say("#face3#再做一萬年試試，看看能不能讓我受一次傷。");
+dir.duration(2500).scale(1000).timePos(2500).y(207).value(5).setCameraZoom();
+dir.setDelay(3000);
+usr.uol("Voice12.img/HighMountain/S#11_4.mp3").value(100).playExclSoundWithDownBGM();
+npc.id(3006702).ui(1).noEsc().next().say("#face3#那股黑色煙霧……好像在往哪裡聚集。");
+usr.uol("Voice12.img/HighMountain/S#11_5.mp3").value(100).playExclSoundWithDownBGM();
+npc.id(3006702).ui(1).noEsc().next().say("#face3#不是飄散而是前往某處…");
+usr.uol("Voice12.img/HighMountain/S#11_6.mp3").value(100).playExclSoundWithDownBGM();
+npc.id(3006702).ui(1).noEsc().next().say("#face3#…應該是發生什麼事了吧？");
+eff.blind(true).binary(255).duration(500).type(2).setLayerBlind();
+dir.setDelay(500);
+dir.setVansheeMode(false);
+dir.setFadeDelay(700);
+//stage.setTemporarySkillSet(0);
+dir.block().setInGameDirectionMode();
+dir.setStandAloneMode(false);
+stage.destroyTempNpc(entity_1);
+stage.destroyTempNpc(entity_2);
+stage.destroyTempNpc(entity_3);
+stage.changeMap(993240012, 0);

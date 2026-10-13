@@ -1,0 +1,1 @@
+     stage.changeMap(910002000, 0);

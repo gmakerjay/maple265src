@@ -1,0 +1,20 @@
+[
+    {
+        "itemId": 2439305,
+        "minNum": 1,
+        "maxNum": 1,
+        "chance": 2000,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00",
+        "endDate": "2079-01-01 00:00:00"
+    },
+    {
+        "itemId": 2435902,
+        "minNum": 1,
+        "maxNum": 1,
+        "chance": 8000,
+        "questId": 0,
+        "startDate": "1900-01-01 00:00:00",
+        "endDate": "2079-01-01 00:00:00"
+    }
+]

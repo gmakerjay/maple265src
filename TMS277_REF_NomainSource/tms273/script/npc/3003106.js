@@ -1,0 +1,1 @@
+stage.openShop(ctx.getDataId());

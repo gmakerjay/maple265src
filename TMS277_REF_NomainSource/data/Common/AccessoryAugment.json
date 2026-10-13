@@ -1,0 +1,407 @@
+[
+  {
+    "reqItemId": 2539001,
+    "reqCount": 1,
+    "prob": 10,
+    "mesos": 500000000,
+    "targetItemId": 1113098,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 1,
+    "prob": 10,
+    "mesos": 500000000,
+    "targetItemId": 1113329,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 1,
+    "prob": 10,
+    "mesos": 500000000,
+    "targetItemId": 1113113,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 1,
+    "prob": 10,
+    "mesos": 500000000,
+    "targetItemId": 1113122,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 1,
+    "prob": 10,
+    "mesos": 500000000,
+    "targetItemId": 1113104,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 1,
+    "prob": 10,
+    "mesos": 500000000,
+    "targetItemId": 1113114,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 1,
+    "prob": 10,
+    "mesos": 500000000,
+    "targetItemId": 1113116,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 1,
+    "prob": 10,
+    "mesos": 500000000,
+    "targetItemId": 1113108,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 1,
+    "prob": 10,
+    "mesos": 500000000,
+    "targetItemId": 1113115,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 2,
+    "prob": 20,
+    "mesos": 1000000000,
+    "targetItemId": 1113098,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 2,
+    "prob": 20,
+    "mesos": 1000000000,
+    "targetItemId": 1113122,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 2,
+    "prob": 20,
+    "mesos": 1000000000,
+    "targetItemId": 1113329,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 2,
+    "prob": 20,
+    "mesos": 1000000000,
+    "targetItemId": 1113113,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 2,
+    "prob": 20,
+    "mesos": 1000000000,
+    "targetItemId": 1113104,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 2,
+    "prob": 20,
+    "mesos": 1000000000,
+    "targetItemId": 1113114,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 2,
+    "prob": 20,
+    "mesos": 1000000000,
+    "targetItemId": 1113108,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 2,
+    "prob": 20,
+    "mesos": 1000000000,
+    "targetItemId": 1113115,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 2,
+    "prob": 20,
+    "mesos": 1000000000,
+    "targetItemId": 1113116,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 3,
+    "prob": 30,
+    "mesos": 2000000000,
+    "targetItemId": 1113098,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 3,
+    "prob": 30,
+    "mesos": 2000000000,
+    "targetItemId": 1113113,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 3,
+    "prob": 30,
+    "mesos": 2000000000,
+    "targetItemId": 1113114,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 3,
+    "prob": 30,
+    "mesos": 2000000000,
+    "targetItemId": 1113115,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 3,
+    "prob": 30,
+    "mesos": 2000000000,
+    "targetItemId": 1113116,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 3,
+    "prob": 30,
+    "mesos": 2000000000,
+    "targetItemId": 1113122,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 3,
+    "prob": 30,
+    "mesos": 2000000000,
+    "targetItemId": 1113108,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 3,
+    "prob": 30,
+    "mesos": 2000000000,
+    "targetItemId": 1113104,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 3,
+    "prob": 30,
+    "mesos": 2000000000,
+    "targetItemId": 1113329,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 4,
+    "prob": 40,
+    "mesos": 3500000000,
+    "targetItemId": 1113116,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 4,
+    "prob": 40,
+    "mesos": 3500000000,
+    "targetItemId": 1113122,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 4,
+    "prob": 40,
+    "mesos": 3500000000,
+    "targetItemId": 1113114,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 4,
+    "prob": 40,
+    "mesos": 3500000000,
+    "targetItemId": 1113108,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 4,
+    "prob": 40,
+    "mesos": 3500000000,
+    "targetItemId": 1113113,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 4,
+    "prob": 40,
+    "mesos": 3500000000,
+    "targetItemId": 1113104,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 4,
+    "prob": 40,
+    "mesos": 3500000000,
+    "targetItemId": 1113098,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 4,
+    "prob": 40,
+    "mesos": 3500000000,
+    "targetItemId": 1113115,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 4,
+    "prob": 40,
+    "mesos": 3500000000,
+    "targetItemId": 1113329,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 5,
+    "prob": 50,
+    "mesos": 5000000000,
+    "targetItemId": 1113122,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 5,
+    "prob": 50,
+    "mesos": 5000000000,
+    "targetItemId": 1113114,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 5,
+    "prob": 50,
+    "mesos": 5000000000,
+    "targetItemId": 1113116,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 5,
+    "prob": 50,
+    "mesos": 5000000000,
+    "targetItemId": 1113108,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 5,
+    "prob": 50,
+    "mesos": 5000000000,
+    "targetItemId": 1113113,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 5,
+    "prob": 50,
+    "mesos": 5000000000,
+    "targetItemId": 1113115,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 5,
+    "prob": 50,
+    "mesos": 5000000000,
+    "targetItemId": 1113104,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 5,
+    "prob": 50,
+    "mesos": 5000000000,
+    "targetItemId": 1113098,
+    "baseLevel": 4,
+    "nextLevel": 5
+  },
+  {
+    "reqItemId": 2539001,
+    "reqCount": 5,
+    "prob": 50,
+    "mesos": 5000000000,
+    "targetItemId": 1113329,
+    "baseLevel": 4,
+    "nextLevel": 5
+  }
+]

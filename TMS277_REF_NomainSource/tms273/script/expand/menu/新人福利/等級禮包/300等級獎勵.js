@@ -1,0 +1,55 @@
+/*
+ * Copyright (c) 2025. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ */
+
+/**
+ * 150 等級箱子
+ */
+
+
+const listA = [
+    1780000,
+	1122267,
+	1132246,
+];
+let log = require('check_log');
+
+// let boxId = 2431901;//箱子ID
+
+function start() {
+    if (log.getPQLog(stage, db, "300等級獎勵") > 0 && !stage.isGm()) {
+        npc.say("已經領過");
+        return;
+    } else if (stage.getLevel() < 299) {
+        npc.say("等級不足");
+        return;
+    }
+
+    let str = "恭喜您達到300級，獎勵包含\r\n抽獎大禮包寶玉\r\n是否領取";
+    if (npc.askYesNo(str) == 1) {
+        if (log.getPQLog(stage, db, "300等級獎勵") == 0 || stage.isGm()) {
+            if (stage.getFreeSlot(1) < 12) {
+                npc.say("清理揹包");
+                return;
+            }
+            for (let i in listA) {
+                stage.gainItem(listA[i], 1);
+                stage.gainItem(5060025, 2);
+				stage.gainItem(5060048, 2);
+				stage.gainItem(5060086, 2);
+				stage.gainItem(5060087, 2);
+				
+            }
+
+            log.addPQLog(stage, db, "300等級獎勵", 1, -1);
+            npc.say("領取成功");
+
+
+        } else {
+            npc.say("級別不夠哦");
+        }
+    }
+}
+
+start();
+

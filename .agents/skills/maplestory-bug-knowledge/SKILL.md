@@ -38,7 +38,7 @@ description: >-
 ### 1.4 การทดสอบผ่านคำสั่งลับระดับ Admin เท่านั้น (Private Admin Testing Commands)
 - **ห้ามใส่ปุ่มโกงหรือเมนูทดสอบลงในสคริปต์สาธารณะเด็ดขาด**: ไฟล์สำหรับแจกจ่ายผู้เล่นทั่วไป (`quick_adminNPC.py`, `PlayerCommands.java` ฯลฯ) ต้องสะอาด 100%
 - **การทดสอบทำผ่านคำสั่งลับระดับ Admin เท่านั้น** (`requiredType = Admin` ใน `AdminCommands.java` บัญชี `admin`/`admin`):
-  - `!endgame` หรือ `!test6` หรือ `!boost` (ปรับเลเวล 260, สกิลคลาส 1-4 เต็ม, สกิล V-Matrix และ HEXA คลาส 6 Lv.30 เต็ม, อาวุธ Arcane Umbra, เงิน 2B Mesos, Sol Erda Energy x20, Sol Erda Fragment x1,000)
+  - `!endgame` หรือ `!test6` หรือ `!boost` (ปรับเลเวล 260, มอบแต้ม SP เต็มพิกัดให้อัปสกิลคลาส 1-4 เองโดยห้ามใส่ chr.addSkill หรือ maxSkills, สกิล V-Matrix และ HEXA คลาส 6 Lv.30 เต็ม, อาวุธ Arcane Umbra, เงิน 2B Mesos, Sol Erda Energy x20, Sol Erda Fragment x1,000)
   - `!endgame <class_name>` สำหรับเปลี่ยนอาชีพและรับของฟูลเซ็ตทันที เช่น `!endgame hayato`, `!endgame kanna`, `!endgame khali`, `!endgame lara`, `!endgame kain`, `!endgame illium`, `!endgame ark`, `!endgame hoyoung`
 - เมื่อเพิ่มหรือปรับแก้คลาสใหม่ ให้ลงทะเบียนไอเทมประจำอาชีพและสกิล V-Matrix/HEXA ใน `AdminCommands.setupEndgame` เสมอ
 
@@ -266,3 +266,27 @@ description: >-
             ▼
 [Git Add, Commit, Push]
 ```
+
+---
+
+## 6. มาตรฐานการพอร์ตและตรวจสอบข้อมูลอ้างอิงข้ามเวอร์ชัน (Cross-Version Porting & Strict ID Audit)
+
+1. **คลังข้อมูลอ้างอิงหลัก**:
+   - `TMS277_REF_NomainSource/tms273/`:
+     - `script/event/`: แมคคานิคบอส 81 ตัว (Kalos, Kaling, Seren, Limbo, Extreme Lotus, Black Mage ฯลฯ)
+     - `script/boss/`: ตารางดรอปและคำนวณของรางวัลบอส (`BOSS_REWARD_APPLY.js`, `boss_crystallize.js`)
+     - `script/ScriptAPI.d.ts`: นิยามเมธอดของระบบ Script Engine (2,067 บรรทัด)
+     - `data/MobReward/`: ข้อมูลอัตราการดรอปของมอนสเตอร์ 1,987 ตัว
+     - `data/Shop/`: สินค้าร้านค้า NPC 169 ร้าน
+2. **กฎเหล็กการตรวจสอบ ID ป้องกันความคลาดเคลื่อน**:
+   - ⚠️ ห้ามคัดลอก ID จาก TMS มาใส่ใน v265 โดยไม่ผ่านการตรวจสอบ 100%
+   - **Mob IDs**: ตรวจสอบกับ `Server263/data/wz265/Mob.wz/<MobID>.img.xml` และ `String.wz/Mob.img.xml`
+   - **Item IDs**: ตรวจสอบกับ `Server263/data/wz265/Item.wz/` และ `Character.wz/` กรองไอเทม TMS Exclusive ทิ้ง
+   - **Map IDs**: ตรวจสอบกับ `Server263/data/wz265/Map.wz/Map/Map<X>/<MapID>.img.xml` ป้องกันจอดำ
+   - **Reactor IDs & Portals**: ตรวจสอบกับ `Server263/data/wz265/Reactor.wz/`
+3. **ขั้นตอนการพอร์ตที่เป็นมาตรฐาน**:
+   - **Step 1: Automated Asset Audit**: สแกน IDs ทั้งหมดในสคริปต์ต้นทางเทียบ WZ v265 ผ่าน Python Checker
+   - **Step 2: Script Logic Translation**: แมปคำสั่ง ScriptAPI (JavaScript) ➔ SwordieMS (Python/Java)
+   - **Step 3: Verification & In-Game Testing**: ทดสอบในเกมผ่านตัวละคร Admin
+   - **Step 4: Update Documentation**: บันทึกใน `PROGRESS.md` ตามมาตรฐาน
+

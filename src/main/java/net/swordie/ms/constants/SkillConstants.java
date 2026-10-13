@@ -1056,6 +1056,9 @@ public class SkillConstants {
             case 22141012:
             case 400021046:
             case 400021012:
+            case 400021013:
+            case 400021014:
+            case 400021015:
             // Evan 6th Job (HEXA)
             case 22201002: // HEXA Thunder Circle
             case 22201003: // HEXA Dragon Flash
@@ -2646,9 +2649,13 @@ public class SkillConstants {
             case 22201014: // HEXA Wind Breath (alt)
                 return 22201011; // HEXA Dragon Breath
             case 22201501: // Zodiac Burst Attack
-            case 22201502: // United Horizons / Finisher
-            case 22201503: // United Horizons
                 return 22201500; // Zodiac Burst
+            case 22201503: // United Horizons Resonance Attack
+                return 22201502; // United Horizons
+            case 400021013:
+            case 400021014:
+            case 400021015:
+                return 400021012; // Elemental Barrage
             case 500061042:
             case 500061043:
             case 500061044:

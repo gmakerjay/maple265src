@@ -1,0 +1,62 @@
+[
+  {
+    "itemId": 2616000,
+    "count": 1,
+    "prob": 10,
+    "broadcast": false
+  },
+  {
+    "itemId": 2616001,
+    "count": 1,
+    "prob": 10,
+    "broadcast": false
+  },
+  {
+    "itemId": 2615005,
+    "count": 1,
+    "prob": 10,
+    "broadcast": false
+  },
+  {
+    "itemId": 2615006,
+    "count": 1,
+    "prob": 10,
+    "broadcast": false
+  },
+  {
+    "itemId": 2613012,
+    "count": 1,
+    "prob": 10,
+    "broadcast": false
+  },
+  {
+    "itemId": 2613013,
+    "count": 1,
+    "prob": 10,
+    "broadcast": false
+  },
+  {
+    "itemId": 2612019,
+    "count": 1,
+    "prob": 10,
+    "broadcast": false
+  },
+  {
+    "itemId": 2612020,
+    "count": 1,
+    "prob": 10,
+    "broadcast": false
+  },
+  {
+    "itemId": 2048812,
+    "count": 1,
+    "prob": 10,
+    "broadcast": false
+  },
+  {
+    "itemId": 2048813,
+    "count": 1,
+    "prob": 10,
+    "broadcast": false
+  }
+]

@@ -1,0 +1,226 @@
+{
+  "startDate": "2026-04-01 00:00:00",
+  "endDate": "2026-04-28 00:00:00",
+  "maxDay": 28,
+  "maxKillCount": 1000,
+  "gifts": [
+    {
+      "day": 1,
+      "itemId": 4001715,
+      "count": 5,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 2,
+      "itemId": 2432468,
+      "count": 2,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 3,
+      "itemId": 2002085,
+      "count": 5,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 4,
+      "itemId": 2630437,
+      "count": 1000,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 5,
+      "itemId": 2639270,
+      "count": 20,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 6,
+      "itemId": 2637532,
+      "count": 888,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 7,
+      "itemId": 2430755,
+      "count": 1,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 8,
+      "itemId": 2637466,
+      "count": 1,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 9,
+      "itemId": 4001715,
+      "count": 15,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 10,
+      "itemId": 2049376,
+      "count": 1,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 11,
+      "itemId": 2630612,
+      "count": 30,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 12,
+      "itemId": 2644047,
+      "count": 5,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 13,
+      "itemId": 2432468,
+      "count": 5,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 14,
+      "itemId": 2438004,
+      "count": 1,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 15,
+      "itemId": 2630150,
+      "count": 1,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 16,
+      "itemId": 2048761,
+      "count": 66,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 17,
+      "itemId": 2048761,
+      "count":88,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 18,
+      "itemId": 2048761,
+      "count": 200,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 19,
+      "itemId": 2644052,
+      "count": 1,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 20,
+      "itemId": 2630612,
+      "count":50,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 21,
+      "itemId": 2430755,
+      "count": 2,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 22,
+      "itemId": 2644007,
+      "count": 1,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 23,
+      "itemId": 2630612,
+      "count": 100,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 24,
+      "itemId": 2644064,
+      "count": 1,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 25,
+      "itemId": 2630150,
+      "count": 2,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 26,
+      "itemId": 2436163,
+      "count": 1,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 27,
+      "itemId": 2431642,
+      "count": 1,
+      "duration": 10080,
+      "cashIcon": false
+    },
+    {
+      "day": 28,
+      "itemId": 2637460,
+      "count": 1,
+      "duration": 10080,
+      "cashIcon": false
+    }
+  ],
+  "mvpHolders": [
+    {
+      "day": 28,
+      "bonus": {
+        "minMVPType": 7,
+        "maxMVPType": 8,
+        "rate": 2
+      },
+      "groupBonus": [
+        {
+          "minMVPType": 7,
+          "maxMVPType": 7,
+          "rate": 2
+        },
+        {
+          "minMVPType": 8,
+          "maxMVPType": 8,
+          "rate": 3
+        }
+      ]
+    }
+  ]
+}

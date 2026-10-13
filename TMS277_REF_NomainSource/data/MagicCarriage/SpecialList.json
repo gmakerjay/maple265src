@@ -1,0 +1,74 @@
+[
+  {
+    "id": 20000,
+    "key": 201000,
+    "startDate": "1900-01-01 00:00:00",
+    "endDate": "2079-01-01 00:00:00",
+    "commodityId": 110200004,
+    "flagType": 5,
+    "discount": 0,
+    "special": 1,
+    "index": 1000,
+    "prop": 10
+  },
+  {
+    "id": 20001,
+    "key": 201001,
+    "startDate": "1900-01-01 00:00:00",
+    "endDate": "2079-01-01 00:00:00",
+    "commodityId": 110200014,
+    "flagType": 5,
+    "discount": 0,
+    "special": 1,
+    "index": 1001,
+    "prop": 10
+  },
+  {
+    "id": 20002,
+    "key": 201002,
+    "startDate": "1900-01-01 00:00:00",
+    "endDate": "2079-01-01 00:00:00",
+    "commodityId": 110200016,
+    "flagType": 5,
+    "discount": 0,
+    "special": 0,
+    "index": 1002,
+    "prop": 10
+  },
+  {
+    "id": 20003,
+    "key": 201003,
+    "startDate": "1900-01-01 00:00:00",
+    "endDate": "2079-01-01 00:00:00",
+    "commodityId": 110200021,
+    "flagType": 5,
+    "discount": 0,
+    "special": 0,
+    "index": 1003,
+    "prop": 10
+  },
+  {
+    "id": 20004,
+    "key": 201004,
+    "startDate": "1900-01-01 00:00:00",
+    "endDate": "2079-01-01 00:00:00",
+    "commodityId": 110200034,
+    "flagType": 5,
+    "discount": 0,
+    "special": 0,
+    "index": 1004,
+    "prop": 10
+  },
+  {
+    "id": 20005,
+    "key": 201005,
+    "startDate": "1900-01-01 00:00:00",
+    "endDate": "2079-01-01 00:00:00",
+    "commodityId": 110200054,
+    "flagType": 5,
+    "discount": 0,
+    "special": 1,
+    "index": 1005,
+    "prop": 10
+  }
+]
