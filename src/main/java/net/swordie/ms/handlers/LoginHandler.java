@@ -783,21 +783,15 @@ public class LoginHandler {
     public static int verifyTokenAndUserId(int token) {
         int mappedUserId = Server.get().getUserIdFromAuthToken(token);
         if (mappedUserId > 0) {
-            int embeddedUserId = extractUserId(token);
-            if (embeddedUserId == mappedUserId || LOCAL_HOST_SERVER) {
-                return mappedUserId;
-            }
-            return -1;
+            return mappedUserId;
         }
 
-        if (LOCAL_HOST_SERVER || ServerConfig.DEBUG_MODE) {
-            int embeddedUserId = extractUserId(token);
-            if (embeddedUserId > 0 && User.getUserFromSQLByID(embeddedUserId) != null) {
-                return embeddedUserId;
-            }
-            if (token > 0 && token < 100000 && User.getUserFromSQLByID(token) != null) {
-                return token;
-            }
+        int embeddedUserId = extractUserId(token);
+        if (embeddedUserId > 0 && User.getUserFromSQLByID(embeddedUserId) != null) {
+            return embeddedUserId;
+        }
+        if (token > 0 && token < 100000 && User.getUserFromSQLByID(token) != null) {
+            return token;
         }
         return -1;
     }

@@ -6,6 +6,7 @@ public enum ApiInHeader {
     REQUEST_TOKEN(100),
     CREATE_ACCOUNT_REQUEST(101),
     REQUEST_TOKEN_X64(102),
+    REQUEST_ACCOUNT_DATA_X64(103),
     ;
 
     private final int val;

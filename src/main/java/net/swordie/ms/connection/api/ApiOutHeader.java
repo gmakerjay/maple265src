@@ -6,6 +6,7 @@ public enum ApiOutHeader {
     REQUEST_TOKEN_RESULT(100),
     CREATE_ACCOUNT_RESULT(101),
     REQUEST_TOKEN_RESULT_X64(102),
+    ACCOUNT_DATA_RESULT_X64(103),
     ;
 
     private final int val;

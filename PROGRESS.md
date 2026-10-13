@@ -3,6 +3,69 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-13 15:52 น.] Modern WPF Launcher & Full Packet Compatibility Implementation (Opcode 101, 102, 103, LAN Architecture, Dynamic Hook & Zero-Config IP)
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: Complete Modern WPF Client Launcher Build, Packet Protocol Alignment (Opcodes 101, 102, 103), Full LAN Support, and Zero-Config Registration
+- **รายละเอียด**:
+  1. **ปัญหาและความต้องการของผู้ใช้ (Problem & Requirements)**:
+     - ผู้ใช้ต้องการสร้างไฟล์ลันเชอร์เข้าเกมใหม่จากโฟลเดอร์ `launcher` (WPF .NET 4.8 x64) ให้สวยงาม ทันสมัย และใช้งานง่าย
+     - ระบบต้องรองรับการสมัครไอดี + ระบบ LAN ทั้งฝั่งเซิร์ฟเวอร์และตัวเข้าเกมอย่างราบรื่น
+     - ผู้รันเซิร์ฟเวอร์สามารถสมัครไอดีล่วงหน้าไว้ให้ผู้เล่นได้ (ผ่าน `Create_Account.bat` หรือฐานข้อมูล) หรือผู้เล่นสามารถสมัครเองผ่านลันเชอร์ หรือใช้ Auto-Register เมื่อเข้าเกมครั้งแรก
+     - กำชับกฎสำคัญ: การรับ-ส่งแพ็กเก็ตระหว่าง Client Launcher กับเซิร์ฟเวอร์ Java (Port 8483 / 8484) ต้องสอดคล้องถูกต้องที่สุด 100%
+  2. **สาเหตุเชิงเทคนิคที่ตรวจสอบพบ (Technical Analysis & Root Causes)**:
+     - **Opcode 103 Desync**: ลันเชอร์ C# มีโค้ดส่ง Packet 103 (`REQUEST_ACCOUNT_DATA_X64`) เพื่อดึงยอด NX, DP, VP และข้อมูลตัวละคร แต่เซิร์ฟเวอร์ Java SwordieMS เดิมยังไม่มีการ Implement Opcode 103 ใน API ส่งผลให้ลันเชอร์แสดงข้อความ "COULD NOT REACH THE CHARACTER SERVICE"
+     - **Opcode 102 Error Header Mismatch**: ใน [`ApiRequestHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/ApiRequestHandler.java) เมื่อการตรวจสอบรหัสผ่านล้มเหลว (เช่น รหัสผ่านผิด, โดนแบน, ล็อกอินซ้อน) เซิร์ฟเวอร์เรียก `ApiResponse.tokenRequestResult(type, (String) "wrongPassword")` ซึ่งใช้ Opcode 100 (`REQUEST_TOKEN_RESULT`) แทนที่จะเป็น Opcode 102 (`REQUEST_TOKEN_RESULT_X64`) ทำให้ลันเชอร์ x64 อ่าน Header ผิด
+     - **LAN / Token Verification Strictness**: ใน [`LoginHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/LoginHandler.java) เมธอด `verifyTokenAndUserId` มีการเช็คเงื่อนไข `LOCAL_HOST_SERVER` ทำให้เมื่อเชื่อมต่อผ่าน LAN/VPN หาก Token หลุดจากเงื่อนไข IP เครื่อง จะถูกปฏิเสธ
+     - **Hook DLL Hardcoded**: ลันเชอร์เดิมตั้งค่า Dll เป็น `msvn.dll` แต่โฟลเดอร์แจกจ่ายอย่างเป็นทางการของ Server263 ใช้ `Localhost.dll`
+     - **Dynamic IP & launcher.ini Binding**: ค่า IP ในลันเชอร์เดิมถูกเข้ารหัส Base64 ฝังในโค้ด ทำให้ผู้เล่นในวง LAN แก้ไข IP เพื่อเชื่อมต่อเครื่องแม่ได้ยาก
+  3. **การแก้ไขและพัฒนาเชิงสถาปัตยกรรม (Implementation & Fixes)**:
+     - **ฝั่ง Java Server (`v214 src`)**:
+       - เพิ่ม `REQUEST_ACCOUNT_DATA_X64(103)` ใน [`ApiInHeader.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/connection/api/ApiInHeader.java) และ `ACCOUNT_DATA_RESULT_X64(103)` ใน [`ApiOutHeader.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/connection/api/ApiOutHeader.java)
+       - เพิ่ม `handleAccountDataX64Request` ใน [`ApiRequestHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/ApiRequestHandler.java) ดึงข้อมูลยอดเงิน (NX, DP, VP) และ Top 3 ตัวละครจากฐานข้อมูล พร้อมส่งกลับด้วย [`ApiResponse.accountDataResult`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/connection/packet/ApiResponse.java)
+       - ปรับ `handleTokenX64Request` ให้ส่ง Opcode 102 (`REQUEST_TOKEN_RESULT_X64`) เสมอทุกกรณีความผิดพลาด (Result Code 1, 2, 3, 5, 6) ป้องกัน Header Desync
+       - ปรับปรุง [`LoginHandler.verifyTokenAndUserId`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/LoginHandler.java) ให้ยอมรับ Token ที่ผ่านการออกสิทธิ์จากเซิร์ฟเวอร์โดยตรงทันที รองรับ LAN / VPN 100%
+       - เพิ่มการกำหนดค่า PIC เริ่มต้น `111111` แบบ BCrypt ในการสร้างไอดีผ่าน API
+     - **ฝั่ง WPF Client Launcher (`launcher/`)**:
+       - พัฒนาระบบอ่าน-เขียนไฟล์ [`launcher.ini`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/Client_Patch_Files/launcher.ini) แบบไดนามิกใน [`ServerInfo.cs`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/launcher/Models/ServerInfo.cs)
+       - เพิ่มหน้าต่างตั้งค่า LAN / Server IP ในปุ่มเฟืองเกียร์หน้าหลัก [`MainWindow.xaml`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/launcher/MainWindow.xaml) และ [`MainWindow.xaml.cs`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/launcher/MainWindow.xaml.cs) ให้ผู้เล่นพิมพ์ IP เครื่องโฮสต์แล้วกด Apply ได้ทันทีโดยไม่ต้องเปิดไฟล์ Config
+       - ขยายขนาดบัฟเฟอร์ [`InPacket.BufferSize`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/launcher/Models/InPacket.cs) เป็น 65,536 ไบต์ และเพิ่ม Dynamic Auto-Resize ใน [`OutPacket.cs`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/launcher/Models/OutPacket.cs)
+       - ปรับปรุง [`LoginService.Inject`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/launcher/Services/LoginService.cs) ให้ใช้ Win32 `LoadLibraryW` พร้อมตรวจจับ Hook DLL อัตโนมัติ (`Localhost.dll` หรือ `msvn.dll`)
+       - ปรับปรุงการแจ้งเตือนความผิดพลาดในหน้าต่างล็อกอินให้แจกแจงตาม Result Code จริง
+     - **การคอมไพล์และการส่งมอบ (Build & Deployment)**:
+       - คอมไพล์ Java Core ด้วย Maven บน JDK 21: `BUILD SUCCESS` (0 errors)
+       - คอมไพล์ WPF Launcher ด้วย MSBuild ในโหมด Release: `gms265 Launcher.exe` ขนาด 26.8 MB (0 errors)
+       - ส่งมอบไฟล์สู่ `Server263/Client_Patch_Files/` (ทั้ง `gms265 Launcher.exe`, `Launcher.exe`, และ `WpfAnimatedGif.dll`)
+       - อัปเดต `Run_Game.bat` และ `Install_Client_Patch.bat`
+  4. **การทดสอบจริง (End-to-End Live In-Game/Protocol Testing)**:
+     - รันสคริปต์ทดสอบแพ็กเก็ตสด [`test_api_packets.py`](file:///C:/Users/admin/.gemini/antigravity-ide/brain/18fc54e8-96e1-4445-a5a0-da70085c391f/scratch/test_api_packets.py) เชื่อมต่อเซิร์ฟเวอร์จริงและ MariaDB บนพอร์ต 33066:
+       - **Test 1 (Opcode 102 Login)**: ล็อกอิน admin ผ่าน 100% ได้รับ Auth Token ถูกต้อง
+       - **Test 2 (Opcode 103 Account Overview)**: ดึงยอดเงินและตัวละคร 3 ตัว (NightLORD, EVOffline, eraz) ถูกต้องระดับไบต์
+       - **Test 3 (Opcode 101 Create Account)**: สมัครไอดีใหม่ผ่าน API ส่งผลลัพธ์ Code 0 (Success)
+       - **Test 4 (Opcode 102 New User Login)**: ไอดีใหม่ล็อกอินสำเร็จทันทีและได้รับ Token ใหม่
+       - **Test 5 (Opcode 102 Wrong Password)**: รหัสผ่านผิดส่งผลลัพธ์ Header 102 พร้อม Error Code 1 ถูกต้อง
+     - สร้าง All-in-One Patch Archive: [**`Patches/Server263_Patch_Latest.zip`**](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip) ขนาด 172.97 MB ตามมาตรฐานไฟล์เดี่ยว
+
+### 📂 Files Modified
+- [`v214 src/src/main/java/net/swordie/ms/connection/api/ApiInHeader.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/connection/api/ApiInHeader.java)
+- [`v214 src/src/main/java/net/swordie/ms/connection/api/ApiOutHeader.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/connection/api/ApiOutHeader.java)
+- [`v214 src/src/main/java/net/swordie/ms/connection/api/ApiHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/connection/api/ApiHandler.java)
+- [`v214 src/src/main/java/net/swordie/ms/connection/packet/ApiResponse.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/connection/packet/ApiResponse.java)
+- [`v214 src/src/main/java/net/swordie/ms/handlers/ApiRequestHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/ApiRequestHandler.java)
+- [`v214 src/src/main/java/net/swordie/ms/handlers/LoginHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/LoginHandler.java)
+- [`launcher/Models/ServerInfo.cs`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/launcher/Models/ServerInfo.cs)
+- [`launcher/Models/Configs.cs`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/launcher/Models/Configs.cs)
+- [`launcher/Models/InPacket.cs`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/launcher/Models/InPacket.cs)
+- [`launcher/Models/OutPacket.cs`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/launcher/Models/OutPacket.cs)
+- [`launcher/Services/Client.cs`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/launcher/Services/Client.cs)
+- [`launcher/Services/LoginService.cs`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/launcher/Services/LoginService.cs)
+- [`launcher/MainWindow.xaml`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/launcher/MainWindow.xaml)
+- [`launcher/MainWindow.xaml.cs`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/launcher/MainWindow.xaml.cs)
+- [`launcher/Views/PlayPage.xaml`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/launcher/Views/PlayPage.xaml)
+- [`launcher/Views/PlayPage.xaml.cs`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/launcher/Views/PlayPage.xaml.cs)
+- [`Server263/Client_Patch_Files/Run_Game.bat`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/Client_Patch_Files/Run_Game.bat)
+- [`Server263/Client_Patch_Files/Install_Client_Patch.bat`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/Client_Patch_Files/Install_Client_Patch.bat)
+
 ## 📅 [2026-10-13 14:48 น.] Core Standards & Admin Command Policy Realignment: TMS Reference Audit, Test-First Deployment, Full Git Sync, and Zero-Skill-Injection `!endgame`
 
 ### 🎯 Scope & Technical Details

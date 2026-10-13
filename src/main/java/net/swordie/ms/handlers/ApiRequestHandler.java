@@ -14,6 +14,14 @@ import net.swordie.ms.util.DataPrinter;
 import net.swordie.ms.util.Util;
 import org.mindrot.jbcrypt.BCrypt;
 
+import net.swordie.ms.connection.hikariCP.DatabaseManager;
+import net.swordie.ms.constants.JobConstants;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,10 +43,10 @@ public class ApiRequestHandler {
         String name = inPacket.decodeString();
         String password = inPacket.decodeString();
         boolean wrongWZFiles = false;
-        if (c.getLastAPIAttempt() + 5000 < System.currentTimeMillis() || ServerConfig.DEBUG_MODE) {
+        if (c.getLastAPIAttempt() + 1000 < System.currentTimeMillis() || ServerConfig.DEBUG_MODE) {
             c.setLastAPIAttempt(System.currentTimeMillis());
         } else {
-            c.write(ApiResponse.tokenRequestResult(ApiTokenResultType.TooManyRequest, "tooManyRequest"));
+            c.write(ApiResponse.tokenRequestResult(ApiTokenResultType.TooManyRequest, 0));
             return;
         }
         User user = User.getUserFromSQLForAPI(name);
@@ -55,7 +63,8 @@ public class ApiRequestHandler {
                 System.out.printf("[AutoRegister] New user auto-registered: %s (ID: %d)%n", cleanName, user.getId());
                 success = true;
             } else {
-                c.write(ApiResponse.tokenRequestResult(ApiTokenResultType.InvalidUserPassCombination, "wrongPassword"));
+                c.write(ApiResponse.tokenRequestResult(ApiTokenResultType.InvalidUserPassCombination, 0));
+                return;
             }
         } else {
             String dbPassword = user.getPassword();
@@ -73,11 +82,11 @@ public class ApiRequestHandler {
         }
         if (success) {
             if (wrongWZFiles) {
-                c.write(ApiResponse.tokenRequestResult(ApiTokenResultType.WrongWZFiles, "wrongWZFiles"));
+                c.write(ApiResponse.tokenRequestResult(ApiTokenResultType.WrongWZFiles, 0));
             } else if (user.getBanExpireDate() != null && !user.getBanExpireDate().isExpired()) {
-                c.write(ApiResponse.tokenRequestResult(ApiTokenResultType.Banned, "banned"));
+                c.write(ApiResponse.tokenRequestResult(ApiTokenResultType.Banned, 0));
             } else if (Server.get().getUserById(user.getId()) != null) {
-                c.write(ApiResponse.tokenRequestResult(ApiTokenResultType.AlreadyLogin, "alreadyLogin"));
+                c.write(ApiResponse.tokenRequestResult(ApiTokenResultType.AlreadyLogin, 0));
             } else {
                 // Generate token
                 final int token = getTokenPacked(user.getId());
@@ -86,7 +95,7 @@ public class ApiRequestHandler {
                 DataPrinter.send(DataPrinter.LOGIN, String.format("[IP: %s] đăng nhập thành công tài khoản %s và có token: %d.", c.getIP(), name, token));
             }
         } else {
-            c.write(ApiResponse.tokenRequestResult(ApiTokenResultType.InvalidUserPassCombination, "wrongPassword"));
+            c.write(ApiResponse.tokenRequestResult(ApiTokenResultType.InvalidUserPassCombination, 0));
         }
     }
 
@@ -107,15 +116,17 @@ public class ApiRequestHandler {
         String name = inPacket.decodeString();
         String pwd = inPacket.decodeString();
         String email = inPacket.decodeString();
-        if (c.getLastAPIAttempt() + 5000 < System.currentTimeMillis()) {
+        if (c.getLastAPIAttempt() + 1000 < System.currentTimeMillis() || ServerConfig.DEBUG_MODE) {
             c.setLastAPIAttempt(System.currentTimeMillis());
         } else {
             c.write(ApiResponse.createAccountResult(AccountCreateResult.Unknown));
             return;
         }
         AccountCreateResult acr = AccountCreateResult.Success;
+        if (name == null || name.trim().length() < 3 || pwd == null || pwd.trim().isEmpty()) {
+            acr = AccountCreateResult.Unknown;
+        }
         User user = User.getUserFromSQLForAPI(name);
-        Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
         if (user != null) {
             acr = AccountCreateResult.NameInUse;
         }
@@ -127,14 +138,84 @@ public class ApiRequestHandler {
             boolean hashed = Util.isStringBCrypt(pwd);
             if (!hashed) {
                 user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt(ServerConstants.BCRYPT_ITERATIONS)));
-                if (user.getPic() != null && user.getPic().length() >= 6 && !Util.isStringBCrypt(user.getPic())) {
-                    user.setPic(BCrypt.hashpw(user.getPic(), BCrypt.gensalt(ServerConstants.BCRYPT_ITERATIONS)));
-                }
             }
+            user.setPic(BCrypt.hashpw("111111", BCrypt.gensalt(ServerConstants.BCRYPT_ITERATIONS)));
             user.setEmail(email);
             user.insertUserToSQL();
             DataPrinter.send(DataPrinter.REGISTER, String.format("[IP: %s] đăng ký thành công tài khoản %s, Email %s.", c.getIP(), name, email));
         }
         c.write(ApiResponse.createAccountResult(acr));
+    }
+
+    public static class CharSummaryData {
+        public String name;
+        public int level;
+        public int job;
+        public String jobName;
+        public int field;
+
+        public CharSummaryData(String name, int level, int job, String jobName, int field) {
+            this.name = name;
+            this.level = level;
+            this.job = job;
+            this.jobName = jobName;
+            this.field = field;
+        }
+    }
+
+    public static void handleAccountDataX64Request(Client c, InPacket inPacket) {
+        int token = inPacket.decodeInt();
+        int userId = Server.get().getUserIdFromAuthToken(token);
+        if (userId <= 0) {
+            userId = LoginHandler.verifyTokenAndUserId(token);
+        }
+        if (userId <= 0) {
+            c.write(ApiResponse.accountDataResult((byte) 1, 0, 0, 0, null));
+            return;
+        }
+
+        User user = User.getUserFromSQLByID(userId);
+        if (user == null) {
+            c.write(ApiResponse.accountDataResult((byte) 1, 0, 0, 0, null));
+            return;
+        }
+
+        int nx = user.getNxPrepaid();
+        int dp = user.getDonationPoints();
+        int vp = user.getVotePoints();
+
+        List<CharSummaryData> characters = new ArrayList<>();
+        String query = "SELECT cs.name, cs.level, cs.job, COALESCE(c.fieldid, cs.posMap, 0) AS curfield " +
+                "FROM characters c " +
+                "JOIN accounts a ON c.accid = a.id " +
+                "JOIN avatardata ad ON c.avatardata = ad.id " +
+                "JOIN characterstats cs ON ad.characterstat = cs.id " +
+                "WHERE a.userid = ? " +
+                "ORDER BY cs.level DESC " +
+                "LIMIT 3";
+        try (Connection con = DatabaseManager.getConnection();
+             PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String charName = rs.getString("name");
+                    int level = rs.getInt("level");
+                    int job = rs.getInt("job");
+                    int field = rs.getInt("curfield");
+                    String jobName = JobConstants.getCleanJobName((short) job);
+                    if (jobName == null || jobName.trim().isEmpty()) {
+                        jobName = JobConstants.getJobNameById((short) job);
+                    }
+                    if (jobName == null || jobName.trim().isEmpty()) {
+                        jobName = "Beginner";
+                    }
+                    characters.add(new CharSummaryData(charName, level, job, jobName, field));
+                }
+            }
+        } catch (Exception e) {
+            DataPrinter.send(DataPrinter.HIKARICP_ERROR, e);
+        }
+
+        c.write(ApiResponse.accountDataResult((byte) 0, nx, dp, vp, characters));
     }
 }

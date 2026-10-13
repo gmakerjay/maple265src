@@ -30,6 +30,9 @@ public class ApiHandler extends SimpleChannelInboundHandler<InPacket> {
             case CREATE_ACCOUNT_REQUEST:
                 ApiRequestHandler.handleCreateAccountRequest(c, inPacket);
                 break;
+            case REQUEST_ACCOUNT_DATA_X64:
+                ApiRequestHandler.handleAccountDataX64Request(c, inPacket);
+                break;
         }
         System.out.printf("[API In]\t| %s, %d/0x%s\t| %s%n", opHeader, op, Integer.toHexString(op).toUpperCase(), inPacket);
     }

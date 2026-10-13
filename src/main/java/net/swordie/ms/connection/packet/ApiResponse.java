@@ -36,4 +36,25 @@ public class ApiResponse {
 
         return outPacket;
     }
+
+    public static OutPacket accountDataResult(byte result, int nx, int dp, int vp, java.util.List<net.swordie.ms.handlers.ApiRequestHandler.CharSummaryData> characters) {
+        OutPacket outPacket = new OutPacket(ApiOutHeader.ACCOUNT_DATA_RESULT_X64);
+        outPacket.encodeByte(result);
+        if (result == 0) {
+            outPacket.encodeInt(nx);
+            outPacket.encodeInt(dp);
+            outPacket.encodeInt(vp);
+            outPacket.encodeByte(characters != null ? (byte) characters.size() : (byte) 0);
+            if (characters != null) {
+                for (net.swordie.ms.handlers.ApiRequestHandler.CharSummaryData chr : characters) {
+                    outPacket.encodeString(chr.name != null ? chr.name : "");
+                    outPacket.encodeInt(chr.level);
+                    outPacket.encodeInt(chr.job);
+                    outPacket.encodeString(chr.jobName != null ? chr.jobName : "Beginner");
+                    outPacket.encodeInt(chr.field);
+                }
+            }
+        }
+        return outPacket;
+    }
 }
