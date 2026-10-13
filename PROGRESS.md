@@ -3,6 +3,34 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-13 14:02 น.] Patch Consolidation & Deployment: Unified Single All-in-One Distribution Package
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: Patch Consolidation into a Single All-in-One Package (`Server263_Patch_Latest.zip`) & Re-Deployment
+- **รายละเอียด**:
+  1. **ปัญหาที่พบ (Problem)**:
+     - ในโฟลเดอร์ [`Patches/`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/) มีไฟล์แพตช์แยกย่อยซ้ำซ้อนกันถึง 4 ไฟล์ (`Server263_Patch_<timestamp>.zip`, `Server263_Patch_Latest.zip`, `Client_Patch_<timestamp>.zip`, `Client_Patch_Latest.zip`) ซึ่งกินพื้นที่และทำให้ผู้ใช้งานเกิดความสับสนในการเลือกไฟล์ไปใช้งาน
+     - ตัวแพ็คเกจ Server263_Patch แท้จริงแล้วได้รวมโฟลเดอร์ `Client_Patch_Files/` (Launcher.exe, Localhost.dll, launcher.ini, Install_Client_Patch.bat) ไว้ครบถ้วนอยู่แล้ว จึงไม่มีความจำเป็นต้องแยกไฟล์ Client ออกเป็นอีกชุด
+  2. **การปรับปรุงและวิธีแก้ (Enhancement & Implementation)**:
+     - **ปรับปรุงเครื่องมือสร้างแพตช์ ([`tools/create_patch.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/create_patch.py) และ [`v214 src/tools/create_patch.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/tools/create_patch.py))**:
+       - แก้ไขให้ล้างโฟลเดอร์ `Patches/` เดิมทั้งหมดก่อน และส่งออกไฟล์แพตช์แบบ All-in-One เพียงไฟล์เดียวอย่างเข้มงวด: [**`Server263_Patch_Latest.zip`**](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip)
+       - กรองตัดไฟล์ขยะแคช `*.class` และ `__pycache__` ออกจาก `data/scripts` ระหว่างกระบวนการแพ็คเพื่อลดขนาดไฟล์และเพิ่มความสะอาด
+       - เพิ่ม `backup.sql`, `Create_Account.bat`, และ `Create_Update_Patch.bat` ลงในรายการไฟล์ที่อัปเดตอัตโนมัติของ `Apply_Patch.bat`
+       - ปรับปรุงให้ `Apply_Patch.bat` รองรับทั้งการแตกไฟล์ทับไดเรกทอรีปัจจุบัน และตรวจหาโฟลเดอร์ Server263 อัตโนมัติ
+     - **รันกระบวนการ Deploy และตรวจสอบความสมบูรณ์ (Integrity Verification)**:
+       - รันคำสั่งแพ็คและ Deploy ใหม่: ผลิตไฟล์ `Patches/Server263_Patch_Latest.zip` ขนาด 122.42 MB (7,016 ไฟล์)
+       - ตรวจสอบความถูกต้องของโครงสร้างไฟล์ ZIP (`Valid ZIP: True`) ครบถ้วนทั้ง Server Core, Script Data, Drop Tables และ Client Patch Files
+  3. **ผลลัพธ์ (Outcome)**:
+     - โฟลเดอร์ [`Patches/`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/) ได้รับการจัดระเบียบให้เหลือ **เพียงไฟล์เดียว (Single File 100%)** เบ็ดเสร็จทุกระบบในที่เดียว สะอาดตา และพร้อมแจกจ่ายทันที
+     - ผู้ใช้นำ [**`Server263_Patch_Latest.zip`**](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip) ไปแตกไฟล์และรัน `Apply_Patch.bat` จะอัปเดตทั้งเซิร์ฟเวอร์และถามเพื่ออัปเดตโฟลเดอร์ตัวเกมให้อัตโนมัติในคลิกเดียว
+
+### 📂 Files Modified / Created
+- [`tools/create_patch.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/create_patch.py)
+- [`v214 src/tools/create_patch.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/tools/create_patch.py)
+- [`Patches/Server263_Patch_Latest.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip) (Single All-in-One Distribution Package)
+- [`v214 src/PROGRESS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/PROGRESS.md)
+- [`PROGRESS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS.md)
+
 ## 📅 [2026-10-13 13:25 น.] Workspace Root Directory Architecture Cleanup & Comprehensive Organization
 
 ### 🎯 Scope & Technical Details
