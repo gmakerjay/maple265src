@@ -1,96 +1,83 @@
-# 📋 เอกสารส่งมอบงาน & แผนการปรับปรุงระบบ Arcane Symbols & River Quests (v265)
+# 📋 เอกสารส่งมอบงาน & แผนการปรับปรุงระบบ Arcane Symbols & River Quests (v265 Official Handoff)
 
 **โครงการ:** MapleStory v265 Portable Server Runner (SwordieMS Core)  
-**วันที่จัดทำ:** 13 ตุลาคม 2569 (2026-10-13 เวลา 23:40 น.)  
-**สถานะภาพรวม:** ระบบหลักสมบูรณ์ ~75% - 80% (Core UI, Enhancement, EXP, Meso Cost, Mob Set Tracking สมบูรณ์ 100%)  
-**เป้าหมายของเอกสาร:** สรุปรายการปัญหา, สาเหตุทางเทคนิค, และแนวทางการปรับปรุงระบบ Arcane Symbols และเควสต์ Arcane River เพื่อให้นักพัฒนาสามารถนำไปปฏิบัติการแก้ไขต่อได้ทันที  
+**วันที่บันทึก:** 13 ตุลาคม 2569 (2026-10-13 เวลา 23:45 น.)  
+**สถานะการทำงาน:** เตรียมพร้อมสำหรับลงมือปฏิบัติ (On Hold - Handoff Specification Ready)  
+**เป้าหมาย:** สรุปข้อมูลทางการ (Official WZ Data), โฟลวการทำงานฉบับสมบูรณ์, รายการโค้ดและสคริปต์ที่พร้อมนำไปใช้งานได้ทันทีเมื่อเริ่มดำเนินการ  
 
 ---
 
 ## 📌 สารบัญ (Table of Contents)
-1. [ภาพรวมสถานะระบบ Arcane Symbols (System Status Overview)](#1-ภาพรวมสถานะระบบ-arcane-symbols)
-2. [รายการจุดบกพร่องที่ต้องปรับปรุงเร่งด่วน (Critical Issues to Fix)](#2-รายการจุดบกพร่องที่ต้องปรับปรุงเร่งด่วน)
-   - [2.1 บัคในสคริปต์ NPC ประจำเมือง 6 เมือง (Crash on NPC Talk)](#21-บัคในสคริปต์-npc-ประจำเมือง-6-เมือง)
-   - [2.2 สคริปต์คูปอง Arcane Symbol ประจำเมืองที่ขาดหายไป (Missing Item Scripts)](#22-สคริปต์คูปอง-arcane-symbol-ประจำเมืองที่ขาดหายไป)
-   - [2.3 การคลีนข้อความภาษาเวียดนาม (Localization Cleanup)](#23-การคลีนข้อความภาษาเวียดนาม)
-   - [2.4 ความสมบูรณ์ของเควสต์เนื้อเรื่องหลัก (Pre-quests Storyline Gap)](#24-ความสมบูรณ์ของเควสต์เนื้อเรื่องหลัก)
-   - [2.5 ระบบมินิเกมและเควสต์รายสัปดาห์ (Weekly Minigames Integration)](#25-ระบบมินิเกมและเควสต์รายสัปดาห์)
-3. [แนวทางการแก้ไขทางเทคนิคพร้อมโค้ดตัวอย่าง (Technical Implementation Guide)](#3-แนวทางการแก้ไขทางเทคนิคพร้อมโค้ดตัวอย่าง)
-4. [ตารางรายการไฟล์ที่เกี่ยวข้อง (Affected Files & Directories)](#4-ตารางรายการไฟล์ที่เกี่ยวข้อง)
+1. [ข้อมูลเควสต์ทางการจาก WZ v265 (Official WZ Mapping Data)](#1-ข้อมูลเควสต์ทางการจาก-wz-v265)
+2. [โฟลวการทำงานของเควสต์ตามมาตรฐานทางการ (Official Workflow Specification)](#2-โฟลวการทำงานของเควสต์ตามมาตรฐานทางการ)
+3. [สรุป 4 จุดที่ต้องปรับปรุงและโค้ดพร้อมใช้งาน (Implementation Blueprint)](#3-สรุป-4-จุดที่ต้องปรับปรุงและโค้ดพร้อมใช้งาน)
+   - [จุดที่ 1: เพิ่มเมธอดใน Java Engine (`ScriptManagerImpl.java`)](#จุดที่-1-เพิ่มเมธอดใน-java-engine-scriptmanagerimpljava)
+   - [จุดที่ 2: แก้ไขสคริปต์ NPC ประจำเมือง 6 แห่ง](#จุดที่-2-แก้ไขสคริปต์-npc-ประจำเมือง-6-แห่ง)
+   - [จุดที่ 3: สคริปต์คูปองสัญลักษณ์ประจำเมือง (`2635510` ถึง `2635514`)](#จุดที่-3-สคริปต์คูปองสัญลักษณ์ประจำเมือง-2635510-ถึง-2635514)
+   - [จุดที่ 4: แปลภาษาข้อความรีเซ็ตและบทสนทนา (Localization)](#จุดที่-4-แปลภาษาข้อความรีเซ็ตและบทสนทนา-localization)
+4. [เช็คลิสต์ขั้นตอนการปฏิบัติงานเมื่อเริ่มดำเนินการ (Actionable Checklist)](#4-เช็คลิสต์ขั้นตอนการปฏิบัติงานเมื่อเริ่มดำเนินการ)
 
 ---
 
-## 1. ภาพรวมสถานะระบบ Arcane Symbols
+## 1. ข้อมูลเควสต์ทางการจาก WZ v265 (Official WZ Mapping Data)
 
-| ส่วนของระบบ | ความสมบูรณ์ | รายละเอียดสถานะการทำงาน |
-|---|:---:|---|
-| **UI รวมสัญลักษณ์ (Opcode 374: Merge)** | 🟢 100% | รวมสัญลักษณ์ซ้ำเพื่อเพิ่ม EXP (+1 EXP) ใช้งานได้สมบูรณ์ใน [`ItemHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemHandler.java) |
-| **UI อัปเลเวลสัญลักษณ์ (Opcode 374: Level Up)** | 🟢 100% | คำนวณสูตร Meso ทางการ, มอบ Main Stat +100 / DA HP +2,100 / Xenon All-stat +48, Arcane Power สูงสุด 220, อัปเดต Union Artifact และส่ง Effect |
-| **ระบบนับจำนวนมอนสเตอร์ (Mob Kill Tracking)** | 🟢 100% | รองรับ `QuestCountGroup` ผ่าน `mob.getParentMobSet().contains(reqMobID)` นับจำนวนมอนสเตอร์ 500-600 ตัวในทุกแผนที่ได้ถูกต้อง |
-| **คูปองเลือกสัญลักษณ์ (`2635509`)** | 🟢 100% | สคริปต์ [`consume_2635509.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/item/consume_2635509.py) เลือกสัญลักษณ์ได้ 6 เมือง พร้อมตรวจสอบช่องว่างใน Equip |
-| **ระบบรีเซ็ตเควสต์รายวัน (Daily Reset)** | 🟢 100% | เมธอด `initSymbolQuests()` ใน [`Char.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java) เคลียร์เควสต์และรีเซ็ตทุกเที่ยงคืน |
-| **สคริปต์ NPC ประจำเมือง 6 แห่ง** | 🔴 ต้องแก้ไข | เกิด `AttributeError` และ `NameError` เมื่อผู้เล่นที่กำลังทำเควสต์กดคุยกับ NPC |
-| **สคริปต์คูปองสัญลักษณ์ประจำเมือง (`2635510-2635514`)** | 🔴 ต้องสร้างเพิ่ม | ไม่มีไฟล์สคริปต์รองรับ ทำให้ผู้เล่นกดดับเบิ้ลคลิกใช้งานคูปองที่ได้จากเควสต์ไม่ได้ |
-| **เควสต์เนื้อเรื่องหลัก (Pre-quests)** | 🟡 ปานกลาง | สคริปต์เนื้อเรื่องไม่ครบ (แก้ปัญหาชั่วคราวโดยเปิด `ServerConfig.BOSS_UNLOCK_PREQUESTS = true`) |
-| **มินิเกมรายสัปดาห์ (Weekly Minigames)** | 🟡 ปานกลาง | มีเพียง Hungry Muto ที่สมบูรณ์ใน Java ขณะที่ Erda Spectrum, Spirit Savior ยังขาดระบบแจกรางวัล |
+จากการตรวจสอบไฟล์ [`Quest.wz/QuestData/`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/wz265/Quest.wz/QuestData/) ในระบบ v265 โครงสร้างเควสต์และมอนสเตอร์ถูกแบ่งออกเป็น 6 โซนอย่างเป็นเอกภาพ:
 
----
-
-## 2. รายการจุดบกพร่องที่ต้องปรับปรุงเร่งด่วน (Critical Issues to Fix)
-
-### 2.1 บัคในสคริปต์ NPC ประจำเมือง 6 เมือง
-- **ไฟล์ที่พบปัญหา**:
-  - `data/scripts/npc/3003104.py` (Rona - Vanishing Journey)
-  - `data/scripts/npc/3003152.py` (Master Lyck - Chu Chu Island)
-  - `data/scripts/npc/3003209.py` (Gray Mask - Lachelein)
-  - `data/scripts/npc/3003322.py` (Small Spirit - Arcana)
-  - `data/scripts/npc/3003432.py` (Jean - Morass)
-  - `data/scripts/npc/3003530.py` (Ollie - Esfera)
-- **สาเหตุเชิงลึก**:
-  1. ในโค้ดมีการเรียก `q = sm.getQuestById(qid)` แต่บนคลาส `ScriptManagerImpl` **ไม่มีเมธอด `getQuestById`** (มีอยู่เฉพาะบน `Char`) ส่งผลให้เกิด `AttributeError: 'net.swordie.ms.scripts.ScriptManagerImpl' object has no attribute 'getQuestById'`
-  2. โค้ดเขียน `if q != null and q.isComplete(chr):` ซึ่งคำว่า `null` เป็นภาษา Java ไม่ใช่คีย์เวิร์ดของ Python (ต้องเป็น `None`) ส่งผลให้เกิด `NameError: name 'null' is not defined`
-  3. เควสต์รายวัน 38450-38473 เป็น `AccountQuest` การค้นหาผ่าน `chr.getQuestById(qid)` ปกติจะไม่พบ ต้องเข้าถึงผ่าน `chr.getAccount().getQuestById(qid)`
+| เมือง / โซน | เควสต์ตั้งต้น | เควสต์ย่อย & มอนสเตอร์เป้าหมาย | Mob Group ID ทางการ (`QuestCountGroup`) | Start Script | End Script | NPC ผู้ดูแลเควสต์ |
+|---|:---:|---|:---:|:---:|:---:|---|
+| **Vanishing Journey** | `38450` | `38451` (100 ตัว)<br>`38452` (300 ตัว)<br>`38453` (500 ตัว) | **`9101238`** | `q38450s` | `q38451e`<br>`q38452e`<br>`q38453e` | Rona (`3003104`) |
+| **Chu Chu Island** | `38454` | `38455` (100 ตัว)<br>`38456` (300 ตัว)<br>`38457` (500 ตัว) | **`9101239`** | `q38454s` | `q38455e`<br>`q38456e`<br>`q38457e` | Master Lyck (`3003152`) |
+| **Lachelein** | `38458` | `38459` (100 ตัว)<br>`38460` (300 ตัว)<br>`38461` (500 ตัว) | **`9101240`** | `q38458s` | `q38459e`<br>`q38460e`<br>`q38461e` | Gray Mask (`3003209`) |
+| **Arcana** | `38462` | `38463` (100 ตัว)<br>`38464` (300 ตัว)<br>`38465` (500 ตัว) | **`9101241`** | `q38462s` | `q38463e`<br>`q38464e`<br>`q38465e` | Small Spirit (`3003322`) |
+| **Morass** | `38466` | `38467` (100 ตัว)<br>`38468` (300 ตัว)<br>`38469` (500 ตัว) | **`9101242`** | `q38466s` | `q38467e`<br>`q38468e`<br>`q38469e` | Jean (`3003432`) |
+| **Esfera** | `38470` | `38471` (100 ตัว)<br>`38472` (300 ตัว)<br>`38473` (500 ตัว) | **`9101243`** | `q38470s` | `q38471e`<br>`q38472e`<br>`q38473e` | Ollie (`3003530`) |
 
 ---
 
-### 2.2 สคริปต์คูปอง Arcane Symbol ประจำเมืองที่ขาดหายไป
-- **ไฟล์ที่พบปัญหา**: สคริปต์จบเควสต์ของแต่ละเมืองแจกคูปองเฉพาะเมือง:
-  - Chu Chu Island (`q38457e.py`): แจกคูปอง `2635510` (Arcane Symbol: Chu Chu Island Coupon)
-  - Lachelein (`q38461e.py`): แจกคูปอง `2635511` (Arcane Symbol: Lachelein Coupon)
-  - Arcana (`q38465e.py`): แจกคูปอง `2635512` (Arcane Symbol: Arcana Coupon)
-  - Morass (`q38469e.py`): แจกคูปอง `2635513` (Arcane Symbol: Morass Coupon)
-  - Esfera (`q38473e.py`): แจกคูปอง `2635514` (Arcane Symbol: Esfera Coupon)
-- **สาเหตุเชิงลึก**:
-  - ในโฟลเดอร์ `data/scripts/item/` **ไม่มีไฟล์ `consume_2635510.py` ถึง `consume_2635514.py`**
-  - และไม่มี Java Handler รองรับใน `ItemHandler.java`
-  - เมื่อผู้เล่นดับเบิ้ลคลิกใช้งานคูปองเหล่านี้จากช่อง USE จึงไม่มีอะไรเกิดขึ้นเลย
+## 2. โฟลวการทำงานของเควสต์ตามมาตรฐานทางการ (Official Workflow Specification)
+
+```
+[ผู้เล่นเลเวล 200+ ปลดล็อกเควสต์เข้าเมือง]
+                 │
+                 ▼
+[ขั้นตอนที่ 1: การรับเควสต์ประจำวัน (Daily Acceptance)]
+ ├─ ช่องทาง 1: ผ่าน Maple Guide / Quick Move (ไม่ต้องเดินทางมาหา NPC)
+ └─ ช่องทาง 2: พูดคุยกับ NPC ประจำเมือง (Rona, Master Lyck, Gray Mask, Small Spirit, Jean, Ollie)
+      │
+      ├─ เซิร์ฟเวอร์ตรวจสอบความก้าวหน้าของผู้เล่น (Quest Reduction Mechanism):
+      │   ├─ ผู้เล่นใหม่ในเมืองนั้น: กำจัด 500 ตัว (Quest End Tag: 3)
+      │   ├─ ผ่านเมืองถัดไป 1 เมือง: ลดเหลือ 300 ตัว (Quest End Tag: 2)
+      │   └─ ผ่านเมืองถัดไป 2 เมืองขึ้นไป: ลดเหลือ 100 ตัว (Quest End Tag: 1)
+      │
+      ▼
+[ขั้นตอนที่ 2: การล่ามอนสเตอร์ (Mob Hunting)]
+ ├─ ผู้เล่นไปฟาร์มมอนสเตอร์ตัวใดก็ได้ในแผนที่ของเมืองนั้นๆ
+ └─ เซิร์ฟเวอร์ตรวจเช็ค mob.getParentMobSet().contains(Group_ID) และนับตัวอัตโนมัติ (0/500)
+      │
+      ▼
+[ขั้นตอนที่ 3: การส่งเควสต์ & รับรางวัล (Turn-in & Rewards)]
+ ├─ ผู้เล่นส่งเควสต์ผ่านหลอดไฟเควสต์ หรือพูดคุยกับ NPC ประจำเมือง
+ ├─ ได้รับค่าประสบการณ์ก้อนโต (Daily EXP)
+ └─ ได้รับรางวัล Arcane Symbols:
+      ├─ 10 ชิ้นต่อวัน (หรือ 20 ชิ้น หากผ่านเควสต์พื้นที่ย่อย เช่น Reverse City, Yum Yum Island)
+      └─ มอบเป็นคูปอง Arcane Symbol Selector Coupon (2635509) หรือคูปองเฉพาะเมือง (2635510-2635514)
+      │
+      ▼
+[ขั้นตอนที่ 4: การใช้งานและการอัปเลเวล (Enhancement)]
+ ├─ ดับเบิ้ลคลิกคูปองเพื่อรับ Symbol เข้าช่อง Equip
+ └─ รวมสัญลักษณ์ซ้ำ (+1 EXP) และจ่าย Meso อัปเลเวลผ่าน Opcode 374 (Main Stat +100 / ARC +10)
+      │
+      ▼
+[ขั้นตอนที่ 5: การรีเซ็ตทุกเที่ยงคืน (Daily Reset)]
+ └─ Char.initSymbolQuests() รีเซ็ตเควสต์ทุก 00:00 น. ให้พร้อมรับใหม่ในวันถัดไป
+```
 
 ---
 
-### 2.3 การคลีนข้อความภาษาเวียดนาม (Localization Cleanup)
-- **ตำแหน่งที่พบ**:
-  1. [`Char.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java#L10856): ข้อความประกาศรีเซ็ตเควสต์ใน `initSymbolQuests()` เป็น `[Thông báo] ... đã được làm mới!`
-  2. สคริปต์เควสต์ `q38451e.py`, `q38452e.py`, `q38453e.py`, `q38455e.py`, `q38457e.py` ฯลฯ: บทสนทนาส่งเควสต์ยังเป็นภาษาเวียดนาม เช่น `Bạn đã hoàn thành nhiệm vụ thành công...`
+## 3. สรุป 4 จุดที่ต้องปรับปรุงและโค้ดพร้อมใช้งาน (Implementation Blueprint)
 
----
-
-### 2.4 ความสมบูรณ์ของเควสต์เนื้อเรื่องหลัก (Pre-quests Storyline Gap)
-- เควสต์เนื้อเรื่องหลัก 34100 - 34700 มีไฟล์สคริปต์ไม่ครบทุกช่วงตอน (เช่น Vanishing Journey มีเพียง 5 สคริปต์จากทั้งหมด 20+ สคริปต์)
-- ปัจจุบันเซิร์ฟเวอร์เปิดใช้งาน `ServerConfig.BOSS_UNLOCK_PREQUESTS = true` ทำให้ผู้เล่นสามารถรับเควสต์ประจำวันและเข้าบอสได้ทันทีโดยไม่ต้องผ่าน Pre-quests
-- แต่หากในอนาคตต้องการเปิดให้ผู้เล่นทำเนื้อเรื่องตั้งแต่ต้น จะต้องนำเข้าสคริปต์เควสต์เนื้อเรื่องให้ครบทุกตอน
-
----
-
-### 2.5 ระบบมินิเกมและเควสต์รายสัปดาห์ (Weekly Minigames Integration)
-- มีเพียง **Hungry Muto** ที่ถูกพัฒนาขึ้นในระบบ Java เต็มรูปแบบ ([`HungryMuto.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/HungryMuto.java))
-- มินิเกมอื่นๆ ประจำสัปดาห์ (Erda Spectrum `34151`, Midnight Chaser `34378`, Spirit Savior `39035`, Enheim Defense, Ranheim Defense) ยังไม่มีระบบแจก Arcane Symbol รายสัปดาห์แบบสมบูรณ์
-
----
-
-## 3. แนวทางการแก้ไขทางเทคนิคพร้อมโค้ดตัวอย่าง (Technical Implementation Guide)
-
-### Step 1: เพิ่มเมธอด `isQuestComplete` และ `getQuestById` ใน `ScriptManagerImpl.java`
-เพื่อรองรับการตรวจเช็คเควสต์ทั้ง `AccountQuest` และ `Quest` ปกติจากสคริปต์ Python ได้โดยไม่เกิด Error:
+### จุดที่ 1: เพิ่มเมธอดใน Java Engine ([`ScriptManagerImpl.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/scripts/ScriptManagerImpl.java))
+เพิ่ม 2 เมธอดนี้เพื่อป้องกันสคริปต์ Python เรียกหาเมธอดไม่เจอ และรองรับการเช็ค `AccountQuest` โดยไม่โยน Exception:
 ```java
 // เพิ่มใน ScriptManagerImpl.java
 public boolean isQuestComplete(int questID) {
@@ -111,10 +98,20 @@ public Quest getQuestById(int questID) {
 }
 ```
 
-### Step 2: ปรับปรุงสคริปต์ NPC ประจำเมืองทั้ง 6 เมือง
-แก้ไขบล็อกบรรทัด 10-17 ของไฟล์ `3003104.py`, `3003152.py`, `3003209.py`, `3003322.py`, `3003432.py`, `3003530.py`:
+---
+
+### จุดที่ 2: แก้ไขสคริปต์ NPC ประจำเมือง 6 แห่ง
+ปรับโค้ดบรรทัด 10-17 ในไฟล์ `3003104.py`, `3003152.py`, `3003209.py`, `3003322.py`, `3003432.py`, `3003530.py`:
 ```python
-# รูปแบบที่ถูกต้องและปลอดภัย 100%
+# โค้ดเดิมที่มีปัญหา (Crash):
+# for qid in SUB_QUESTS:
+#     if sm.hasQuest(qid):
+#         q = sm.getQuestById(qid)
+#         if q != null and q.isComplete(chr):
+#             completedSubQuest = qid
+#             break
+
+# โค้ดใหม่ที่ถูกต้องและทำงานได้ 100%:
 completedSubQuest = None
 for qid in SUB_QUESTS:
     if sm.hasQuest(qid) and sm.isQuestComplete(qid):
@@ -122,30 +119,64 @@ for qid in SUB_QUESTS:
         break
 ```
 
-### Step 3: สร้างสคริปต์คูปอง `consume_2635510.py` ถึง `consume_2635514.py`
-สร้างสคริปต์สำหรับดับเบิ้ลคลิกใช้งานคูปองของแต่ละเมือง โดยมอบ Symbol ประจำเมืองนั้นเข้าตัวทันที:
-- `consume_2635510.py` ➔ มอบ `1712002` (Arcane Symbol: Chu Chu Island)
-- `consume_2635511.py` ➔ มอบ `1712003` (Arcane Symbol: Lachelein)
-- `consume_2635512.py` ➔ มอบ `1712004` (Arcane Symbol: Arcana)
-- `consume_2635513.py` ➔ มอบ `1712005` (Arcane Symbol: Morass)
-- `consume_2635514.py` ➔ มอบ `1712006` (Arcane Symbol: Esfera)
+---
 
-*(หรืออีกทางเลือกหนึ่ง: แก้ไขสคริปต์ `q38455e.py` - `q38473e.py` ให้แจก `2635509` (Selector Coupon) ทั้งหมดตามมาตรฐาน MapleStory v265 ยุคใหม่)*
+### จุดที่ 3: สคริปต์คูปองสัญลักษณ์ประจำเมือง (`2635510` ถึง `2635514`)
+สร้างไฟล์สคริปต์ใน `v214 src/data/scripts/item/` รองรับการดับเบิ้ลคลิกใช้งาน:
+- **`consume_2635510.py`** ➔ มอบ `1712002` (Arcane Symbol: Chu Chu Island)
+- **`consume_2635511.py`** ➔ มอบ `1712003` (Arcane Symbol: Lachelein)
+- **`consume_2635512.py`** ➔ มอบ `1712004` (Arcane Symbol: Arcana)
+- **`consume_2635513.py`** ➔ มอบ `1712005` (Arcane Symbol: Morass)
+- **`consume_2635514.py`** ➔ มอบ `1712006` (Arcane Symbol: Esfera)
 
-### Step 4: แปลภาษาข้อความแจ้งเตือนและบทสนทนา
-- แก้ไขใน [`Char.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java#L10856):
-  - เปลี่ยนจาก `[Thông báo] Vanishing Journey Research đã được làm mới!`
-  - เป็น `[Notice] Vanishing Journey Research has been reset!` หรือ `[แจ้งเตือน] เควสต์สำรวจ Vanishing Journey ได้รับการรีเซ็ตแล้ว!`
-- แปลสคริปต์ `q38451e.py` ถึง `q38473e.py` เป็นภาษาอังกฤษหรือไทย
+**ตัวอย่างโครงสร้างโค้ดสำหรับคูปองประจำเมือง (เช่น `consume_2635510.py`):**
+```python
+# Arcane Symbol: Chu Chu Island Coupon
+COUPON_ID = 2635510
+SYMBOL_ID = 1712002
+
+emptySlots = sm.getEmptyInventorySlots(1) # Equip
+totalCoupons = sm.getQuantityOfItem(COUPON_ID)
+
+if totalCoupons <= 0:
+    sm.dispose()
+elif emptySlots < 1:
+    sm.sendSayOkay("Please make sure you have at least 1 empty slot in your #bEQUIP#k inventory.")
+else:
+    maxQty = min(totalCoupons, emptySlots)
+    quantity = sm.sendAskNumber("How many #b#i" + str(SYMBOL_ID) + "# #z" + str(SYMBOL_ID) + "##k would you like to receive?\r\n(Available Coupons: " + str(totalCoupons) + ", Free Equip Slots: " + str(emptySlots) + ")", 1, 1, maxQty)
+    if 0 < quantity <= totalCoupons:
+        if sm.getEmptyInventorySlots(1) >= quantity:
+            sm.consumeItem(COUPON_ID, quantity)
+            sm.giveSymbol(SYMBOL_ID, quantity)
+            sm.sendSayOkay("You received #b#i" + str(SYMBOL_ID) + "# #z" + str(SYMBOL_ID) + "##k x " + str(quantity) + "!")
+        else:
+            sm.sendSayOkay("You do not have enough empty slots in your #bEQUIP#k inventory.")
+```
 
 ---
 
-## 4. ตารางรายการไฟล์ที่เกี่ยวข้อง (Affected Files & Directories)
+### จุดที่ 4: แปลภาษาข้อความรีเซ็ตและบทสนทนา (Localization)
+1. **ใน [`Char.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java#L10856-L10904)**:
+   - แปลข้อความ `[Thông báo] Vanishing Journey Research đã được làm mới!`
+   - เปลี่ยนเป็น: `[Notice] Vanishing Journey Research has been reset!` หรือ `[แจ้งเตือน] เควสต์สำรวจ Vanishing Journey ได้รับการรีเซ็ตแล้ว!`
+2. **ในสคริปต์จบเควสต์ `q38451e.py` ถึง `q38473e.py`**:
+   - ปรับภาษาเวียดนามใน `sendNext` และ `sendAskYesNo` ให้เป็นภาษาอังกฤษหรือไทยที่สละสลวย
 
-| ไฟล์ที่เกี่ยวข้อง | บทบาทหน้าที่ | การดำเนินการที่แนะนำ |
-|---|---|---|
-| [`ScriptManagerImpl.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/scripts/ScriptManagerImpl.java) | Script Execution Engine | เพิ่มเมธอด `isQuestComplete(questId)` และ `getQuestById(questId)` |
-| [`Char.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java) | Character Core & Daily Reset | แปลภาษาข้อความรีเซ็ตเควสต์ใน `initSymbolQuests()` |
-| [`3003104.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/3003104.py) - [`3003530.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/3003530.py) | NPC ประจำเมือง 6 แห่ง | ปรับปรุงการตรวจสอบ `sm.isQuestComplete` และตัด `null` ออก |
-| `data/scripts/item/consume_2635510.py` - `514.py` | คูปองรับสัญลักษณ์ประจำเมือง | สร้างสคริปต์ใหม่เพื่อรองรับการกดใช้งานคูปอง |
-| `data/scripts/quest/q38450s.py` - `q38476e.py` | สคริปต์เควสต์รายวัน Arcane River | แปลภาษาบทสนทนาส่งเควสต์จากเวียดนามเป็นอังกฤษ/ไทย |
+---
+
+## 4. เช็คลิสต์ขั้นตอนการปฏิบัติงานเมื่อเริ่มดำเนินการ (Actionable Checklist)
+
+เมื่อผู้ใช้สั่งให้เริ่มดำเนินการ ให้ปฏิบัติตามลำดับขั้นตอนดังนี้:
+- [ ] **Step 1**: แก้ไขโค้ดใน [`ScriptManagerImpl.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/scripts/ScriptManagerImpl.java) (เพิ่ม `isQuestComplete` และ `getQuestById`)
+- [ ] **Step 2**: แก้ไขข้อความประกาศภาษาเวียดนามใน [`Char.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java)
+- [ ] **Step 3**: คอมไพล์ Java Core (`2_Build_Server.bat` หรือ `mvn package`) และ Deploy `maplestory.jar` ไปยัง `Server263/`
+- [ ] **Step 4**: ปรับปรุงสคริปต์ NPC ทั้ง 6 เมือง (`3003104.py`, `3003152.py`, `3003209.py`, `3003322.py`, `3003432.py`, `3003530.py`)
+- [ ] **Step 5**: สร้างสคริปต์คูปอง `consume_2635510.py` ถึง `consume_2635514.py`
+- [ ] **Step 6**: แปลบทสนทนาส่งเควสต์ใน `q38451e.py` - `q38473e.py`
+- [ ] **Step 7**: รันเซิร์ฟเวอร์และทดสอบ In-Game Testing (รับเควสต์, ตีมอนสเตอร์, ส่งเควสต์, เปิดคูปอง, อัปเลเวลสัญลักษณ์)
+- [ ] **Step 8**: สร้าง All-in-One Patch Archive (`Patches/Server263_Patch_Latest.zip`)
+- [ ] **Step 9**: อัปเดต `PROGRESS.md` พร้อมระบุเวลาจริง และทำ `git add .`, `git commit`, `git push`
+
+---
+**จบเอกสารส่งมอบงาน (End of Handoff Document)**
