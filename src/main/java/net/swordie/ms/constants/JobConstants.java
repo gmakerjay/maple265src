@@ -2159,7 +2159,7 @@ public class JobConstants {
             if (level >= 100) return 2217;
             if (level >= 60) return 2214;
             if (level >= 30) return 2212;
-            if (level >= 10) return 2200;
+            if (level >= 10) return 2210;
             return job;
         }
 

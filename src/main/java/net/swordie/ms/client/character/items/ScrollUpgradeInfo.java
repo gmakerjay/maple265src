@@ -137,12 +137,12 @@ public class ScrollUpgradeInfo implements Encodable {
             case CleanSlate: {
                 success = Util.succeedProp(getChance());
                 if (success) {
-                    Equip fullTucEquip = ItemData.getEquipDeepCopyFromID(equip.getItemId(), false);
-                    int maxTuc = fullTucEquip.getTuc();
-                    if (equip.getTuc() < maxTuc && (maxTuc + equip.getIuc() - equip.getTuc() > equip.getCuc()) && equip.isLastScrollFail()) {
+                    if (equip.hasFailedSlots()) {
                         equip.addStat(EquipBaseStat.tuc, 1);
+                        equip.setLastScrollFail(equip.hasFailedSlots());
                         if (zeroEquip != null) {
                             zeroEquip.addStat(EquipBaseStat.tuc, 1);
+                            zeroEquip.setLastScrollFail(zeroEquip.hasFailedSlots());
                         }
                     }
                 }

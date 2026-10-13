@@ -336,8 +336,8 @@ public class ItemUpgradeHandler {
             chr.dispose();
             return;
         }
-        if (ItemConstants.isCleanStateScroll(scrollID) && !equip.isLastScrollFail()) {
-            chr.chatMessage("Can only be used on equipment when item has failed to be upgraded at lease at 1 time(s).");
+        if (ItemConstants.isCleanStateScroll(scrollID) && !equip.hasFailedSlots()) {
+            chr.chatMessage("Can only be used on equipment when item has failed to be upgraded at least 1 time(s).");
             chr.dispose();
             return;
         }

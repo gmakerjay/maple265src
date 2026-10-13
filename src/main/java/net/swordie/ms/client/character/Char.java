@@ -7843,7 +7843,14 @@ public class Char {
     public boolean hasSkillOnCooldown(int skillID) {
         long now = System.currentTimeMillis();
         long nextUsableTime = skillCoolTimes.get(skillID); // 0 nếu không có
-        return now < nextUsableTime;
+        if (now < nextUsableTime) {
+            return true;
+        }
+        int actualSkillID = SkillConstants.getActualSkillIDfromSkillID(skillID);
+        if (actualSkillID != skillID) {
+            return now < skillCoolTimes.get(actualSkillID);
+        }
+        return false;
     }
 
     public boolean checkAndSetSkillCooltime(int skillID, boolean fromAttack) {
@@ -7941,9 +7948,12 @@ public class Char {
             if (si != null && si.isAscentSkill()) {
                 //return true; TODO
             }
+            int actualSkillID = SkillConstants.getActualSkillIDfromSkillID(skillID);
             var skill = getSkill(skillID);
+            if (skill == null && actualSkillID != skillID) {
+                skill = getSkill(actualSkillID);
+            }
             if (skill != null && si != null && si.hasCooltime() && !SkillConstants.isKeydownCDSkill(skillID)) {
-                int actualSkillID = SkillConstants.getActualSkillIDfromSkillID(skillID);
                 setSkillCooldown(actualSkillID, getSkillLevel(actualSkillID));
             }
             return true;

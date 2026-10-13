@@ -5114,6 +5114,10 @@ public class ItemConstants {
         return (scrollID / 100) == 20490 && scrollID != 2049023;
     }
 
+    public static boolean isCleanSlateScroll(int scrollID) {
+        return isCleanStateScroll(scrollID);
+    }
+
     public static boolean isInnocenceScroll(int scrollID) {
         return scrollID >= 2049600 && scrollID <= 2049618;
     }

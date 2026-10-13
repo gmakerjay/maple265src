@@ -1506,8 +1506,20 @@ public class Equip extends Item {
         this.sharableOnce = sharableOnce;
     }
 
+    public int getFailedSlots() {
+        Equip fullTucEquip = ItemData.getEquipDeepCopyFromID(getItemId(), false);
+        int maxTuc = fullTucEquip != null ? fullTucEquip.getTuc() : 0;
+        int totalSlots = maxTuc + getIuc();
+        int usedSlots = getTuc() + getCuc();
+        return Math.max(0, totalSlots - usedSlots);
+    }
+
+    public boolean hasFailedSlots() {
+        return getFailedSlots() > 0;
+    }
+
     public boolean isLastScrollFail() {
-        return isLastScrollFail;
+        return hasFailedSlots() || isLastScrollFail;
     }
 
     public void setLastScrollFail(boolean fail) {
@@ -2226,91 +2238,95 @@ public class Equip extends Item {
 
     public int getRandomOption(boolean bonus, int line, int cubeId, int additionalPrimes) {
         List<Integer> data = ItemConstants.getWeightedOptionsByEquip(this, bonus, line, cubeId, additionalPrimes);
+        if (data == null || data.isEmpty()) {
+            return 0;
+        }
         int result = data.get(Util.getRandom(data.size() - 1));
         if (cubeId != 1) {
             if (line != 0) {
-                int option1 = getOptions().getFirst();
+                int option1 = bonus ? getOptionBonus(0) : getOptions().getFirst();
+                int tries = 0;
                 if (PotentialConstants.isBossDamagePercent(option1)) {
                     if (Util.succeedProp(10)) {
-                        while (PotentialConstants.isBossDamagePercent(result) || PotentialConstants.isATTPercent(result) || PotentialConstants.isMATTPercent(result)) {
+                        while ((PotentialConstants.isBossDamagePercent(result) || PotentialConstants.isATTPercent(result) || PotentialConstants.isMATTPercent(result)) && ++tries <= 30) {
                             result = data.get(Util.getRandom(data.size() - 1));
                         }
                     }
                 } else if (PotentialConstants.isDamagePercent(option1)) {
                     if (Util.succeedProp(10)) {
-                        while (PotentialConstants.isDamagePercent(result)) {
+                        while (PotentialConstants.isDamagePercent(result) && ++tries <= 30) {
                             result = data.get(Util.getRandom(data.size() - 1));
                         }
                     }
                 } else if (PotentialConstants.isATTPercent(option1)) {
                     if (Util.succeedProp(10)) {
-                        while (PotentialConstants.isATTPercent(result) || PotentialConstants.isBossDamagePercent(result)) {
+                        while ((PotentialConstants.isATTPercent(result) || PotentialConstants.isBossDamagePercent(result)) && ++tries <= 30) {
                             result = data.get(Util.getRandom(data.size() - 1));
                         }
                     }
                 } else if (PotentialConstants.isMATTPercent(option1)) {
                     if (Util.succeedProp(10)) {
-                        while (PotentialConstants.isMATTPercent(result) || PotentialConstants.isBossDamagePercent(result)) {
+                        while ((PotentialConstants.isMATTPercent(result) || PotentialConstants.isBossDamagePercent(result)) && ++tries <= 30) {
                             result = data.get(Util.getRandom(data.size() - 1));
                         }
                     }
                 } else if (PotentialConstants.isIgnoreMonsterDEFPercent(option1)) {
                     if (Util.succeedProp(10)) {
-                        while (PotentialConstants.isIgnoreMonsterDEFPercent(result) || PotentialConstants.isBossDamagePercent(result)) {
+                        while ((PotentialConstants.isIgnoreMonsterDEFPercent(result) || PotentialConstants.isBossDamagePercent(result)) && ++tries <= 30) {
                             result = data.get(Util.getRandom(data.size() - 1));
                         }
                     }
                 } else if (PotentialConstants.isAllStatsPercent(option1)) {
                     if (Util.succeedProp(10)) {
-                        while (PotentialConstants.isSTRPercent(result) || PotentialConstants.isDEXPercent(result) || PotentialConstants.isINTPercent(result) || PotentialConstants.isLUKPercent(result)) {
+                        while ((PotentialConstants.isSTRPercent(result) || PotentialConstants.isDEXPercent(result) || PotentialConstants.isINTPercent(result) || PotentialConstants.isLUKPercent(result)) && ++tries <= 30) {
                             result = data.get(Util.getRandom(data.size() - 1));
                         }
                     }
                 } else if (PotentialConstants.isSTRPercent(option1)) {
                     if (Util.succeedProp(10)) {
-                        while (PotentialConstants.isSTRPercent(result) || PotentialConstants.isAllStatsPercent(result)) {
+                        while ((PotentialConstants.isSTRPercent(result) || PotentialConstants.isAllStatsPercent(result)) && ++tries <= 30) {
                             result = data.get(Util.getRandom(data.size() - 1));
                         }
                     }
                 } else if (PotentialConstants.isDEXPercent(option1)) {
                     if (Util.succeedProp(10)) {
-                        while (PotentialConstants.isDEXPercent(result) || PotentialConstants.isAllStatsPercent(result)) {
+                        while ((PotentialConstants.isDEXPercent(result) || PotentialConstants.isAllStatsPercent(result)) && ++tries <= 30) {
                             result = data.get(Util.getRandom(data.size() - 1));
                         }
                     }
                 } else if (PotentialConstants.isLUKPercent(option1)) {
                     if (Util.succeedProp(10)) {
-                        while (PotentialConstants.isLUKPercent(result) || PotentialConstants.isAllStatsPercent(result)) {
+                        while ((PotentialConstants.isLUKPercent(result) || PotentialConstants.isAllStatsPercent(result)) && ++tries <= 30) {
                             result = data.get(Util.getRandom(data.size() - 1));
                         }
                     }
                 } else if (PotentialConstants.isINTPercent(option1)) {
                     if (Util.succeedProp(10)) {
-                        while (PotentialConstants.isINTPercent(result) || PotentialConstants.isAllStatsPercent(result)) {
+                        while ((PotentialConstants.isINTPercent(result) || PotentialConstants.isAllStatsPercent(result)) && ++tries <= 30) {
                             result = data.get(Util.getRandom(data.size() - 1));
                         }
                     }
                 } else if (PotentialConstants.isCriticalDamagePercent(option1)) {
                     if (Util.succeedProp(10)) {
-                        while (PotentialConstants.isCriticalDamagePercent(result)) {
+                        while (PotentialConstants.isCriticalDamagePercent(result) && ++tries <= 30) {
                             result = data.get(Util.getRandom(data.size() - 1));
                         }
                     }
                 } else if (PotentialConstants.isMaxHPPercent(option1)) {
                     if (Util.succeedProp(10)) {
-                        while (PotentialConstants.isMaxHPPercent(result)) {
+                        while (PotentialConstants.isMaxHPPercent(result) && ++tries <= 30) {
                             result = data.get(Util.getRandom(data.size() - 1));
                         }
                     }
                 } else if (PotentialConstants.isMesoObtainedPercent(option1)) {
                     if (Util.succeedProp(10)) {
-                        while (PotentialConstants.isMesoObtainedPercent(result)) {
+                        while (PotentialConstants.isMesoObtainedPercent(result) && ++tries <= 30) {
                             result = data.get(Util.getRandom(data.size() - 1));
                         }
                     }
                 } else if (PotentialConstants.isItemDropRatePercent(option1)) {
                     if (Util.succeedProp(10)) {
-                        while (PotentialConstants.isItemDropRatePercent(result)) {
+                        while (PotentialConstants.isItemDropRatePercent(result) && ++tries <= 30) {
                             result = data.get(Util.getRandom(data.size() - 1));
                         }
                     }
@@ -2721,20 +2737,18 @@ public class Equip extends Item {
             boolean recover = vals.containsKey(ScrollStat.recover);
             boolean reset = vals.containsKey(ScrollStat.reset);
             int chance = vals.getOrDefault(ScrollStat.success, 100);
-            boolean useTuc = /*!recover &&*/ !reset;
+            boolean useTuc = !recover && !reset && !ItemConstants.isCleanStateScroll(scrollID);
             boolean isChaos = vals.containsKey(ScrollStat.randStat);
-            if (ItemConstants.isCleanStateScroll(scrollID)) {
+            if (recover || ItemConstants.isCleanStateScroll(scrollID)) {
                 useTuc = false;
-            }
-            Equip fullTucEquip = ItemData.getEquipDeepCopyFromID(getItemId(), false);
-            int maxTuc = fullTucEquip.getTuc();
-            if (getTuc() >= maxTuc && (maxTuc + getIuc() - getTuc() <= getCuc() && ItemConstants.isCleanStateScroll(scrollID) && !isLastScrollFail) /*&& recover*/) {
-                chr.chatMessage(SystemNotice, "You can't use on this equipment.");
-                chr.dispose();
-                return;
+                if (!hasFailedSlots()) {
+                    chr.chatMessage(SystemNotice, "This item does not have any failed slots to recover.");
+                    chr.dispose();
+                    return;
+                }
             }
             if (success) {
-                if (!ItemConstants.isCleanStateScroll(scrollID) && !ItemConstants.isInnocenceScroll(scrollID)) {
+                if (!ItemConstants.isCleanStateScroll(scrollID) && !ItemConstants.isInnocenceScroll(scrollID) && !recover) {
                     setLastScrollFail(false);
                 }
                 if (!recover && !reset && hasAttribute(EquipAttribute.ReturnScroll)) {
@@ -2775,12 +2789,12 @@ public class Equip extends Item {
                             chaos.put(EnchantStat.getByEquipBaseStat(ebs), randStat);
                         }
                     }
-                } else if (recover) {
-                    if (isLastScrollFail) {
-                        setLastScrollFail(false);
+                } else if (recover || ItemConstants.isCleanStateScroll(scrollID)) {
+                    if (hasFailedSlots() || isLastScrollFail) {
                         addStat(EquipBaseStat.tuc, 1);
+                        setLastScrollFail(hasFailedSlots());
                     } else {
-                        chr.chatMessage(SystemNotice, "Chỉ có thể sử dụng cho trang bị có ít nhất 01 lần thất bại.");
+                        chr.chatMessage(SystemNotice, "This item does not have any failed slots to recover.");
                     }
                 } else if (reset) {
                     reset(vals.containsKey(ScrollStat.perfectReset));
@@ -2804,7 +2818,7 @@ public class Equip extends Item {
                 }
             }
             else {
-                if (!ItemConstants.isCleanStateScroll(scrollID) && !ItemConstants.isInnocenceScroll(scrollID)) {
+                if (!ItemConstants.isCleanStateScroll(scrollID) && !ItemConstants.isInnocenceScroll(scrollID) && !recover) {
                     setLastScrollFail(true);
                 }
                 if (tucProtect) {

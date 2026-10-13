@@ -224,9 +224,14 @@ public class CubeHandler {
         short chooseOption = inPacket.decodeShort();
         long uniqueID = inPacket.decodeLong();
         MemorialCubeInfo memorialCubeInfo = chr.getMemorialCubeInfo();
+        if (memorialCubeInfo == null) {
+            chr.dispose();
+            return;
+        }
         Equip equip = memorialCubeInfo.getEquip();
         Equip zeroEquip = null;
-        if (memorialCubeInfo == null || equip == null) {
+        if (equip == null) {
+            chr.dispose();
             return;
         }
         if (JobConstants.isZero(chr.getJob()) && ItemConstants.isLongOrBigSword(equip.getItemId())) {
@@ -387,16 +392,31 @@ public class CubeHandler {
             chr.chatMessage(SystemNotice, "Đã xảy ra lỗi không xác định.");
             chr.dispose();
             return;
-        } else if (equip.getBonusGrade() > itemGradeMax.getVal()) {
-            String msg = String.format("Character %d tried to use %s cube (id %d) an equip with a potential greater than it is allowed to (id %d)", chr.getId(), StringData.getItemStringById(cubeID), cubeID, equip.getItemId());
-            DataPrinter.send(DataPrinter.AUTOBAN_WARNING, msg);
-            chr.dispose();
-            return;
-        } else if (equip.getBaseGrade() < ItemGrade.Rare.getVal()) {
-            String msg = String.format("Character %d tried to use cube (id %d) an equip without a potential (id %d)", chr.getId(), cubeID, equip.getItemId());
-            DataPrinter.send(DataPrinter.AUTOBAN_WARNING, msg);
-            chr.dispose();
-            return;
+        }
+        if (bonus) {
+            if (equip.getBonusGrade() > itemGradeMax.getVal()) {
+                String msg = String.format("Character %d tried to use %s cube (id %d) an equip with a bonus potential greater than it is allowed to (id %d)", chr.getId(), StringData.getItemStringById(cubeID), cubeID, equip.getItemId());
+                DataPrinter.send(DataPrinter.AUTOBAN_WARNING, msg);
+                chr.chatMessage(SystemNotice, "This item's bonus potential exceeds the maximum grade allowed by this cube.");
+                chr.dispose();
+                return;
+            } else if (equip.getBonusGrade() < ItemGrade.Rare.getVal()) {
+                chr.chatMessage(SystemNotice, "This item does not have bonus potential. Please use a Bonus Potential Scroll first.");
+                chr.dispose();
+                return;
+            }
+        } else {
+            if (equip.getBaseGrade() > itemGradeMax.getVal()) {
+                String msg = String.format("Character %d tried to use %s cube (id %d) an equip with a potential greater than it is allowed to (id %d)", chr.getId(), StringData.getItemStringById(cubeID), cubeID, equip.getItemId());
+                DataPrinter.send(DataPrinter.AUTOBAN_WARNING, msg);
+                chr.chatMessage(SystemNotice, "This item's potential exceeds the maximum grade allowed by this cube.");
+                chr.dispose();
+                return;
+            } else if (equip.getBaseGrade() < ItemGrade.Rare.getVal()) {
+                chr.chatMessage(SystemNotice, "This item does not have potential. Please use a Potential Scroll or Magnifying Glass first.");
+                chr.dispose();
+                return;
+            }
         }
         int tierUpChance = bonus ? ItemConstants.getTierUpChance(cubeID, ItemGrade.getGradeByVal(equip.getBonusGrade())) : ItemConstants.getTierUpChance(cubeID, ItemGrade.getGradeByVal(equip.getBaseGrade()));
         short hiddenValue = bonus ? ItemGrade.getGradeByVal(equip.getBonusGrade()).getVal() : ItemGrade.getGradeByVal(equip.getBaseGrade()).getVal();
@@ -441,16 +461,31 @@ public class CubeHandler {
                 chr.chatMessage(SystemNotice, "Đã xảy ra lỗi không xác định.");
                 chr.dispose();
                 return;
-            } else if (equip.getBonusGrade() > itemGradeMax.getVal()) {
-                String msg = String.format("Character %d tried to use %s cube (id %d) an equip with a potential greater than it is allowed to (id %d)", chr.getId(), StringData.getItemStringById(cubeID), cubeID, equip.getItemId());
-                DataPrinter.send(DataPrinter.AUTOBAN_WARNING, msg);
-                chr.dispose();
-                return;
-            } else if (equip.getBaseGrade() < ItemGrade.Rare.getVal()) {
-                String msg = String.format("Character %d tried to use cube (id %d) an equip without a potential (id %d)", chr.getId(), cubeID, equip.getItemId());
-                DataPrinter.send(DataPrinter.AUTOBAN_WARNING, msg);
-                chr.dispose();
-                return;
+            }
+            if (bonus) {
+                if (equip.getBonusGrade() > itemGradeMax.getVal()) {
+                    String msg = String.format("Character %d tried to use %s cube (id %d) an equip with a bonus potential greater than it is allowed to (id %d)", chr.getId(), StringData.getItemStringById(cubeID), cubeID, equip.getItemId());
+                    DataPrinter.send(DataPrinter.AUTOBAN_WARNING, msg);
+                    chr.chatMessage(SystemNotice, "This item's bonus potential exceeds the maximum grade allowed by this cube.");
+                    chr.dispose();
+                    return;
+                } else if (equip.getBonusGrade() < ItemGrade.Rare.getVal()) {
+                    chr.chatMessage(SystemNotice, "This item does not have bonus potential. Please use a Bonus Potential Scroll first.");
+                    chr.dispose();
+                    return;
+                }
+            } else {
+                if (equip.getBaseGrade() > itemGradeMax.getVal()) {
+                    String msg = String.format("Character %d tried to use %s cube (id %d) an equip with a potential greater than it is allowed to (id %d)", chr.getId(), StringData.getItemStringById(cubeID), cubeID, equip.getItemId());
+                    DataPrinter.send(DataPrinter.AUTOBAN_WARNING, msg);
+                    chr.chatMessage(SystemNotice, "This item's potential exceeds the maximum grade allowed by this cube.");
+                    chr.dispose();
+                    return;
+                } else if (equip.getBaseGrade() < ItemGrade.Rare.getVal()) {
+                    chr.chatMessage(SystemNotice, "This item does not have potential. Please use a Potential Scroll or Magnifying Glass first.");
+                    chr.dispose();
+                    return;
+                }
             }
             int tierUpChance = bonus ? ItemConstants.getTierUpChance(cubeID, ItemGrade.getGradeByVal(equip.getBonusGrade())) : ItemConstants.getTierUpChance(cubeID, ItemGrade.getGradeByVal(equip.getBaseGrade()));
             short hiddenValue = bonus ? ItemGrade.getGradeByVal(equip.getBonusGrade()).getVal() : ItemGrade.getGradeByVal(equip.getBaseGrade()).getVal();
@@ -502,9 +537,13 @@ public class CubeHandler {
                     }
                 }
             }
-            chr.getMemorialCubeInfo().setEquip(null);
+            if (chr.getMemorialCubeInfo() != null) {
+                chr.getMemorialCubeInfo().setEquip(null);
+                chr.setMemorialCubeInfo(null);
+            }
             inPacket.skip(inPacket.getUnreadAmount() - 1);
             chr.write(WvsContext.consumeBrightCubeRelease(inPacket.decodeByte()));
+            chr.dispose();
         }
     }
 

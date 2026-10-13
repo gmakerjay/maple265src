@@ -887,9 +887,9 @@ public class ItemHandler {
                 }
                 ScrollUpgradeInfo sui = suis.get(scrollID);
                 if (sui.getType() == SpellTraceScrollType.CleanSlate) {
-                    if (!equip.isLastScrollFail()) {
-                        chr.chatMessage(SystemNotice, "Can only be used on upgraded equipment.");
-                        chr.write(FieldPacket.showScrollUpgradeResult(feverTime, 0, "Can only be used on upgraded equipment.", prevEquip, equip));
+                    if (!equip.hasFailedSlots()) {
+                        chr.chatMessage(SystemNotice, "Can only be used on equipment with failed slots.");
+                        chr.write(FieldPacket.showScrollUpgradeResult(feverTime, 0, "Can only be used on equipment with failed slots.", prevEquip, equip));
                         chr.dispose();
                         return;
                     }

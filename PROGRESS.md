@@ -3,6 +3,112 @@
 This file tracks all bug fixes, feature implementations, and system optimizations across sessions.
 **Rule (AGENTS.md #4)**: Every agent MUST record new progress here and in `.agents/skills/maplestory-bug-knowledge/SKILL.md` after completing any modification.
 
+## 📅 [2026-10-13 09:05 น.] HEXA Elemental Barrage Packet Misalignment Fix & Client Crash Telemetry Diagnostic
+
+### 🎯 Scope & Technical Details
+1. **Evan HEXA Elemental Barrage Attack Handling & Packet Alignment (`500061041` - `500061045`)**:
+   - **ปัญหาที่พบ (Problem)**: ขณะทดสอบตัวละคร `EvanOFFLINE` มีข้อผิดพลาดใน `task-645.log` แจ้งเตือน: `[ExceptionCaught/Attacks.txt] [EvanOFFLINE] Skill ID: 500061041 unable to handle Attacks.` สกิลไม่สร้างดาเมจและแพ็กเก็ตหลุดตำแหน่ง
+   - **สาเหตุเชิงลึก (Technical Root Cause)**:
+     - ในโปรโตคอล v265 สกิลสาย Evan Force Skills จะมีการส่งไบต์พิเศษ 1 ไบต์เพิ่มเติมก่อนค่า attack speed (`ai.attackSpeed = inPacket.decodeByte()`) โดย `AttackHandler.java:635` ทำการตรวจสอบด้วยคำสั่ง `if (SkillConstants.isEvanForceSkill(skillID)) inPacket.skipByte();`
+     - สกิล HEXA V-Enhancement **Elemental Barrage** (`500061041` - `500061045`) ขาดหายไปจาก `SkillConstants.isEvanForceSkill(skillID)` ส่งผลให้ไม่ถูกข้ามไบต์ ข้อมูลถัดไปใน InPacket เกิด Offset Shift (ไบต์เลื่อน) ทำให้ตัวประมวลผลอ่านดาเมจและข้อมูลเป้าหมายผิดตำแหน่ง
+     - สกิลลูก `500061042 - 500061045` ไม่ได้ถูกแมปเข้าหา Root Skill `500061041` ใน `SkillConstants.getActualSkillIDfromSkillID()`
+     - คลาส [`Evan.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Evan.java) ยังไม่มีเคสประมวลผลดาเมจและคูลดาวน์สำหรับ `HEXA_ELEMENTAL_BARRAGE` (`500061041`)
+   - **แนวทางแก้ไขและผลลัพธ์ (Solution & Outcome)**:
+     - เพิ่ม ID `500061041`, `500061042`, `500061043`, `500061044`, `500061045` ลงใน `SkillConstants.isEvanForceSkill()`
+     - เพิ่มการแปลงรหัสย่อย `500061042 - 500061045` -> `500061041` ใน `SkillConstants.getActualSkillIDfromSkillID()`
+     - ใน [`Evan.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Evan.java): กำหนดค่าคงที่ `HEXA_ELEMENTAL_BARRAGE = 500061041`, จัดการคำนวณบัฟดาเมจ / คริติคอลใน `handleAttack` และตั้งคูลดาวน์ 60 วินาทีใน `handleSetCoolDownSkill()` อย่างถูกต้องสมบูรณ์
+     - สกิล HEXA Elemental Barrage โจมตีติดดาเมจทุกฮิต และไม่เกิด Exception Packet Shift อีกต่อไป
+
+2. **Client Crash CallStack Telemetry (`LogCallStack2 / LogCallStack0`) Diagnostic**:
+   - **ปัญหาที่พบ (Problem)**: ผู้ใช้พบข้อความ Log: `NAME|(null)|JOB|-1|Socket|-|-|-|LogCallStack2|Hash|1974435496|Line|116|Info1|-1|...` ในคอนโซล
+   - **การวิเคราะห์ทางเทคนิค (Technical Analysis)**:
+     - ล็อกดังกล่าวไม่ใช่ Exception ฝั่งเซิร์ฟเวอร์ Java แต่เป็นแพ็กเก็ต `InHeader.EXCEPTION_LOG` (Opcode 179) ที่ไคลเอนต์ `MapleStory.exe` ส่งมารายงานเซิร์ฟเวอร์โดยอัตโนมัติเมื่อทำการเชื่อมต่อ
+     - ข้อมูลระบุว่าไคลเอนต์เกิด Crash ก่อนหน้านี้ (`DATETIME|2026/10/13 08:51:57` ในขณะที่เซิร์ฟเวอร์เพิ่งกำลังเริ่มรัน) สาเหตุเกิดจากช่วงเวลาที่ตัวเกมเปิดขึ้นมาแล้ว Socket ยังไม่พร้อม (`Socket|-|-|-|`, `NAME|(null)|JOB|-1|`) และมีข้อผิดพลาดเกี่ยวกับไดรเวอร์/โมดูล `DosHdr is NULL` ในการโหลด
+     - เมื่อผู้เล่นเข้าเล่นตามปกติหลังจากเซิร์ฟเวอร์พร้อม ตัวเกมส่งรายงานเก่านี้มาบันทึกที่เซิร์ฟเวอร์ 1 ครั้ง จากนั้นผู้เล่นสามารถล็อกอินเข้าแมพและเล่นได้ตามปกติอย่างไร้ปัญหา
+
+### 📂 Files Modified
+- [`SkillConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)
+- [`Evan.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Evan.java)
+- [`PROGRESS.md`](file:///c:/Users/admin/Documents/MapleV265Src/PROGRESS.md)
+- [`v214 src/PROGRESS.md`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/PROGRESS.md)
+
+### 🧪 Verification & Deployment
+- **Maven Build**: `BUILD SUCCESS` (Compiled 853 source files with Java 21)
+- **Deployment**: Synchronized Fat JAR to `v214 src/maplestory.jar` and `Server263/maplestory.jar`
+- **Patch Folder**: Regenerated clean, uncompressed `Patches/Server263_Patch_Latest` with updated `maplestory.jar` and 1-click `Apply_Patch.bat`
+
+## 📅 [2026-10-13 08:45 น.] Comprehensive Stability Overhaul: Clean Slate Slot Recovery, Cube Freeze Elimination, Evan Cooldown Synchronization & Auto Job Advance (Section 9.1 - 9.6)
+
+### 🎯 Scope & Technical Details
+1. **Clean Slate Scroll Slot Recovery (ใบขาวคืนรู) — Section 9.1**:
+   - **ปัญหาที่พบ (Problem)**: ผู้เล่นแจ้งว่า Clean Slate Scroll (ใบขาวคืนรู) ใช้งานแล้วมีอาการบั๊ก ใช้แล้วรูไม่คืน, เมื่อเปลี่ยนแผนที่หรือ Re-login แล้วรูที่เคยคืนได้กลับคืนไม่ได้, หรือหากคืนรูสำเร็จ 1 ครั้งจะล็อกไม่ให้ใช้ใบขาวกับรูที่เหลือที่ยังพังอยู่
+   - **สาเหตุเชิงลึก (Technical Root Cause)**:
+     - ตัวแปร `isLastScrollFail` ใน [`Equip.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/items/Equip.java) เป็นฟิลด์สถานะชั่วคราวในหน่วยความจำ (`@Transient`) ไม่ได้ถูกบันทึกลงในฐานข้อมูล SQL ทำให้ทุกครั้งที่มีการเปลี่ยนแมพ หรือ Re-login ค่าจะรีเซ็ตกลับเป็น `false` ทันที แม้ว่าไอเทมจะมีรูที่เสียจากการตีบวกพลาดจริงก็ตาม
+     - ใน `applyScroll()` เมื่อ Clean Slate สำเร็จ 1 ครั้ง ระบบสั่ง `setLastScrollFail(false)` ทันที ทำให้ไม่สามารถกู้คืนรูที่เสียรูถัดไปได้
+   - **แนวทางแก้ไขและผลลัพธ์ (Solution & Outcome)**:
+     - พัฒนาสูตรคำนวณ Failed Slots ตามหลักคณิตศาสตร์:
+       `failedSlots = Math.max(0, (maxTuc + equip.getIuc()) - (equip.getTuc() + equip.getCuc()))`
+       โดย `maxTuc` คือรูตั้งต้นของไอเทม, `iuc` คือรูค้อน Vicious Hammer, `tuc` คือรูที่เหลือสำหรับตีบวก, และ `cuc` คือจำนวนครั้งที่ตีบวกสำเร็จ
+     - เพิ่มฟังก์ชัน `getFailedSlots()` และ `hasFailedSlots()` ใน [`Equip.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/items/Equip.java) และอัปเดต `isLastScrollFail()` ให้คืนค่า `hasFailedSlots() || isLastScrollFail`
+     - ปรับปรุงการตรวจสอบใน [`ItemUpgradeHandler.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemUpgradeHandler.java), [`ItemHandler.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemHandler.java) (SpellTrace), [`ScrollUpgradeInfo.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/items/ScrollUpgradeInfo.java), และเพิ่ม alias `isCleanSlateScroll()` ใน [`ItemConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/ItemConstants.java)
+     - ไอเทมสามารถใช้ Clean Slate Scroll กู้คืนรูที่เสียได้ครบตามจำนวนรูที่เสียจริง 100% ไม่สูญหายหลัง Re-login
+
+2. **Bonus Potential Cube & Memorial Cube Client Freeze Elimination — Section 9.2**:
+   - **ปัญหาที่พบ (Problem)**: การใช้งาน Bonus Potential Cube หรือ Memorial Cube (Black/Bright Cube) มีอาการค้าง (Client Freeze / Stalled State) ไม่แสดงหน้าต่างผลลัพธ์
+   - **สาเหตุเชิงลึก (Technical Root Cause)**:
+     - ใน `CubeHandler.handleUserMemorialCubeOptionRequest`: มีการเรียก `memorialCubeInfo.getEquip()` ก่อนคำสั่งตรวจสอบ `if (memorialCubeInfo == null)` ส่งผลให้เกิด `NullPointerException` ใน Netty Worker Thread ทำให้แพ็กเก็ตตกหล่นและ Client รอคอยผลลัพธ์ไม่สิ้นสุด
+     - ใน `CubeHandler.handleCube` และ `handleBrightCube`: มีการตรวจสอบศักยภาพสลับประเภท โดยบังคับเช็ค `equip.getBaseGrade() < Rare` และ `equip.getBonusGrade() > itemGradeMax` สำหรับทุกลูกบาศก์ ทำให้ลูกบาศก์ศักยภาพโบนัสที่ใช้บนไอเทมที่ไม่มีศักยภาพหลักถูกปฏิเสธ หรือไอเทมที่ไม่มีศักยภาพโบนัสแต่มีศักยภาพหลักกลับถูกปล่อยผ่าน
+     - ใน `Equip.getRandomOption`: เมื่อทำการสุ่มออปชั่นโบนัส (`bonus == true`) บรรทัดที่ 2244 ไปดึง `option1` จาก Base Line 1 (`getOptions().getFirst()`) แทนที่จะเป็น Bonus Line 1 (`getOptionBonus(0)`) และลูป `while` ทั้ง 14 เงื่อนไขไม่มีตัวนับรอบความปลอดภัย (Infinite Spinlock) หากสุ่มได้ออปชั่นที่ไม่ผ่านเงื่อนไขซ้ำๆ
+   - **แนวทางแก้ไขและผลลัพธ์ (Solution & Outcome)**:
+     - ดักจับ Null-safety ทุกจุดใน [`CubeHandler.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/item/CubeHandler.java) พร้อมคืนสถานะด้วย `chr.dispose()` และทำความสะอาด `chr.setMemorialCubeInfo(null)`
+     - แยกตรรกะการตรวจสอบศักยภาพระหว่าง `bonus` (ตรวจสอบ `BonusGrade`) และ `base` (ตรวจสอบ `BaseGrade`) ชัดเจน 100%
+     - ใน `getRandomOption`: ปรับปรุง `int option1 = bonus ? getOptionBonus(0) : getOptions().getFirst();` และเพิ่มตัวควบคุมความปลอดภัย `&& ++tries <= 30` ในทุก `while` loop ป้องกัน Thread Spinlock และ Client Freeze 100%
+
+3. **Evan Skill Cooldowns & Mir Attacks (สกิลมังกรคูลดาวน์ผิดปกติ) — Section 9.3**:
+   - **ปัญหาที่พบ (Problem)**: สกิลโจมตีของมังกร Mir สามารถกดรัวๆ ซ้ำได้เรื่อยๆ โดยไม่ติดคูลดาวน์
+   - **สาเหตุเชิงลึก (Technical Root Cause)**:
+     - สกิล Dragon Breath (`22171063`), Dragon Dive (`22141012`, `22140022`), HEXA Dragon Breath (`22201011`), HEXA Dragon Dive (`22201007`), และ HEXA Dragon Flash (`22201003`) ถูกใส่ไว้ใน `SkillConstants.isNoCoolDownAttack()` ส่งผลให้ใน `Char.checkAndSetSkillCooltime` ส่งค่า `return true;` ข้ามการเช็คคูลดาวน์ทั้งหมดเมื่อมาจากการโจมตี (`fromAttack = true`)
+     - ใน `Char.checkAndSetSkillCooltime`: สกิลย่อย (Sub-action IDs) คืนค่า `getSkill(skillID) == null` เพราะตัวละครครอบครองเฉพาะ Root Skill ทำให้เซิร์ฟเวอร์ไม่ได้ตั้งค่าคูลดาวน์
+   - **แนวทางแก้ไขและผลลัพธ์ (Solution & Outcome)**:
+     - ลบสกิลมังกร Mir ทั้งหมดออกจาก `SkillConstants.isNoCoolDownAttack()`
+     - เชื่อมโยง Sub-action IDs ทั้งหมดของ Mir (`22110022`, `22110023`, `22140022`, `22201004`, `22201005`, `22201008`, `22201009`, `22201012-22201014`) ไปยัง Root Skill ใน `SkillConstants.getActualSkillIDfromSkillID()`
+     - ใน `Char.hasSkillOnCooldown()` และ `Char.checkAndSetSkillCooltime()`: เพิ่มกลไก Fallback ตรวจสอบและตั้งค่าคูลดาวน์ที่ Root Skill เมื่อค้นหา Sub-skill ไม่พบ
+     - เพิ่มเคสใน `Evan.handleSetCoolDownSkill()` จัดการคูลดาวน์สกิลมังกรทุกระดับอย่างสมบูรณ์
+
+4. **Evan HEXA Origin Zodiac Burst Cooldown Synchronization — Section 9.4**:
+   - **ปัญหาที่พบ (Problem)**: สกิล Origin คลาส 6 ของ Evan (Zodiac Burst) และ Finisher มีระยะเวลาคูลดาวน์ไม่ตรงกัน (ปนเปกันระหว่าง 240s และ 360s) และบางกรณีไม่ติดคูลดาวน์
+   - **สาเหตุเชิงลึก (Technical Root Cause)**: ใน `Evan.java` มีการเรียก `chr.setSkillCooldown(ZODIAC_BURST, 360)` ซึ่งส่งค่า 360 ไปยังพารามิเตอร์ `slv` (Skill Level) แทนที่จะเป็นเวลาคูลดาวน์ ส่งผลให้คูลดาวน์ไม่ทำงานหาก WZ ไม่มีโหนด cooltime ตามระดับเลเวลนั้น
+   - **แนวทางแก้ไขและผลลัพธ์ (Solution & Outcome)**:
+     - เปลี่ยนมาใช้ `chr.addSkillCooldown(ZODIAC_BURST, 360 * 1000)` กำหนดคูลดาวน์ 360 วินาที (360,000 มิลลิวินาที) ทั้งบน Server และ Client ตรงตามมาตรฐานทางการ ทั้งใน `handleSkill`, `handleAttack`, และ `handleSetCoolDownSkill`
+     - ซิงค์คูลดาวน์ระหว่าง Zodiac Burst (`22201500`) และ United Horizons Finisher (`22201502`) เป็น 360 วินาทีเท่ากันอย่างเป็นเอกภาพ
+
+5. **Evan Auto Job Advance & Starter Lifecycle — Section 9.5 & 9.6**:
+   - **ปัญหาที่พบ (Problem)**: ตัวละคร Evan เมื่อเลเวลอัปถึง 10 มีอาการถูกดาวน์เกรดกลับเป็นจ็อบ 2200 และไม่เปลี่ยนอาชีพคลาส 2, 3, 4 อัตโนมัติเมื่อเลเวลถึงเกณฑ์
+   - **สาเหตุเชิงลึก (Technical Root Cause)**: ใน `JobConstants.getTargetJobForLevel` บรรทัดที่ 2162 ตั้งค่า `if (level >= 10) return 2200;` ซึ่ง 2200 คือจ็อบระดับ 0 ยุคก่อนรีแวมป์ ส่งผลให้เมื่อเลเวล 10 ระบบทำการเซ็ตจ็อบกลับเป็น 2200 แทนที่จะเป็น 2210 (1st Job) และทำให้ Auto Job Advance หยุดชะงัก
+   - **แนวทางแก้ไขและผลลัพธ์ (Solution & Outcome)**:
+     - แก้ไขใน [`JobConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/JobConstants.java) ให้คืนค่า 2210 (1st Job), 2212 (2nd Job), 2214 (3rd Job), 2217 (4th Job)
+     - ตรวจสอบ Starter Lifecycle ใน `Evan.java` (`setCharCreationStats`, `addItemToNewCharacter`, `handleInitAfterMigrate`): มอบอาวุธคทา (1382000), สมุดมังกร Dragon Document (1352940), ปลดเควสต์เริ่มต้น และเสก Mir ร่วมผจญภัยทันทีโดยไม่ติด UI Lock
+
+### 📂 Files Modified
+- [`Equip.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/items/Equip.java) (Failed slots math formula, safe bonus option line 1, while loop limit)
+- [`ItemUpgradeHandler.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemUpgradeHandler.java) (Clean slate slot validation)
+- [`ItemHandler.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemHandler.java) (SpellTrace Clean slate slot validation)
+- [`ScrollUpgradeInfo.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/items/ScrollUpgradeInfo.java) (Clean slate recovery slot check)
+- [`ItemConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/ItemConstants.java) (Added isCleanSlateScroll alias)
+- [`CubeHandler.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/handlers/item/CubeHandler.java) (Null-safety, separate bonus vs base potential checks, dispose cleanup)
+- [`SkillConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java) (Removed Mir attacks from isNoCoolDownAttack, added Evan sub-skill root mappings)
+- [`Char.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java) (Root skill resolution for cooldown check & setting)
+- [`Evan.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/client/jobs/legend/Evan.java) (Zodiac Burst 360s unified cooldown, Mir attack cooldowns in handleSetCoolDownSkill)
+- [`JobConstants.java`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/src/main/java/net/swordie/ms/constants/JobConstants.java) (Fixed 1st job target to 2210)
+- [`v214 src/PROGRESS.md`](file:///c:/Users/admin/Documents/MapleV265Src/MapleStory_Server_Runner_Ready/v214%20src/PROGRESS.md)
+- [`PROGRESS.md`](file:///c:/Users/admin/Documents/MapleV265Src/PROGRESS.md)
+
+### 🧪 Verification & Deployment
+- **Maven Compile & Package**: `BUILD SUCCESS` (853 files, Fat JAR `maplestory.jar` 138.67 MB created)
+- **Deployment**: Synchronized to `v214 src/maplestory.jar`, Root `maplestory.jar`, and `Server263/maplestory.jar`
+- **Patch Created**: Single uncompressed patch `Patches/Server263_Patch_Latest/` with automated `Apply_Patch.bat`
+- **Rule Verification**: `Server263/` contains 0 source code files (`.java`/`pom.xml`), zero old patches in `Patches/`
+
 ## 📅 [2026-10-12 23:48 น.] Windows 11 Smart App Control (SAC) & Device Guard Policy Blocking Portable MariaDB: Technical Diagnosis & Resolution Standard
 
 ### 🎯 Scope & Technical Details

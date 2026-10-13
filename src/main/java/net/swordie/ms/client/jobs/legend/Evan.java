@@ -114,6 +114,7 @@ public class Evan extends Job {
     public static final int ZODIAC_BURST_ATTACK = 22201501;
     public static final int ZODIAC_BURST_FINISHER = 22201502;
     public static final int ZODIAC_BURST_FINISHER_ATTACK = 22201503;
+    public static final int HEXA_ELEMENTAL_BARRAGE = 500061041;
 
     private int prevSkill = 0;
     private Dragon dragon;
@@ -213,17 +214,17 @@ public class Evan extends Job {
         handleDragonSkillEffect(attackInfo, skillID);
         if (skillID == ZODIAC_BURST || skillID == ZODIAC_BURST_ATTACK || skillID == ZODIAC_BURST_FINISHER || skillID == ZODIAC_BURST_FINISHER_ATTACK) {
             if (skillID == ZODIAC_BURST_FINISHER || skillID == ZODIAC_BURST_FINISHER_ATTACK) {
-                if (chr.hasSkillOnCooldown(ZODIAC_BURST_FINISHER)) {
+                if (chr.hasSkillOnCooldown(ZODIAC_BURST)) {
                     return;
                 }
-                chr.setSkillCooldown(ZODIAC_BURST_FINISHER, 240);
-                chr.setSkillCooldown(ZODIAC_BURST, 360);
+                chr.addSkillCooldown(ZODIAC_BURST, 360 * 1000);
+                chr.addSkillCooldown(ZODIAC_BURST_FINISHER, 360 * 1000);
                 tsm.removeStatsBySkill(ZODIAC_BURST);
             } else if (skillID == ZODIAC_BURST) {
                 if (chr.hasSkillOnCooldown(ZODIAC_BURST)) {
                     return;
                 }
-                chr.setSkillCooldown(ZODIAC_BURST, 360);
+                chr.addSkillCooldown(ZODIAC_BURST, 360 * 1000);
             }
         }
         if (hasHitMobs) {
@@ -254,23 +255,28 @@ public class Evan extends Job {
             if (chr.hasSkill(MAGIC_DEBRIS) || chr.hasSkill(ENHANCED_MAGIC_DEBRIS) || chr.hasSkill(HEXA_MAGIC_DEBRIS)) {
                 createWreckage(attackInfo, skillID);
             }
-            if (skillID == ELEMENTAL_BARRAGE || skillID >= 400021013 && skillID <= 400021015) {
+            boolean isElementalBarrage = skillID == ELEMENTAL_BARRAGE || (skillID >= 400021013 && skillID <= 400021015);
+            boolean isHexaElementalBarrage = skillID == HEXA_ELEMENTAL_BARRAGE || (skillID >= 500061042 && skillID <= 500061045);
+            if (isElementalBarrage || isHexaElementalBarrage) {
                 Option o1 = new Option();
                 Option o2 = new Option();
-                si = SkillData.getSkillInfoById(ELEMENTAL_BARRAGE);
-                int yValue = si.getValue(y, slv);
-                int RealValue = skillID == 400021015 ?
-                        yValue * 4 :
-                        skillID == 400021014 ?
-                        yValue * 3 :
-                        skillID == 400021013 ?
-                        yValue * 2 : yValue;
-                if (skillID == ELEMENTAL_BARRAGE) {
-                    o1.nReason = 400021015;
-                    o1.nValue = si.getValue(cr, slv);
+                int rootSkill = isHexaElementalBarrage ? HEXA_ELEMENTAL_BARRAGE : ELEMENTAL_BARRAGE;
+                si = SkillData.getSkillInfoById(rootSkill);
+                if (si == null) {
+                    si = SkillData.getSkillInfoById(ELEMENTAL_BARRAGE);
+                }
+                int yValue = si != null ? si.getValue(y, slv) : 0;
+                int hitCount = 1;
+                if (skillID == 400021015 || skillID == 500061045) hitCount = 4;
+                else if (skillID == 400021014 || skillID == 500061044) hitCount = 3;
+                else if (skillID == 400021013 || skillID == 500061043) hitCount = 2;
+                int RealValue = yValue * hitCount;
+                if (skillID == ELEMENTAL_BARRAGE || skillID == HEXA_ELEMENTAL_BARRAGE) {
+                    o1.nReason = isHexaElementalBarrage ? 500061045 : 400021015;
+                    o1.nValue = si != null ? si.getValue(cr, slv) : 0;
                     o1.tTerm = 10;
                     tsm.sendStat(IndieCrR, o1);
-                    o2.nReason = 400021015;
+                    o2.nReason = isHexaElementalBarrage ? 500061045 : 400021015;
                     o2.nValue = RealValue;
                     o2.tTerm = 10;
                     tsm.sendStat(IndieDamR, o2);
@@ -595,7 +601,7 @@ public class Evan extends Job {
                 o1.tOption = 7;
                 tsm.sendStat(IndieNotDamaged, o1);
                 chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
-                chr.setSkillCooldown(ZODIAC_BURST, 360);
+                chr.addSkillCooldown(ZODIAC_BURST, 360 * 1000);
                 break;
             case HEROS_WILL_EVAN:
                 tsm.removeAllDebuffs();
@@ -765,23 +771,22 @@ public class Evan extends Job {
     @Override
     public int handleSetCoolDownSkill(int skillId) {
         switch (skillId) {
-            case 22140022 -> { // Dragon Dive
+            case 22140022, 22141012 -> { // Dragon Dive
                 chr.setSkillCooldown(22140022, chr.getSkillLevel(22141012));
+                chr.setSkillCooldown(22141012, chr.getSkillLevel(22141012));
                 return 1;
             }
-            case HEXA_DRAGON_DIVE -> { // HEXA Dragon Dive
+            case HEXA_DRAGON_DIVE, 22201008, 22201009 -> { // HEXA Dragon Dive
                 chr.setSkillCooldown(HEXA_DRAGON_DIVE, chr.getSkillLevel(HEXA_DRAGON_DIVE));
                 return 1;
             }
-            case 22110023 -> { // Dragon Flash
+            case 22110023, 22110022, 22111012 -> { // Dragon Flash
                 chr.setSkillCooldown(22110023, chr.getSkillLevel(22111012));
-                return 1;
-            }
-            case 22110022 -> { // Dragon Flash
                 chr.setSkillCooldown(22110022, chr.getSkillLevel(22111012));
+                chr.setSkillCooldown(22111012, chr.getSkillLevel(22111012));
                 return 1;
             }
-            case HEXA_DRAGON_FLASH -> { // HEXA Dragon Flash
+            case HEXA_DRAGON_FLASH, 22201004, 22201005 -> { // HEXA Dragon Flash
                 chr.setSkillCooldown(HEXA_DRAGON_FLASH, chr.getSkillLevel(HEXA_DRAGON_FLASH));
                 return 1;
             }
@@ -789,7 +794,7 @@ public class Evan extends Job {
                 chr.setSkillCooldown(DRAGON_BREATH, chr.getSkillLevel(DRAGON_BREATH));
                 return 1;
             }
-            case HEXA_DRAGON_BREATH -> { // HEXA Dragon Breath
+            case HEXA_DRAGON_BREATH, 22201012, 22201013, 22201014 -> { // HEXA Dragon Breath
                 chr.setSkillCooldown(HEXA_DRAGON_BREATH, chr.getSkillLevel(HEXA_DRAGON_BREATH));
                 return 1;
             }
@@ -809,8 +814,9 @@ public class Evan extends Job {
                 chr.setSkillCooldown(HEROIC_MEMORIES_EVAN, chr.getSkillLevel(HEROIC_MEMORIES_EVAN));
                 return 1;
             }
-            case ELEMENTAL_BARRAGE -> {
-                chr.setSkillCooldown(ELEMENTAL_BARRAGE, chr.getSkillLevel(ELEMENTAL_BARRAGE));
+            case ELEMENTAL_BARRAGE, HEXA_ELEMENTAL_BARRAGE -> {
+                int cdSkill = chr.hasSkill(HEXA_ELEMENTAL_BARRAGE) ? HEXA_ELEMENTAL_BARRAGE : ELEMENTAL_BARRAGE;
+                chr.setSkillCooldown(cdSkill, chr.getSkillLevel(cdSkill));
                 return 1;
             }
             case DRAGON_SLAM -> {
@@ -830,8 +836,8 @@ public class Evan extends Job {
                 return 1;
             }
             case ZODIAC_BURST, ZODIAC_BURST_ATTACK, ZODIAC_BURST_FINISHER, ZODIAC_BURST_FINISHER_ATTACK -> {
-                chr.setSkillCooldown(ZODIAC_BURST, 360);
-                chr.setSkillCooldown(ZODIAC_BURST_FINISHER, 240);
+                chr.addSkillCooldown(ZODIAC_BURST, 360 * 1000);
+                chr.addSkillCooldown(ZODIAC_BURST_FINISHER, 360 * 1000);
                 return 1;
             }
         }

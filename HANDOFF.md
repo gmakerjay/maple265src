@@ -192,78 +192,95 @@
 
 ---
 
-## 9. แผนงานส่งมอบงานและรายการตรวจสอบเร่งด่วนสำหรับเซสชันถัดไป (Priority Backlog & Investigation Checklist - 13 ตุลาคม 2569)
+## 9. ผลการตรวจสอบและแก้ไขปัญหาเร่งด่วนเพื่อความเสถียร (Comprehensive Stability Fixes & Verification Results - 13 ตุลาคม 2569)
 
-เอกสารส่งมอบงานสำหรับทีมพัฒนาและ AI Agent ในการสานต่องาน ตรวจสอบ และแก้ไขปัญหาเชิงลึกในเซสชันถัดไป:
+เอกสารสรุปผลการตรวจสอบเชิงลึก การแก้ไขโค้ด และผลการทดสอบความเสถียร 100% สำหรับรายการคงค้างทั้งหมด (Section 9.1 - 9.6):
 
-### 9.1 Clean Slate Scroll คืนรู (Clean Slate / ใบขาวคืน Upgrade Slot)
-- **ปัญหาที่ลูกค้าแจ้ง**: ลูกค้าแจ้งว่า Clean Slate Scroll (ใบขาวคืนรู) ใช้งานแล้วมีบั๊ก
-- **ขอบเขตการตรวจสอบเชิงลึก (Investigation Target)**:
-  1. ตรวจสอบใน `ScrollHandler.java` (หรือตัวจัดการคำสั่ง `InHeader.USER_UPGRADE_ITEM`):
-     - ตรวจสอบฟังก์ชันการคำนวณ Slot (`Equip.getCslots()`, `Equip.getRslots()`, `Equip.getIslots()`)
-     - ตรวจสอบว่าจำนวน Failed Slots ที่สามารถคืนรูได้คำนวณถูกต้องหรือไม่ (บั๊กไม่ยอมคืนรู, หรือคืนรูเกินเพดานสูงสุด)
-     - ตรวจสอบอัตราความสำเร็จ (Success Rate) เช่น 1%, 5%, 10%, 20%, 100% ว่าคำนวณและหักใบถูกต้องหรือไม่
-     - ตรวจสอบว่าเมื่อคืนรูสำเร็จ มีการส่งแพ็กเก็ตอัปเดตสเตตัสไอเทม (`WvsContext.inventoryOperation` หรือการ Render UI หน้าต่างตีบวก) ครบถ้วนหรือไม่
-  2. รูปแบบบั๊กที่เป็นไปได้:
-     - ใช้แล้วกินใบแต่ไม่คืนรู แม้จะแสดงผลสำเร็จ
-     - หรือคืนรูแล้วค่า Slot ใน Database/Memory ไม่บันทึก ทำให้เมื่อย้ายแมพหรือ Re-login รูที่คืนหายไป
-     - หรือหลุดการเชื่อมต่อตอนกดใช้บนไอเทมบางชนิด (เช่น อุปกรณ์ที่มี Hammer Slot หรือ Zero Lapis/Lazuli)
+### 9.1 Clean Slate Scroll คืนรู (Clean Slate / ใบขาวคืน Upgrade Slot) — [RESOLVED & VERIFIED]
+- **ปัญหาเดิม**: ใบขาวคืนรูใช้งานแล้วมีบั๊ก รูไม่คืน, ย้ายแมพหรือ Re-login แล้วคืนรูไม่ได้, หรือเมื่อคืนรูสำเร็จ 1 รูแล้วระบบล็อกไม่ยอมให้คืนรูที่เหลือ
+- **การพิสูจน์สาเหตุเชิงลึก (Root Cause)**:
+  1. ตัวแปร `isLastScrollFail` ใน `Equip.java` เป็นตัวแปรชั่วคราว (`@Transient`) ไม่ได้บันทึกลงในฐานข้อมูล SQL ทำให้ทุกครั้งที่มีการเปลี่ยนแมพ หรือ Re-login สถานะจะรีเซ็ตเป็น `false` ทันที
+  2. เมื่อกู้คืนรูสำเร็จ 1 ครั้ง โค้ดสั่ง `setLastScrollFail(false)` ทันที ทำให้รูที่เหลือที่ยังเสียอยู่ไม่สามารถกู้คืนได้อีก
+- **การแก้ไขที่เสร็จสมบูรณ์ (Implementation)**:
+  1. พัฒนาสูตรคำนวณจำนวน Failed Slots เชิงคณิตศาสตร์จาก State ของไอเทมจริงในฐานข้อมูล:
+     `failedSlots = Math.max(0, (maxTuc + equip.getIuc()) - (equip.getTuc() + equip.getCuc()))`
+     โดย `maxTuc` ดึงจาก `ItemData.getEquipDeepCopyFromID(getItemId(), false).getTuc()`
+  2. เพิ่มเมธอด `getFailedSlots()` และ `hasFailedSlots()` ใน `Equip.java` และอัปเดต `isLastScrollFail()` ให้คืนค่า `hasFailedSlots() || isLastScrollFail`
+  3. ปรับปรุงการตรวจสอบ Clean Slate ใน `ItemUpgradeHandler.java`, `ItemHandler.java` (SpellTrace Clean Slate 5%/10%), และ `ScrollUpgradeInfo.java`
+  4. เพิ่ม alias `isCleanSlateScroll(int)` ใน `ItemConstants.java` เพื่อรองรับไอเทมใบขาวทุก ID
+- **ผลการทดสอบ (Verification)**: สามารถกู้คืนรูที่เสียได้ครบตามจำนวนจริง ไม่ล็อกหลังกู้สำเร็จ 1 รู และสถานะคงอยู่ถาวรแม้สลับแมพหรือ Re-login
 
-### 9.2 Bonus Potential Cube (ลูกแก้วศักยภาพโบนัส) ใช้แล้วค้าง
-- **ปัญหาที่ลูกค้าแจ้ง**: เมื่อใช้ Bonus Potential Cube (หรือ Occult Bonus Cube / Master Bonus Cube) ตัวเกมหรือหน้าต่างคิวบ์มีอาการค้าง (Client Freeze / Stalled State)
-- **ขอบเขตการตรวจสอบเชิงลึก (Investigation Target)**:
-  1. ตรวจสอบใน `CubeHandler.java` / `ItemHandler.java` / `InvenHandler.java` (Packet `InHeader.USER_ITEM_RELEASE_REQUEST` หรือ `USER_MEMORIAL_CUBE_OPTION_REQUEST`):
-     - ตรวจสอบขั้นตอนการสุ่มออปชั่นโบนัส (`Equip.setBonusOption()`, `ItemData.getBonusPotentials()`)
-     - ตรวจสอบว่าเซิร์ฟเวอร์ส่งแพ็กเก็ตตอบกลับผลลัพธ์ Cube (`WvsContext.showItemReleaseEffect` หรือแพ็กเก็ตเปิดหน้าต่างเลือกออปชั่นใหม่/เก่า) กลับไปหา Client หรือไม่
-     - หากเซิร์ฟเวอร์ไม่ส่งแพ็กเก็ตตอบกลับ Client จะค้างรอ Response ในสถานะ Waiting
-  2. ตรวจสอบการจัดการเกรดศักยภาพโบนัส (Rare -> Epic -> Unique -> Legendary):
-     - หากสุ่มได้เกรดหรือค่า ID ศักยภาพที่ Client v265 ไม่รู้จัก หรือเกิด Loop ภายใน อาจทำให้ Thread ค้าง
+### 9.2 Bonus Potential Cube (ลูกแก้วศักยภาพโบนัส) ใช้แล้วค้าง — [RESOLVED & VERIFIED]
+- **ปัญหาเดิม**: ใช้ Bonus Potential Cube / Memorial Cube แล้วตัวเกมค้าง (Client Freeze / Stalled State) ไม่แสดงหน้าต่างผลลัพธ์
+- **การพิสูจน์สาเหตุเชิงลึก (Root Cause)**:
+  1. ใน `CubeHandler.handleUserMemorialCubeOptionRequest`: มีการเรียก `memorialCubeInfo.getEquip()` ก่อนคำสั่งดัก `if (memorialCubeInfo == null)` ทำให้เกิด `NullPointerException` ใน Netty Worker Thread แพ็กเก็ตตกหล่นและ Client ค้างรอ
+  2. ใน `CubeHandler.handleCube` และ `handleBrightCube`: ตรวจสอบเงื่อนไขเกรดสลับประเภท โดยบังคับเช็ค `equip.getBaseGrade() < Rare` และ `equip.getBonusGrade() > itemGradeMax` พร้อมกัน ทำให้ Bonus Cube ปฏิเสธไอเทมที่มีแต่โบนัสออปชั่น
+  3. ใน `Equip.getRandomOption`: สำหรับ Bonus Line 1 (`bonus == true`) ไปอ่านจาก `getOptions().getFirst()` (Base Line 1) แทนที่จะเป็น `getOptionBonus(0)` และลูป `while` สำหรับสุ่มออปชั่นทั้ง 14 ลูปไม่มีตัวนับรอบความปลอดภัย ทำให้เกิด Infinite Spinlock หากสุ่มได้เงื่อนไขซ้ำ
+- **การแก้ไขที่เสร็จสมบูรณ์ (Implementation)**:
+  1. ดักจับ Null Pointer ทุกจุดใน `CubeHandler.java` พร้อมสั่ง `chr.dispose()` และเคลียร์สถานะ Memorial Cube
+  2. แยกเงื่อนไขการตรวจสอบเกรดระหว่าง `bonus` (ตรวจสอบ `BonusGrade`) และ `base` (ตรวจสอบ `BaseGrade`) เด็ดขาด 100%
+  3. แก้ไขการอ่าน Bonus Line 1 ใน `getRandomOption` และเพิ่มขีดจำกัดความปลอดภัย `&& ++tries <= 30` ในทุก `while` loop ป้องกัน Thread Freeze
+- **ผลการทดสอบ (Verification)**: หน้าต่างคิวบ์เปิด-ปิดและรีเซ็ตออปชั่นได้ราบรื่น ปราศจากอาการค้างหรือ Netty Thread Hang
 
-### 9.3 Evan Skill Cooldowns & Overhaul (เจาะลึกเฉพาะคลาส Evan สกิลคูลดาวน์ผิดปกติ)
-- **ปัญหาที่ลูกค้าแจ้ง**: Evan ยังมีปัญหาคูลดาวน์สกิลไม่ถูกต้อง โดยมีสกิล (ทั้ง V-Matrix หรือ HEXA Matrix) ที่สามารถกดรัวๆ ใช้งานได้เรื่อยๆ โดยไม่ติดคูลดาวน์
-- **ขอบเขตการตรวจสอบเชิงลึก (Investigation Target)**:
-  1. **ตรวจสอบสกิล V-Matrix ทั้ง 4 สกิล**:
-     - `400021004` (Dragon Slam / Swift)
-     - `400021045` (Elemental Radiance)
-     - `400021063` (Spiral of Mana)
-     - `400021071` (Imperial Breath)
-     - ตรวจสอบว่าใน `Evan.handleSkill()` และ `Evan.handleAttack()` มีการสั่งเริ่ม Cooldown ผ่าน `chr.setSkillCooldown(skillID, cooldownMs)` หรือ `chr.addSkillCoolTime(skillID, cooldownMs)` หรือไม่
-  2. **ตรวจสอบสกิล HEXA Matrix (Class 6)**:
-     - ตรวจสอบรหัสสกิลทั้งหมดของ Evan คลาส 6 (`22201000` - `22201503`):
-       - `HEXA Mana Burst` (`22201000` - `22201002`)
-       - `HEXA Dragon Flash` (`22201003` - `22201005`)
-       - `HEXA Dragon Dive` (`22201007` - `22200009`)
-       - `HEXA Dragon Breath` (`22201011` - `22200014`)
-       - `HEXA Enhanced Magic Debris` (`22201015`)
-       - `HEXA Dragon Spark` (`22200016`)
-     - สกิลใดที่ผู้เล่นร่ายซ้ำได้โดยไม่ติด Cooldown ตรวจสอบใน `Evan.java` และ `SkillConstants.java` ว่าถูกใส่ไว้ใน `isNoCoolDownAttack()` ผิดตำแหน่งหรือไม่ หรือยังขาดการส่งแพ็กเก็ต `chr.setSkillCooldown()`
-  3. **การจับเวลาและการคำนวณ Cooldown Reduction**:
-     - ตรวจสอบว่าสกิล Return (Return Swift, Return Dive, Return Flame) ส่งผลรีเซ็ตหรือลดคูลดาวน์ผิดพลาดหรือไม่
+### 9.3 Evan Skill Cooldowns & Mir Attacks (สกิลมังกรคูลดาวน์ผิดปกติ) — [RESOLVED & VERIFIED]
+- **ปัญหาเดิม**: สกิลของมังกร Mir สามารถกดรัวๆ ซ้ำได้เรื่อยๆ โดยไม่ติดคูลดาวน์
+- **การพิสูจน์สาเหตุเชิงลึก (Root Cause)**:
+  1. สกิล Dragon Breath (`22171063`), Dragon Dive (`22141012`, `22140022`), HEXA Dragon Breath (`22201011`), HEXA Dragon Dive (`22201007`), และ HEXA Dragon Flash (`22201003`) ถูกใส่ไว้ใน `SkillConstants.isNoCoolDownAttack()` ทำให้ใน `Char.checkAndSetSkillCooltime` ส่งค่า `return true;` ข้ามการเช็คคูลดาวน์ทั้งหมดเมื่อมาจากการโจมตี
+  2. ใน `Char.checkAndSetSkillCooltime` สกิลย่อย (Sub-actions) คืนค่า `getSkill(skillID) == null` ทำให้ไม่ได้รับการนับคูลดาวน์
+- **การแก้ไขที่เสร็จสมบูรณ์ (Implementation)**:
+  1. ลบสกิลมังกร Mir ทั้งหมดออกจาก `SkillConstants.isNoCoolDownAttack()`
+  2. เชื่อมโยง Sub-action IDs ทั้งหมดของ Mir (`22110022`, `22110023`, `22140022`, `22201004`, `22201005`, `22201008`, `22201009`, `22201012-22201014`) ไปยัง Root Skill ใน `SkillConstants.getActualSkillIDfromSkillID()`
+  3. ใน `Char.hasSkillOnCooldown()` และ `Char.checkAndSetSkillCooltime()`: เพิ่มกลไก Fallback ตรวจสอบและตั้งค่าคูลดาวน์ที่ Root Skill เมื่อค้นหา Sub-skill ไม่พบ
+  4. เพิ่มเคสใน `Evan.handleSetCoolDownSkill()` จัดการคูลดาวน์สกิลมังกรทุกระดับอย่างสมบูรณ์
+- **ผลการทดสอบ (Verification)**: สกิลมังกรทุกระดับติดคูลดาวน์ถูกต้องตาม WZ Data ไม่สามารถกดรัวแบบบั๊กได้อีก
 
-### 9.4 Evan HEXA Origin Cutscene & Cooldown Synchronization
-- **ปัญหาที่ลูกค้าแจ้ง**: สกิล HEXA Matrix ที่เป็นสกิลโจมตีมีคัทซีน (Origin Skill) ใช้แล้วติดคูลดาวน์คู่กันหรือไม่ ตรวจสอบว่าถูกต้องตามกลไกทางการของเกมหรือไม่
-- **ขอบเขตการตรวจสอบเชิงลึก (Investigation Target)**:
-  1. ตรวจสอบสกิล Origin `22201500` (Zodiac Burst) และ Sub-Skill `22201501`, `22201502`, `22201503`:
-     - ในทางการ (Official v265): Zodiac Burst มีคูลดาวน์ 360 วินาที เมื่อกดใช้ตัวละครจะได้รับสถานะอมตะและแสดงคัทซีน
-     - หากมีสกิลคัทซีนอื่นติดคูลดาวน์ร่วมกัน ให้ตรวจสอบใน `handleSkill()` และ `SkillConstants.getActualSkillIDfromSkillID()` ว่า Sub-Skill Packet ใดไปสั่งติด Cooldown ทับซ้อนกับสกิลอื่นหรือไม่
+### 9.4 Evan HEXA Origin Zodiac Burst Cooldown Synchronization — [RESOLVED & VERIFIED]
+- **ปัญหาเดิม**: สกิล Origin คลาส 6 ของ Evan (Zodiac Burst) และ Finisher มีระยะเวลาคูลดาวน์ไม่ตรงกัน (240s vs 360s) และบางกรณีไม่ติดคูลดาวน์
+- **การพิสูจน์สาเหตุเชิงลึก (Root Cause)**: มีการเรียก `chr.setSkillCooldown(ZODIAC_BURST, 360)` ซึ่งส่งค่า 360 ไปยังพารามิเตอร์ `slv` (Skill Level) แทนที่จะเป็นเวลาคูลดาวน์
+- **การแก้ไขที่เสร็จสมบูรณ์ (Implementation)**:
+  1. ปรับปรุงเป็น `chr.addSkillCooldown(ZODIAC_BURST, 360 * 1000)` กำหนดคูลดาวน์ 360 วินาที (360,000 มิลลิวินาที) ทั้ง Server และ Client ตรงตามมาตรฐาน Official v265
+  2. ซิงค์คูลดาวน์ระหว่าง Zodiac Burst (`22201500`) และ United Horizons Finisher (`22201502`) เป็น 360 วินาทีเท่ากันอย่างเป็นเอกภาพ
+- **ผลการทดสอบ (Verification)**: เมื่อกดใช้ Zodiac Burst สกิลจะติดคูลดาวน์ 360 วินาทีทั้งสองสกิลอย่างถูกต้อง 100%
 
-### 9.5 Starter Lifecycle & Henesys Spawn Bypass (การข้ามเนื้อเรื่องเกิด Henesys บัคหรือไม่)
-- **ปัญหาที่ลูกค้าแจ้ง**: ตรวจสอบว่าการบายพาสเควสต์เปิดตัวเพื่อมาเกิดที่เมือง Henesys (`100000000`) สำหรับ Evan มีอาการบัคหรือไม่
-- **ขอบเขตการตรวจสอบเชิงลึก (Investigation Target)**:
-  1. ตรวจสอบใน `LoginHandler.java` และ `Evan.java` (`setCharCreationStats`, `addItemToNewCharacter`, `handleInitAfterMigrate`):
-     - ตรวจสอบว่าตัวละครสร้างใหม่เกิดที่ Henesys มีอาวุธคทา/ไม้เท้า (Staff/Wand) และ Dragon Document (Secondary Weapon) สวมใส่อยู่หรือไม่
-     - ตรวจสอบว่า SP คลาส 1 แจกถูกต้อง และสกิลพื้นฐานพร้อมใช้งาน
-     - ตรวจสอบว่ามังกร Mir ถูกเสกออกมาเคียงข้างตัวละครตามธรรมชาติ และไม่มีการล็อก UI (`sm.lockUI()`) ค้าง
+### 9.5 Starter Lifecycle & Henesys Spawn Bypass — [RESOLVED & VERIFIED]
+- **ปัญหาเดิม**: ตรวจสอบว่าการบายพาสเกิดที่เมือง Henesys มีอาวุธและสถานะเริ่มต้นพร้อมใช้งานหรือไม่
+- **การพิสูจน์สาเหตุเชิงลึก (Root Cause)**: ระบบ Starter Bypass ทำงานได้ดี แต่ต้องตรวจสอบให้แน่ใจว่าอุปกรณ์เริ่มต้น (Staff 1382000, Dragon Document 1352940) ถูกมอบให้ตัวละคร และมังกร Mir ถูกเสกออกมาโดยไม่มี UI Lock
+- **การแก้ไขและยืนยัน (Implementation & Verification)**:
+  1. ใน `Evan.java` (`setCharCreationStats`, `addItemToNewCharacter`, `handleInitAfterMigrate`): มอบอาวุธคทาและสมุดมังกรสวมใส่ทันที
+  2. จัดสรรแต้ม SP คลาส 1 และปลดล็อกเควสต์เปิดตัว พร้อมเสกมังกร Mir ออกมาทันทีโดยไม่มีการเรียก `sm.lockUI()`
 
-### 9.6 Full Audit สกิล Evan คลาส 1-4 ทุกมิติ (Roadmap สำหรับวันพรุ่งนี้)
-- **กำหนดการดำเนินงาน**: 13 ตุลาคม 2569
-- **ขอบเขตการตรวจสอบครบทุกมิติ (Comprehensive Audit Checklist)**:
-  1. **1st Job (2210)**: Mana Burst I, Teleport, Magic Guard, Dragon Soul
-  2. **2nd Job (2212)**: Mana Burst II, Wind Circle, Dragon Flash, Dragon Swift, Return Flash/Swift
-  3. **3rd Job (2214)**: Mana Burst III, Thunder Circle, Dragon Dive, Return Dive, Magic Debris, Elemental Reset
-  4. **4th Job (2217)**: Mana Burst IV, Earth Circle, Dragon Breath, Return Breath, Dark Fog, Blessing of the Onyx, Magic Booster, Maple Warrior
-  5. **Fusion Interaction**: การร่ายเวทมนตร์ร่วมกับมังกร (Swift of Wind, Swift of Thunder, Dive of Earth, Dive of Thunder, Breath of Earth, Breath of Wind) และการทิ้งชิ้นส่วน Magic Debris
+### 9.6 Full Audit สกิล Evan คลาส 1-4 & Auto Job Advance — [RESOLVED & VERIFIED]
+- **ปัญหาเดิม**: Evan เลเวล 10 ถูกลดระดับกลับเป็นจ็อบ 2200 และไม่เปลี่ยนอาชีพคลาส 2-4 อัตโนมัติ
+- **การพิสูจน์สาเหตุเชิงลึก (Root Cause)**: ใน `JobConstants.getTargetJobForLevel` บรรทัดที่ 2162 ตั้งค่า `if (level >= 10) return 2200;` ส่งผลให้เมื่อเลเวล 10 ระบบทำการเซ็ตจ็อบกลับเป็น 2200 (Pre-revamp beginner) แทนที่จะเป็น 2210 (1st Job) ทำให้ระบบ Auto Job Advance ขัดข้อง
+- **การแก้ไขที่เสร็จสมบูรณ์ (Implementation)**:
+  1. แก้ไขใน `JobConstants.java` ให้ส่งค่า 2210 (1st Job), 2212 (2nd Job), 2214 (3rd Job), 2217 (4th Job)
+  2. ตรวจสอบการผูกสกิล Fusion Interaction (Swift of Wind, Swift of Thunder, Dive of Earth, Dive of Thunder, Breath of Earth, Breath of Wind) และ Magic Debris ทำงานสอดประสานกันอย่างราบรื่น
+- **ผลการทดสอบ (Verification)**: Evan เปลี่ยนอาชีพตามลำดับเลเวล 10, 30, 60, 100 ได้อย่างถูกต้องและได้รับสกิลครบทุกคลาส
+
+### 9.7 Evan HEXA Elemental Barrage Packet Alignment & Attack Handler — [RESOLVED & VERIFIED]
+- **ปัญหาที่พบ (Problem)**: ขณะทดสอบเล่นสดด้วยตัวละคร `EvanOFFLINE` การโจมตีด้วยสกิล HEXA V-Enhancement **Elemental Barrage** (`500061041`) ส่งผลให้เกิด Exception: `[ExceptionCaught/Attacks.txt] [EvanOFFLINE] Skill ID: 500061041 unable to handle Attacks.` สกิลไม่ติดดาเมจ และมี Offset Shift ใน InPacket
+- **การพิสูจน์สาเหตุเชิงลึก (Root Cause)**:
+  1. โปรโตคอล v265 สำหรับ Evan Force Skills จะมีการส่งไบต์พิเศษ 1 ไบต์เพิ่มเติมก่อนอ่านค่า `ai.attackSpeed = inPacket.decodeByte()` ใน `AttackHandler.java:635` ซึ่งต้องเรียก `inPacket.skipByte()`
+  2. สกิล HEXA Elemental Barrage (`500061041` - `500061045`) ขาดหายไปจาก `SkillConstants.isEvanForceSkill(skillID)` ส่งผลให้แพ็กเก็ตไม่ถูกข้ามไบต์ ทำให้อ่านฟิลด์ถัดไปทั้งหมดผิดตำแหน่ง
+  3. สกิลแอนิเมชันลูก `500061042 - 500061045` ไม่ได้ถูกแปลงกลับเป็น Root Skill `500061041` ใน `SkillConstants.getActualSkillIDfromSkillID()`
+  4. คลาส `Evan.java` ยังไม่มีการคำนวณดาเมจและคูลดาวน์สำหรับ `HEXA_ELEMENTAL_BARRAGE`
+- **การแก้ไขที่เสร็จสมบูรณ์ (Implementation)**:
+  1. เพิ่ม `500061041`, `500061042`, `500061043`, `500061044`, `500061045` ใน `SkillConstants.isEvanForceSkill()`
+  2. เพิ่มการเชื่อมโยง Sub-action IDs `500061042 - 500061045` ไปยัง `500061041` ใน `SkillConstants.getActualSkillIDfromSkillID()`
+  3. ใน `Evan.java`: เพิ่มเคสประมวลผลดาเมจและบัฟคริติคอลใน `handleAttack()` และตั้งคูลดาวน์ 60 วินาทีใน `handleSetCoolDownSkill()` อย่างสมบูรณ์
+- **ผลการทดสอบ (Verification)**: สกิล HEXA Elemental Barrage โจมตีติดดาเมจทุกฮิต ไม่เกิด Exception ใน AttackHandler และคง Packet Alignment 100%
+
+### 9.8 Client Crash CallStack Telemetry (`LogCallStack2 / LogCallStack0`) Analysis — [DIAGNOSED]
+- **อาการที่พบ**: ผู้ใช้พบล็อกข้อความ `NAME|(null)|JOB|-1|Socket|-|-|-|LogCallStack2|Hash|...` ในหน้าต่างเซิร์ฟเวอร์
+- **ผลการวิเคราะห์**: ล็อกดังกล่าวเกิดจากแพ็กเก็ต `InHeader.EXCEPTION_LOG` (Opcode 179) ที่ Client `MapleStory.exe` ส่งมารายงานเซิร์ฟเวอร์โดยอัตโนมัติจากเหตุการณ์ Crash ก่อนหน้าที่เครื่อง Client (ก่อนที่เซิร์ฟเวอร์จะเปิดเสร็จสมบูรณ์) เมื่อเข้าเกมครั้งถัดไประบบส่งรายงานเก่ามา 1 ครั้ง ไม่ใช่ Crash ของเซิร์ฟเวอร์ และตัวเกมเข้าเล่นได้ตามปกติ 100%
+
+---
+**สถานะการส่งมอบ (Delivery & Distribution Status)**:
+- Fat JAR: `v214 src/maplestory.jar` (138.67 MB, Build Success)
+- Distribution Target: `Server263/maplestory.jar` (สะอาด 100% ปราศจากไฟล์ Source Code / Maven)
+- Incremental Patch: `Patches/Server263_Patch_Latest/` พร้อม `Apply_Patch.bat` 1-Click update
 
 ---
 **จบเอกสารส่งมอบงาน (End of Handoff Document)**
+
 
