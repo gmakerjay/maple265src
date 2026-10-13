@@ -3,6 +3,28 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-13 23:45 น.] Comprehensive Arcane Symbol System Analysis, Technical Audit & Master Handoff Specification
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: Arcane Symbol Ecosystem Audit, Script & Coupon Gap Analysis, and Master Project Handoff Documentation
+- **รายละเอียด**:
+  1. **การตรวจสอบและวิเคราะห์ระบบ Arcane Symbols & Quests (System Audit & Findings)**:
+     - **ระบบที่สมบูรณ์ 100% (Working Features)**:
+       - **UI Merging & Level Up (Opcode 374)** ใน [ItemHandler.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemHandler.java): คำนวณสูตร Meso ทางการ `10,000 * Math.floor((curLvl^2 + 11) * (8 + 0.1 * curLvl))`, มอบ Main Stat +100 / DA HP +2,100 / Xenon All-stat +48, Arcane Power สูงสุด 220, อัปเดต Union Artifact และส่งเอฟเฟกต์อัปเลเวล `UIContextPacket.ArcLevelUpEffect`
+       - **Mob Kill Tracking**: รองรับ `QuestCountGroup` (เช่น 9101238) ผ่าน `mob.getParentMobSet().contains(reqMobID)` ใน [Char.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java) และ [Quest.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/quest/Quest.java) นับจำนวนมอนสเตอร์ 500-600 ตัวในทุกแผนที่ได้ถูกต้อง
+       - **Daily Reset**: ฟังก์ชัน `initSymbolQuests()` ใน [Char.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java) รีเซ็ตสถานะเควสต์ทุกเที่ยงคืนถูกต้อง
+       - **Selector Coupon (`2635509`)**: สคริปต์ [consume_2635509.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/item/consume_2635509.py) ให้เลือกรับสัญลักษณ์ได้ครบทั้ง 6 เมือง
+     - **จุดบกพร่องและสิ่งที่ต้องปรับปรุง (Defects & Improvement Roadmap)**:
+       - **Bugs ในสคริปต์ NPC 6 เมือง** ([3003104.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/3003104.py) ถึง [3003530.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/3003530.py)): พบการเรียก `sm.getQuestById(qid)` ซึ่งไม่มีเมธอดบน `ScriptManagerImpl` (เกิด `AttributeError`) และใช้คีย์เวิร์ด Java `null` ใน Python (เกิด `NameError`) เมื่อผู้เล่นมีเควสต์ค้างอยู่กดคุยกับ NPC จะทำให้สคริปต์ Error ทันที
+       - **คูปองสัญลักษณ์เฉพาะเมืองไม่มีสคริปต์รองรับ (`2635510` - `2635514`)**: เควสต์ประจำวัน Chu Chu (`q38457e.py`), Lachelein (`q38461e.py`), Arcana (`q38465e.py`), Morass (`q38469e.py`), Esfera (`q38473e.py`) แจกคูปองเฉพาะเมืองเหล่านี้ แต่ไม่มีไฟล์สคริปต์ `consume_2635510.py` ถึง `consume_2635514.py` ทำให้ผู้เล่นกดดับเบิ้ลคลิกใช้งานไม่ได้
+       - **ภาษาเวียดนามตกค้าง**: ข้อความรีเซ็ตใน `Char.java` (`[Thông báo] ... đã được làm mới!`) และบทสนทนาส่งเควสต์ใน `q38451e.py` - `q38473e.py`
+       - **เควสต์เนื้อเรื่องหลัก (Storyline Pre-quests)**: สคริปต์เนื้อเรื่อง 34100-34700 ขาดตอน (ปัจจุบันเปิด `ServerConfig.BOSS_UNLOCK_PREQUESTS = true` เพื่อให้ข้ามเควสต์ได้)
+       - **มินิเกมรายสัปดาห์**: มีเฉพาะ Hungry Muto ที่สมบูรณ์ใน Java ขณะที่ Erda Spectrum, Midnight Chaser, Spirit Savior ยังขาดระบบแจกรางวัล
+  2. **การจัดทำเอกสารส่งมอบงาน (Master Handoff Documentation)**:
+     - สร้างเอกสารเฉพาะทาง [ARCANE_SYMBOLS_HANDOFF.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/ARCANE_SYMBOLS_HANDOFF.md) รวบรวมสรุปประเด็น, สาเหตุเชิงลึก, แนวทางแก้ไขทางเทคนิคทีละขั้นตอนพร้อมโค้ดตัวอย่าง และตารางไฟล์ที่เกี่ยวข้อง
+     - อัปเดตเอกสารส่งมอบงานหลัก [HANDOFF.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/HANDOFF.md) เพิ่มหมวดที่ 10 (การปรับปรุง Cube Latency) และหมวดที่ 11 (แผนการปรับปรุง Arcane Symbols)
+     - ซิงค์เอกสารทั้งหมดไปยัง root directory และเตรียม push ขึ้นรีโปสิโทรีอย่างสมบูรณ์
+
 ## 📅 [2026-10-13 22:25 น.] Fix Bright Cube Option Selection UI & Resolve Glowing Cube Responsiveness Delay (Opcode 381 & Sequence Alignment)
 
 ### 🎯 Scope & Technical Details

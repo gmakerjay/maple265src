@@ -275,12 +275,54 @@
 - **ผลการวิเคราะห์**: ล็อกดังกล่าวเกิดจากแพ็กเก็ต `InHeader.EXCEPTION_LOG` (Opcode 179) ที่ Client `MapleStory.exe` ส่งมารายงานเซิร์ฟเวอร์โดยอัตโนมัติจากเหตุการณ์ Crash ก่อนหน้าที่เครื่อง Client (ก่อนที่เซิร์ฟเวอร์จะเปิดเสร็จสมบูรณ์) เมื่อเข้าเกมครั้งถัดไประบบส่งรายงานเก่ามา 1 ครั้ง ไม่ใช่ Crash ของเซิร์ฟเวอร์ และตัวเกมเข้าเล่นได้ตามปกติ 100%
 
 ---
+
+## 10. การปรับปรุงระบบ Cube & Potential ล่าสุด (Bright Cube & Glowing Cube Latency Fix) — [RESOLVED & VERIFIED]
+
+### 10.1 Glowing Cube (ลูกแก้วเขียว `5062028`) ดีเลย์ 2-3 วินาที
+- **ปัญหา**: เมื่อกดใช้ Glowing Cube แล้วมีอาการหน่วงช้า 2-3 วินาที กว่าจะสุ่มออปชั่นเสร็จ
+- **สาเหตุเชิงลึก**: ใน `CubeHandler.java` มีการเรียกคำสั่งหน่วงเวลาแบบฮาร์ดโค้ด `chr.getTimer().addEvent(..., 2000, TimeUnit.MILLISECONDS)` หรือ delay ที่ไม่จำเป็น
+- **การแก้ไข**: นำ delay ออกและส่งแพ็กเก็ตผลลัพธ์ทันที ทำให้การสุ่มออปชั่นตอบสนองฉับไวในระดับมิลลิวินาที (Instant Response)
+
+### 10.2 Bright Cube (ลูกแก้วม่วง `5062029`) ใช้งานไม่ได้ / เลือกออปชั่นไม่ได้
+- **ปัญหา**: ผู้เล่นกดใช้ Bright Cube หน้าต่าง Before / After ไม่ขึ้น หรือเมื่อขึ้นแล้วกดเลือกออปชั่นไม่ได้
+- **สาเหตุเชิงลึก**:
+  1. Opcode `InHeader.USER_MEMORIAL_CUBE_OPTION_REQUEST` ถูกเซ็ตค่าไม่ตรงกับ Client v265 (ขาด Opcode 381)
+  2. แพ็กเก็ตที่ส่งมาจากตัวเกมมี Header และ Index ข้อมูลที่สลับลำดับกับเซิร์ฟเวอร์รุ่นเก่า
+- **การแก้ไข**:
+  1. ลงทะเบียน Opcode 381 ใน `InHeader.java` เข้ากับ Handler ของ Memorial Cube
+  2. ปรับปรุง `CubeHandler.java` ให้แกะค่า `cubeIndex` และ `selection` (Before = 0, After = 1) ได้อย่างถูกต้อง
+  3. มอบสิทธิการเลือก Before/After และอัปเดตสเตตัสไอเทมลงฐานข้อมูลอย่างสมบูรณ์
+
+---
+
+## 11. รายงานการวิเคราะห์และแผนการปรับปรุงระบบ Arcane Symbols & Quests (Arcane Symbol Improvement Plan)
+
+เอกสารส่งมอบงานฉบับละเอียดสำหรับการปรับปรุงระบบ Arcane Symbols ถูกบันทึกไว้ที่ [`ARCANE_SYMBOLS_HANDOFF.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/ARCANE_SYMBOLS_HANDOFF.md) โดยมีสรุปประเด็นหลัก 5 ข้อที่ต้องดำเนินการดังนี้:
+
+1. **แก้ไข Crash ในสคริปต์ NPC ประจำเมือง 6 แห่ง (`3003104.py`, `3003152.py`, `3003209.py`, `3003322.py`, `3003432.py`, `3003530.py`)**:
+   - เพิ่ม `sm.isQuestComplete(questId)` ใน `ScriptManagerImpl.java` เพื่อรองรับทั้ง `AccountQuest` และ `Quest` ปกติ
+   - ลบการเรียก `sm.getQuestById` และคำว่า `null` ใน Python script ออกทั้งหมด
+2. **สร้างสคริปต์คูปอง Arcane Symbol ประจำเมือง (`2635510` ถึง `2635514`)**:
+   - สร้างสคริปต์ใน `data/scripts/item/consume_2635510.py` - `2635514.py` เพื่อให้ผู้เล่นดับเบิ้ลคลิกรับ Symbol ประจำเมือง (Chu Chu, Lachelein, Arcana, Morass, Esfera) ได้ทันที
+   - หรือปรับปรุงเควสต์ประจำวันให้แจก `2635509` (Selector Coupon) ตามมาตรฐาน v265
+3. **แปลภาษาข้อความแจ้งเตือนและบทสนทนา**:
+   - แปลข้อความรีเซ็ตใน `Char.java` (`initSymbolQuests`) จากภาษาเวียดนามเป็นภาษาอังกฤษ/ไทย
+   - แปลบทสนทนาส่งเควสต์ใน `q38451e.py` ถึง `q38473e.py`
+4. **เควสต์เนื้อเรื่องหลัก (Pre-quests Storyline Gap)**:
+   - นำเข้าสคริปต์เควสต์เนื้อเรื่องที่ขาดหายไป หรือคงค่า `ServerConfig.BOSS_UNLOCK_PREQUESTS = true` ไว้เพื่อความสะดวกในการเล่น
+5. **มินิเกมและเควสต์รายสัปดาห์ (Weekly Minigames Integration)**:
+   - ต่อยอดระบบ Erda Spectrum (`34151`), Midnight Chaser (`34378`), และ Spirit Savior (`39035`) ให้มีระบบแจกสัญลักษณ์ประจำสัปดาห์เช่นเดียวกับ Hungry Muto
+
+---
+
 **สถานะการส่งมอบ (Delivery & Distribution Status)**:
 - Fat JAR: `v214 src/maplestory.jar` (138.67 MB, Build Success)
 - Distribution Target: `Server263/maplestory.jar` (สะอาด 100% ปราศจากไฟล์ Source Code / Maven)
-- Incremental Patch: `Patches/Server263_Patch_Latest/` พร้อม `Apply_Patch.bat` 1-Click update
+- Incremental Patch: `Patches/Server263_Patch_Latest.zip` (All-in-One พร้อม `Apply_Patch.bat` 1-Click update)
+- Handoff Spec: `ARCANE_SYMBOLS_HANDOFF.md` และ `HANDOFF.md`
 
 ---
+
 **จบเอกสารส่งมอบงาน (End of Handoff Document)**
 
 
