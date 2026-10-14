@@ -3430,6 +3430,13 @@ public class Char {
      * and sends the info to the client.
      */
     public void setJob(int id) {
+        if (id == 2200) {
+            id = 2210;
+        } else if (id == 2211) {
+            id = 2212;
+        } else if (id == 2218) {
+            id = 2217;
+        }
         JobConstants.JobEnum job = JobConstants.JobEnum.getJobById((short) id);
         if (job == null) {
             chatMessage("Unable to set unknown Job Id " + id);
@@ -12569,17 +12576,19 @@ public class Char {
         List<Skill> list = new ArrayList<>();
         short job = getJob();
         Set<Short> jobs = new LinkedHashSet<>(JobConstants.getJobChain(job));
-        if (getLevel() >= 260 && JobConstants.isSiaAstelle(job)) {
-            jobs.add((short) 18214);
-        }
         for (short j : jobs) {
+            if (JobConstants.isBeginnerJob(j)) {
+                continue;
+            }
             for (Skill skill : SkillData.getSkillsByJob(j)) {
-                // STRICT SAFETY: Do NOT touch V-Matrix (5th Job) or HEXA Matrix (6th Job)
-                if (j >= 40000 || skill.getSkillId() >= 40000000) {
+                // STRICT SAFETY: Do NOT touch V-Matrix (5th Job, 400000000+), HEXA Matrix (6th Job), or Hyper Skills
+                if (j >= 40000 || skill.getSkillId() >= 400000000) {
                     continue;
                 }
                 SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
-                if (si != null && (si.isOriginSkill() || si.isAscentSkill() || si.getVSkill() > 0)) {
+                if (si != null && (si.isOriginSkill() || si.isAscentSkill() || si.getVSkill() > 0
+                        || si.getHyper() > 0 || si.getHyperStat() > 0
+                        || SkillConstants.isHyperSkill(j, skill.getSkillId()))) {
                     continue;
                 }
                 byte maxLevel = (byte) skill.getMaxLevel();

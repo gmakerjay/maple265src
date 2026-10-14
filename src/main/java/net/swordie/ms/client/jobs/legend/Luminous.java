@@ -69,14 +69,14 @@ public class Luminous extends Job {
 
     public static final int SHADOW_SHELL = 27111004; //Buff
     public static final int RAY_OF_REDEMPTION = 27111101; // Attack + heals party members
-    public static final int DUSK_GUARD = 27111005; //Buff
+    public static final int DUSK_GUARD = 27110005; // Passive in v265 (was 27111005)
     public static final int PHOTIC_MEDITATION = 27111006; //Buff
-    public static final int LUNAR_TIDE = 27110007;
+    public static final int LUNAR_TIDE = 27110007; // Self Recovery in v265
     public static final int DEATH_SCYTHE = 27111303;
 
-    public static final int DARK_CRESCENDO = 27121005; //Buff
+    public static final int DARK_CRESCENDO = 27120005; // Passive stacking buff on attack in v265 (was 27121005)
     public static final int ARCANE_PITCH = 27121006; //Buff
-    public static final int MAPLE_WARRIOR_LUMI = 27121009; //Buff
+    public static final int MAPLE_WARRIOR_LUMI = 27121009; // Passive in v265
     public static final int ENDER = 27121303;
     public static final int DARKNESS_MASTERY = 27120008;
     public static final int HEROS_WILL_LUMI = 27121010;
@@ -283,59 +283,61 @@ public class Luminous extends Job {
                 o1.rOption = lm.isDark() ? ECLIPSE : SUNFIRE;
                 newStats.put(Larkness, o1);
             }
-            // Dark Crescendo
-            if (tsm.hasStat(StackBuff)) {
-                if (Util.succeedProp(crescendoProp)) {
-                    // increment Dark Crescendo
-                    SkillInfo crescendoInfo = SkillData.getSkillInfoById(DARK_CRESCENDO);
-                    Skill skill = chr.getSkill(DARK_CRESCENDO);
-                    slv = skill.getCurrentLevel();
+            // Dark Crescendo (v265 passive stacking buff on attack: 27120005)
+            if (chr.hasSkill(DARK_CRESCENDO) && Util.succeedProp(crescendoProp)) {
+                SkillInfo crescendoInfo = SkillData.getSkillInfoById(DARK_CRESCENDO);
+                Skill skill = chr.getSkill(DARK_CRESCENDO);
+                if (crescendoInfo != null && skill != null) {
+                    int cSlv = skill.getCurrentLevel();
                     int amount = 1;
-                    if (tsm.hasStat(StackBuff)) {
+                    if (tsm.hasStat(StackBuff) && tsm.getOption(StackBuff).rOption == DARK_CRESCENDO) {
                         amount = tsm.getOption(StackBuff).mOption;
                         if (amount < getMaxDarkCrescendoStack()) {
                             amount++;
                         }
                     }
-                    o2.setInMillis(true);
-                    o2.nOption = (amount * crescendoInfo.getValue(damR, slv));
+                    int durationSec = Math.max(30, crescendoInfo.getValue(time, cSlv));
+                    this.darkCrescendoTimer = System.currentTimeMillis() + (durationSec * 1000L);
+                    o2.nOption = (amount * crescendoInfo.getValue(damR, cSlv));
                     o2.rOption = DARK_CRESCENDO;
-                    o2.tOption = (int) (darkCrescendoTimer - System.currentTimeMillis());
+                    o2.tOption = durationSec;
                     o2.mOption = amount;
                     newStats.put(StackBuff, o2);
                 }
             }
-            // Lunar Tide
+            // Self Recovery (27110007 in v265, formerly Lunar Tide)
             if (chr.hasSkill(LUNAR_TIDE)) {
-                // giveLunarTideBuff();
                 SkillInfo lti = SkillData.getSkillInfoById(LUNAR_TIDE);
                 Skill skill = chr.getSkill(LUNAR_TIDE);
-                slv = skill.getCurrentLevel();
-                int maxMP = c.getChr().getStat(Stat.mmp);
-                int curMP = c.getChr().getStat(Stat.mp);
-                int maxHP = c.getChr().getStat(Stat.mhp);
-                int curHP = c.getChr().getStat(Stat.hp);
-                double ratioHP = ((double) curHP / maxHP);
-                double ratioMP = ((double) curMP) / maxMP;
-                if (ratioHP > ratioMP) {
-                    o3.nOption = 2;
-                    o3.rOption = LUNAR_TIDE;
-                    newStats.put(LifeTidal, o3);
-                    //only gives 10% for w/e reason but the SkillStat is correct
-                    o4.nOption = lti.getValue(prop, slv);
-                    o4.rOption = LUNAR_TIDE;
-                    newStats.put(CriticalBuff, o4);
-                } else {
-                    o3.nOption = 1;
-                    o3.rOption = LUNAR_TIDE;
-                    newStats.put(LifeTidal, o3);
-                    o4.nOption = lti.getValue(x, slv);
-                    o4.rOption = LUNAR_TIDE;
-                    newStats.put(DamR, o4);
+                if (lti != null && skill != null && lti.getSkillStatInfo().containsKey(prop) && !lti.getSkillStatInfo().containsKey(t)) {
+                    int lSlv = skill.getCurrentLevel();
+                    int maxMP = c.getChr().getStat(Stat.mmp);
+                    int curMP = c.getChr().getStat(Stat.mp);
+                    int maxHP = c.getChr().getStat(Stat.mhp);
+                    int curHP = c.getChr().getStat(Stat.hp);
+                    double ratioHP = ((double) curHP / maxHP);
+                    double ratioMP = ((double) curMP) / maxMP;
+                    if (ratioHP > ratioMP) {
+                        o3.nOption = 2;
+                        o3.rOption = LUNAR_TIDE;
+                        newStats.put(LifeTidal, o3);
+                        o4.nOption = lti.getValue(prop, lSlv);
+                        o4.rOption = LUNAR_TIDE;
+                        newStats.put(CriticalBuff, o4);
+                    } else {
+                        o3.nOption = 1;
+                        o3.rOption = LUNAR_TIDE;
+                        newStats.put(LifeTidal, o3);
+                        o4.nOption = lti.getValue(x, lSlv);
+                        o4.rOption = LUNAR_TIDE;
+                        newStats.put(DamR, o4);
+                    }
                 }
             }
-            tsm.sendStat(newStats);
-            newStats.clear();
+            if (!newStats.isEmpty()) {
+                tsm.sendStat(newStats);
+                newStats.clear();
+            }
         }
         switch (skillID) {
             case HARMONIC_PARADOX:
@@ -440,10 +442,12 @@ public class Luminous extends Job {
                 tsm.sendStat(Booster, o1);
                 break;
             case MAPLE_WARRIOR_LUMI:
-                o1.nReason = skillID;
-                o1.nValue = si.getValue(x, slv);
-                o1.tTerm = si.getValue(time, slv);
-                tsm.sendStat(IndieStatR, o1);
+                if (si != null && si.getValue(time, slv) > 0) {
+                    o1.nReason = skillID;
+                    o1.nValue = si.getValue(x, slv);
+                    o1.tTerm = si.getValue(time, slv);
+                    tsm.sendStat(IndieStatR, o1);
+                }
                 break;
             case SHADOW_SHELL:
                 o1.nOption = 3;
@@ -453,10 +457,13 @@ public class Luminous extends Job {
                 tsm.sendStat(AntiMagicShell, o1);
                 break;
             case DUSK_GUARD:
-                o1.nValue = si.getValue(indiePdd, slv);
-                o1.nReason = skillID;
-                o1.tTerm = si.getValue(time, slv);
-                tsm.sendStat(IndiePDD, o1);
+            case 27111005:
+                if (si != null && si.getValue(time, slv) > 0) {
+                    o1.nValue = si.getValue(indiePdd, slv);
+                    o1.nReason = skillID;
+                    o1.tTerm = si.getValue(time, slv);
+                    tsm.sendStat(IndiePDD, o1);
+                }
                 break;
             case PHOTIC_MEDITATION:
                 o1.nOption = si.getValue(emad, slv);
@@ -465,12 +472,15 @@ public class Luminous extends Job {
                 tsm.sendStat(EMAD, o1);
                 break;
             case DARK_CRESCENDO:
-                o1.nOption = 1;
-                o1.rOption = skillID;
-                o1.tOption = si.getValue(time, slv);
-                o1.mOption = 1;
-                tsm.sendStat(StackBuff, o1);
-                this.darkCrescendoTimer = System.currentTimeMillis() + (si.getValue(time, slv) * 1000L);
+            case 27121005:
+                if (si != null && si.getValue(time, slv) > 0) {
+                    o1.nOption = 1;
+                    o1.rOption = skillID;
+                    o1.tOption = si.getValue(time, slv);
+                    o1.mOption = 1;
+                    tsm.sendStat(StackBuff, o1);
+                    this.darkCrescendoTimer = System.currentTimeMillis() + (si.getValue(time, slv) * 1000L);
+                }
                 break;
             case ARCANE_PITCH:
                 o1.nOption = si.getValue(y, slv);
@@ -541,16 +551,14 @@ public class Luminous extends Job {
             case HARMONIC_PARADOX:
             case LUSTROUS_ORB:
                 // Origin cutscene invincibility (7s) + enter Equilibrium
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
                 o1.nReason = skillID;
                 o1.nValue = 1;
                 o1.tTerm = 7;
                 tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
-                chr.write(UserLocal.showHexaSkillEff(chr));
-                if (chr.getParty() != null) {
-                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
-                        other.write(UserLocal.showHexaSkillEff(chr));
-                    }
-                }
+                chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
                 Option eqOpt = new Option();
                 eqOpt.nOption = 1;
                 eqOpt.rOption = EQUILIBRIUM_LIGHT;
@@ -596,7 +604,7 @@ public class Luminous extends Job {
                 }
             }
         }
-        if (tsm.getOption(Larkness).rOption == EQUILIBRIUM_DARK) {
+        if (tsm.hasStat(Larkness) && tsm.getOption(Larkness).rOption == EQUILIBRIUM_DARK) {
             return;
         } else {
             /*
@@ -702,10 +710,10 @@ public class Luminous extends Job {
             for (int qid = 25000; qid <= 25015; qid++) {
                 sm.completeQuestNoRewards(qid);
             }
-            sm.levelUntil(30);
-            sm.setJob(JobConstants.JobEnum.LUMINOUS2.getJobId());
-            sm.addSPJobAdv(JobConstants.JobEnum.LUMINOUS1.getJobId(), 5);
-            sm.addSPJobAdv(JobConstants.JobEnum.LUMINOUS2.getJobId(), 3);
+            sm.levelUntil(30); // Job.handleLevelUp(30) automatically advances to 2710, grants SP, and maxes skills
+            if (chr.getJob() != JobConstants.JobEnum.LUMINOUS2.getJobId()) {
+                sm.setJob(JobConstants.JobEnum.LUMINOUS2.getJobId());
+            }
             sm.giveAndEquip(1212001); // Lv 30 Shining Rod
             sm.giveAndEquip(1352401); // Lv 30 Orb
             sm.warp(FieldConstants.HOME_MAP);

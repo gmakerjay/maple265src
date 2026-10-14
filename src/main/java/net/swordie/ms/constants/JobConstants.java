@@ -1288,11 +1288,7 @@ public class JobConstants {
     }
 
     public static boolean isEvan(short id) {
-        return id == JobEnum.EVAN_NOOB.getJobId()
-                || id == JobEnum.EVAN1.getJobId()
-                || id == JobEnum.EVAN2.getJobId()
-                || id == JobEnum.EVAN3.getJobId()
-                || id == JobEnum.EVAN4.getJobId();
+        return id == JobEnum.EVAN_NOOB.getJobId() || (id >= 2200 && id <= 2220);
     }
 
     public static boolean isMercedes(short id) {
@@ -1994,10 +1990,10 @@ public class JobConstants {
         }
 
         // Evan
-        if ((job >= 2200 && job <= 2218) || job == 2001) {
+        if ((job >= 2200 && job <= 2220) || job == 2001) {
             jobs.add((short) 2001);
             if (job != 2001) {
-                short[] evanChain = new short[]{2200, 2210, 2212, 2214, 2217, 2218};
+                short[] evanChain = new short[]{2200, 2210, 2211, 2212, 2214, 2217, 2218};
                 for (short ej : evanChain) {
                     if (ej <= job) {
                         jobs.add(ej);

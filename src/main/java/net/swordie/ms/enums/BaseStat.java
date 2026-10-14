@@ -229,9 +229,11 @@ public enum BaseStat {
                 stats.put(luk, o.nValue);
                 break;
             case DamR:
-            case IndieDamR:
             case BeastForm:
                 stats.put(damR, o.nOption);
+                break;
+            case IndieDamR:
+                stats.put(damR, o.nValue != 0 ? o.nValue : o.nOption);
                 break;
             case IndieMDF:
                 stats.put(mdf, o.nValue);
@@ -278,10 +280,11 @@ public enum BaseStat {
             case IndieStatR:
             case IndieStatRBasic:
             case BasicStatUp:
-                stats.put(strR, o.nValue);
-                stats.put(dexR, o.nValue);
-                stats.put(intR, o.nValue);
-                stats.put(lukR, o.nValue);
+                int statRVal = o.nValue != 0 ? o.nValue : o.nOption;
+                stats.put(strR, statRVal);
+                stats.put(dexR, statRVal);
+                stats.put(intR, statRVal);
+                stats.put(lukR, statRVal);
                 break;
             case Stance:
                 stats.put(stance, o.nOption);

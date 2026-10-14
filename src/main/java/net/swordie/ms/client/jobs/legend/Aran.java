@@ -542,10 +542,12 @@ public class Aran extends Job {
                 tsm.sendStat(Booster, o1);
                 break;
             case MAPLE_WARRIOR_ARAN:
-                o1.nReason = skillID;
-                o1.nValue = si.getValue(x, slv);
-                o1.tTerm = si.getValue(time, slv);
-                tsm.sendStat(IndieStatR, o1);
+                if (si != null && si.getValue(time, slv) > 0) {
+                    o1.nReason = skillID;
+                    o1.nValue = si.getValue(x, slv);
+                    o1.tTerm = si.getValue(time, slv);
+                    tsm.sendStat(IndieStatR, o1);
+                }
                 break;
             case DRAIN:
                 if (tsm.hasStatBySkillId(skillID)) {
@@ -616,6 +618,9 @@ public class Aran extends Job {
                 o1.nOption = 1;
                 o1.rOption = skillID;
                 o1.tOption = 7;
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 7;
                 tsm.sendStat(IndieNotDamaged, o1);
                 chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
                 giveAdrenalinRushBuff(tsm);
@@ -700,10 +705,10 @@ public class Aran extends Job {
                 sm.completeQuestNoRewards(qid);
             }
             sm.completeQuestNoRewards(21050);
-            sm.levelUntil(30);
-            sm.setJob(JobConstants.JobEnum.ARAN2.getJobId());
-            sm.addSPJobAdv(JobConstants.JobEnum.ARAN1.getJobId(), 5);
-            sm.addSPJobAdv(JobConstants.JobEnum.ARAN2.getJobId(), 3);
+            sm.levelUntil(30); // Job.handleLevelUp(30) automatically advances to 2110, grants SP, and maxes skills
+            if (chr.getJob() != JobConstants.JobEnum.ARAN2.getJobId()) {
+                sm.setJob(JobConstants.JobEnum.ARAN2.getJobId());
+            }
             sm.giveAndEquip(1442001); // Lv 30 Polearm
             sm.giveAndEquip(1352931); // Lv 30 Secondary
             sm.warp(FieldConstants.HOME_MAP);

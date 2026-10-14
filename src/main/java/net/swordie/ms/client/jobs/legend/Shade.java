@@ -420,10 +420,12 @@ public class Shade extends Job {
         Option o5 = new Option();
         switch (skillID) {
             case MAPLE_WARRIOR_SH:
-                o1.nReason = skillID;
-                o1.nValue = si.getValue(x, slv);
-                o1.tTerm = si.getValue(time, slv);
-                tsm.sendStat(IndieStatR, o1);
+                if (si != null && si.getValue(time, slv) > 0) {
+                    o1.nReason = skillID;
+                    o1.nValue = si.getValue(x, slv);
+                    o1.tTerm = si.getValue(time, slv);
+                    tsm.sendStat(IndieStatR, o1);
+                }
                 break;
             case FOX_SPIRITS:
                 o1.nOption = 1;
@@ -553,12 +555,15 @@ public class Shade extends Job {
                 tsm.removeAllDebuffs();
                 break;
             case ADVENT_OF_THE_FOX_GOD:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
                 o1.nValue = 1;
                 o1.nReason = skillID;
                 o1.tTerm = 7;
                 newStats.put(IndieNotDamaged, o1);
                 tsm.sendStat(newStats);
-                chr.getField().broadcast(UserPacket.effect(Effect.skillSpecial(skillID)), chr);
+                chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
                 break;
         }
     }
@@ -677,10 +682,10 @@ public class Shade extends Job {
             for (int qid = 38000; qid <= 38012; qid++) {
                 sm.completeQuestNoRewards(qid);
             }
-            sm.levelUntil(30);
-            sm.setJob(JobConstants.JobEnum.SHADE2.getJobId());
-            sm.addSPJobAdv(JobConstants.JobEnum.SHADE1.getJobId(), 5);
-            sm.addSPJobAdv(JobConstants.JobEnum.SHADE2.getJobId(), 3);
+            sm.levelUntil(30); // Job.handleLevelUp(30) automatically advances to 2510, grants SP, and maxes skills
+            if (chr.getJob() != JobConstants.JobEnum.SHADE2.getJobId()) {
+                sm.setJob(JobConstants.JobEnum.SHADE2.getJobId());
+            }
             sm.giveAndEquip(1482001); // Lv 30 Knuckle
             sm.giveAndEquip(1353101); // Lv 30 Fox Marble
             sm.warp(FieldConstants.HOME_MAP);

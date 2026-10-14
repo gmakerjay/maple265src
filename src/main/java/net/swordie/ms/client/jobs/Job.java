@@ -3032,14 +3032,10 @@ public abstract class Job {
             }
         }
 
-        // Auto-complete Evan dragon evolution quests (22100 - 22103) so Mir evolves properly in Skill UI
+        // Auto-complete Evan dragon evolution quests (22100-22109, 22130-22133) so Mir evolves properly in Skill UI
         if (JobConstants.isEvan(targetJob)) {
-            int curLevel = chr.getLevel();
-            if (curLevel >= 10 && !chr.hasQuestCompleted(22100)) chr.completeQuest(22100);
-            if (curLevel >= 30 && !chr.hasQuestCompleted(22101)) chr.completeQuest(22101);
-            if (curLevel >= 60 && !chr.hasQuestCompleted(22102)) chr.completeQuest(22102);
-            if (curLevel >= 100 && !chr.hasQuestCompleted(22103)) chr.completeQuest(22103);
             if (chr.getJobHandler() instanceof net.swordie.ms.client.jobs.legend.Evan evan) {
+                evan.syncDragonEvolutionQuests();
                 evan.spawnDragon();
             }
         }

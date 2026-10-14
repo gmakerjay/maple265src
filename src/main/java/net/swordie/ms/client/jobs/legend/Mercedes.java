@@ -183,9 +183,6 @@ public class Mercedes extends Job {
                 sm.completeQuestNoRewards(qid);
             }
             sm.levelUntil(30);
-            sm.setJob(JobConstants.JobEnum.MERCEDES2.getJobId());
-            sm.addSPJobAdv(JobConstants.JobEnum.MERCEDES1.getJobId(), 5);
-            sm.addSPJobAdv(JobConstants.JobEnum.MERCEDES2.getJobId(), 3);
             sm.giveAndEquip(1522001); // Lv 30 Dual Bowguns
             sm.giveAndEquip(1352001); // Lv 30 Magic Arrows
             sm.warp(FieldConstants.HOME_MAP);
@@ -440,10 +437,12 @@ public class Mercedes extends Job {
                 tsm.sendStat(Booster, o1);
                 break;
             case MAPLE_WARRIOR_MERC:
-                o1.nReason = skillID;
-                o1.nValue = si.getValue(x, slv);
-                o1.tTerm = si.getValue(time, slv);
-                tsm.sendStat(IndieStatR, o1);
+                if (si != null && si.getValue(time, slv) > 0) {
+                    o1.nReason = skillID;
+                    o1.nValue = si.getValue(x, slv);
+                    o1.tTerm = si.getValue(time, slv);
+                    tsm.sendStat(IndieStatR, o1);
+                }
                 break;
             case WATER_SHIELD:
                 o1.nOption = si.getValue(asrR, slv);
@@ -533,6 +532,9 @@ public class Mercedes extends Job {
                 o1.nOption = 1;
                 o1.rOption = skillID;
                 o1.tOption = 7;
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 7;
                 tsm.sendStat(IndieNotDamaged, o1);
                 chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
                 break;

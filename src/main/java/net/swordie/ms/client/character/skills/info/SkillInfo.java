@@ -229,11 +229,29 @@ public class SkillInfo {
         Map<BaseStat, Integer> stats = new HashMap<>();
         for (SkillStat ss : getSkillStatInfo().keySet()) {
             Tuple<BaseStat, Integer> bs = getBaseStatValue(ss, slv, chr);
-            stats.put(bs.getLeft(), bs.getRight());
+            if (bs == null || bs.getLeft() == null) {
+                continue;
+            }
+            BaseStat stat = bs.getLeft();
+            int val = bs.getRight();
+            stats.merge(stat, val, Integer::sum);
+            if (stat == BaseStat.allStat) {
+                stats.merge(BaseStat.str, val, Integer::sum);
+                stats.merge(BaseStat.dex, val, Integer::sum);
+                stats.merge(BaseStat.inte, val, Integer::sum);
+                stats.merge(BaseStat.luk, val, Integer::sum);
+            } else if (stat == BaseStat.allStatR) {
+                stats.merge(BaseStat.strR, val, Integer::sum);
+                stats.merge(BaseStat.dexR, val, Integer::sum);
+                stats.merge(BaseStat.intR, val, Integer::sum);
+                stats.merge(BaseStat.lukR, val, Integer::sum);
+            }
         }
         Map<BaseStat, Integer> guildSkillStats = getBaseStatValuesFromGuildSkills(chr);
         if (!guildSkillStats.isEmpty()) {
-            stats.putAll(guildSkillStats);
+            for (Map.Entry<BaseStat, Integer> entry : guildSkillStats.entrySet()) {
+                stats.merge(entry.getKey(), entry.getValue(), Integer::sum);
+            }
         }
         return stats;
     }

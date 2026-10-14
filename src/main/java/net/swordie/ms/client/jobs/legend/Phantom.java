@@ -702,10 +702,12 @@ public class Phantom extends Job {
                 tsm.sendStat(Booster, o1);
                 break;
             case MAPLE_WARRIOR_PH:
-                o1.nReason = skillID;
-                o1.nValue = si.getValue(x, slv);
-                o1.tTerm = si.getValue(time, slv);
-                tsm.sendStat(IndieStatR, o1);
+                if (si != null && si.getValue(time, slv) > 0) {
+                    o1.nReason = skillID;
+                    o1.nValue = si.getValue(x, slv);
+                    o1.tTerm = si.getValue(time, slv);
+                    tsm.sendStat(IndieStatR, o1);
+                }
                 break;
             case GHOSTWALK:
                 o1.nOption = si.getValue(x, slv);
@@ -850,12 +852,15 @@ public class Phantom extends Job {
                 tsm.sendStat(newStats);
                 break;
             case DEFYING_FATE:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
                 o1.nValue = 1;
                 o1.nReason = skillID;
                 o1.tTerm = 7;
                 newStats.put(IndieNotDamaged, o1);
                 tsm.sendStat(newStats);
-                chr.getField().broadcast(UserPacket.effect(Effect.skillSpecial(skillID)), chr);
+                chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
                 break;
         }
     }
@@ -1026,15 +1031,15 @@ public class Phantom extends Job {
     public void handleInitAfterMigrate(Char chr) {
         if (chr.getLevel() < 30) {
             ScriptManagerImpl sm = chr.getScriptManager();
-            sm.setJob(JobConstants.JobEnum.PHANTOM2.getJobId());
-            sm.levelUntil(30);
             for (int qid = 25400; qid <= 25425; qid++) {
                 sm.completeQuestNoRewards(qid);
             }
             sm.completeQuestNoRewards(25100);
             sm.completeQuestNoRewards(25101);
-            sm.addSPJobAdv(JobConstants.JobEnum.PHANTOM1.getJobId(), 5);
-            sm.addSPJobAdv(JobConstants.JobEnum.PHANTOM2.getJobId(), 3);
+            sm.levelUntil(30); // Job.handleLevelUp(30) automatically advances to 2410, grants SP, and maxes skills
+            if (chr.getJob() != JobConstants.JobEnum.PHANTOM2.getJobId()) {
+                sm.setJob(JobConstants.JobEnum.PHANTOM2.getJobId());
+            }
             sm.giveAndEquip(1362005);
             sm.giveAndEquip(1352101);
             sm.warp(FieldConstants.HOME_MAP);
@@ -1050,39 +1055,29 @@ public class Phantom extends Job {
             chr.addSkill(JUDGMENT_DRAW_2, 1, 1);
         }
         var sm = chr.getScriptManager();
-        if (level == 60 || level == 100) {
-            final short jobID = chr.getJob();
-            if (!JobConstants.canJobAdvance(jobID)) {
-                return;
+        if (level == 60) {
+            sm.completeQuestNoRewards(25111);
+            for (int qid = 25426; qid <= 25433; qid++) {
+                sm.completeQuestNoRewards(qid);
             }
-            final short next = JobConstants.nextJob(jobID);
-            sm.setJob(next);
-            if (level == 60) {
-                sm.completeQuestNoRewards(25111);
-                for (int qid = 25426; qid <= 25433; qid++) {
-                    sm.completeQuestNoRewards(qid);
-                }
-                for (int qid = 25444; qid <= 25447; qid++) {
-                    sm.completeQuestNoRewards(qid);
-                }
-            } else {
-                for (int qid = 25120; qid <= 25122; qid++) {
-                    sm.completeQuestNoRewards(qid);
-                }
-                for (int qid = 25434; qid <= 25438; qid++) {
-                    sm.completeQuestNoRewards(qid);
-                }
-                for (int qid = 25439; qid <= 25441; qid++) {
-                    sm.completeQuestNoRewards(qid);
-                }
-                for (int qid = 25300; qid <= 25302; qid++) {
-                    sm.completeQuestNoRewards(qid);
-                }
-                sm.completeQuestNoRewards(25446);
-                sm.completeQuestNoRewards(25448);
+            for (int qid = 25444; qid <= 25447; qid++) {
+                sm.completeQuestNoRewards(qid);
             }
-            sm.addSPJobAdv(jobID, 5);
-            sm.addSPJobAdv(next, 3);
+        } else if (level == 100) {
+            for (int qid = 25120; qid <= 25122; qid++) {
+                sm.completeQuestNoRewards(qid);
+            }
+            for (int qid = 25434; qid <= 25438; qid++) {
+                sm.completeQuestNoRewards(qid);
+            }
+            for (int qid = 25439; qid <= 25441; qid++) {
+                sm.completeQuestNoRewards(qid);
+            }
+            for (int qid = 25300; qid <= 25302; qid++) {
+                sm.completeQuestNoRewards(qid);
+            }
+            sm.completeQuestNoRewards(25446);
+            sm.completeQuestNoRewards(25448);
         }
     }
 

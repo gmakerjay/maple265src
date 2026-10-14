@@ -1,5 +1,5 @@
 sm.levelUntil(10)
-sm.setJob(2200)
+sm.setJob(2210)
 sm.addSP(5, True)
 sm.giveSkill(20011293)
 sm.chatScript("You learned the Back to Nature skill.")

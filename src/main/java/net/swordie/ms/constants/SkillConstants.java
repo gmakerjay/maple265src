@@ -1671,9 +1671,11 @@ public class SkillConstants {
             case 27120211:
             case 27121201:
             case 27121202:
+            case 27121214: // Twilight Nova (Dark)
             case 27141004: // HEXA_APOCALYPSE
             case 27140002: // HEXA_ENDLESS_DARKNESS (passive)
             case 27141003: // HEXA_ENDLESS_DARKNESS (active/attack)
+            case 27141008: // HEXA_TWILIGHT_NOVA (Dark)
             case 80001892:
                 return true;
         }
@@ -1689,9 +1691,11 @@ public class SkillConstants {
             case 27111100:
             case 27111101:
             case 27121100:
+            case 27121113: // Twilight Nova (Light)
             case 27141001: // HEXA_REFLECTION
             case 27140005: // HEXA_ETERNAL_LIGHT (passive)
             case 27141006: // HEXA_ETERNAL_LIGHT (active/attack)
+            case 27141007: // HEXA_TWILIGHT_NOVA (Light)
             case 80001891:
                 return true;
         }
@@ -2635,13 +2639,17 @@ public class SkillConstants {
             case 22110022: // Dragon Flash (Mir Action)
             case 22110023: // Dragon Flash (Mir Action)
                 return 22111012; // Dragon Flash
+            case 22110024: // Wind Flash (Mir Action)
+                return 22110014; // Wind Flash
             case 22140022: // Dragon Dive (Mir Action)
                 return 22141012; // Dragon Dive
             // Evan 6th Job HEXA Sub-Skills
             case 22201001: // HEXA Mana Burst Sub
                 return 22201000;
-            case 22201004: // HEXA Thunder Flash
-            case 22201005: // HEXA Wind Flash
+            case 22200004: // HEXA Thunder Flash
+            case 22200005: // HEXA Wind Flash
+            case 22201004: // HEXA Thunder Flash (alt)
+            case 22201005: // HEXA Wind Flash (alt)
                 return 22201003; // HEXA Dragon Flash
             case 22200008: // HEXA Earth Dive
             case 22200009: // HEXA Thunder Dive
@@ -2747,6 +2755,7 @@ public class SkillConstants {
     public static boolean isEvanFusionSkill(int skillID) {
         switch (skillID) {
             case 22110014:
+            case 22110024: // Wind Flash (Mir Action)
             case 22110025:
             case 22140014:
             case 22140015:
@@ -2756,9 +2765,23 @@ public class SkillConstants {
             case 22170066:
             case 22170067:
             case 22170094:
+            // Evan 5th Job V-Matrix Fusion Skills
+            case 400021012: // Elemental Barrage
+            case 400021013:
+            case 400021014:
+            case 400021015:
+            case 500061041: // HEXA Elemental Barrage
+            case 500061042:
+            case 500061043:
+            case 500061044:
+            case 500061045:
+            case 400020046: // Wyrmking's Breath
+            case 400020051: // Ludicrous Speed
             // Evan 6th Job (HEXA) Fusion Skills
-            case 22201004: // HEXA Thunder Flash
-            case 22201005: // HEXA Wind Flash
+            case 22200004: // HEXA Thunder Flash
+            case 22200005: // HEXA Wind Flash
+            case 22201004: // HEXA Thunder Flash (alt)
+            case 22201005: // HEXA Wind Flash (alt)
             case 22200008: // HEXA Earth Dive
             case 22200009: // HEXA Thunder Dive
             case 22201008: // HEXA Earth Dive (alt)

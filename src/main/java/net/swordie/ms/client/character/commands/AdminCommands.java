@@ -2990,6 +2990,7 @@ public class AdminCommands {
             chr.write(WvsContext.hexaSkillsUpdate(chr));
             if (JobConstants.isEvan(job)) {
                 if (chr.getJobHandler() instanceof net.swordie.ms.client.jobs.legend.Evan evan) {
+                    evan.syncDragonEvolutionQuests();
                     evan.spawnDragon();
                 }
             }

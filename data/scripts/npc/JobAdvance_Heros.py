@@ -94,12 +94,18 @@ def Evan_1stJob():
     sm.flipSpeaker()
     if sm.sendAskYesNo("#e\tWould you like to skip the Job Advanced Quest(s)?"):
         sm.jobAdvance(2210)
+        sm.completeQuestNoRewards(22100)
+        sm.completeQuestNoRewards(22101)
+        sm.completeQuestNoRewards(22130)
         #sm.dispose()
     
 def Evan_2ndJob():
     sm.flipSpeaker()
     if sm.sendAskYesNo("#e\tWould you like to skip the Job Advanced Quest(s)?"):
         sm.jobAdvance(2212)
+        sm.completeQuestNoRewards(22102)
+        sm.completeQuestNoRewards(22103)
+        sm.completeQuestNoRewards(22131)
         #sm.dispose()
     
 def Evan_3rdJob():
@@ -108,6 +114,9 @@ def Evan_3rdJob():
         if sm.getEmptyInventorySlots(1)>= 1:
             sm.jobAdvance(2214)
             sm.giveItem(1142156)
+            sm.completeQuestNoRewards(22104)
+            sm.completeQuestNoRewards(22105)
+            sm.completeQuestNoRewards(22132)
             #sm.dispose()
         else:
             sm.sendSayOkay("\t#ePlease make more space in your EQUIP inventory.")
@@ -117,8 +126,13 @@ def Evan_4thJob():
     sm.flipSpeaker()
     if sm.sendAskYesNo("#e\tWould you like to skip the Job Advanced Quest(s)?"):
         if sm.getEmptyInventorySlots(1)>= 1:
-            sm.jobAdvance(2218)
+            sm.jobAdvance(2217)
             sm.giveItem(1142157)
+            sm.completeQuestNoRewards(22106)
+            sm.completeQuestNoRewards(22107)
+            sm.completeQuestNoRewards(22108)
+            sm.completeQuestNoRewards(22109)
+            sm.completeQuestNoRewards(22133)
             #sm.dispose()
         else:
             sm.sendSayOkay("\t#ePlease make more space in your EQUIP inventory.")
@@ -432,6 +446,6 @@ if (Job == 2711):
         req = "#eThis jobs require the player to be at least level #r%s#k prior to advancement" %(Req_Level_4thJob)
         sm.sendSayOkay(req)
         #sm.dispose()
-if (Job == 2112 or Job == 2218 or Job == 2312 or Job == 2512 or Job == 2412 or Job == 2712):
+if (Job == 2112 or Job == 2217 or Job == 2218 or Job == 2312 or Job == 2512 or Job == 2412 or Job == 2712):
     sm.flipSpeaker()
     sm.sendSayOkay("#eYou may not advance at the current state.")

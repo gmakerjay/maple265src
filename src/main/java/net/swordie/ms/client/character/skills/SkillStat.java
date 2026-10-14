@@ -287,6 +287,7 @@ public enum SkillStat {
     itemConNo,
     indieCooltimeReduce,
     indieEvaR,
+    indieStatR,
     indieStatRBasic,
     indieCD,
     indieNotDamaged,
@@ -461,6 +462,10 @@ public enum SkillStat {
                 return BaseStat.ied;
             case indieAllStat:
                 return BaseStat.allStat;
+            case basicStatUp:
+            case indieStatR:
+            case indieStatRBasic:
+                return BaseStat.allStatR;
             case criticaldamageMin:
             case criticaldamageMax:
             case criticaldamage:

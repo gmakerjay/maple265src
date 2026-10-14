@@ -261,6 +261,45 @@ public class SkillData {
                 }
                 skillInfo.getSecondAtomInfos().put(index, secondAtomInfo);
             }
+            if (!skillInfo.getSkillStatInfo().containsKey(SkillStat.actionSpeed)) {
+                switch (skillInfo.getSkillId()) {
+                    case 1100004:
+                    case 1200004:
+                    case 1300004:
+                    case 2100011:
+                    case 2200015:
+                    case 2300010:
+                    case 3100012:
+                    case 3200013:
+                    case 3300010:
+                    case 4100003:
+                    case 4200002:
+                    case 4300006:
+                    case 5100006:
+                    case 5200014:
+                    case 5300009:
+                    case 21000011: // Aran Agile Polearms
+                    case 22110026: // Evan Agile Magic
+                    case 23100009: // Mercedes Agile Bowguns
+                    case 24100005: // Phantom Agile Canes
+                    case 27100007: // Luminous Agile Magic
+                    case 31000006:
+                    case 31200012:
+                    case 32100014:
+                    case 33000012:
+                    case 35000018:
+                    case 36000004:
+                    case 37000011:
+                    case 61000007:
+                        skillInfo.addSkillStatInfo(SkillStat.actionSpeed, "-2");
+                        break;
+                    case 121000115:
+                    case 162120025:
+                    case 400000006:
+                        skillInfo.addSkillStatInfo(SkillStat.actionSpeed, "-1");
+                        break;
+                }
+            }
             skills.put(skillInfo.getSkillId(), skillInfo);
         } catch (IOException e) {
             DataPrinter.send(DataPrinter.EXCEPTION_CAUGHT, e);
@@ -548,6 +587,7 @@ public class SkillData {
                                     case "common":
                                     case "info":
                                     case "info2":
+                                    case "psdWeaponBooster":
                                         for (Node commonNode : XMLApi.getAllChildren(mainLevelNode)) {
                                             Map<String, String> commonAttr = XMLApi.getAttributes(commonNode);
                                             String nodeName = commonAttr.get("name");

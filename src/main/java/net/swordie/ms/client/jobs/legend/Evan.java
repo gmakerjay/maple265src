@@ -69,7 +69,7 @@ public class Evan extends Job {
     public static final int SUMMON_ONYX_DRAGON = 22171081; // Summon
     public static final int HEROIC_MEMORIES_EVAN = 22171082;
     public static final int ENHANCED_MAGIC_DEBRIS = 22170070;
-    public static final int HEROS_WILL_EVAN = 22171004;
+    public static final int HEROS_WILL_EVAN = 22171069;
     public static final int DRAGON_FURY = 22170074;
 
     //Returns
@@ -303,21 +303,21 @@ public class Evan extends Job {
         if (si == null) {
             return;
         }
-        if (tsm.getOptByCTSAndSkill(Stance, PARTNERS) == null) {
-            EnumMap<CharacterTemporaryStat, Option> newStats = new EnumMap<>(CharacterTemporaryStat.class);
-            Option o1 = new Option();
-            Option o2 = new Option();
-            prevSkill = skillID;
-            o1.nReason = PARTNERS;
-            o1.nValue = si.getValue(indieDamR, 1);
-            o1.tTerm = 3;
-            newStats.put(IndieDamR, o1);
-            o2.nOption = si.getValue(stanceProp, 1);
-            o2.rOption = PARTNERS;
-            o2.tOption = 3;
-            newStats.put(Stance, o2);
-            tsm.sendStat(newStats);
-        }
+        int slv = Math.max(1, chr.getSkillLevel(PARTNERS));
+        int duration = Math.max(3, si.getValue(time, slv));
+        EnumMap<CharacterTemporaryStat, Option> newStats = new EnumMap<>(CharacterTemporaryStat.class);
+        Option o1 = new Option();
+        Option o2 = new Option();
+        prevSkill = skillID;
+        o1.nReason = PARTNERS;
+        o1.nValue = si.getValue(indieDamR, slv);
+        o1.tTerm = duration;
+        newStats.put(IndieDamR, o1);
+        o2.nOption = si.getValue(stanceProp, slv);
+        o2.rOption = PARTNERS;
+        o2.tOption = duration;
+        newStats.put(Stance, o2);
+        tsm.sendStat(newStats);
     }
 
     private void createMagicDebrisForceAtom() {
@@ -409,12 +409,15 @@ public class Evan extends Job {
             case 22110013:
                 attackInfo.attackActionType = 2;
                 break;
+            case 22110022:
             case 22110023:
             case 22201003: // HEXA Dragon Flash
                 attackInfo.attackActionType = 3;
                 break;
+            case 22110024:
             case 22110025:
-            case 22201005: // HEXA Wind Flash
+            case 22200005: // HEXA Wind Flash
+            case 22201005: // HEXA Wind Flash (alt)
                 attackInfo.attackActionType = 4;
                 break;
             case 22140023:
@@ -441,7 +444,8 @@ public class Evan extends Job {
                 attackInfo.attackActionType = 9;
                 break;
             case 22110014:
-            case 22201004: // HEXA Thunder Flash
+            case 22200004: // HEXA Thunder Flash
+            case 22201004: // HEXA Thunder Flash (alt)
                 attackInfo.attackActionType = 10;
                 break;
             case 22170066:
@@ -491,9 +495,13 @@ public class Evan extends Job {
         Option o2 = new Option();
         switch (skillID) {
             case MAGIC_GUARD:
-                o1.nOption = si.getValue(x, slv);
-                o1.rOption = skillID;
-                tsm.sendStat(MagicGuard, o1);
+                if (tsm.hasStat(MagicGuard)) {
+                    tsm.removeStatsBySkill(skillID);
+                } else {
+                    o1.nOption = si.getValue(x, slv);
+                    o1.rOption = skillID;
+                    tsm.sendStat(MagicGuard, o1);
+                }
                 break;
             case MAGIC_BOOSTER:
                 o1.nOption = si.getValue(x, slv);
@@ -502,15 +510,17 @@ public class Evan extends Job {
                 tsm.sendStat(Booster, o1);
                 break;
             case MAPLE_WARRIOR_EVAN:
-                o1.nReason = skillID;
-                o1.nValue = si.getValue(x, slv);
-                o1.tTerm = si.getValue(time, slv);
-                tsm.sendStat(BasicStatUp, o1);
+                if (si != null && si.getValue(time, slv) > 0) {
+                    o1.nReason = skillID;
+                    o1.nValue = si.getValue(x, slv);
+                    o1.tTerm = si.getValue(time, slv);
+                    tsm.sendStat(BasicStatUp, o1);
+                }
                 break;
             case RETURN_DIVE:
                 o1.nReason = skillID;
-                o1.nValue = si.getValue(x, slv);
-                o1.tTerm = si.getValue(time, slv);
+                o1.nValue = si != null ? si.getValue(indieBooster, slv) : -1;
+                o1.tTerm = si != null ? si.getValue(time, slv) : 60;
                 tsm.sendStat(IndieBooster, o1);
                 break;
             case ELEMENTAL_DECREASE:
@@ -606,6 +616,9 @@ public class Evan extends Job {
                 o1.nOption = 1;
                 o1.rOption = skillID;
                 o1.tOption = 7;
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 7;
                 tsm.sendStat(IndieNotDamaged, o1);
                 chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
                 chr.addSkillCooldown(ZODIAC_BURST, 360 * 1000);
@@ -617,11 +630,15 @@ public class Evan extends Job {
                 o1.nOption = 1;
                 o1.rOption = skillID;
                 o1.tOption = 5;
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 5;
                 tsm.sendStat(IndieNotDamaged, o1);
                 chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
                 chr.addSkillCooldown(UNITED_HORIZONS, 240 * 1000);
                 break;
             case HEROS_WILL_EVAN:
+            case 22171004:
                 tsm.removeAllDebuffs();
                 break;
         }
@@ -634,14 +651,65 @@ public class Evan extends Job {
         if (tsm.hasStat(MagicGuard)) {
             Skill skill = chr.getSkill(MAGIC_GUARD);
             SkillInfo si = SkillData.getSkillInfoById(MAGIC_GUARD);
-            int dmgPerc = si.getValue(x, skill.getCurrentLevel());
-            int dmg = hitInfo.hpDamage;
-            int mpDmg = (int) (dmg * (dmgPerc / 100D));
-            mpDmg = chr.getStat(Stat.mp) - mpDmg < 0 ? chr.getStat(Stat.mp) : mpDmg;
-            hitInfo.hpDamage = dmg - mpDmg;
-            hitInfo.mpDamage = mpDmg;
+            if (skill != null && si != null && skill.getCurrentLevel() > 0) {
+                int dmgPerc = si.getValue(x, skill.getCurrentLevel());
+                int dmg = hitInfo.hpDamage;
+                int mpDmg = (int) (dmg * (dmgPerc / 100D));
+                mpDmg = chr.getStat(Stat.mp) - mpDmg < 0 ? chr.getStat(Stat.mp) : mpDmg;
+                hitInfo.hpDamage = dmg - mpDmg;
+                hitInfo.mpDamage = mpDmg;
+            }
         }
         super.handleHit(c, inPacket, hitInfo);
+    }
+
+    private void completeEvanQuest(int qid) {
+        if (chr == null) {
+            return;
+        }
+        Quest q = chr.getQuests().get(qid);
+        if (q == null || q.getStatus() != QuestStatus.Completed) {
+            if (chr.getClient() != null) {
+                chr.completeQuest(qid, true);
+            } else {
+                q = new Quest(chr.getId(), qid, QuestStatus.Completed);
+                q.setCompletedTime(FileTime.currentTime());
+                chr.getQuests().put(qid, q);
+            }
+        }
+    }
+
+    /**
+     * Synchronizes all Evan tutorial and Dragon (Mir) evolution quests (22100-22109, 22130-22133, 22500)
+     * according to the character's current level so that the Skill UI [K] and Dragon Equip UI render Mir properly.
+     */
+    public void syncDragonEvolutionQuests() {
+        if (chr == null) {
+            return;
+        }
+        for (int qid = 22000; qid <= 22015; qid++) {
+            completeEvanQuest(qid);
+        }
+        completeEvanQuest(22500);
+        int level = chr.getLevel();
+        if (level >= 10) {
+            completeEvanQuest(22100);
+            completeEvanQuest(22130);
+        }
+        if (level >= 30) {
+            completeEvanQuest(22101);
+            completeEvanQuest(22131);
+        }
+        if (level >= 60) {
+            completeEvanQuest(22102);
+            completeEvanQuest(22132);
+        }
+        if (level >= 100) {
+            for (int qid = 22103; qid <= 22109; qid++) {
+                completeEvanQuest(qid);
+            }
+            completeEvanQuest(22133);
+        }
     }
 
     @Override
@@ -667,10 +735,12 @@ public class Evan extends Job {
             q.setCompletedTime(FileTime.currentTime());
             chr.getQuests().put(qid, q);
         }
-        // ปลดล็อคเควสต์กำเนิดมังกร 1st Job (22100) เพื่อให้ Mir ฟักออกจากไข่ในหน้าต่าง UI ทันที
-        Quest qMir = new Quest(chr.getId(), 22100, QuestStatus.Completed);
-        qMir.setCompletedTime(FileTime.currentTime());
-        chr.getQuests().put(22100, qMir);
+        // ปลดล็อคเควสต์กำเนิดมังกร 1st Job (22100, 22130) เพื่อให้ Mir ฟักออกจากไข่ในหน้าต่าง UI ทันที
+        for (int qid : new int[]{22100, 22130, 22500}) {
+            Quest qMir = new Quest(chr.getId(), qid, QuestStatus.Completed);
+            qMir.setCompletedTime(FileTime.currentTime());
+            chr.getQuests().put(qid, qMir);
+        }
     }
 
     @Override
@@ -700,25 +770,20 @@ public class Evan extends Job {
 
     @Override
     public void handleInitAfterMigrate(Char chr) {
-        spawnDragon();
         if (chr.getLevel() < 30) {
             ScriptManagerImpl sm = chr.getScriptManager();
-            for (int qid = 22000; qid <= 22011; qid++) {
-                sm.completeQuestNoRewards(qid);
+            sm.giveSkill(BACK_TO_NATURE); // Back to Nature
+            sm.levelUntil(30); // Job.handleLevelUp(30) automatically advances to 2212, grants SP, and maxes skills
+            if (chr.getJob() != JobConstants.JobEnum.EVAN2.getJobId()) {
+                sm.setJob(JobConstants.JobEnum.EVAN2.getJobId());
             }
-            sm.completeQuestNoRewards(22130);
-            sm.completeQuestNoRewards(22131);
-            sm.completeQuestNoRewards(22500);
-            sm.giveSkill(20011293); // Back to Nature
-            sm.levelUntil(30);
-            sm.setJob(JobConstants.JobEnum.EVAN2.getJobId());
-            sm.addSPJobAdv(JobConstants.JobEnum.EVAN1.getJobId(), 5);
-            sm.addSPJobAdv(JobConstants.JobEnum.EVAN2.getJobId(), 3);
             sm.giveAndEquip(1382003); // Lv 30 Staff (Wizard Staff)
             sm.giveAndEquip(1352941); // Lv 30 Secondary (Dragon Master's Document)
+            syncDragonEvolutionQuests();
             sm.warp(FieldConstants.HOME_MAP);
-            spawnDragon();
         }
+        syncDragonEvolutionQuests();
+        spawnDragon();
         super.handleInitAfterMigrate(chr);
     }
 
@@ -727,13 +792,15 @@ public class Evan extends Job {
         super.handleLevelUp(level);
         switch (level) {
             case 10:
-                chr.setJob(2200);
-                chr.setStatAndSendPacket(Stat.job, 2200);
-                chr.completeQuest(22130, true);
-                chr.addSpToSpecificJob((short) 2200, 5);
-                if (!chr.hasSkill(20011293)) {
-                    chr.addSkill(20011293, 1, 1);
+                if (chr.getJob() == JobConstants.JobEnum.EVAN_NOOB.getJobId()) {
+                    chr.setJob(JobConstants.JobEnum.EVAN1.getJobId());
+                    chr.setStatAndSendPacket(Stat.job, JobConstants.JobEnum.EVAN1.getJobId());
+                    chr.addSpToSpecificJob(JobConstants.JobEnum.EVAN1.getJobId(), 5);
                 }
+                if (!chr.hasSkill(BACK_TO_NATURE)) {
+                    chr.addSkill(BACK_TO_NATURE, 1, 1);
+                }
+                syncDragonEvolutionQuests();
                 spawnDragon();
                 break;
             case 20: {
@@ -742,11 +809,10 @@ public class Evan extends Job {
                 break;
             }
             case 30:
-                chr.setJob(2212);
-                chr.setStatAndSendPacket(Stat.job, 2212);
-                chr.completeQuest(22131, true);
-                chr.addSpToSpecificJob((short) 2210, 2);
-                chr.addSpToSpecificJob((short) 2212, 3);
+            case 60:
+            case 100:
+                // Note: super.handleLevelUp(level) already advances Evan to 2212/2214/2217, grants SP, and maxes skills
+                syncDragonEvolutionQuests();
                 spawnDragon();
                 break;
             case 50: {
@@ -755,14 +821,6 @@ public class Evan extends Job {
                 chr.write(UserLocal.addPopupSay(1013208, 6000, message, "FarmSE.img/boxResult"));
                 break;
             }
-            case 60:
-                chr.setJob(2214);
-                chr.setStatAndSendPacket(Stat.job, 2214);
-                chr.completeQuest(22132, true);
-                chr.addSpToSpecificJob((short) 2212, 1);
-                chr.addSpToSpecificJob((short) 2214, 3);
-                spawnDragon();
-                break;
             case 70: {
                 String message = "Master! Thunder Flash will attack five different spots!";
                 chr.write(UserLocal.addPopupSay(1013208, 3000, message, "FarmSE.img/boxResult"));
@@ -786,20 +844,15 @@ public class Evan extends Job {
                 chr.write(UserLocal.addPopupSay(1013208, 3000, message6, "FarmSE.img/boxResult"));
                 break;
             }
-            case 100:
-                chr.setJob(2217);
-                chr.setStatAndSendPacket(Stat.job, 2217);
-                chr.completeQuest(22133, true);
-                chr.addSpToSpecificJob((short) 2214, 2);
-                chr.addSpToSpecificJob((short) 2217, 3);
-                spawnDragon();
-                break;
             case 200: {
                 String message = "L.V 200...This is amazing, Master! I'm really starting to feel stronger!";
                 chr.write(UserLocal.addPopupSay(1013208, 6000, message, "FarmSE.img/boxResult"));
+                syncDragonEvolutionQuests();
+                spawnDragon();
                 break;
             }
             case 260:
+                syncDragonEvolutionQuests();
                 spawnDragon();
                 break;
         }
@@ -822,7 +875,7 @@ public class Evan extends Job {
                 chr.setSkillCooldown(22141012, chr.getSkillLevel(22141012));
                 return 1;
             }
-            case HEXA_DRAGON_DIVE, 22201008, 22201009 -> { // HEXA Dragon Dive
+            case HEXA_DRAGON_DIVE, 22200008, 22200009, 22201008, 22201009 -> { // HEXA Dragon Dive
                 chr.setSkillCooldown(HEXA_DRAGON_DIVE, chr.getSkillLevel(HEXA_DRAGON_DIVE));
                 return 1;
             }
@@ -832,7 +885,7 @@ public class Evan extends Job {
                 chr.setSkillCooldown(22111012, chr.getSkillLevel(22111012));
                 return 1;
             }
-            case HEXA_DRAGON_FLASH, 22201004, 22201005 -> { // HEXA Dragon Flash
+            case HEXA_DRAGON_FLASH, 22200004, 22200005, 22201004, 22201005 -> { // HEXA Dragon Flash
                 chr.setSkillCooldown(HEXA_DRAGON_FLASH, chr.getSkillLevel(HEXA_DRAGON_FLASH));
                 return 1;
             }
@@ -840,7 +893,7 @@ public class Evan extends Job {
                 chr.setSkillCooldown(DRAGON_BREATH, chr.getSkillLevel(DRAGON_BREATH));
                 return 1;
             }
-            case HEXA_DRAGON_BREATH, 22201012, 22201013, 22201014 -> { // HEXA Dragon Breath
+            case HEXA_DRAGON_BREATH, 22200012, 22200013, 22200014, 22201012, 22201013, 22201014 -> { // HEXA Dragon Breath
                 chr.setSkillCooldown(HEXA_DRAGON_BREATH, chr.getSkillLevel(HEXA_DRAGON_BREATH));
                 return 1;
             }
@@ -858,6 +911,10 @@ public class Evan extends Job {
             }
             case HEROIC_MEMORIES_EVAN -> {
                 chr.setSkillCooldown(HEROIC_MEMORIES_EVAN, chr.getSkillLevel(HEROIC_MEMORIES_EVAN));
+                return 1;
+            }
+            case HEROS_WILL_EVAN, 22171004 -> {
+                chr.setSkillCooldown(HEROS_WILL_EVAN, chr.getSkillLevel(HEROS_WILL_EVAN));
                 return 1;
             }
             case ELEMENTAL_BARRAGE, 400021013, 400021014, 400021015,
