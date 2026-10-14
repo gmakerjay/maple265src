@@ -16,6 +16,8 @@ import java.util.concurrent.TimeUnit;
 
 public class DatabaseManager {
 
+    public static final java.util.concurrent.ExecutorService DB_EXECUTOR = java.util.concurrent.Executors.newFixedThreadPool(4);
+
     protected static String url = "jdbc:mariadb://127.0.0.1:3306/vietmaple?allowMultiQueries=true";
     protected static String username = "root";
     protected static String password = "123456";

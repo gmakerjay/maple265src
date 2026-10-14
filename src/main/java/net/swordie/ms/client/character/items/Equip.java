@@ -480,7 +480,7 @@ public class Equip extends Item {
                 String.format("except_damageR = %d, ", getExceptionalStat().getDamage()) +
                 String.format("except_reduceReqLevel = %d ", getExceptionalStat().getReduceReqLevel()) +
                 String.format("WHERE itemid = %d;", getId());
-        DatabaseManager.executeStatement(query);
+        DatabaseManager.DB_EXECUTOR.submit(() -> DatabaseManager.executeStatement(query));
     }
 
     public void updateOptionsInSQL() {
@@ -490,7 +490,7 @@ public class Equip extends Item {
         }
         String query = String.format("UPDATE equips SET options = '%s', grade = %d WHERE itemid = %d;",
                 getOptionsSQL(), getGrade(), getId());
-        DatabaseManager.executeStatement(query);
+        DatabaseManager.DB_EXECUTOR.submit(() -> DatabaseManager.executeStatement(query));
     }
 
     public Equip() {

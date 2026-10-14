@@ -86,25 +86,26 @@ public class ItemConstants {
 
     public static final int MYSTICAL_CUBE = 2710028; // tradeBlock
     public static final List<Integer> MYSTICAL_CUBES = Arrays.asList(
-            2711011, 2711027,                               // USER_CONSUME_CUBE_ITEM_USE_REQUEST (TODO)
+            2710000, 2710001, 2710004,
+            2711000, 2711001, 2711009, 2711011, 2711015, 2711027,
             2710028, 2710033, 2710036, 2710037              // USER_CASH_CUBE_ITEM_USE_REQUEST
     );
 
     public static final int BONUS_MYSTICAL_CUBE = 2730007; // tradeBlock
     public static final List<Integer> BONUS_MYSTICAL_CUBES = Arrays.asList(
-            2730000, 2730002, 2730004, 2730006, 2730013,    // USER_BONUS_MYSTICAL_ITEM_USE_REQUEST (TODO)
+            2730000, 2730001, 2730002, 2730003, 2730004, 2730005, 2730006, 2730013,
             2730007, 2730008, 2730009, 2730010, 2730017     // USER_CASH_CUBE_ITEM_USE_REQUEST
     );
 
     public static final int HARD_CUBE = 2710034; // tradeBlock
     public static final List<Integer> HARD_CUBES = Arrays.asList(
-            2711012, 2711023, 2711026,                      // USER_CONSUME_CUBE_ITEM_USE_REQUEST (TODO)
+            2710002, 2711003, 2711005, 2711007, 2711012, 2711016, 2711022, 2711023, 2711026,
             2710029, 2710032, 2710034, 2710038, 2710044     // USER_CASH_CUBE_ITEM_USE_REQUEST
     );
 
     public static final int SOLID_CUBE = 2710035; // tradeBlock
     public static final List<Integer> SOLID_CUBES = Arrays.asList(
-            2711021, 2711028,                               // USER_CONSUME_CUBE_ITEM_USE_REQUEST (TODO)
+            2710003, 2711004, 2711006, 2711008, 2711013, 2711017, 2711020, 2711021, 2711028,
             2710030, 2710035, 2710039, 2710040, 2710042     // USER_CASH_CUBE_ITEM_USE_REQUEST
     );
 
@@ -115,8 +116,45 @@ public class ItemConstants {
     public static final int BONUS_BRIGHT_CUBE_1 = 5062503;
     public static final int BONUS_BRIGHT_CUBE_2 = 5062506;
 
-    public static final List<Integer> BRIGHT_CUBES = Arrays.asList(2711024, 2711025, 2710054, 2710055); // USER_BONUS_BRIGHT_CUBE_ITEM_USE_REQUEST (TODO)
-    public static final List<Integer> BONUS_BRIGHT_CUBES = Arrays.asList(2730011, 2730012, 2730018, 2730019); // USER_BONUS_BRIGHT_CUBE_ITEM_USE_REQUEST (TODO)
+    public static final List<Integer> BRIGHT_CUBES = Arrays.asList(2711024, 2711025, 2710054, 2710055);
+    public static final List<Integer> BONUS_BRIGHT_CUBES = Arrays.asList(2730011, 2730012, 2730018, 2730019);
+
+    /**
+     * Converts legacy UIWindow2.img cube IDs (which cause client UI freeze in v265 because
+     * their legacy result opcodes were removed in favor of UICubeWz2.img + CUBE_SYSTEM_RELEASE)
+     * into their native v265 UICubeWz2.img equivalents.
+     */
+    public static int normalizeLegacyCubeItemId(int itemId) {
+        return switch (itemId) {
+            case RED_CUBE, MIRACLE_CUBE, PREMIUM_MIRACLE_CUBE, SUPER_MIRACLE_CUBE,
+                 REVOLUTIONARY_MIRACLE_CUBE, ENLIGHTENING_MIRACLE_CUBE, PLATINUM_MIRACLE_CUBE -> GLOWING_CUBE; // 5062028
+            case BLACK_CUBE -> BRIGHT_CUBE; // 5062029
+            case BONUS_POTENTIAL_CUBE, SPECIAL_BONUS_POTENTIAL_CUBE -> BONUS_GLOWING_CUBE; // 5062505 (Green Bonus Glowing Cube)
+            case BONUS_BRIGHT_CUBE_1 -> BONUS_BRIGHT_CUBE_2; // 5062506 (Bonus Bright Cube)
+            case 2710000, 2710001, 2710004, 2711000, 2711001, 2711009, 2711011, 2711015, 2711027 -> MYSTICAL_CUBE; // 2710028
+            case 2710002, 2711003, 2711005, 2711007, 2711012, 2711016, 2711022, 2711023, 2711026 -> HARD_CUBE; // 2710034
+            case 2710003, 2711004, 2711006, 2711008, 2711013, 2711017, 2711020, 2711021, 2711028 -> SOLID_CUBE; // 2710035
+            case 2730000, 2730001, 2730002, 2730003, 2730004, 2730005, 2730006, 2730013 -> BONUS_MYSTICAL_CUBE; // 2730007
+            case 2711024, 2711025 -> 2710054;
+            case 2730011, 2730012 -> 2730018;
+            default -> itemId;
+        };
+    }
+
+    /**
+     * Returns the v265 UICubeWz2.img cubeType (tradeability variant index) for CUBE_SYSTEM_RELEASE:
+     * 0 = Cash cube (5062xxx), 1 = Karma Account Sharable, 2 = Untradable (tradeBlock),
+     * 3 = Account Sharable, 4 = Tradable.
+     */
+    public static int getCubeType(int itemId) {
+        return switch (itemId) {
+            case 2710044, 2710040, 2730017, 2710054, 2730018, KARMA_BONUS_GLOWING_CUBE -> 1;
+            case 2710028, 2710036, 2710032, 2710034, 2710035, 2710042, 2730007, 2730009, 2710055, 2730019 -> 2;
+            case 2710033, 2710038, 2710039, 2730008 -> 3;
+            case 2710037, 2710029, 2710030, 2730010 -> 4;
+            default -> 0;
+        };
+    }
 
     //Chances are out of 1k (10* typical 100 values so we don't have to use doubles)
     // Scaled 10% more challenging than standard rates (rate * 0.90)

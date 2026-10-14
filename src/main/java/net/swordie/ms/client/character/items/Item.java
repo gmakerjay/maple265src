@@ -303,7 +303,14 @@ public class Item implements Serializable, Encodable {
         item.setCharID(rs.getInt("charid"));
         item.setTrunkID(rs.getInt("trunkid"));
         item.setAuctionHouseStatus(AuctionHouseStatus.getTypeById(rs.getByte("auctionHouseStatus")));
-        item.setItemId(rs.getInt("itemid"));
+        int rawItemId = rs.getInt("itemid");
+        int normalizedItemId = item.getTrunkID() == 0 ? ItemConstants.normalizeLegacyCubeItemId(rawItemId) : rawItemId;
+        item.setItemId(normalizedItemId);
+        if (normalizedItemId != rawItemId && item.getId() != 0) {
+            long dbId = item.getId();
+            DatabaseManager.DB_EXECUTOR.submit(() -> DatabaseManager.executeStatement(
+                    String.format("UPDATE items SET itemid = %d WHERE id = %d;", normalizedItemId, dbId)));
+        }
         item.setBagIndex(rs.getInt("bagindex"));
         item.setCashItemSerialNumber(rs.getLong("cashitemserialnumber"));
         item.setDateExpire(DatabaseManager.getFileTimeFromString(rs.getString("dateexpire")));
@@ -486,7 +493,7 @@ public class Item implements Serializable, Encodable {
                 stringBuilder.append("trunkid = NULL, ");
             }
             stringBuilder.append(String.format("auctionHouseStatus = %d, ", getAuctionHouseStatus().getVal()));
-            //Never Change ID stringBuilder.append(String.format("itemid = %d, ", getItemId()));
+            stringBuilder.append(String.format("itemid = %d, ", getItemId()));
             stringBuilder.append(String.format("bagindex = %d, ", getBagIndex()));
             stringBuilder.append(String.format("cashitemserialnumber = %d, ", getCashItemSerialNumber()));
             stringBuilder.append(String.format("dateexpire = '%s', ", DatabaseManager.convertToDateTimeSQL(getDateExpire())));
@@ -505,7 +512,7 @@ public class Item implements Serializable, Encodable {
             stringBuilder.append(String.format("titleon = %d ", isTitleOn() ? 1 : 0));
             stringBuilder.append(String.format("WHERE id = %d;", getId()));
             String query = stringBuilder.toString();
-            DatabaseManager.executeStatement(query);
+            DatabaseManager.DB_EXECUTOR.submit(() -> DatabaseManager.executeStatement(query));
             if (ItemConstants.isEquip(getItemId())) {
                 Equip equip = (Equip) this;
                 equip.updateEquipToSQL();
@@ -517,72 +524,88 @@ public class Item implements Serializable, Encodable {
     }
 
     public void updatePositionInSQL() {
-        if (getId() == 0) {
+        final long dbId = getId();
+        if (dbId == 0) {
             return;
         }
-        String sql = "UPDATE items SET " +
-                "inventoryid = ?, " +
-                "trunkid = ?, " +
-                "bagindex = ?, " +
-                "invtype = ?, " +
-                "charid = ? " +
-                "WHERE id = ?";
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            if (getInventoryID() != 0) {
-                ps.setInt(1, getInventoryID());
-            } else {
-                ps.setNull(1, Types.INTEGER);
+        final int invId = getInventoryID();
+        final int trkId = getTrunkID();
+        final int bIdx = getBagIndex();
+        final int iType = getInvType().getVal();
+        final int cId = getCharID();
+        DatabaseManager.DB_EXECUTOR.submit(() -> {
+            String sql = "UPDATE items SET " +
+                    "inventoryid = ?, " +
+                    "trunkid = ?, " +
+                    "bagindex = ?, " +
+                    "invtype = ?, " +
+                    "charid = ? " +
+                    "WHERE id = ?";
+            try (Connection conn = DatabaseManager.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                if (invId != 0) {
+                    ps.setInt(1, invId);
+                } else {
+                    ps.setNull(1, Types.INTEGER);
+                }
+                if (trkId != 0) {
+                    ps.setInt(2, trkId);
+                } else {
+                    ps.setNull(2, Types.INTEGER);
+                }
+                ps.setInt(3, bIdx);
+                ps.setInt(4, iType);
+                if (cId != 0) {
+                    ps.setInt(5, cId);
+                } else {
+                    ps.setNull(5, Types.INTEGER);
+                }
+                ps.setLong(6, dbId);
+                ps.executeUpdate();
+                DataPrinter.send(DataPrinter.HIKARICP, ps.toString(), true);
+            } catch (SQLException e) {
+                DataPrinter.send(DataPrinter.HIKARICP_ERROR, e);
             }
-            if (getTrunkID() != 0) {
-                ps.setInt(2, getTrunkID());
-            } else {
-                ps.setNull(2, Types.INTEGER);
-            }
-            ps.setInt(3, getBagIndex());
-            ps.setInt(4, getInvType().getVal());
-            if (getCharID() != 0) {
-                ps.setInt(5, getCharID());
-            } else {
-                ps.setNull(5, Types.INTEGER);
-            }
-            ps.setLong(6, getId());
-            ps.executeUpdate();
-            DataPrinter.send(DataPrinter.HIKARICP, ps.toString(), true);
-        } catch (SQLException e) {
-            DataPrinter.send(DataPrinter.HIKARICP_ERROR, e);
-        }
+        });
     }
 
     public void updateQuantityInSQL() {
-        if (getId() == 0) {
+        final long dbId = getId();
+        if (dbId == 0) {
             return;
         }
-        String sql = "UPDATE items SET quantity = ? WHERE id = ?";
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, getQuantity());
-            ps.setLong(2, getId());
-            ps.executeUpdate();
-            DataPrinter.send(DataPrinter.HIKARICP, ps.toString(), true);
-        } catch (SQLException e) {
-            DataPrinter.send(DataPrinter.HIKARICP_ERROR, e);
-        }
+        final int qty = getQuantity();
+        DatabaseManager.DB_EXECUTOR.submit(() -> {
+            String sql = "UPDATE items SET quantity = ? WHERE id = ?";
+            try (Connection conn = DatabaseManager.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, qty);
+                ps.setLong(2, dbId);
+                ps.executeUpdate();
+                DataPrinter.send(DataPrinter.HIKARICP, ps.toString(), true);
+            } catch (SQLException e) {
+                DataPrinter.send(DataPrinter.HIKARICP_ERROR, e);
+            }
+        });
     }
 
     public void updateBagIndexInSQL() {
-        if (getId() == 0) {
+        final long dbId = getId();
+        if (dbId == 0) {
             return;
         }
-        String sql = "UPDATE items SET bagindex = ? WHERE id = ?";
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, getBagIndex());
-            ps.setLong(2, getId());
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            DataPrinter.send(DataPrinter.HIKARICP_ERROR, e);
-        }
+        final int bIdx = getBagIndex();
+        DatabaseManager.DB_EXECUTOR.submit(() -> {
+            String sql = "UPDATE items SET bagindex = ? WHERE id = ?";
+            try (Connection conn = DatabaseManager.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setInt(1, bIdx);
+                ps.setLong(2, dbId);
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                DataPrinter.send(DataPrinter.HIKARICP_ERROR, e);
+            }
+        });
     }
 
     public void fillInsertStatement(PreparedStatement ps) throws SQLException {
@@ -656,31 +679,48 @@ public class Item implements Serializable, Encodable {
     }
 
     public void deleteFromSQL() {
-        Connection con = null;
-        try {
-            con = DatabaseManager.getConnection();
-            con.setAutoCommit(false);
-            deleteFromSQL(con);
-            con.commit();
-            setId(0);
-        } catch (SQLException e) {
-            if (con != null) {
-                try {
-                    con.rollback();
-                } catch (Exception rollBack) {
-                    DataPrinter.send(DataPrinter.HIKARICP_ERROR, rollBack);
-                }
-            }
-            DataPrinter.send(DataPrinter.HIKARICP_ERROR, e);
-        } finally {
-            if (con != null) {
-                try {
-                    con.close();
-                } catch (Exception e) {
-                    DataPrinter.send(DataPrinter.HIKARICP_ERROR, e);
-                }
-            }
+        final long idToDelete = getId();
+        if (idToDelete == 0) {
+            return;
         }
+        final int itemIdToDelete = getItemId();
+        setId(0);
+        DatabaseManager.DB_EXECUTOR.submit(() -> {
+            Connection con = null;
+            try {
+                con = DatabaseManager.getConnection();
+                con.setAutoCommit(false);
+                if (ItemConstants.isEquip(itemIdToDelete)) {
+                    deleteSubItemFromSQL(con, "equips", idToDelete);
+                } else if (ItemConstants.isPet(itemIdToDelete)) {
+                    deleteSubItemFromSQL(con, "petitems", idToDelete);
+                }
+                String query = "DELETE FROM `items` WHERE `id` = ?";
+                try (PreparedStatement ps = con.prepareStatement(query)) {
+                    ps.setLong(1, idToDelete);
+                    ps.executeUpdate();
+                    DataPrinter.send(DataPrinter.HIKARICP, ps.toString(), true);
+                }
+                con.commit();
+            } catch (SQLException e) {
+                if (con != null) {
+                    try {
+                        con.rollback();
+                    } catch (Exception rollBack) {
+                        DataPrinter.send(DataPrinter.HIKARICP_ERROR, rollBack);
+                    }
+                }
+                DataPrinter.send(DataPrinter.HIKARICP_ERROR, e);
+            } finally {
+                if (con != null) {
+                    try {
+                        con.close();
+                    } catch (Exception e) {
+                        DataPrinter.send(DataPrinter.HIKARICP_ERROR, e);
+                    }
+                }
+            }
+        });
     }
 
     public void deleteFromSQL(Connection con) throws SQLException {

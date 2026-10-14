@@ -148,57 +148,8 @@ public class CubeHandler {
     }
 
     public static void useVioletCube(Char chr, InPacket inPacket) {
-        if (true) {
-            return; // TODO
-        }
-        int cubeID = ItemConstants.VIOLET_CUBE;
-
-        short equipPosition = (short) inPacket.decodeShort();
-        inPacket.skip(inPacket.getUnreadAmount() - 1);
-        InvType invType = equipPosition < 0 ? EQUIPPED : EQUIP;
-        Equip equip = (Equip) chr.getInventoryByType(invType).getItemBySlot(equipPosition);
-        Equip zeroEquip = null;
-        //Verify Equip.
-        if (equip == null) {
-            chr.chatMessage(SystemNotice, "An unknown error has occurred.");
-            chr.dispose();
-            return;
-        }
-
-        int tierUpChance = ItemConstants.getTierUpChance(cubeID, ItemGrade.getGradeByVal(equip.getBaseGrade()));
-        short hiddenValue = ItemGrade.getGradeByVal(equip.getBaseGrade()).getVal();
-        int itemGradeMax = CubeHandler.getMaxGradeOfItem(cubeID).getVal();
-        boolean isTierUp = !(hiddenValue >= itemGradeMax) && Util.succeedProp(tierUpChance, 1000);
-        if (isTierUp) {
-            hiddenValue++;
-        }
-        boolean isThreeLine = equip.getOptionBase(2) != 0;
-        List<Integer> availableOptions = new ArrayList<>(equip.getVioletOptions(cubeID, 2, isThreeLine ? 6 : 4));
-
-        chr.consumeItem(cubeID, 1);
-        int cubeCount = Math.max(chr.getScriptManager().getQuantityOfItem(cubeID) - 1, 0);
-
-        long cost = ItemConstants.getMesoCubingCost(equip.getrLevel());
-        if (cost > chr.getMoney()) {
-            chr.chatMessage("You don't have enough mesos.");
-            chr.dispose();
-            return;
-        }
-        chr.deductMoney(cost);
-        chr.setVioletEquip(equip);
-        //For Zero.
-        if (ItemConstants.isLongOrBigSword(equip.getItemId())) {
-            Equip zeroWeapon = (Equip) chr.getEquippedInventory().getItemBySlot(11);
-            if (zeroWeapon != null) {
-                chr.setVioletZeroEquip(zeroWeapon);
-            }
-        }
-        chr.write(UserLocal.itemSlotExtendItemUse(true, cubeID, equip.getItemId()));
-        chr.write(WvsContext.violetCubeInit(inPacket.decodeByte(),0, cubeCount,
-                chr.getCashInventory().getItemByItemID(ItemConstants.VIOLET_CUBE),
-                equip.getId(),
-                equip,
-                availableOptions));
+        chr.chatMessage(SystemNotice, "Violet Cube has been upgraded to Bright Cube in v265.");
+        chr.dispose();
     }
 
     public static ItemGrade getMaxGradeOfItem(int cubeID) {
@@ -287,6 +238,7 @@ public class CubeHandler {
         Item item;
         if (init) {
             int pos;
+            byte invTypeVal = 5;
             if (type == 3) {
                 pos = inPacket.decodeShort();
                 item = chr.getCashInventory().getItemBySlot(pos);
@@ -297,12 +249,19 @@ public class CubeHandler {
                 useVioletCube(chr, inPacket);
                 return;
             } else {
-                inPacket.decodeByte(); // 2?
+                invTypeVal = inPacket.decodeByte(); // 2 = Consume, 5 = Cash
                 pos = inPacket.decodeInt();
             }
-            item = chr.getCashInventory().getItemBySlot(pos);
-            if (item == null) {
+            if (invTypeVal == 2) {
                 item = chr.getConsumeInventory().getItemBySlot(pos);
+                if (item == null) {
+                    item = chr.getCashInventory().getItemBySlot(pos);
+                }
+            } else {
+                item = chr.getCashInventory().getItemBySlot(pos);
+                if (item == null) {
+                    item = chr.getConsumeInventory().getItemBySlot(pos);
+                }
             }
             if (item == null) {
                 chr.dispose();
@@ -341,10 +300,11 @@ public class CubeHandler {
             return;
         }
         var itemID = item.getItemId();
+        int cubeType = ItemConstants.getCubeType(itemID);
         switch (itemID) {
             case ItemConstants.GLOWING_CUBE:
             case ItemConstants.RED_CUBE:
-                handleCube(chr, item, itemID, 0, inPacket, ItemGrade.Legendary, false);
+                handleCube(chr, item, itemID, cubeType, inPacket, ItemGrade.Legendary, false);
                 break;
             case ItemConstants.BRIGHT_CUBE:
             case ItemConstants.BLACK_CUBE:
@@ -354,7 +314,7 @@ public class CubeHandler {
             case ItemConstants.KARMA_BONUS_GLOWING_CUBE:
             case ItemConstants.BONUS_POTENTIAL_CUBE:
             case ItemConstants.SPECIAL_BONUS_POTENTIAL_CUBE:
-                handleCube(chr, item, itemID, 0, inPacket, ItemGrade.Legendary, true);
+                handleCube(chr, item, itemID, cubeType, inPacket, ItemGrade.Legendary, true);
                 break;
             case ItemConstants.BONUS_BRIGHT_CUBE_1:
             case ItemConstants.BONUS_BRIGHT_CUBE_2:
@@ -362,37 +322,30 @@ public class CubeHandler {
                 break;
             case ItemConstants.MIRACLE_CUBE:
             case ItemConstants.PREMIUM_MIRACLE_CUBE:
-                handleCube(chr, item, itemID, 0, inPacket, ItemGrade.Unique, false);
+                handleCube(chr, item, itemID, cubeType, inPacket, ItemGrade.Unique, false);
                 break;
             case ItemConstants.SUPER_MIRACLE_CUBE:
             case ItemConstants.REVOLUTIONARY_MIRACLE_CUBE:
             case ItemConstants.PLATINUM_MIRACLE_CUBE:
-                handleCube(chr, item, itemID, 0, inPacket, ItemGrade.Legendary, false);
+                handleCube(chr, item, itemID, cubeType, inPacket, ItemGrade.Legendary, false);
                 break;
             default:
                 if (ItemConstants.MYSTICAL_CUBES.contains(itemID)) {
-                    handleCube(chr, item, itemID, 0, inPacket, ItemGrade.Epic, false);
+                    handleCube(chr, item, itemID, cubeType, inPacket, ItemGrade.Epic, false);
                 } else if (ItemConstants.HARD_CUBES.contains(itemID)) {
-                    int cubeType = switch (itemID) {
-                        case 2710044 -> 1;
-                        case 2710032, 2710034 -> 2;
-                        case 2710038 -> 3;
-                        case 2710029 -> 4;
-                        default -> 0;
-                    };
                     handleCube(chr, item, itemID, cubeType, inPacket, ItemGrade.Unique, false);
                 } else if (ItemConstants.SOLID_CUBES.contains(itemID)) {
-                    handleCube(chr, item, itemID, 0, inPacket, ItemGrade.Legendary, false);
+                    handleCube(chr, item, itemID, cubeType, inPacket, ItemGrade.Legendary, false);
                 } else if (ItemConstants.BRIGHT_CUBES.contains(itemID)) {
                     handleBrightCube(chr, item, inPacket, ItemGrade.Legendary, false, true);
                 } else if (ItemConstants.BONUS_MYSTICAL_CUBES.contains(itemID)) {
-                    handleCube(chr, item, itemID, 0, inPacket, ItemGrade.Epic, true);
+                    handleCube(chr, item, itemID, cubeType, inPacket, ItemGrade.Epic, true);
                 } else if (ItemConstants.BONUS_BRIGHT_CUBES.contains(itemID)) {
                     handleBrightCube(chr, item, inPacket, ItemGrade.Legendary, true, true);
                 } else if (ItemConstants.isBonusCube(itemID)) {
-                    handleCube(chr, item, itemID, 0, inPacket, ItemGrade.Legendary, true);
+                    handleCube(chr, item, itemID, cubeType, inPacket, ItemGrade.Legendary, true);
                 } else if (ItemConstants.isCube(itemID)) {
-                    handleCube(chr, item, itemID, 0, inPacket, ItemGrade.Legendary, false);
+                    handleCube(chr, item, itemID, cubeType, inPacket, ItemGrade.Legendary, false);
                 } else {
                     chr.dispose();
                 }
@@ -402,21 +355,29 @@ public class CubeHandler {
 
     @Handler(op = InHeader.USER_BONUS_MYSTICAL_ITEM_USE_REQUEST)
     public static void handleUserBonusMysticalCubeItemUseRequest(Char chr, InPacket inPacket) {
-        inPacket.decodeInt();
+        inPacket.decodeInt(); // tick
         int uPos = inPacket.decodeShort();
-        int cubeID = inPacket.decodeInt();
         Item item = chr.getConsumeInventory().getItemBySlot(uPos);
         if (item == null) {
             item = chr.getCashInventory().getItemBySlot(uPos);
         }
-        handleCube(chr, item, cubeID, 0, inPacket, ItemGrade.Epic, true);
+        int cubeID = item != null ? item.getItemId() : ItemConstants.BONUS_MYSTICAL_CUBE;
+        if (inPacket.getUnreadAmount() >= 6) {
+            cubeID = inPacket.decodeInt();
+        }
+        handleCube(chr, item, cubeID, ItemConstants.getCubeType(cubeID), inPacket, ItemGrade.Epic, true);
     }
 
     @Handler(op = InHeader.USER_BONUS_BRIGHT_CUBE_ITEM_USE_REQUEST)
     public static void handleUserBonusCubeItemUseRequest(Char chr, InPacket inPacket) {
-        inPacket.decodeInt();
-        int cubeID = inPacket.decodeInt();
-        short uPos = inPacket.decodeShort();
+        inPacket.decodeInt(); // tick
+        short uPos;
+        if (inPacket.getUnreadAmount() >= 6) {
+            inPacket.decodeInt(); // cubeID
+            uPos = inPacket.decodeShort();
+        } else {
+            uPos = inPacket.decodeShort();
+        }
         var item = chr.getConsumeInventory().getItemBySlot(uPos);
         if (item == null) {
             item = chr.getCashInventory().getItemBySlot(uPos);
@@ -460,12 +421,12 @@ public class CubeHandler {
                 chr.dispose();
                 return;
             }
-            if (currentGrade.isHidden()) {
+            if (currentGrade.isHidden() || currentGrade == ItemGrade.RareSecondary) {
                 hiddenValue = (short) switch (currentGrade) {
-                    case RareBonusHidden -> ItemGrade.Rare.getVal();
-                    case EpicBonusHidden -> ItemGrade.Epic.getVal();
-                    case UniqueBonusHidden -> ItemGrade.Unique.getVal();
-                    case LegendaryBonusHidden -> ItemGrade.Legendary.getVal();
+                    case RareBonusHidden, HiddenRare, RareSecondary -> ItemGrade.Rare.getVal();
+                    case EpicBonusHidden, HiddenEpic -> ItemGrade.Epic.getVal();
+                    case UniqueBonusHidden, HiddenUnique -> ItemGrade.Unique.getVal();
+                    case LegendaryBonusHidden, HiddenLegendary -> ItemGrade.Legendary.getVal();
                     default -> ItemGrade.Rare.getVal();
                 };
             } else {
@@ -483,12 +444,12 @@ public class CubeHandler {
                 chr.dispose();
                 return;
             }
-            if (currentGrade.isHidden()) {
+            if (currentGrade.isHidden() || currentGrade == ItemGrade.RareSecondary) {
                 hiddenValue = (short) switch (currentGrade) {
-                    case HiddenRare -> ItemGrade.Rare.getVal();
-                    case HiddenEpic -> ItemGrade.Epic.getVal();
-                    case HiddenUnique -> ItemGrade.Unique.getVal();
-                    case HiddenLegendary -> ItemGrade.Legendary.getVal();
+                    case HiddenRare, RareBonusHidden, RareSecondary -> ItemGrade.Rare.getVal();
+                    case HiddenEpic, EpicBonusHidden -> ItemGrade.Epic.getVal();
+                    case HiddenUnique, UniqueBonusHidden -> ItemGrade.Unique.getVal();
+                    case HiddenLegendary, LegendaryBonusHidden -> ItemGrade.Legendary.getVal();
                     default -> ItemGrade.Rare.getVal();
                 };
             } else {
@@ -519,6 +480,12 @@ public class CubeHandler {
         chr.deductMoney(cost);
         if (cube != null) {
             chr.consumeItem(cube, 1);
+            int normalizedCubeId = ItemConstants.normalizeLegacyCubeItemId(cubeID);
+            if (normalizedCubeId != cubeID && cube.getQuantity() > 0) {
+                int remainingQty = cube.getQuantity();
+                chr.consumeItem(cube, remainingQty);
+                chr.addItemToInventory(normalizedCubeId, remainingQty);
+            }
         } else {
             chr.consumeItem(cubeID, 1);
         }
@@ -551,6 +518,9 @@ public class CubeHandler {
             if (zeroEquip != null) {
                 zeroEquip.updateOptionsInSQL();
             }
+        }
+        if (cubeType == 0 && (cubeID / 10000 == 271 || cubeID / 10000 == 273)) {
+            chr.write(FieldPacket.inGameCubeResult(chr.getId(), tierUp, cubeID, ePos, equip, cubeCount));
         }
         chr.write(WvsContext.consumeCubeRelease(cubeIndex, equip.getId(), cubeCount, cubeType));
         chr.dispose();
@@ -589,12 +559,12 @@ public class CubeHandler {
                     chr.dispose();
                     return;
                 }
-                if (currentGrade.isHidden()) {
+                if (currentGrade.isHidden() || currentGrade == ItemGrade.RareSecondary) {
                     hiddenValue = (short) switch (currentGrade) {
-                        case RareBonusHidden -> ItemGrade.Rare.getVal();
-                        case EpicBonusHidden -> ItemGrade.Epic.getVal();
-                        case UniqueBonusHidden -> ItemGrade.Unique.getVal();
-                        case LegendaryBonusHidden -> ItemGrade.Legendary.getVal();
+                        case RareBonusHidden, HiddenRare, RareSecondary -> ItemGrade.Rare.getVal();
+                        case EpicBonusHidden, HiddenEpic -> ItemGrade.Epic.getVal();
+                        case UniqueBonusHidden, HiddenUnique -> ItemGrade.Unique.getVal();
+                        case LegendaryBonusHidden, HiddenLegendary -> ItemGrade.Legendary.getVal();
                         default -> ItemGrade.Rare.getVal();
                     };
                 } else {
@@ -612,12 +582,12 @@ public class CubeHandler {
                     chr.dispose();
                     return;
                 }
-                if (currentGrade.isHidden()) {
+                if (currentGrade.isHidden() || currentGrade == ItemGrade.RareSecondary) {
                     hiddenValue = (short) switch (currentGrade) {
-                        case HiddenRare -> ItemGrade.Rare.getVal();
-                        case HiddenEpic -> ItemGrade.Epic.getVal();
-                        case HiddenUnique -> ItemGrade.Unique.getVal();
-                        case HiddenLegendary -> ItemGrade.Legendary.getVal();
+                        case HiddenRare, RareBonusHidden, RareSecondary -> ItemGrade.Rare.getVal();
+                        case HiddenEpic, EpicBonusHidden -> ItemGrade.Epic.getVal();
+                        case HiddenUnique, UniqueBonusHidden -> ItemGrade.Unique.getVal();
+                        case HiddenLegendary, LegendaryBonusHidden -> ItemGrade.Legendary.getVal();
                         default -> ItemGrade.Rare.getVal();
                     };
                 } else {
@@ -646,6 +616,12 @@ public class CubeHandler {
             chr.deductMoney(cost);
             if (cube != null) {
                 chr.consumeItem(cube, 1);
+                int normalizedCubeId = ItemConstants.normalizeLegacyCubeItemId(cubeID);
+                if (normalizedCubeId != cubeID && cube.getQuantity() > 0) {
+                    int remainingQty = cube.getQuantity();
+                    chr.consumeItem(cube, remainingQty);
+                    chr.addItemToInventory(normalizedCubeId, remainingQty);
+                }
             } else {
                 chr.consumeItem(cubeID, 1);
             }

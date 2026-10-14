@@ -163,6 +163,10 @@ public enum ItemGrade {
             case HiddenEpic:
             case HiddenUnique:
             case HiddenLegendary:
+            case RareBonusHidden:
+            case EpicBonusHidden:
+            case UniqueBonusHidden:
+            case LegendaryBonusHidden:
                 return true;
         }
         return false;

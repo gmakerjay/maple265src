@@ -1746,6 +1746,10 @@ public class Char {
         if (item == null || item.getItemId() == GameConstants.MOB_SOUL) {
             return;
         }
+        int normalizedId = ItemConstants.normalizeLegacyCubeItemId(item.getItemId());
+        if (normalizedId != item.getItemId()) {
+            item.setItemId(normalizedId);
+        }
         checkAndRemoveExpiredItems(false);
         int itemID = item.getItemId();
         Inventory inventory = getInventoryByType(type);
@@ -8292,15 +8296,14 @@ public class Char {
     }
 
     public void addItemToInventory(int id, int quantity) {
+        id = ItemConstants.normalizeLegacyCubeItemId(id);
         if (ItemConstants.isEquip(id)) {
             Equip equip = ItemData.getEquipDeepCopyFromID(id, false);
             addItemToInventory(equip.getInvType(), equip, false, false);
-            write(WvsContext.inventoryOperation(true, false, Add, (short) equip.getBagIndex(), (byte) -1, 0, equip));
         } else {
             Item item = ItemData.getItemDeepCopy(id);
             item.setQuantity(quantity);
             addItemToInventory(item);
-            write(WvsContext.inventoryOperation(true, false, Add, (short) item.getBagIndex(), (byte) -1, 0, item));
         }
         write(WvsContext.dropPickupMessage(id, (short) quantity));
     }
@@ -8328,6 +8331,7 @@ public class Char {
     }
 
     public void addItemToInventory(int id, int quantity, String type, long expires, int chuc) {
+        id = ItemConstants.normalizeLegacyCubeItemId(id);
         LocalDateTime localDateTime = switch (type) {
             case "hour" -> LocalDateTime.now().plusHours(expires);
             case "minute" -> LocalDateTime.now().plusMinutes(expires);
@@ -8351,16 +8355,12 @@ public class Char {
                 equip.setChuc((short) chuc, true);
             }
             addItemToInventory(equip.getInvType(), equip, false, false);
-            write(WvsContext.inventoryOperation(true, false,
-                    Add, (short) equip.getBagIndex(), (byte) -1, 0, equip));
 
         } else {    //Item
             Item item = ItemData.getItemDeepCopy(id);
             item.setQuantity(quantity);
             item.setDateExpire(FileTime.fromDate(localDateTime));
             addItemToInventory(item);
-            write(WvsContext.inventoryOperation(true, false,
-                    Add, (short) item.getBagIndex(), (byte) -1, 0, item));
         }
     }
 

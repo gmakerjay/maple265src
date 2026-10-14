@@ -58,7 +58,7 @@ public class NpcShopItem {
                     NpcShopItem npcShopItem = new NpcShopItem();
                     npcShopItem.setId(rs.getLong("id"));
                     npcShopItem.setShopID(shopID);
-                    var itemID = rs.getInt("itemid");
+                    var itemID = ItemConstants.normalizeLegacyCubeItemId(rs.getInt("itemid"));
                     npcShopItem.setItemID(itemID);
                     npcShopItem.setPrice(rs.getLong("price"));
                     npcShopItem.setTokenItemID(rs.getInt("tokenitemid"));

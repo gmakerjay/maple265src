@@ -1647,6 +1647,7 @@ public class ItemData {
     }
 
     public static Item getItemDeepCopy(int id, boolean randomize) {
+        id = ItemConstants.normalizeLegacyCubeItemId(id);
         if (ItemConstants.isEquip(id)) {
             return getEquipDeepCopyFromID(id, randomize);
         } else if (ItemConstants.isPet(id)) {

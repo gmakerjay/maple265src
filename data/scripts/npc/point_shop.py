@@ -525,12 +525,14 @@ ACCESSORY_ITEMS = [
 # CUBES & POTENTIAL ITEMS
 # ==============================================================================
 CUBE_ITEMS = [
-    (5062009, "Red Cube", 1200, "Rerolls equipment potential up to Legendary tier."),
-    (5062010, "Black Cube", 2200, "Rerolls potential with the choice to keep previous stats."),
-    (5062500, "Bonus Potential Cube", 2400, "Rerolls bonus potential stats up to Legendary tier."),
-    (5062024, "Violet Cube", 3000, "Rerolls potential and allows selecting 3 out of 6 lines."),
-    (5062028, "Glowing Cube", 1500, "Rerolls potential with enhanced tier-up chance."),
-    (5062029, "Bright Cube", 2500, "Rerolls potential with Before / After selection.")
+    (5062028, "Glowing Cube", 1200, "Rerolls equipment potential up to Legendary tier."),
+    (5062029, "Bright Cube", 2200, "Rerolls potential with Before / After selection."),
+    (5062505, "Bonus Glowing Cube", 2400, "Rerolls bonus potential stats up to Legendary tier."),
+    (5062506, "Bonus Bright Cube", 3000, "Rerolls bonus potential with Before / After selection."),
+    (2710028, "Mystical Cube", 300, "Rerolls equipment potential up to Epic tier."),
+    (2710034, "Hard Cube", 600, "Rerolls equipment potential up to Unique tier."),
+    (2710035, "Solid Cube", 1000, "Rerolls equipment potential up to Legendary tier."),
+    (2730007, "Bonus Mystical Cube", 500, "Rerolls bonus potential stats up to Epic tier.")
 ]
 
 # ==============================================================================
