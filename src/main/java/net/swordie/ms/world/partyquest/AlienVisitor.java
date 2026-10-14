@@ -101,7 +101,7 @@ public class AlienVisitor implements PartyQuest {
 
     @Override
     public void exit() {
-        chr.getParty().setPartyQuest(null);
+        if (chr.getParty() != null) chr.getParty().setPartyQuest(null);
         if (chr.getField().getId() == GameConstants.ALIEN_VISITOR_EXT_MAP) {
             long totalEXP = 0;
             if (!chr.getVisitorStageResult().isEmpty()) {
@@ -253,8 +253,11 @@ public class AlienVisitor implements PartyQuest {
 
     @Override
     public void event() {
-        Instance instance = chr.getParty().getInstance();
-        if (chr.getParty().isLeader(chr)) {
+        Party p = chr.getParty() != null ? chr.getParty() : this.party;
+        this.party = p;
+        if (p == null) return;
+        Instance instance = p.getInstance();
+        if (p.isLeader(chr)) {
             if (chr.getField().getId() == 861000050) {
                 sm.warpParty(861000100, party);
                 instance.setVisitorStageCount(0);
@@ -294,6 +297,14 @@ public class AlienVisitor implements PartyQuest {
 
     @Override
     public void clear(Char chr) {
+        ScriptManagerImpl sm = chr.getScriptManager();
+        Party p = chr.getParty() != null ? chr.getParty() : this.party;
+        if (p != null) {
+            sm.givePQRewards(p);
+        } else {
+            sm.givePQRewards(null);
+        }
+        end(chr);
     }
 
     @Override

@@ -502,7 +502,25 @@ public class DefenseEvent implements PartyQuest {
     }
 
     public void waveClear() {
-        for (Char player : chr.getParty().getOnlineChars()) {
+        Party p = chr.getParty() != null ? chr.getParty() : this.party;
+        if (p == null) {
+            if (getWave() == 20) {
+                chr.write(FieldPacket.fieldEffect(FieldEffect.getFieldEffectFromWz("Map/Effect.img/killing/clear", 0)));
+                chr.getTimer().addEvent(() -> {
+                    chr.write(DefensePacket.result(true,
+                            getWave(), getLife(), chr.getDefenseEventMember() != null ? chr.getDefenseEventMember().getPoint() : 0, chr.getDefenseEventMember() != null ? chr.getDefenseEventMember().getExp() : 0));
+                    chr.getTimer().addEvent(() -> {
+                        endWave();
+                        chr.warp(isHard() ? 926010002 : 926010003);
+                    }, 7000);
+                }, 2000);
+            }
+            if (chr.canHold(NETT_EMERALD)) {
+                chr.addItemToInventory(NETT_EMERALD, 1);
+            }
+            return;
+        }
+        for (Char player : p.getOnlineChars()) {
             if (getWave() == 20) {
                 player.write(FieldPacket.fieldEffect(FieldEffect.getFieldEffectFromWz("Map/Effect.img/killing/clear", 0)));
                 chr.getTimer().addEvent(() -> {
@@ -539,7 +557,14 @@ public class DefenseEvent implements PartyQuest {
     }
 
     public void endWave() {
-        for (Char pm : chr.getParty().getOnlineChars()) {
+        Party p = chr.getParty() != null ? chr.getParty() : this.party;
+        if (p == null) {
+            chr.setDefenseEvent(null);
+            chr.setDefenseEventMember(null);
+            chr.write(FieldPacket.closeUI(UIType.UI_FIELDITEM));
+            return;
+        }
+        for (Char pm : p.getOnlineChars()) {
             pm.setDefenseEvent(null);
             pm.setDefenseEventMember(null);
             pm.write(FieldPacket.closeUI(UIType.UI_FIELDITEM));

@@ -35,8 +35,29 @@ public class PartyQuestManager {
         };
     }
 
+    private boolean matches(PartyQuest pq, PartyQuestType type) {
+        if (pq == null || type == null) return false;
+        return switch (type) {
+            case MOON_BUNNY -> pq instanceof MoonBunny;
+            case FIRST_TIME_TOGETHER -> pq instanceof FirstTimeTogether;
+            case LUDIBRIUM -> pq instanceof Ludibrium;
+            case TANGYOON_COOKING -> pq instanceof TangyoonCooking;
+            case DIMENSION_INVASION -> pq instanceof DimensionInvasion;
+            case NETT_PYRAMID -> pq instanceof DefenseEvent;
+            case ESCAPE -> pq instanceof Escape;
+            case HUNGRY_MUTO -> pq instanceof HungryMuto;
+            case XERXES_CHRYSE -> pq instanceof XerxesInChryse;
+            case LORD_PIRATE -> pq instanceof LordPirate;
+            case DRAGON_RIDER -> pq instanceof DragonRider;
+            case KENTA_IN_DANGER -> pq instanceof KentaInDanger;
+            case ROMEO -> pq instanceof Romeo;
+            case JULIET -> pq instanceof Juliet;
+            case ALIEN_VISITOR -> pq instanceof AlienVisitor;
+        };
+    }
+
     public void start(Char chr, PartyQuestType partyQuestType, byte typeEnter) {
-        if (this.partyQuest == null) {
+        if (typeEnter == 0 || this.partyQuest == null || !matches(this.partyQuest, partyQuestType)) {
             this.partyQuest = getPartyQuestByType(chr, partyQuestType);
         }
         switch (typeEnter) {

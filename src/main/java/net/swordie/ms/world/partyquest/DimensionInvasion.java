@@ -130,8 +130,13 @@ public class DimensionInvasion implements PartyQuest {
     public void clear(Char chr) {
         this.stage = 0;
         this.currentDIStage = 0;
-        for (Char player : party.getOnlineChars()) {
-            player.addItemToInventory(2431127, 1);
+        Party p = chr.getParty() != null ? chr.getParty() : this.party;
+        if (p != null) {
+            for (Char player : p.getOnlineChars()) {
+                player.addItemToInventory(2431127, 1);
+            }
+        } else {
+            chr.addItemToInventory(2431127, 1);
         }
         end(chr);
     }
@@ -175,7 +180,7 @@ public class DimensionInvasion implements PartyQuest {
         if (wave >= getDIWaveByStage(stage)) {
             return;
         }
-        int avgLevel = sm.getParty().getAvgPartyLevel();
+        int avgLevel = sm.getParty() != null ? sm.getParty().getAvgPartyLevel() : chr.getLevel();
         switch (stage) {
             case 0:
                 if (incMonsterGauge(70)) {

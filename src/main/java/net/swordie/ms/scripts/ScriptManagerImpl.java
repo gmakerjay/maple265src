@@ -1484,6 +1484,10 @@ public class ScriptManagerImpl implements ScriptManager {
     }
 
     public void warpParty(int id, Party party) {
+        if (party == null) {
+            warp(id);
+            return;
+        }
         int fieldID = chr.getFieldID();
         for (Char onlineChar : party.getOnlineChars()) {
             if (onlineChar.getField().getId() == fieldID) {
@@ -1493,6 +1497,10 @@ public class ScriptManagerImpl implements ScriptManager {
     }
 
     public void warpParty(Char chr, int id, Party party) {
+        if (party == null) {
+            chr.warp(id);
+            return;
+        }
         int fieldID = chr.getFieldID();
         for (Char onlineChar : party.getOnlineChars()) {
             if (onlineChar.getField().getId() == fieldID) {
@@ -3019,6 +3027,13 @@ public class ScriptManagerImpl implements ScriptManager {
     public void givePQRewards(Party party) {
         showEffectToField(WzConstants.EFFECT_PQ_CLEAR);
         playSound(WzConstants.EFFECT_PQ_CLEAR, true);
+        if (party == null) {
+            incWillEXP((short) 6);
+            incInsightEXP((short) 3);
+            addPartyPoint(10);
+            showClearStageExpWindow(getPQExp());
+            return;
+        }
         for (Char player : party.getPartyMembersInSameFieldWithChr(chr)) {
             ScriptManagerImpl sm = player.getScriptManager();
             sm.incWillEXP((short) 6);
@@ -3030,32 +3045,32 @@ public class ScriptManagerImpl implements ScriptManager {
 
     // For Party
     public boolean checkAttempt(int entryQuest, Party party, int maximumCount) {
+        if (party == null) {
+            return checkAttempt(entryQuest, maximumCount);
+        }
         DateTimeFormatter dtf_d = DateTimeFormatter.ofPattern("dd");
         final LocalDateTime now = LocalDateTime.now();
         int day = Integer.parseInt(dtf_d.format(now));
-        if (party != null) {
-            for (Char chr : chr.getParty().getPartyMembersInSameFieldWithChr(chr)) {
-                ScriptManagerImpl sm = chr.getScriptManager();
-                if (hasQuest(entryQuest)) {
-                    final String date = sm.getQRValueByKey(entryQuest, "date"); // yy/MM/dd
-                    if (date != null) {
-                        final String count = sm.getQRValueByKey(entryQuest, "count");
-                        if (count != null) {
-                            int lastDay = Integer.parseInt(date.substring(6, 8));
-                            if (lastDay == day) {
-                                if (Integer.parseInt(count) >= maximumCount) {
-                                    return false;
-                                }
-                            } else {
-                                sm.setQRValueByKey(entryQuest, "count", "0");
+        for (Char pChr : party.getPartyMembersInSameFieldWithChr(chr)) {
+            ScriptManagerImpl sm = pChr.getScriptManager();
+            if (sm.hasQuest(entryQuest)) {
+                final String date = sm.getQRValueByKey(entryQuest, "date"); // yy/MM/dd
+                if (date != null) {
+                    final String count = sm.getQRValueByKey(entryQuest, "count");
+                    if (count != null) {
+                        int lastDay = Integer.parseInt(date.substring(6, 8));
+                        if (lastDay == day) {
+                            if (Integer.parseInt(count) >= maximumCount) {
+                                return false;
                             }
+                        } else {
+                            sm.setQRValueByKey(entryQuest, "count", "0");
                         }
                     }
                 }
             }
-            return true;
         }
-        return false;
+        return true;
     }
 
     // For Party
@@ -3065,6 +3080,16 @@ public class ScriptManagerImpl implements ScriptManager {
 
     // For Party
     public void addAttempt(int entryQuest, Party party) {
+        if (party == null) {
+            final LocalDateTime now = LocalDateTime.now();
+            if (hasQuest(entryQuest) || hasQuestCompleted(entryQuest)) {
+                setQRValueByKey(entryQuest, "count", getQRValueByKey(entryQuest, "count").equals("5") ? "1" : String.valueOf(Integer.parseInt(getQRValueByKey(entryQuest, "count")) + 1));
+                setQRValueByKey(entryQuest, "date", DateTimeFormatter.ofPattern("yy/MM/dd").format(now));
+            } else {
+                createQuestWithQRValue(entryQuest, String.format("count=%d;date=%s", 1, DateTimeFormatter.ofPattern("yy/MM/dd").format(now)));
+            }
+            return;
+        }
         final LocalDateTime now = LocalDateTime.now();
         for (Char player : party.getOnlineChars()) {
             ScriptManagerImpl sm = player.getScriptManager();
@@ -3845,7 +3870,13 @@ public class ScriptManagerImpl implements ScriptManager {
     }
 
     public void showClearStageExpWindowToParty(long expGiven) {
-        for (Char player : getParty().getPartyMembersInSameFieldWithChr(chr)) {
+        Party party = getParty();
+        if (party == null) {
+            chr.write(FieldPacket.fieldEffect(FieldEffect.showClearStageExpWindow((int) expGiven)));
+            chr.addExp(expGiven, false);
+            return;
+        }
+        for (Char player : party.getPartyMembersInSameFieldWithChr(chr)) {
             player.write(FieldPacket.fieldEffect(FieldEffect.showClearStageExpWindow((int) expGiven)));
             player.addExp(expGiven, false);
         }

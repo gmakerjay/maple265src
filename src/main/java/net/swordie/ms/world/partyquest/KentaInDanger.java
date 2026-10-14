@@ -6,6 +6,8 @@ import net.swordie.ms.client.social.Party.PartyMember;
 import net.swordie.ms.constants.GameConstants;
 import net.swordie.ms.constants.WzConstants;
 import net.swordie.ms.scripts.ScriptManagerImpl;
+import net.swordie.ms.enums.WeatherEffNoticeType;
+import net.swordie.ms.world.field.Instance;
 
 public class KentaInDanger implements PartyQuest {
 
@@ -106,28 +108,29 @@ public class KentaInDanger implements PartyQuest {
             return;
         }
         int fieldId = sm.getFieldID();
+        Party p = chr.getParty() != null ? chr.getParty() : this.party;
+        this.party = p;
         if (fieldId == 923040100) {
-            sm.warpParty(923040200, party);
+            sm.warpParty(923040200, p);
         } else if (fieldId == 923040200) {
-            sm.warpParty(923040300, party);
+            sm.warpParty(923040300, p);
         } else if (fieldId == 923040300) {
-            sm.warpParty(923040400, party);
-            sm.spawnMob(8520000, 180, 1810, false);
+            sm.warpParty(923040400, p);
         } else if (fieldId == 923040400) {
+            Instance instance = p != null ? p.getInstance() : null;
+            if (instance != null && !instance.hasProperty("pianus_spawned")) {
+                instance.addProperty("pianus_spawned", true);
+                sm.spawnMob(8520000, 180, 1810, false);
+                sm.showWeatherNoticeToField("Defeat Pianus to rescue Kenta!", WeatherEffNoticeType.KentaPQ);
+                return;
+            }
             if (!sm.hasMobsInField()) {
-                if (party.isLeader(chr)) {
+                if (p != null && p.isLeader(chr)) {
                     sm.sendNext("Thank you so much for rescuing me from Pianus! Here is your reward.");
                 } else {
                     sm.sendSayOkay("Thank you for helping me defeat Pianus!");
                 }
-                sm.showEffectToField(WzConstants.EFFECT_PQ_CLEAR);
-                sm.playSound(WzConstants.EFFECT_PQ_SOUND_CLEAR, true);
-                sm.givePQRewards(party);
-                sm.setAchieveRatio(100);
-                for (Char player : party.getOnlineChars()) {
-                    player.addItemToInventory(4001535, 2);
-                }
-                sm.invokeAfterDelay(2000, "warpParty", GameConstants.KENTA_IN_DANGER_ENTRANCE_MAP, party);
+                clear(chr);
             } else {
                 sm.sendSayOkay("Please defeat Pianus to save Kenta!");
             }
@@ -145,6 +148,22 @@ public class KentaInDanger implements PartyQuest {
 
     @Override
     public void clear(Char chr) {
+        ScriptManagerImpl sm = chr.getScriptManager();
+        sm.showEffectToField(WzConstants.EFFECT_PQ_CLEAR);
+        sm.playSound(WzConstants.EFFECT_PQ_SOUND_CLEAR, true);
+        Party p = chr.getParty() != null ? chr.getParty() : this.party;
+        if (p != null) {
+            sm.givePQRewards(p);
+            for (Char player : p.getOnlineChars()) {
+                player.addItemToInventory(4001535, 2);
+            }
+            sm.invokeAfterDelay(2000, "warpParty", GameConstants.KENTA_IN_DANGER_ENTRANCE_MAP, p);
+        } else {
+            sm.givePQRewards(null);
+            chr.addItemToInventory(4001535, 2);
+            sm.warpInstanceOut(chr, GameConstants.KENTA_IN_DANGER_ENTRANCE_MAP);
+        }
+        sm.setAchieveRatio(100);
     }
 
     @Override

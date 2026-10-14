@@ -112,6 +112,8 @@ public class LordPirate implements PartyQuest {
 
     @Override
     public void event() {
+        Party currentParty = chr.getParty() != null ? chr.getParty() : this.party;
+        this.party = currentParty;
         if (party == null) {
             return;
         }
@@ -188,6 +190,16 @@ public class LordPirate implements PartyQuest {
 
     @Override
     public void clear(Char chr) {
+        ScriptManagerImpl sm = chr.getScriptManager();
+        sm.showEffectToField(WzConstants.EFFECT_PQ_CLEAR);
+        sm.playSound(WzConstants.EFFECT_PQ_SOUND_CLEAR, true);
+        Party p = chr.getParty() != null ? chr.getParty() : this.party;
+        if (p != null) {
+            sm.givePQRewards(p);
+        } else {
+            sm.givePQRewards(null);
+        }
+        end(chr);
     }
 
     @Override

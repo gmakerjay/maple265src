@@ -5,6 +5,7 @@ import net.swordie.ms.client.social.Party.Party;
 import net.swordie.ms.client.social.Party.PartyMember;
 import net.swordie.ms.connection.packet.TemporarySkillMan;
 import net.swordie.ms.constants.GameConstants;
+import net.swordie.ms.constants.WzConstants;
 import net.swordie.ms.life.mob.Mob;
 import net.swordie.ms.scripts.ScriptManagerImpl;
 import net.swordie.ms.world.field.Field;
@@ -329,6 +330,16 @@ public class XerxesInChryse implements PartyQuest {
 
     @Override
     public void clear(Char chr) {
+        ScriptManagerImpl sm = chr.getScriptManager();
+        sm.showEffectToField(WzConstants.EFFECT_PQ_CLEAR);
+        sm.playSound(WzConstants.EFFECT_PQ_SOUND_CLEAR, true);
+        Party p = chr.getParty() != null ? chr.getParty() : this.party;
+        if (p != null) {
+            sm.givePQRewards(p);
+        } else {
+            sm.givePQRewards(null);
+        }
+        end(chr);
     }
 
     @Override

@@ -13,7 +13,7 @@ public class DragonRider implements PartyQuest {
 
     private final ScriptManagerImpl sm;
     private final Char chr;
-    private final Party party;
+    private Party party;
     private final int entryQuest = 1210;
 
     public DragonRider(Char chr) {
@@ -43,10 +43,11 @@ public class DragonRider implements PartyQuest {
             case 0:
                 Party party = chr.getParty();
                 if (party == null) {
-                    party = Party.createNewParty((byte) 0, chr.getName() + "'s Party", chr.getWorld());
-                    party.addPartyMember(chr);
+                    party = Party.createNewParty(chr, chr.getName() + "'s Party");
                     chr.setParty(party);
-                } else if (!party.isLeader(chr)) {
+                }
+                this.party = party;
+                if (!party.isLeader(chr)) {
                     sm.sendSayOkay("Please tell the leader of your party to talk to me.");
                     return;
                 }
@@ -93,6 +94,8 @@ public class DragonRider implements PartyQuest {
 
     @Override
     public void event() {
+        Party p = chr.getParty() != null ? chr.getParty() : this.party;
+        this.party = p;
         Field field = chr.getField();
         if (field.getId() == 240080500) { // Final Stage
             if (field.getMobs().isEmpty()) {
@@ -104,7 +107,7 @@ public class DragonRider implements PartyQuest {
             if (field.getMobs().isEmpty()) {
                 sm.showEffectToField(WzConstants.EFFECT_PQ_CLEAR);
                 sm.playSound(WzConstants.EFFECT_PQ_SOUND_CLEAR, true);
-                sm.warpParty(field.getId() + 100, party);
+                sm.warpParty(field.getId() + 100, p);
             } else {
                 sm.chat("Please eliminate all enemies before moving to the next stage.");
             }
@@ -123,7 +126,8 @@ public class DragonRider implements PartyQuest {
         ScriptManagerImpl sm = chr.getScriptManager();
         sm.showEffectToField(WzConstants.EFFECT_PQ_CLEAR);
         sm.playSound(WzConstants.EFFECT_PQ_SOUND_CLEAR, true);
-        sm.givePQRewards(party);
+        Party p = chr.getParty() != null ? chr.getParty() : this.party;
+        sm.givePQRewards(p);
         end(chr);
     }
 

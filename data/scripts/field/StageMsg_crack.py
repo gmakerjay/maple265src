@@ -10,7 +10,8 @@ STAGE_4_CLEARED = "Stage4Cleared"
 
 #Stage 2
 if sm.getFieldID() == 922010400:
-    if chr.getParty().getOrCreateFieldById(922010401).getMobs().size() == 0 and chr.getParty().getOrCreateFieldById(922010402).getMobs().size() == 0 and chr.getParty().getOrCreateFieldById(922010403).getMobs().size() == 0 and chr.getParty().getOrCreateFieldById(922010404).getMobs().size() == 0 and chr.getParty().getOrCreateFieldById(922010405).getMobs().size() == 0:
+    p = chr.getParty()
+    if p is not None and p.getOrCreateFieldById(922010401).getMobs().size() == 0 and p.getOrCreateFieldById(922010402).getMobs().size() == 0 and p.getOrCreateFieldById(922010403).getMobs().size() == 0 and p.getOrCreateFieldById(922010404).getMobs().size() == 0 and p.getOrCreateFieldById(922010405).getMobs().size() == 0:
         #Do this so that the effect won't get spammed
         if not field.hasProperty(STAGE_2_CLEARED):
             sm.invokeForParty("showFieldEffect", "quest/party/clear", 10000)

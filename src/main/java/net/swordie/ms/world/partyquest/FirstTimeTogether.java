@@ -14,7 +14,7 @@ public class FirstTimeTogether implements PartyQuest {
 
     private final ScriptManagerImpl sm;
     private final Char chr;
-    private final Party party;
+    private Party party;
     private final int entryQuest = 1323;
 
     Instance instance;
@@ -48,6 +48,7 @@ public class FirstTimeTogether implements PartyQuest {
                         party = Party.createNewParty(chr, chr.getName() + "'s Party");
                         chr.setParty(party);
                     }
+                    this.party = party;
                     if (!party.isLeader(chr)) {
                         sm.sendSayOkay("If you want to try the quest, please tell the #bleader of your party#k to talk to me.");
                     } else if (sm.checkPartyForPQ()) {
@@ -90,8 +91,16 @@ public class FirstTimeTogether implements PartyQuest {
 
     @Override
     public void event() {
+        Party currentParty = chr.getParty() != null ? chr.getParty() : this.party;
+        this.party = currentParty;
+        if (currentParty == null) {
+            return;
+        }
+        instance = currentParty.getInstance();
+        if (instance == null) {
+            return;
+        }
         String scriptName = sm.getLastActiveScriptName();
-        instance = party.getInstance();
         stage = (byte) ((sm.getFieldID() % 10000) / 1000);
 
         switch (scriptName) {
@@ -270,7 +279,8 @@ public class FirstTimeTogether implements PartyQuest {
     public void clear(Char chr) {
         ScriptManagerImpl sm = chr.getScriptManager();
         sm.sendNext("Congratulations on clearing all the stages. Take care...");
-        sm.givePQRewards(party);
+        Party p = chr.getParty() != null ? chr.getParty() : this.party;
+        sm.givePQRewards(p);
         end(chr);
     }
 

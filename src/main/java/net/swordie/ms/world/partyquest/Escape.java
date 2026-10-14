@@ -38,7 +38,8 @@ public class Escape implements PartyQuest {
                 "#b" +
                 "#L0#I'll help the Explorer trapped in the castle!#l\r\n" +
                 "#L1#Please tell me about the castle's prison.#l\r\n" +
-                "#L2#Please tell me more about the Prison Guard Key.#l" +
+                "#L2#Please tell me more about the Prison Guard Key.#l\r\n" +
+                "#L3#How many more attempts do I have today?#l" +
                 "#k");
         switch (selection) {
             case 0:
@@ -92,6 +93,13 @@ public class Escape implements PartyQuest {
                     sm.sendSayOkay("You don't have enough 5 of #t4001534#s or make some room in your EQUIP inventory.");
                 }
                 break;
+            case 3:
+                int count = 5;
+                if (chr.hasQuest(entryQuest)) {
+                    count = 5 - Integer.parseInt(chr.getQRValueByKey(entryQuest, "count"));
+                }
+                sm.sendSayOkay("You can challenge this " + count + " more time(s) today.");
+                break;
         }
     }
 
@@ -106,7 +114,11 @@ public class Escape implements PartyQuest {
 
     @Override
     public void event() {
-        Instance instance = party.getInstance();
+        Party p = chr.getParty() != null ? chr.getParty() : this.party;
+        this.party = p;
+        if (p == null) return;
+        Instance instance = p.getInstance();
+        if (instance == null) return;
         int stage = (sm.getFieldID() % 1000) / 100;
         if (!instance.hasProperty("escape" + stage + "clear")) {
             if (!sm.hasMobsInField() || sm.getFieldID() == 921160600) {
@@ -138,6 +150,21 @@ public class Escape implements PartyQuest {
 
     @Override
     public void clear(Char chr) {
+        ScriptManagerImpl sm = chr.getScriptManager();
+        sm.showEffectToField(WzConstants.EFFECT_PQ_CLEAR);
+        sm.playSound(WzConstants.EFFECT_PQ_SOUND_CLEAR, true);
+        Party p = chr.getParty() != null ? chr.getParty() : this.party;
+        if (p != null) {
+            sm.givePQRewards(p);
+            for (Char player : p.getOnlineChars()) {
+                player.addItemToInventory(4001534, 1);
+            }
+        } else {
+            sm.givePQRewards(null);
+            chr.addItemToInventory(4001534, 1);
+        }
+        sm.setAchieveRatio(100);
+        end(chr);
     }
 
     @Override

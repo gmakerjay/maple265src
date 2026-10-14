@@ -227,7 +227,22 @@ public class Juliet implements PartyQuest {
                 }
             }
         } else if (chr.getField().getId() == 926110401) {
-            if (chr.getParty().isLeader(chr)) {
+            Party p = chr.getParty() != null ? chr.getParty() : this.party;
+            this.party = p;
+            if (p == null) return;
+            Instance inst = p.getInstance();
+            if (inst != null && inst.hasProperty("juliet_boss_spawned")) {
+                if (!sm.hasMobById(9300152)) {
+                    clear(chr);
+                } else {
+                    sm.chat("Defeat Angry Frankenroid to complete the quest!");
+                }
+                return;
+            }
+            if (p.isLeader(chr)) {
+                if (inst != null) {
+                    inst.addProperty("juliet_boss_spawned", true);
+                }
                 sm.removeNpc(2112010);
                 int avgLevel = chr.getParty().getAvgPartyLevel();
                 chr.getField().spawnMob(9300150, -535, -126, false, 9999999999L);
@@ -267,6 +282,25 @@ public class Juliet implements PartyQuest {
 
     @Override
     public void clear(Char chr) {
+        ScriptManagerImpl sm = chr.getScriptManager();
+        sm.showEffectToField(WzConstants.EFFECT_PQ_CLEAR);
+        sm.playSound(WzConstants.EFFECT_PQ_SOUND_CLEAR, true);
+        Party p = chr.getParty() != null ? chr.getParty() : this.party;
+        if (p != null) {
+            sm.givePQRewards(p);
+            for (Char member : p.getOnlineChars()) {
+                if (member.getScriptManager().canHold(4001160)) {
+                    member.getScriptManager().giveItem(4001160, 1);
+                }
+            }
+        } else {
+            sm.givePQRewards(null);
+            if (sm.canHold(4001160)) {
+                sm.giveItem(4001160, 1);
+            }
+        }
+        sm.setAchieveRatio(100);
+        end(chr);
     }
 
     @Override

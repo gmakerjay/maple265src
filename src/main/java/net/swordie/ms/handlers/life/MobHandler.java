@@ -576,19 +576,29 @@ public class MobHandler {
                 mob.removeWithAnimation();
                 if (mob.getTemplateId() == GameConstants.MOON_BUNNY) {  // Moon Bunny
                     field.broadcast(WvsContext.weatherEffectNotice(WeatherEffNoticeType.MoonBunny, "The Moon Bunny went home because he was sick.", 7000));
-                    chr.getPartyQuestManager().getPartyQuest().end(chr);
+                    if (chr.getPartyQuestManager() != null && chr.getPartyQuestManager().getPartyQuest() != null) {
+                        chr.getPartyQuestManager().getPartyQuest().end(chr);
+                    }
                 } else if (mob.getTemplateId() == 9300138) {   // Romeo (Brady)
                     field.broadcast(WvsContext.weatherEffectNotice(WeatherEffNoticeType.RomeoNPC, "Romeo has fainted in the middle of the combat.", 7000));
-                    chr.getPartyQuestManager().getPartyQuest().end(chr);
+                    if (chr.getPartyQuestManager() != null && chr.getPartyQuestManager().getPartyQuest() != null) {
+                        chr.getPartyQuestManager().getPartyQuest().end(chr);
+                    }
                 } else if (mob.getTemplateId() == 9300137) {   // Juliet (Brittany)
                     field.broadcast(WvsContext.weatherEffectNotice(WeatherEffNoticeType.JulietNPC, "Juliet has fainted in the middle of the combat.", 7000));
-                    chr.getPartyQuestManager().getPartyQuest().end(chr);
+                    if (chr.getPartyQuestManager() != null && chr.getPartyQuestManager().getPartyQuest() != null) {
+                        chr.getPartyQuestManager().getPartyQuest().end(chr);
+                    }
                 } else if (mob.getTemplateId() == 9300275) { // Shammos
                     field.broadcast(WvsContext.weatherEffectNotice(WeatherEffNoticeType.ShammosPQ, "Shammos has fallen in the middle of the combat.", 7000));
-                    chr.getPartyQuestManager().getPartyQuest().end(chr);
+                    if (chr.getPartyQuestManager() != null && chr.getPartyQuestManager().getPartyQuest() != null) {
+                        chr.getPartyQuestManager().getPartyQuest().end(chr);
+                    }
                 } else if (mob.getTemplateId() == 9300460) { // Kenta
                     field.broadcast(WvsContext.weatherEffectNotice(WeatherEffNoticeType.KentaPQ, "Kenta has fallen in the middle of the combat.", 7000));
-                    chr.getPartyQuestManager().getPartyQuest().end(chr);
+                    if (chr.getPartyQuestManager() != null && chr.getPartyQuestManager().getPartyQuest() != null) {
+                        chr.getPartyQuestManager().getPartyQuest().end(chr);
+                    }
                 } else if (mob.getTemplateId() == 9400322 || mob.getTemplateId() == 9400327 || mob.getTemplateId() == 9400332) { // snowman
                     field.broadcast(WvsContext.weatherEffectNotice(WeatherEffNoticeType.Snowflakes, "The Snowman has melted on the heat of the battle.", 7000));
                     // Christmas Event

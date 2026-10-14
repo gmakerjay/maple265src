@@ -93,6 +93,12 @@ public class HungryMuto implements PartyQuest {
             if (chr.getQRValueByKey(entryQuest, "clear") != null && chr.getQRValueByKey(entryQuest, "clear").equals("1")) {
                 int sel = sm.sendNext("#e#b<Hungry Muto>#k#n\r\n\r\n#b#L0#Claim <Hungry Muto> reward.#l#k");
                 boolean canEnd = true;
+                Party currentParty = chr.getParty() != null ? chr.getParty() : this.party;
+                if (currentParty == null) {
+                    currentParty = Party.createNewParty(chr, chr.getName() + "'s Party");
+                    chr.setParty(currentParty);
+                }
+                this.party = currentParty;
                 for (Char member : party.getOnlineChars()) {
                     if (member.getScriptManager().getEmptyInventorySlots(1) < 5) {
                         canEnd = false;
@@ -270,6 +276,20 @@ public class HungryMuto implements PartyQuest {
     }
 
     public void reward(Party party) {
+        if (party == null) {
+            String diff = chr.getQRValueByKey(entryQuest, "diff");
+            int finishTime = Integer.parseInt(chr.getQRValueByKey(entryQuest, "ptime") != null ? chr.getQRValueByKey(entryQuest, "ptime") : "0");
+            if ("hard".equals(diff)) {
+                sm.giveSymbol(1712002, finishTime >= 300 ? 5 : (finishTime >= 120 ? 4 : 3));
+                sm.showClearStageExpWindow(323619200);
+            } else {
+                sm.giveSymbol(1712002, finishTime >= 300 ? 3 : (finishTime >= 120 ? 2 : 1));
+                sm.showClearStageExpWindow(242714400);
+            }
+            chr.setQRValueByKey(entryQuest, "clear", "0");
+            exit();
+            return;
+        }
         for (Char chr : party.getOnlineChars()) {
             ScriptManagerImpl sm = chr.getScriptManager();
             String diff = chr.getQRValueByKey(entryQuest, "diff");
@@ -311,7 +331,12 @@ public class HungryMuto implements PartyQuest {
 
     @Override
     public void event() {
-        if (chr == null || chr.getParty() == null) {
+        if (chr == null) {
+            return;
+        }
+        Party currentParty = chr.getParty() != null ? chr.getParty() : this.party;
+        this.party = currentParty;
+        if (party == null) {
             return;
         }
         if (party.isLeader(chr)) {

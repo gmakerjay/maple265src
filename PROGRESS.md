@@ -3,6 +3,38 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-14 13:36 น.] Complete Audit, Solo & LAN Compatibility, Null-Safety, and Progression Fixes for all 15 Party Quest (PQ) Systems
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: Complete Audit, Solo & LAN Compatibility, Null-Safety, and Progression Fixes for all 15 Party Quest (PQ) Systems
+- **รายละเอียด**:
+  1. **สถาปัตยกรรม PartyQuestManager & Party Instance Lifecycle**:
+     - แก้ไขใน [PartyQuestManager.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/PartyQuestManager.java): เพิ่มเมธอด `matches()` ตรวจสอบประเภท PQ และรีเซ็ตสร้างอ็อบเจกต์ PQ ใหม่เสมอเมื่อ `typeEnter == 0` หรือเมื่อเปลี่ยนประเภท ป้องกันปัญหาข้อมูลค้างข้าม PQ
+     - แก้ไขใน [DragonRider.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/DragonRider.java), [FirstTimeTogether.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/FirstTimeTogether.java), และ [MoonBunny.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/partyquest/MoonBunny.java): ปลด `final` ออกจาก `party` และอัปเดต `this.party = party` ทุกครั้งที่สร้างปาร์ตี้อัตโนมัติสำหรับผู้เล่นเดี่ยว (Solo mode) ขจัด `NullPointerException` 100%
+  2. **ระบบส่วนกลาง ScriptManagerImpl & MobHandler Null-Safety**:
+     - แก้ไขใน [ScriptManagerImpl.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/scripts/ScriptManagerImpl.java):
+       - `warpParty()`: เพิ่มเงื่อนไข `if (party == null) { warp(id); return; }` ป้องกัน NPE เมื่อผู้เล่นเดี่ยวเคลื่อนย้ายผ่านพอร์ทัล
+       - `givePQRewards()`: เพิ่มเงื่อนไข `if (party == null)` มอบ EXP, Trait, Party Points ให้ตัวละครเดี่ยวได้โดยตรง
+       - `checkAttempt()`: รองรับการเช็คสิทธิ์แบบเดี่ยว (`checkAttempt(entryQuest, maximumCount)`) และแก้ไขการตรวจสอบเควสต์ของสมาชิกปาร์ตี้ด้วย `pChr.getScriptManager().hasQuest()`
+       - `addAttempt()`: บันทึกรอบลงตัวละครโดยตรงหากไม่มีปาร์ตี้
+       - `showClearStageExpWindowToParty()`: เพิ่มการแสดงหน้าต่าง EXP สำหรับผู้เล่นเดี่ยวหาก `party == null`
+     - แก้ไขใน [MobHandler.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/life/MobHandler.java): เพิ่ม Null-check ก่อนเรียก `chr.getPartyQuestManager().getPartyQuest().end(chr)` ในจุดที่ Friendly Mobs ตาย (Moon Bunny, Romeo, Juliet, Shammos, Kenta) ป้องกัน Thread Crash
+  3. **การปรับปรุงและแก้บั๊กเฉพาะของทั้ง 15 Party Quests**:
+     - **Moon Bunny**: รองรับการเคลียร์และรับรางวัลผ่าน `clear(chr)` และเพิ่มกล่องถามยืนยันก่อนออกจากด่าน
+     - **FirstTimeTogether (Kerning PQ)**: ป้องกัน NPE ใน `event()` และส่งต่อรางวัลเมื่อผ่านด่าน Slime King
+     - **Hungry Muto**: แก้ไขจุดตรวจเช็คช่องเก็บของในแผนที่ทางออกไม่ให้เกิด NPE หาก `party == null` และรองรับการแจก Arcane Symbol / EXP ในโหมดเดี่ยว
+     - **Ludibrium (Dimensional Crack)**: ป้องกัน NPE ใน `clear()`, ปรับปรุงจำนวนพาสสำหรับโหมด Solo, และเพิ่ม Null-safety ใน [StageMsg_crack.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/field/StageMsg_crack.py)
+     - **Lord Pirate**: เพิ่มการตรวจสอบและอัปเดตตัวแปร Party ใน `event()`, รองรับการจบด่านผ่าน `clear(chr)`
+     - **Romeo & Juliet**: เพิ่มการตรวจสอบสถานะบอส Frankenroid ถูกกำจัดในห้องบอส (`926100401` / `926110401`) เพื่อจบเควสต์ มอบเหรียญ Alcadno/Zenumist Marble และวาร์ปออกอย่างถูกต้อง
+     - **Escape (Aerial Prison)**: เพิ่มตัวเลือกตรวจสอบรอบคงเหลือประจำวัน (#L3#) ในบทสนทนาเริ่มต้น และรองรับการจบด่านรับ Prison Guard Key ผ่าน `clear(chr)`
+     - **Kenta In Danger**: แก้ไขจุดเรียกเกิดบอส Pianus ให้เกิดในห้องบอส (`923040400`) แทนที่จะเกิดในห้องก่อนหน้า และรองรับการจบด่านรับ Kenta's Goggles Research Materials (item `4001535`)
+     - **Alien Visitor**: ป้องกัน NPE ใน `exit()` และ `event()`, รองรับการมอบรางวัล EXP ตามเกรด S/A/B/C
+     - **Dimension Invasion**: เพิ่มการหาค่าเลเวลเฉลี่ย fallback เป็น `chr.getLevel()` หากไม่มีปาร์ตี้ และป้องกัน NPE ใน `clear()`
+     - **Defense Event (Nett's Pyramid)**: ป้องกัน NPE ใน `waveClear()` และ `endWave()` สำหรับผู้เล่นเดี่ยว
+     - **Tangyoon Cooking**: ป้องกัน NPE ใน `event()` และมอบใบประกาศนียบัตรเชฟ `4033668` ใน `clear()`
+     - **Xerxes in Chryse**: เพิ่มการมอบรางวัลและล้างไทม์เมอร์อย่างปลอดภัยใน `clear()`
+     - **Dragon Rider**: ปรับปรุงการสร้างปาร์ตี้และเคลื่อนย้ายไปสู่แมพถัดไปแบบ Null-safe
+
 ## 📅 [2026-10-14 13:22 น.] Implementation & Complete Resolution of Item Enhancement Stability Audit (Rebirth Flame, Cubes, Scrolls/Spell Trace, Star Force Drop & Chance Time, Toad's Hammer)
 
 ### 🎯 Scope & Technical Details

@@ -4,6 +4,7 @@ import net.swordie.ms.client.character.Char;
 import net.swordie.ms.client.social.Party.Party;
 import net.swordie.ms.client.social.Party.PartyMember;
 import net.swordie.ms.constants.GameConstants;
+import net.swordie.ms.constants.WzConstants;
 import net.swordie.ms.enums.WeatherEffNoticeType;
 import net.swordie.ms.handlers.Timer;
 import net.swordie.ms.life.mob.Mob;
@@ -19,7 +20,7 @@ public class MoonBunny implements PartyQuest {
 
     private final ScriptManagerImpl sm;
     private final Char chr;
-    private final Party party;
+    private Party party;
     private final int entryQuest = 1323;
     List<MobGen> mobGens = new ArrayList<>();
     List<Integer> stage1Mobs = List.of(9300058, 9300059);
@@ -58,6 +59,7 @@ public class MoonBunny implements PartyQuest {
                             party = Party.createNewParty(chr, chr.getName() + "'s Party");
                             chr.setParty(party);
                         }
+                        this.party = party;
                         if (!party.isLeader(chr)) {
                             sm.sendSayOkay("If you want to try the quest, please tell the #bleader of your party#k to talk to me.");
                         } else if (sm.checkPartyForPQ()) {
@@ -116,8 +118,10 @@ public class MoonBunny implements PartyQuest {
 
     @Override
     public void exit() {
-        sm.setAchieveRatio(0, false);
-        sm.warpInstanceOut(chr, GameConstants.MOON_BUNNY_ENTRANCE_MAP);
+        if (sm.sendAskYesNo("Do you want to leave Primrose Hill?")) {
+            sm.setAchieveRatio(0, false);
+            sm.warpInstanceOut(chr, GameConstants.MOON_BUNNY_ENTRANCE_MAP);
+        }
     }
 
     @Override
@@ -167,6 +171,14 @@ public class MoonBunny implements PartyQuest {
 
     @Override
     public void clear(Char chr) {
+        ScriptManagerImpl sm = chr.getScriptManager();
+        sm.showEffectToField(WzConstants.EFFECT_PQ_CLEAR);
+        sm.playSound(WzConstants.EFFECT_PQ_SOUND_CLEAR, true);
+        Party p = chr.getParty() != null ? chr.getParty() : this.party;
+        if (p != null) {
+            sm.givePQRewards(p);
+        }
+        end(chr);
     }
 
     @Override

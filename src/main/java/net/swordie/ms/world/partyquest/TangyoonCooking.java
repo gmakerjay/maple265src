@@ -118,11 +118,27 @@ public class TangyoonCooking implements PartyQuest {
 
     @Override
     public void clear(Char chr) {
+        ScriptManagerImpl sm = chr.getScriptManager();
+        sm.showEffectToField(WzConstants.EFFECT_PQ_CLEAR);
+        sm.playSound(WzConstants.EFFECT_PQ_SOUND_CLEAR, true);
+        Party p = chr.getParty() != null ? chr.getParty() : this.party;
+        if (p != null) {
+            sm.givePQRewards(p);
+            for (Char player : p.getOnlineChars()) {
+                player.addItemToInventory(4033668, 1);
+            }
+        } else {
+            sm.givePQRewards(null);
+            chr.addItemToInventory(4033668, 1);
+        }
+        end(chr);
     }
 
     @Override
     public void event() {
-        if (party == null) {
+        Party p = chr.getParty() != null ? chr.getParty() : this.party;
+        this.party = p;
+        if (p == null) {
             return;
         }
         int sel = sm.sendNext("How goes the cooking, apprentice?\r\n\r\n" +
