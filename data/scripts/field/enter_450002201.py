@@ -297,7 +297,7 @@ if sm.hasQuest(34218):
 
     sm.unlockUI()
     sm.completeQuest(34218)
-    sm.giveSymbol(1712002, 34218)
+    sm.giveSymbol(1712002, 1, 34218)
     sm.warpInstanceOut(chr, 450002021)
     sm.progressMessageFont("Speak with Muto continue your journey.")
     #sm.dispose()

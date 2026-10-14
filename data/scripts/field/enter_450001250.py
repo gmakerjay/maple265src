@@ -4,8 +4,7 @@ if not sm.hasQuestCompleted(34120):
     sm.startQuest(34162)
     sm.setSpeakerID(3003143) # Pile of Clothes
     sm.setParam(2)
-    sm.sendNext("#b(You picked up the #t1712001:# that Kao behind.)#k")
-    sm.giveAndEquip(1712001)
+    sm.sendNext("#b(You picked up the #t1712001:# that Kao left behind.)#k")
+    sm.giveSymbol(1712001, 1, 34120)
     sm.consumeItem(1712000)
     sm.startQuest(28857)
-    sm.sendNext("ueet")

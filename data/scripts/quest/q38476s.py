@@ -5,24 +5,24 @@ VELIVAH = 3003810
 reqMob = 100
 
 sm.setSpeakerID(VELIVAH)
-sm.sendNext("Bạn đây rồi!")
+sm.sendNext("There you are!")
 sm.setPlayerAsSpeaker()
-sm.sendSay("Chuyện gì vậy, Velivah?")
+sm.sendSay("What's going on, Velivah?")
 sm.setSpeakerID(VELIVAH)
-sm.sendSay("Chúng tôi nhận được yêu cầu từ Người bảo vệ thời gian. Họ muốn chúng tôi bắt đầu #bnghiên cứu về Limina#k.")
+sm.sendSay("We received a request from the Guardians of Time. They want us to conduct #bresearch on Limina#k.")
 sm.setPlayerAsSpeaker()
-sm.sendSay("Nghiên cứu?")
+sm.sendSay("Research?")
 sm.setSpeakerID(VELIVAH)
-sm.sendSay("Có! Nghiên cứu này là #rsăn quái vật#k để xem xét những thay đổi trong khu vực.")
-if sm.sendAskAccept("Sẽ rất tuyệt nếu bạn có thể giúp chúng tôi, #h0#. Tất nhiên, chúng tôi sẽ cung cấp những phần thưởng mà bạn sẽ thấy rất hữu ích."):
-    if sm.sendAskAccept("Xin chào! Tôi có yêu cầu điều tra ngày hôm nay. Đánh bại " + str(reqMob) + " quái vật xung quanh khu vực #bLimina#k."):
+sm.sendSay("Yes! This research involves #rhunting monsters#k to examine the changes taking place across the area.")
+if sm.sendAskAccept("It would be wonderful if you could help us, #h0#. Of course, we'll provide rewards that you will find very useful."):
+    if sm.sendAskAccept("Hello! I have an investigation order for today. Defeat " + str(reqMob) + " monsters in the #bLimina#k area."):
         sm.startQuest(parentID)
         sm.setQRValueByKey(parentID, "date", time.strftime("%y/%m/%d"))
         sm.setSpeakerID(VELIVAH)
-        sm.sendNext("Hãy đến gặp tôi sau khi bạn hoàn tất yêu cầu nhiệm vụ. Đừng quên quay lại #r#etrước nửa đêm#n#k nhé!\r\nBây giờ là #r#e" + str(sm.getCurrentTime()))
+        sm.sendNext("Please return to me once you have finished the mission. Don't forget to report back #r#ebefore midnight#n#k!\r\nCurrent time is #r#e" + str(sm.getCurrentTime()) + "#k.")
     else:
         sm.setSpeakerID(VELIVAH)
-        sm.sendNext("Có vẻ như bạn vẫn chưa sẵn sàng. Hãy cho tôi biết khi nào bạn sẵn sàng nhé.")
+        sm.sendNext("It looks like you're not ready yet. Please let me know when you're ready.")
 else:
     sm.setSpeakerID(VELIVAH)
-    sm.sendNext("Có vẻ như bạn vẫn chưa sẵn sàng. Hãy cho tôi biết khi nào bạn sẵn sàng nhé.")
+    sm.sendNext("It looks like you're not ready yet. Please let me know when you're ready.")

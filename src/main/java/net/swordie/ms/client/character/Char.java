@@ -10904,6 +10904,60 @@ public class Char {
                 "[Notice] Limina Research has been reset!");
     }
 
+    public void initDailyQuestSymbol() {
+        initSymbolQuests();
+        initClassicDailyQuest(QuestConstants.VANISHING_JOURNEY_DAILY_QUEST, 5, 34130, 34150);
+        initClassicDailyQuest(QuestConstants.CHU_CHU_DAILY_QUEST, 3, 39017, 39032);
+        initClassicDailyQuest(QuestConstants.LACHELEIN_DAILY_QUEST, 3, 34381, 34393);
+        initClassicDailyQuest(QuestConstants.ARCANA_DAILY_QUEST, 3, 39038, 39048);
+        initClassicDailyQuest(QuestConstants.MORASS_DAILY_QUEST, 3, 34276, 34293);
+        initClassicDailyQuest(QuestConstants.ESFERA_DAILY_QUEST, 3, 34780, 34799);
+    }
+
+    private void initClassicDailyQuest(int questId, int count, int minQuest, int maxQuest) {
+        Account acc = getAccount();
+        if (acc == null) {
+            return;
+        }
+        AccountQuest aq = acc.getQuestById(questId);
+        final String date = getQRValueByKey(questId, "date");
+        final LocalDateTime now = LocalDateTime.now();
+        final int currentDay = Integer.parseInt(DateTimeFormatter.ofPattern("dd").format(now));
+        boolean shouldRenew = false;
+        if (date != null && date.length() >= 8) {
+            try {
+                int lastDay = Integer.parseInt(date.substring(6, 8));
+                if (lastDay != currentDay) {
+                    shouldRenew = true;
+                }
+            } catch (Exception ignored) {
+                shouldRenew = true;
+            }
+        }
+        if (aq == null || getQRValueByKey(questId, "q1") == null || shouldRenew) {
+            if (aq == null) {
+                aq = new AccountQuest(acc.getId(), questId, QuestStatus.NotStarted);
+                acc.addQuest(aq);
+            } else if (shouldRenew) {
+                aq.setStatus(QuestStatus.NotStarted);
+            }
+            List<Integer> selected = new ArrayList<>();
+            for (int i = 0; i < count; i++) {
+                int randomQuest;
+                do {
+                    randomQuest = Util.getRandom(minQuest, maxQuest);
+                } while (selected.contains(randomQuest));
+                selected.add(randomQuest);
+            }
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < selected.size(); i++) {
+                sb.append("q").append(i + 1).append("=").append(selected.get(i)).append(";");
+            }
+            sb.append("date=").append(DateTimeFormatter.ofPattern("yy/MM/dd").format(now)).append(";");
+            createQuestWithQRValue(questId, sb.toString());
+        }
+    }
+
     private void handleSymbolQuest(int[] preQuestIds, int checkQuestID, int endQuestID, String renewMessage) {
         boolean allPrequelsCompleted = ServerConfig.BOSS_UNLOCK_PREQUESTS;
         Account acc = getAccount();
@@ -12731,6 +12785,14 @@ public class Char {
         }
     }
 
+    public boolean hasAccountQuestCompleted(int questID) {
+        if (getAccount() == null) {
+            return false;
+        }
+        AccountQuest quest = getAccount().getQuestById(questID);
+        return quest != null && quest.getStatus() == Completed;
+    }
+
     public void addQuest(Quest quest) {
         addQuest(quest, true);
     }
@@ -12924,6 +12986,14 @@ public class Char {
             }
         }
         dbgChatMsg("QuestID " + questId + " key : " + key + " ,value : " + value);
+    }
+
+    public String getQuestRecordEx(int questId, String key) {
+        return getQRValueByKey(questId, key);
+    }
+
+    public void setQuestRecordEx(int questId, String key, String value) {
+        setQRValueByKey(questId, key, value);
     }
 
     public String getQRValueByKey(String data, long cost, int bossID) {

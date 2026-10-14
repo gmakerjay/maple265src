@@ -1,23 +1,25 @@
 # [Daily Quest] Vanishing Journey Research
 RONA = 3003104
 COUPON = 2635509
+EXP_REWARD = 50000000
 
 sm.setSpeakerID(RONA)
-sm.sendNext("#b[Daily Quest] Vanishing Journey Research#k Bạn đã hoàn thành nhiệm vụ thành công. Nó sẽ giúp ích rất nhiều!")
-if sm.sendAskYesNo("Bạn chưa nhận được nhiệm vụ hàng ngày của Vanishing Journey EXP ngày hôm nay.\r\nBạn có muốn yêu cầu ngay bây giờ không?\r\n\r\n#r#n* EXP hoàn thành Nhiệm vụ hàng ngày của Vanishing Journey chỉ có thể được nhận một lần mỗi ngày cho mỗi thế giới."):
+sm.sendNext("#b[Daily Quest] Vanishing Journey Research#k\r\nYou have successfully completed today's research mission! Your efforts have helped us immensely.")
+if sm.sendAskYesNo("You have not claimed your Vanishing Journey Daily Quest EXP reward today.\r\nWould you like to claim it now?\r\n\r\n#r#n* Vanishing Journey Daily Quest completion EXP can only be claimed once per day per world."):
     if sm.getEmptyInventorySlots(2) >= 1:
         sm.completeQuest(parentID)
+        sm.giveExp(EXP_REWARD)
         if sm.hasQuestCompleted(37620): # [Reverse City] Surviving in the Reversed City
             sm.giveItem(COUPON, 20)
             sm.setSpeakerID(RONA)
-            sm.sendSayOkay("Tôi đã cho bạn #b#i"+str(COUPON)+"# #z"+str(COUPON)+"##k x 20 (+ 10 sau khi hoàn thành nhiệm vụ #b[Reverse City] Surviving in the Reversed City#k) Vui lòng kiểm tra túi USE của bạn.\r\n\r\n#r#e* Bạn đã nhận được EXP hoàn thành Nhiệm vụ hàng ngày ở Khu vực Vanishing Journey.*#n EXP hoàn thành Nhiệm vụ hàng ngày ở Khu vực Vanishing Journey chỉ có thể được nhận một lần mỗi ngày cho mỗi thế giới.")
+            sm.sendSayOkay("I have given you #b#i" + str(COUPON) + "# #z" + str(COUPON) + "##k x 20 (+10 bonus for completing #b[Reverse City] Surviving in the Reversed City#k). Please check your USE inventory.\r\n\r\n#r#e* You have received the Vanishing Journey Daily Quest completion EXP!*#n")
         else:
             sm.giveItem(COUPON, 10)
             sm.setSpeakerID(RONA)
-            sm.sendSayOkay("Tôi đã cho bạn #b#i"+str(COUPON)+"# #z"+str(COUPON)+"##k x 10 Vui lòng kiểm tra túi USE của bạn.\r\n\r\n#r#e* Bạn đã nhận được EXP hoàn thành Nhiệm vụ hàng ngày ở Khu vực Vanishing Journey.*#n EXP hoàn thành Nhiệm vụ hàng ngày ở Khu vực Vanishing Journey chỉ có thể được nhận một lần mỗi ngày cho mỗi thế giới.")
+            sm.sendSayOkay("I have given you #b#i" + str(COUPON) + "# #z" + str(COUPON) + "##k x 10. Please check your USE inventory.\r\n\r\n#r#e* You have received the Vanishing Journey Daily Quest completion EXP!*#n")
     else:
         sm.setSpeakerID(RONA)
-        sm.sendNext("Bạn cần phải có ít nhất 01 ô trong túi USE của bạn.")
+        sm.sendNext("Please make sure you have at least 1 empty slot in your #bUSE#k inventory.")
 else:
     sm.setSpeakerID(RONA)
-    sm.sendNext("Hãy cho tôi biết khi nào bạn sẵn sàng nhận phần thưởng nhé.")
+    sm.sendNext("Let me know when you are ready to claim your rewards.")

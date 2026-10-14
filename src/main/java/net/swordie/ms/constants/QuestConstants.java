@@ -371,6 +371,13 @@ public class QuestConstants {
                 (questID >= 37851 && questID <= ESFERA_DAILY_QUEST_PREQUEST_NEW) ||
                 (questID >= ESFERA_DAILY_QUEST_NEW && questID <= ESFERA_DAILY_QUEST_NEW_END) ||
 
+                questID == VANISHING_JOURNEY_DAILY_QUEST ||
+                questID == CHU_CHU_DAILY_QUEST ||
+                questID == LACHELEIN_DAILY_QUEST ||
+                questID == ARCANA_DAILY_QUEST ||
+                questID == MORASS_DAILY_QUEST ||
+                questID == ESFERA_DAILY_QUEST ||
+
                 questID == MOONBRIDGE_DAILY_QUEST ||
                 questID == LADYRINTH_DAILY_QUEST ||
                 questID == LIMINA_DAILY_QUEST ||

@@ -1,31 +1,37 @@
-# Arcane Symbol Selector Coupon
+# Arcane Symbol: Vanishing Journey Coupon
 COUPON_ID = 2635509
-emptySlot = sm.getEmptyInventorySlots(1) # Equip inventory
+SYMBOL_ID = 1712001
+SPEAKER_ID = 3003104 # Rona
+
 totalCoupons = sm.getQuantityOfItem(COUPON_ID)
+emptySlots = sm.getEmptyInventorySlots(1) # Equip inventory
 
 if totalCoupons <= 0:
     sm.dispose()
-elif emptySlot < 1:
+elif emptySlots < 1:
+    sm.setSpeakerID(SPEAKER_ID)
     sm.sendSayOkay("Please make sure you have at least 1 empty slot in your #bEQUIP#k inventory.")
 else:
-    sm.setSpeakerID(3003104) # Rona
-    text = "Please select the #bArcane Symbol#k you wish to receive:\r\n\r\n"
-    text += "#b#L0# #i1712001# #z1712001##l\r\n"
-    text += "#L1# #i1712002# #z1712002##l\r\n"
-    text += "#L2# #i1712003# #z1712003##l\r\n"
-    text += "#L3# #i1712004# #z1712004##l\r\n"
-    text += "#L4# #i1712005# #z1712005##l\r\n"
-    text += "#L5# #i1712006# #z1712006##l#k\r\n"
-    
-    sel = sm.sendNext(text)
-    if 0 <= sel <= 5:
-        symbolID = 1712001 + sel
-        maxQty = min(totalCoupons, emptySlot)
-        quantity = sm.sendAskNumber("How many #b#i" + str(symbolID) + "# #z" + str(symbolID) + "##k would you like to receive?\r\n(Available Coupons: " + str(totalCoupons) + ", Free Equip Slots: " + str(emptySlot) + ")", 1, 1, maxQty)
-        if quantity > 0 and quantity <= totalCoupons:
-            if sm.getEmptyInventorySlots(1) >= quantity:
+    sm.setSpeakerID(SPEAKER_ID)
+    if totalCoupons == 1:
+        if sm.sendAskYesNo("Would you like to use #b#i" + str(COUPON_ID) + "# #t" + str(COUPON_ID) + "##k to receive #b#i" + str(SYMBOL_ID) + "# #t" + str(SYMBOL_ID) + "##k?"):
+            if sm.getEmptyInventorySlots(1) >= 1 and sm.getQuantityOfItem(COUPON_ID) >= 1:
+                sm.consumeItem(COUPON_ID, 1)
+                sm.giveSymbol(SYMBOL_ID, 1)
+                sm.sendSayOkay("You have received 1 #b#i" + str(SYMBOL_ID) + "# #t" + str(SYMBOL_ID) + "##k!")
+            else:
+                sm.sendSayOkay("Please make sure you have enough empty slots in your #bEQUIP#k inventory.")
+    else:
+        maxQty = min(totalCoupons, emptySlots)
+        quantity = sm.sendAskNumber("How many #b#i" + str(SYMBOL_ID) + "# #t" + str(SYMBOL_ID) + "##k would you like to receive?\r\n(Available Coupons: " + str(totalCoupons) + ", Free Equip Slots: " + str(emptySlots) + ")", 1, 1, maxQty)
+        if quantity is not None and 1 <= quantity <= totalCoupons:
+            if sm.getEmptyInventorySlots(1) >= quantity and sm.getQuantityOfItem(COUPON_ID) >= quantity:
                 sm.consumeItem(COUPON_ID, quantity)
-                sm.giveSymbol(symbolID, quantity)
-                sm.sendSayOkay("You have successfully received #b#i" + str(symbolID) + "# #z" + str(symbolID) + "##k x " + str(quantity) + "!")
+                remaining = quantity
+                while remaining > 0:
+                    batch = min(remaining, 20)
+                    sm.giveSymbol(SYMBOL_ID, batch)
+                    remaining -= batch
+                sm.sendSayOkay("You have successfully received #b#i" + str(SYMBOL_ID) + "# #t" + str(SYMBOL_ID) + "##k x " + str(quantity) + "!")
             else:
                 sm.sendSayOkay("You do not have enough empty slots in your #bEQUIP#k inventory.")

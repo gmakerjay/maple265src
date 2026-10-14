@@ -2,8 +2,28 @@
 
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
+## 📅 [2026-10-14 16:50 น.] Complete Arcane Symbols & Arcane River Quest System Overhaul (Java Core, Storylines, Daily Quests, NPCs & Coupon Items)
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: Complete Overhaul, Verification, Compilation, Synchronization, and Single All-in-One Patch Archive Creation for Arcane Symbols & Arcane River Quest Systems
+- **รายละเอียด**:
+  1. **Java Core & Jython Engine Enhancements (`ScriptManagerImpl.java`, `Char.java`, `QuestConstants.java`)**:
+     - เพิ่มเมธอด `removeQuest`, `getQuestEx`, `setQuestEx`, `getAccountQuestEx`, `setAccountQuestEx`, `hasAccountQuestCompleted`, และ `isQuestComplete` ใน [ScriptManager.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/scripts/ScriptManager.java) และ [ScriptManagerImpl.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/scripts/ScriptManagerImpl.java)
+     - ผูกตัวแปร `null` (`None`) และ `ScriptType` เข้าสู่ Jython Global Scope ป้องกัน `NameError: name 'null' is not defined` ถาวร
+     - เพิ่มระบบตรวจจับพารามิเตอร์สลับตำแหน่งและจำกัดจำนวนสูงสุด `[1, 20]` ต่อการเรียกใน `giveSymbol(...)` ป้องกันบั๊กเสกไอเทม 34,218 ชิ้นค้าง
+     - คืนค่าและปรับปรุงเมธอด `Char.initDailyQuestSymbol()` ใน [Char.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java) สำหรับเควสต์รายวันแบบดั้งเดิม (`34129`, `39014`, `34378`, `39035`, `34275`, `34773`)
+  2. **Arcane Symbol Coupons & Selector Items (`item/`)**:
+     - สร้างสคริปต์คูปองประจำเมืองครบทั้ง 6 เมือง: [consume_2635509.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/data/scripts/item/consume_2635509.py) ถึง [consume_2635514.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/data/scripts/item/consume_2635514.py)
+     - ปรับปรุงและสร้าง Selector Coupons ([consume_2437750.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/data/scripts/item/consume_2437750.py), `2437760`, `2437880`, `2438141`, `2439301`, `2439305`) มอบ Arcane Symbol Lv.1 (`ARC +30`, `Main Stat +300`) ผ่าน `sm.giveSymbol(...)`
+  3. **Daily Quest NPCs, Unified Dailies (`38450`–`38476`) & Full Storyline Coverage (359 WZ Quests)**:
+     - แก้ไขสคริปต์ NPC ประจำเมืองทั้ง 6 เมือง (`3003104`–`3003530`), แปลภาษาเควสต์รายวัน `q38450s`–`q38476e` เป็นภาษาอังกฤษพร้อมรางวัล EXP/Coupon มาตรฐาน และแก้ไข [`enter_450002201.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/data/scripts/field/enter_450002201.py) / [`enter_450001250.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/data/scripts/field/enter_450001250.py)
+     - เติมเต็มสคริปต์เนื้อเรื่องและเควสต์ย่อยครบทั้ง **359 เควสต์ใน WZ** (0 Missing Start / 0 Missing End) ครอบคลุม 5th Job (`1460`–`1466`), Vanishing Journey (`34100`–`34120`), Reverse City (`37600`–`37620`), Chu Chu (`34200`–`34218`), Yum Yum (`37700`–`37727`), Lachelein (`34300`–`34331`), Arcana (`34450`–`34478`), Morass (`34249`–`34272`), และ Esfera (`34560`–`34585` / `37851`–`37871`) พร้อมตัวเลือก Express Prequest Skip ภาษาอังกฤษในทุกเมือง
+  4. **Automated AST, WZ Coverage, Parity & Single All-in-One Patch Archive**:
+     - ยืนยันผลผ่าน [tools/test_ast_syntax.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/test_ast_syntax.py), [tools/test_wz_script_coverage.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/test_wz_script_coverage.py), [tools/test_givesymbol_audit.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/test_givesymbol_audit.py), และ [tools/test_script_parity.py](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/test_script_parity.py) (สคริปต์ 7,198 ไฟล์ตรงกัน 100% ทั้งใน `v214 src` และ `Server263`)
+     - คอมไพล์ Maven `BUILD SUCCESS` (854 คลาส) และ Deploy [maplestory.jar](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/maplestory.jar) ไปยัง `v214 src/`, `Server263/`, และ Root พร้อมแพ็กเกจไฟล์เดียว [Patches/Server263_Patch_Latest.zip](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip) (~173.06 MB)
 
 ## 📅 [2026-10-14 13:36 น.] Complete Audit, Solo & LAN Compatibility, Null-Safety, and Progression Fixes for all 15 Party Quest (PQ) Systems
+
 
 ### 🎯 Scope & Technical Details
 - **หัวข้อ**: Complete Audit, Solo & LAN Compatibility, Null-Safety, and Progression Fixes for all 15 Party Quest (PQ) Systems

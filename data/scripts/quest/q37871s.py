@@ -1,25 +1,28 @@
+# [Esfera] Mirrors in Mirrors (Start)
+# Quest 37871
+# Melange (3003501)
+
 MELANGE = 3003501
 
 sm.setSpeakerID(MELANGE)
 sm.setBoxChat()
-sm.sendNext("#face0# Tôi nghĩ cuối cùng tôi đã biết tất cả những gì tôi cần biết.")
-sm.sendNext("#face0# Với tốc độ này, sức mạnh của các #r#eSiêu việt từ hai thế giới#n#k sẽ hòa làm một. Tôi cho rằng việc chiến đấu với một thế lực hùng mạnh như vậy sẽ là vô vọng.")
+sm.sendNext("#face0#I think I finally know everything I need to know.")
+sm.sendNext("#face0#At this rate, the power of the #r#eTranscendents from two worlds#n#k will fuse. Facing a force of that magnitude would be hopeless.")
 sm.setPlayerBoxChat()
 sm.sendNext("...")
 sm.setSpeakerID(MELANGE)
 sm.setBoxChat()
-sm.sendNext("#face0# Cánh cửa mà Tana nhắc đến sẽ dẫn chúng ta đến một Thế giới Gương khác bên trong Thế giới Gương.")
-sm.sendNext("#face0# Tôi không thể làm gì khác cho anh được. Tôi không thể chiến đấu trong Thế giới Gương của anh ta.")
+sm.sendNext("#face0#The door Tana mentioned will lead us to another Mirror World inside the Mirror World.")
+sm.sendNext("#face0#I cannot fight in his Mirror World, so I can only advise you from here.")
 sm.setPlayerBoxChat()
-if sm.sendAskYesNo("Có vẻ như đúng rồi. Tôi vào đây."):
+if sm.sendAskYesNo("Looks like this is it. I'm going in."):
     sm.setSpeakerID(MELANGE)
     sm.setBoxChat()
-    sm.sendNext("#face0# Bạn vẫn có thể nghe thấy giọng nói của tôi, vì vậy tôi sẽ tư vấn cho bạn nhiều nhất có thể từ đây.")
+    sm.sendNext("#face0#You'll still be able to hear my voice, so I'll guide you as much as I can.")
     sm.setPlayerBoxChat()
-    sm.sendNext("(Đi vào gương và đối mặt với Will.)")
-    sm.setPlayerBoxChat()
-    sm.sendNext("#b#eĐã tự động bỏ qua phần cắt cảnh.#n#k")
-    if sm.getEmptyInventorySlots(1) >= 1 and sm.getEmptyInventorySlots(2) and sm.getEmptyInventorySlots(3) >= 1:
+    sm.sendNext("(Enter the mirror and face Commander Will.)")
+    sm.sendNext("#b#eCutscene skipped.#n#k")
+    if sm.getEmptyInventorySlots(1) >= 1 and sm.getEmptyInventorySlots(2) >= 1 and sm.getEmptyInventorySlots(3) >= 1:
         sm.startQuest(37871)
         sm.completeQuest(37871)
         sm.giveSymbol(1712006, 1, 37871)
@@ -31,6 +34,6 @@ if sm.sendAskYesNo("Có vẻ như đúng rồi. Tôi vào đây."):
     else:
         sm.setSpeakerID(MELANGE)
         sm.setBoxChat()
-        sm.sendNext("Không đủ ô chứa trong túi EQUIP hoặc USE hoặc INSTALL để nhận phần thưởng chuỗi nhiệm vụ Esfera!")
+        sm.sendNext("Please ensure you have at least 1 empty slot each in your EQUIP, USE, and SETUP inventories.")
 else:
-    sm.sendNext("#face0# (Hmm... Bạn có vẻ hơi sợ chăng?)")
+    sm.sendNext("#face0#(Hmm... Perhaps you need a little more time to prepare?)")

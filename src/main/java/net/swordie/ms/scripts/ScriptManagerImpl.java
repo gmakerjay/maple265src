@@ -187,7 +187,7 @@ public class ScriptManagerImpl implements ScriptManager {
     }
 
     private boolean isQuestScriptAllowed() {
-        return getLastActiveScriptType() == ScriptType.None;
+        return getLastActiveScriptType() == ScriptType.None || getLastActiveScriptType() == ScriptType.Npc;
     }
 
     private void notifyMobDeath(Mob mob) {
@@ -266,6 +266,8 @@ public class ScriptManagerImpl implements ScriptManager {
         bindings.put("parentID", parentID);
         bindings.put("scriptType", scriptType);
         bindings.put("objectID", objID);
+        bindings.put("null", null);
+        bindings.put("ScriptType", ScriptType.class);
         if (scriptType == ScriptType.Reactor) {
             bindings.put("reactor", chr == null ? getField().getLifeByObjectID(objID) : chr.getField().getLifeByObjectID(objID));
         }
@@ -2702,6 +2704,11 @@ public class ScriptManagerImpl implements ScriptManager {
     }
 
     public void giveSymbol(int itemId, int quantity, int questId, int level) {
+        if (questId == 0 && quantity > 1000) {
+            questId = quantity;
+            quantity = 1;
+        }
+        quantity = Math.max(1, Math.min(quantity, 20));
         for (int i = 0; i < quantity; i++) {
             Equip equip = ItemData.getEquipDeepCopyFromID(itemId, false);
             equip.getSymbol().setLevel(level);
@@ -2944,6 +2951,45 @@ public class ScriptManagerImpl implements ScriptManager {
         return hasQuest(questId) || hasQuestCompleted(questId);
     }
 
+    @Override
+    public void removeQuest(int questId) {
+        if (chr != null) {
+            chr.removeQuest(questId);
+        }
+    }
+
+    @Override
+    public String getQuestEx(int questId, String key) {
+        if (chr == null) {
+            return "";
+        }
+        String val = chr.getQuestRecordEx(questId, key);
+        return val != null ? val : "";
+    }
+
+    @Override
+    public void setQuestEx(int questId, String key, String value) {
+        if (chr != null) {
+            chr.setQuestRecordEx(questId, key, value);
+        }
+    }
+
+    @Override
+    public String getAccountQuestEx(int questId, String key) {
+        return getQuestEx(questId, key);
+    }
+
+    @Override
+    public void setAccountQuestEx(int questId, String key, String value) {
+        setQuestEx(questId, key, value);
+    }
+
+    @Override
+    public boolean hasAccountQuestCompleted(int questId) {
+        return chr != null && chr.hasAccountQuestCompleted(questId);
+    }
+
+    @Override
     public boolean isQuestComplete(int questID) {
         if (chr == null) {
             return false;
@@ -3010,12 +3056,19 @@ public class ScriptManagerImpl implements ScriptManager {
     }
 
     public String getQuestNameByQuestId(String questId) {
-        int q = Integer.parseInt(questId);
-        return QuestData.getQuestInfoById(q).getQuestName();
+        if (questId == null || questId.isEmpty()) {
+            return "";
+        }
+        try {
+            int q = Integer.parseInt(questId);
+            return QuestData.getQuestInfoById(q) != null ? QuestData.getQuestInfoById(q).getQuestName() : "";
+        } catch (NumberFormatException e) {
+            return "";
+        }
     }
 
     public String getQuestNameByQuestId(int questId) {
-        return QuestData.getQuestInfoById(questId).getQuestName();
+        return QuestData.getQuestInfoById(questId) != null ? QuestData.getQuestInfoById(questId).getQuestName() : "";
     }
 
     public String getCurrentDateAsString() {

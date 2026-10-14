@@ -1110,6 +1110,20 @@ public interface ScriptManager extends Observer {
      */
     boolean hasQuestCompleted(int id);
 
+    void removeQuest(int questId);
+
+    String getQuestEx(int questId, String key);
+
+    void setQuestEx(int questId, String key, String value);
+
+    String getAccountQuestEx(int questId, String key);
+
+    void setAccountQuestEx(int questId, String key, String value);
+
+    boolean hasAccountQuestCompleted(int questId);
+
+    boolean isQuestComplete(int questID);
+
 
     // Boss-related methods --------------------------------------------------------------------------------------------
 

@@ -1,18 +1,20 @@
-# [Daily Quest] Morass Stabilization
+# [Daily Quest] Save the Morass
 JEAN = 3003432
 COUPON = 2635513
+EXP_REWARD = 210000000
 
 sm.setSpeakerID(JEAN)
-sm.sendNext("#b[Daily Quest] Save the Morass#k Bạn đã hoàn thành nhiệm vụ thành công. Nó sẽ giúp ích rất nhiều cho chúng tôi!")
-if sm.sendAskYesNo("Bạn chưa nhận được nhiệm vụ hàng ngày của Morass EXP ngày hôm nay.\r\nBạn có muốn yêu cầu ngay bây giờ không?\r\n\r\n#r#n* EXP hoàn thành Nhiệm vụ hàng ngày của Morass chỉ có thể được nhận một lần mỗi ngày cho mỗi thế giới."):
+sm.sendNext("#b[Daily Quest] Save the Morass#k\r\nYou have successfully completed today's stabilization mission! Thank you for protecting the Swamp of Memory.")
+if sm.sendAskYesNo("You have not claimed your Morass Daily Quest EXP reward today.\r\nWould you like to claim it now?\r\n\r\n#r#n* Morass Daily Quest completion EXP can only be claimed once per day per world."):
     if sm.getEmptyInventorySlots(2) >= 1:
         sm.completeQuest(parentID)
+        sm.giveExp(EXP_REWARD)
         sm.giveItem(COUPON, 20)
         sm.setSpeakerID(JEAN)
-        sm.sendSayOkay("Tôi đã cho bạn #b#i"+str(COUPON)+"# #z"+str(COUPON)+"##k x 20 Vui lòng kiểm tra túi USE của bạn.\r\n\r\n#r#e* Bạn đã nhận được EXP hoàn thành Nhiệm vụ hàng ngày ở Khu vực Morass.*#n EXP hoàn thành Nhiệm vụ hàng ngày ở Khu vực Morass chỉ có thể được nhận một lần mỗi ngày cho mỗi thế giới.")
+        sm.sendSayOkay("I have given you #b#i" + str(COUPON) + "# #z" + str(COUPON) + "##k x 20. Please check your USE inventory.\r\n\r\n#r#e* You have received the Morass Daily Quest completion EXP!*#n")
     else:
         sm.setSpeakerID(JEAN)
-        sm.sendNext("Bạn cần phải có ít nhất 01 ô trong túi USE của bạn.")
+        sm.sendNext("Please make sure you have at least 1 empty slot in your #bUSE#k inventory.")
 else:
     sm.setSpeakerID(JEAN)
-    sm.sendNext("Hãy cho tôi biết khi nào bạn sẵn sàng nhận phần thưởng nhé.")
+    sm.sendNext("Let me know when you are ready to claim your rewards.")

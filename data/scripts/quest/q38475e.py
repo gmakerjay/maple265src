@@ -1,12 +1,14 @@
 # [Daily Quest] Labyrinth of Suffering Research
 VELIVAH = 3003810
+EXP_REWARD = 450000000
 
 sm.setSpeakerID(VELIVAH)
-sm.sendNext("#b[Daily Quest] Labyrinth of Suffering Research#k Bạn đã hoàn thành nhiệm vụ thành công. Nó sẽ giúp ích rất nhiều cho chúng tôi!")
-if sm.sendAskYesNo("Bạn chưa nhận được nhiệm vụ hàng ngày của Labyrinth of Suffering EXP ngày hôm nay.\r\nBạn có muốn yêu cầu ngay bây giờ không?\r\n\r\n#r#n* EXP hoàn thành Nhiệm vụ hàng ngày của Labyrinth of Suffering chỉ có thể được nhận một lần mỗi ngày cho mỗi thế giới."):
+sm.sendNext("#b[Daily Quest] Labyrinth of Suffering Research#k\r\nYou have successfully completed today's investigation! Your courage in the labyrinth is commendable.")
+if sm.sendAskYesNo("You have not claimed your Labyrinth of Suffering Daily Quest EXP reward today.\r\nWould you like to claim it now?\r\n\r\n#r#n* Labyrinth of Suffering Daily Quest completion EXP can only be claimed once per day per world."):
     sm.completeQuest(parentID)
+    sm.giveExp(EXP_REWARD)
     sm.setSpeakerID(VELIVAH)
-    sm.sendSayOkay("#r#e* Bạn đã nhận được EXP hoàn thành Nhiệm vụ hàng ngày ở Khu vực Labyrinth of Suffering.*#n EXP hoàn thành Nhiệm vụ hàng ngày ở Khu vực Labyrinth of Suffering chỉ có thể được nhận một lần mỗi ngày cho mỗi thế giới.")
+    sm.sendSayOkay("#r#e* You have received the Labyrinth of Suffering Daily Quest completion EXP!*#n\r\nThank you for your service to the Alliance.")
 else:
     sm.setSpeakerID(VELIVAH)
-    sm.sendNext("Hãy cho tôi biết khi nào bạn sẵn sàng nhận phần thưởng nhé.")
+    sm.sendNext("Let me know when you are ready to claim your rewards.")

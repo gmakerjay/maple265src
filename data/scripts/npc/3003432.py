@@ -1,59 +1,80 @@
 # Jean - Morass Daily Quest & Symbol Manager
+from net.swordie.ms.scripts import ScriptType
+
 NPC_ID = 3003432
 START_QUEST = 38466
 SUB_QUESTS = [38467, 38468, 38469]
 SYMBOL_ID = 1712005
 COUPON_ID = 2635509
+STORY_QUEST_ID = 34272
+STORY_QUESTS = list(range(34249, 34273))
+REGION_NAME = "Morass"
+GREETING_TEXT = "Greetings, #h0#! I am Jean of the Coral Forest in Morass."
 
 sm.setSpeakerID(NPC_ID)
 
+# Check if any subquest is complete and ready to turn in
 completedSubQuest = None
 for qid in SUB_QUESTS:
-    if sm.hasQuest(qid):
-        q = sm.getQuestById(qid)
-        if q != null and q.isComplete(chr):
-            completedSubQuest = qid
-            break
+    if sm.hasQuest(qid) and sm.isQuestComplete(qid):
+        completedSubQuest = qid
+        break
 
+storylineCompleted = sm.hasQuestCompleted(STORY_QUEST_ID)
+
+options = []
 if completedSubQuest is not None:
-    text = "Thank you so much, #h0#! The memories in Morass are preserved thanks to you.\r\n\r\n"
-    text += "#b#L0#Turn in today's Morass daily research.#l\r\n"
-    text += "#L1#Exchange Arcane Symbol Selector Coupons.#l#k"
-    sel = sm.sendNext(text)
-    if sel == 0:
-        sm.startScript(chr, completedSubQuest, "q" + str(completedSubQuest) + "e", ScriptType.Quest)
-    elif sel == 1:
-        sm.startScript(chr, COUPON_ID, "consume_" + str(COUPON_ID), ScriptType.Item)
+    greeting = "Thank you so much, #h0#! The memories in Morass are preserved thanks to you.\r\n\r\n"
+    options.append(("Turn in today's " + REGION_NAME + " daily research.", "turnin"))
+    options.append(("Exchange Arcane Symbol Selector Coupons.", "coupon"))
+    if not storylineCompleted:
+        options.append(("[Express Skip] Complete " + REGION_NAME + " storyline and receive Lv. 1 Arcane Symbol.", "skip"))
+    options.append(("Receive Arcane Symbol: " + REGION_NAME + ".", "symbol"))
 elif any(sm.hasQuest(qid) for qid in SUB_QUESTS):
-    text = "You are currently working to Save the Morass.\r\nPlease defeat the required monsters and report back before midnight!\r\n\r\n"
-    text += "#b#L0#Exchange Arcane Symbol Selector Coupons.#l\r\n"
-    text += "#L1#I need my Arcane Symbol: Morass.#l#k"
-    sel = sm.sendNext(text)
-    if sel == 0:
-        sm.startScript(chr, COUPON_ID, "consume_" + str(COUPON_ID), ScriptType.Item)
-    elif sel == 1:
-        if not sm.hasItem(SYMBOL_ID):
-            if sm.canHold(SYMBOL_ID, 1):
-                sm.giveSymbol(SYMBOL_ID, 1)
-                sm.sendSayOkay("Here is your #b#i" + str(SYMBOL_ID) + "# #z" + str(SYMBOL_ID) + "##k!")
-            else:
-                sm.sendSayOkay("Please free up a slot in your EQUIP inventory.")
-        else:
-            sm.sendSayOkay("You already have an #b#i" + str(SYMBOL_ID) + "# #z" + str(SYMBOL_ID) + "##k!")
+    greeting = "You are currently working to Save the " + REGION_NAME + ".\r\nPlease defeat the required monsters and report back before midnight!\r\n\r\n"
+    options.append(("Exchange Arcane Symbol Selector Coupons.", "coupon"))
+    if not storylineCompleted:
+        options.append(("[Express Skip] Complete " + REGION_NAME + " storyline and receive Lv. 1 Arcane Symbol.", "skip"))
+    options.append(("Receive Arcane Symbol: " + REGION_NAME + ".", "symbol"))
 else:
-    text = "Greetings, #h0#! I am Jean of the Coral Forest in Morass.\r\n\r\n"
-    text += "#b#L0#Begin today's Morass daily research.#l\r\n"
-    text += "#L1#Exchange Arcane Symbol Selector Coupons.#l\r\n"
-    text += "#L2#Receive Arcane Symbol: Morass.#l#k"
-    sel = sm.sendNext(text)
-    if sel == 0:
+    greeting = GREETING_TEXT + "\r\n\r\n"
+    options.append(("Begin today's " + REGION_NAME + " daily research.", "start"))
+    options.append(("Exchange Arcane Symbol Selector Coupons.", "coupon"))
+    options.append(("Receive Arcane Symbol: " + REGION_NAME + ".", "symbol"))
+    if not storylineCompleted:
+        options.append(("[Express Skip] Complete " + REGION_NAME + " storyline and receive Lv. 1 Arcane Symbol.", "skip"))
+
+text = greeting
+for i, (label, _) in enumerate(options):
+    text += "#b#L" + str(i) + "#" + label + "#l\r\n"
+text += "#k"
+
+sel = sm.sendNext(text)
+if 0 <= sel < len(options):
+    action = options[sel][1]
+    if action == "turnin":
+        sm.startScript(chr, completedSubQuest, "q" + str(completedSubQuest) + "e", ScriptType.Quest)
+    elif action == "start":
         sm.startScript(chr, START_QUEST, "q" + str(START_QUEST) + "s", ScriptType.Quest)
-    elif sel == 1:
+    elif action == "coupon":
         sm.startScript(chr, COUPON_ID, "consume_" + str(COUPON_ID), ScriptType.Item)
-    elif sel == 2:
+    elif action == "skip":
+        if sm.sendAskYesNo("Would you like to skip the #b" + REGION_NAME + "#k storyline quests?\r\n\r\nAll prequests will be marked as complete, and you will receive your #b#i" + str(SYMBOL_ID) + "# #z" + str(SYMBOL_ID) + "##k (Lv. 1) immediately."):
+            if sm.getEmptyInventorySlots(1) < 1:
+                sm.sendSayOkay("Please make sure you have at least 1 empty slot in your #bEQUIP#k inventory.")
+            else:
+                for q in STORY_QUESTS:
+                    sm.startQuest(q)
+                    sm.completeQuest(q)
+                if not sm.hasItem(SYMBOL_ID):
+                    sm.giveSymbol(SYMBOL_ID, 1, STORY_QUEST_ID)
+                    sm.sendSayOkay("The " + REGION_NAME + " storyline has been completed!\r\nYou have received your #b#i" + str(SYMBOL_ID) + "# #z" + str(SYMBOL_ID) + "##k (Lv. 1). You may now accept daily quests!")
+                else:
+                    sm.sendSayOkay("The " + REGION_NAME + " storyline has been completed! You may now accept daily quests!")
+    elif action == "symbol":
         if not sm.hasItem(SYMBOL_ID):
             if sm.canHold(SYMBOL_ID, 1):
-                sm.giveSymbol(SYMBOL_ID, 1)
+                sm.giveSymbol(SYMBOL_ID, 1, STORY_QUEST_ID)
                 sm.sendSayOkay("Here is your #b#i" + str(SYMBOL_ID) + "# #z" + str(SYMBOL_ID) + "##k!")
             else:
                 sm.sendSayOkay("Please free up a slot in your EQUIP inventory.")
