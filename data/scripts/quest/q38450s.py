@@ -16,17 +16,17 @@ if sm.sendAskAccept("It would be wonderful if you could help us, #h0#. Of course
     elif sm.hasQuestCompleted(34218): # [Chu Chu] Goodbye, Chu Chu Island
         reqMob = 300
     if sm.sendAskAccept("Hello! I have an investigation request for today. Defeat " + str(reqMob) + " enemies in the #bVanishing Journey#k area."):
-        sm.completeQuest(parentID)
+        sm.completeQuestNoRewards(parentID)
         sm.setQRValueByKey(parentID, "date", time.strftime("%y/%m/%d"))
         sm.removeQuest(38451)
         sm.removeQuest(38452)
         sm.removeQuest(38453)
         if reqMob == 100:
-            sm.startQuest(38451)
+            sm.startQuestNoCheck(38451)
         elif reqMob == 300:
-            sm.startQuest(38452)
+            sm.startQuestNoCheck(38452)
         else:
-            sm.startQuest(38453)
+            sm.startQuestNoCheck(38453)
         sm.setSpeakerID(RONA)
         sm.sendNext("Please return to me once you have finished the mission. Don't forget to report back #r#ebefore midnight#n#k!\r\nCurrent time is #r#e" + str(sm.getCurrentTime()) + "#k.")
     else:

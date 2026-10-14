@@ -255,21 +255,21 @@ public class CubeHandler {
         switch (chooseOption) {
             case 6: // Choose Current / After (New Potential)
                 equip.setOptions(copy.getOptions());
-                equip.saveToSQL();
+                equip.updateOptionsInSQL();
                 equip.updateToChar(chr);
                 if (zeroEquip != null) {
                     zeroEquip.setOptions(copy.getOptions());
-                    zeroEquip.saveToSQL();
+                    zeroEquip.updateOptionsInSQL();
                     zeroEquip.updateToChar(chr);
                 }
                 break;
             case 7: // Choose Before (Old Potential)
                 equip.setOptions(memorialCubeInfo.getOldPotentials());
-                equip.saveToSQL();
+                equip.updateOptionsInSQL();
                 equip.updateToChar(chr);
                 if (zeroEquip != null) {
                     zeroEquip.setOptions(memorialCubeInfo.getOldPotentials());
-                    zeroEquip.saveToSQL();
+                    zeroEquip.updateOptionsInSQL();
                     zeroEquip.updateToChar(chr);
                 }
                 break;
@@ -291,6 +291,7 @@ public class CubeHandler {
                 pos = inPacket.decodeShort();
                 item = chr.getCashInventory().getItemBySlot(pos);
                 if (item == null) {
+                    chr.dispose();
                     return;
                 }
                 useVioletCube(chr, inPacket);
@@ -404,7 +405,11 @@ public class CubeHandler {
         inPacket.decodeInt();
         int uPos = inPacket.decodeShort();
         int cubeID = inPacket.decodeInt();
-        handleCube(chr, cubeID, 0, inPacket, ItemGrade.Epic, true);
+        Item item = chr.getConsumeInventory().getItemBySlot(uPos);
+        if (item == null) {
+            item = chr.getCashInventory().getItemBySlot(uPos);
+        }
+        handleCube(chr, item, cubeID, 0, inPacket, ItemGrade.Epic, true);
     }
 
     @Handler(op = InHeader.USER_BONUS_BRIGHT_CUBE_ITEM_USE_REQUEST)
@@ -536,7 +541,7 @@ public class CubeHandler {
             }
         }
         chr.write(UserLocal.brightCubeResult(true, cubeID, equip.getItemId()));
-        equip.saveToSQL();
+        equip.updateOptionsInSQL();
         equip.updateToChar(chr);
         if (JobConstants.isZero(chr.getJob()) && ItemConstants.isLongOrBigSword(equip.getItemId())) {
             Equip zeroEquip = (Equip) chr.getEquippedInventory().getItemBySlot(-11);
@@ -544,10 +549,11 @@ public class CubeHandler {
                 zeroEquip = (Equip) chr.getEquippedInventory().getItemBySlot(11);
             }
             if (zeroEquip != null) {
-                zeroEquip.saveToSQL();
+                zeroEquip.updateOptionsInSQL();
             }
         }
         chr.write(WvsContext.consumeCubeRelease(cubeIndex, equip.getId(), cubeCount, cubeType));
+        chr.dispose();
     }
 
     protected static void handleBrightCube(Char chr, Item cube, InPacket inPacket, ItemGrade itemGradeMax, boolean bonus, boolean init) {
@@ -655,6 +661,7 @@ public class CubeHandler {
             chr.setMemorialCubeInfo(new MemorialCubeInfo(copy, equip.getOptions(), cubeID));
             chr.write(UserLocal.brightCubeResult(true, cubeID, copy.getItemId()));
             chr.write(WvsContext.consumeBrightCubeInit(cubeIndex, cubeCount, cube, equip.getId(), copy, bonus));
+            chr.dispose();
         } else {
             int result = inPacket.getUnreadAmount() >= 4 ? inPacket.decodeInt() : (inPacket.getUnreadAmount() >= 2 ? inPacket.decodeShort() : 0);
             var memorialCubeInfo = chr.getMemorialCubeInfo();
@@ -666,6 +673,7 @@ public class CubeHandler {
                         && cubeID != ItemConstants.BLACK_CUBE
                         && cubeID != ItemConstants.BONUS_BRIGHT_CUBE_1
                         && cubeID != ItemConstants.BONUS_BRIGHT_CUBE_2) {
+                    chr.dispose();
                     return;
                 }
                 var copy = memorialCubeInfo.getEquip();
@@ -684,7 +692,7 @@ public class CubeHandler {
                         } else {
                             equip.setOptions(memorialCubeInfo.getOldPotentials());
                         }
-                        equip.saveToSQL();
+                        equip.updateOptionsInSQL();
                         equip.updateToChar(chr);
                         if (JobConstants.isZero(chr.getJob()) && ItemConstants.isLongOrBigSword(equip.getItemId())) {
                             Equip zeroEquip = (Equip) chr.getEquippedInventory().getItemBySlot(-11);
@@ -693,7 +701,7 @@ public class CubeHandler {
                             }
                             if (zeroEquip != null) {
                                 zeroEquip.setOptions(equip.getOptions());
-                                zeroEquip.saveToSQL();
+                                zeroEquip.updateOptionsInSQL();
                                 zeroEquip.updateToChar(chr);
                             }
                         }
@@ -744,6 +752,7 @@ public class CubeHandler {
             for (int i = 0; i < size; i++) {
                 equip.setOption(i, potentials.get(i), false);
             }
+            equip.updateOptionsInSQL();
             equip.updateToChar(chr);
             chr.setVioletEquip(null);
             chr.write(FieldPacket.violetCubeResult(1, equip.getOptions()));
@@ -753,11 +762,11 @@ public class CubeHandler {
                 for (int i = 0; i < size; i++) {
                     zeroWeapon.setOption(i, potentials.get(i), false);
                 }
+                zeroWeapon.updateOptionsInSQL();
                 zeroWeapon.updateToChar(chr);
                 chr.setVioletZeroEquip(null);
             }
-        } else {
-            chr.dispose();
         }
+        chr.dispose();
     }
 }

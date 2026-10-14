@@ -9,11 +9,11 @@ sel = sm.sendAskMenu("Would you like to experience the storyline or skip the pre
 if sel == 1:
     if sm.getEmptyInventorySlots(1) >= 1:
         for qid in range(34100, 34121):
-            sm.startQuest(qid)
-            sm.completeQuest(qid)
-        sm.completeQuest(34128)
-        sm.completeQuest(34162)
-        sm.completeQuest(28857)
+            sm.startQuestNoCheck(qid)
+            sm.completeQuestNoRewards(qid)
+        sm.completeQuestNoRewards(34128)
+        sm.completeQuestNoRewards(34162)
+        sm.completeQuestNoRewards(28857)
         sm.giveSymbol(1712001, 1, 34120)
         chr.initDailyQuestSymbol()
         sm.sendSayOkay("You have skipped the Vanishing Journey prequests and received your #b#i1712001# #z1712001##k!")

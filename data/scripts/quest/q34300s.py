@@ -5,9 +5,9 @@ sel = sm.sendAskMenu("Would you like to experience the storyline or skip the pre
 if sel == 1:
     if sm.getEmptyInventorySlots(1) >= 1:
         for qid in range(34300, 34332):
-            sm.startQuest(qid)
-            sm.completeQuest(qid)
-        sm.completeQuest(34377)
+            sm.startQuestNoCheck(qid)
+            sm.completeQuestNoRewards(qid)
+        sm.completeQuestNoRewards(34377)
         sm.giveSymbol(1712003, 1, 34331)
         chr.initDailyQuestSymbol()
         sm.sendSayOkay("You have skipped the Lachelein prequests and received your #b#i1712003# #z1712003##k!")

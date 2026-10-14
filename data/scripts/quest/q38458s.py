@@ -16,17 +16,17 @@ if sm.sendAskAccept("It would be wonderful if you could help us, #h0#. Of course
     elif sm.hasQuestCompleted(34478): # [Arcana] The Harmony of the Forest
         reqMob = 300
     if sm.sendAskAccept("Hello! I have a task for you today. Defeat " + str(reqMob) + " monsters in the #bLachelein#k area."):
-        sm.completeQuest(parentID)
+        sm.completeQuestNoRewards(parentID)
         sm.setQRValueByKey(parentID, "date", time.strftime("%y/%m/%d"))
         sm.removeQuest(38459)
         sm.removeQuest(38460)
         sm.removeQuest(38461)
         if reqMob == 100:
-            sm.startQuest(38459)
+            sm.startQuestNoCheck(38459)
         elif reqMob == 300:
-            sm.startQuest(38460)
+            sm.startQuestNoCheck(38460)
         else:
-            sm.startQuest(38461)
+            sm.startQuestNoCheck(38461)
         sm.setSpeakerID(GRAY_MASK)
         sm.sendNext("Please return to me once you have finished the mission. Don't forget to report back #r#ebefore midnight#n#k!\r\nCurrent time is #r#e" + str(sm.getCurrentTime()) + "#k.")
     else:

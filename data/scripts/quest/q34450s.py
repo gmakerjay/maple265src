@@ -5,9 +5,9 @@ sel = sm.sendAskMenu("Would you like to experience the storyline or skip the pre
 if sel == 1:
     if sm.getEmptyInventorySlots(1) >= 1:
         for qid in range(34450, 34479):
-            sm.startQuest(qid)
-            sm.completeQuest(qid)
-        sm.completeQuest(39034)
+            sm.startQuestNoCheck(qid)
+            sm.completeQuestNoRewards(qid)
+        sm.completeQuestNoRewards(39034)
         sm.giveSymbol(1712004, 1, 34478)
         chr.initDailyQuestSymbol()
         sm.sendSayOkay("You have skipped the Arcana prequests and received your #b#i1712004# #z1712004##k!")

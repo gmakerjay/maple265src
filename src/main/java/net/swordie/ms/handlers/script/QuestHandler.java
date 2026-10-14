@@ -62,10 +62,12 @@ public class QuestHandler {
         }
         if (questID == 0 || qt == null) {
             chr.chatMessage(SystemNotice, String.format("[Lỗi nhiệm vụ] Không thể tìm thấy nhiệm vụ số %d.", questID));
+            chr.dispose();
             return;
         }
         QuestInfo qi = QuestData.getQuestInfoById(questID);
         if (qi == null) {
+            chr.dispose();
             return;
         }
         switch (qt) {
@@ -77,6 +79,8 @@ public class QuestHandler {
                         chr.addQuest(QuestData.createQuestFromId(questID, chr.getId()));
                     }
                     success = true;
+                } else {
+                    chr.dispose();
                 }
                 break;
             case QuestReq_CompleteQuest:
@@ -86,6 +90,7 @@ public class QuestHandler {
             case QuestReq_OpeningScript:
                 String scriptName = qi.getStartScript();
                 if (!chr.canStartQuest(questID)) {
+                    chr.dispose();
                     return;
                 }
                 if (scriptName == null || scriptName.equalsIgnoreCase("")) {
@@ -98,11 +103,13 @@ public class QuestHandler {
                 if (QuestConstants.isAccountQuest(questID)) {
                     if (!chr.hasQuestInProgress(questID) || !chr.getAccount().getQuestById(questID).isComplete(chr)) {
                         System.out.println("Could not complete account quest, as the prerequisites haven't been met.");
+                        chr.dispose();
                         return;
                     }
                 } else {
                     if (!chr.hasQuestInProgress(questID) || !chr.getQuestById(questID).isComplete(chr)) {
                         System.out.println("Could not complete character quest, as the prerequisites haven't been met.");
+                        chr.dispose();
                         return;
                     }
                 }

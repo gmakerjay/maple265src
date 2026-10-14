@@ -38,17 +38,15 @@ public class QuestStartCompletionRequirement implements QuestStartRequirement {
 
     @Override
     public boolean hasRequirements(Char chr) {
-        switch (getQuestStatus()) {
-//            case 0: // Not started
-//                return !chr.hasQuestInProgress(getQuestID()) && !chr.hasQuestCompleted(getQuestID());
-//            case 1: // In progress
-//                return chr.hasQuestInProgress(getQuestID());
-            case 0: // Completed
-                return chr.hasQuestCompleted(getQuestID());
-            default:
-                System.out.printf("Unknown quest status %d%n", getQuestStatus());
-                return true;
-        }
+        return switch (getQuestStatus()) {
+            case 0 -> // Not started
+                    !chr.hasQuestInProgress(getQuestID()) && !chr.hasQuestCompleted(getQuestID());
+            case 1 -> // In progress
+                    chr.hasQuestInProgress(getQuestID()) || chr.hasQuestCompleted(getQuestID());
+            case 2 -> // Completed
+                    net.swordie.ms.ServerConfig.BOSS_UNLOCK_PREQUESTS || chr.hasQuestCompleted(getQuestID());
+            default -> true;
+        };
     }
 
     @Override

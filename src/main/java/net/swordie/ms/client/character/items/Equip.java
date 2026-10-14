@@ -483,6 +483,16 @@ public class Equip extends Item {
         DatabaseManager.executeStatement(query);
     }
 
+    public void updateOptionsInSQL() {
+        if (getId() <= 0) {
+            saveToSQL();
+            return;
+        }
+        String query = String.format("UPDATE equips SET options = '%s', grade = %d WHERE itemid = %d;",
+                getOptionsSQL(), getGrade(), getId());
+        DatabaseManager.executeStatement(query);
+    }
+
     public Equip() {
         super();
         this.exp = 0;
@@ -2189,8 +2199,9 @@ public class Equip extends Item {
         for (EnchantStat es : EnchantStat.values()) {
             assert es.getEquipBaseStat() != null;
             int curAmount = (int) getBaseStat(es.getEquipBaseStat());
-            if (curAmount > 0 || (es == EnchantStat.PAD || es == EnchantStat.MAD || es == EnchantStat.PDD || es == EnchantStat.MDD)) {
-                res.put(es, GameConstants.getEnchantmentValByChuc(this, es, getChuc(), curAmount));
+            int val = GameConstants.getEnchantmentValByChuc(this, es, getChuc(), curAmount);
+            if (curAmount > 0 || val > 0 || es == EnchantStat.PDD || es == EnchantStat.MDD) {
+                res.put(es, val);
             }
         }
         return res;
@@ -2519,8 +2530,12 @@ public class Equip extends Item {
     public void recalcEnchantmentStats() {
         getEnchantStats().clear();
         for (int i = 0; i < getChuc(); i++) {
-            for (EnchantStat es : getHyperUpgradeStats().keySet()) {
-                putEnchantStat(es, getEnchantStats().getOrDefault(es, 0) + GameConstants.getEnchantmentValByChuc(this, es, (short) i, (int) getBaseStat(es.getEquipBaseStat())));
+            for (EnchantStat es : EnchantStat.values()) {
+                int curAmount = (int) getBaseStat(es.getEquipBaseStat());
+                int val = GameConstants.getEnchantmentValByChuc(this, es, (short) i, curAmount);
+                if (val > 0) {
+                    putEnchantStat(es, getEnchantStats().getOrDefault(es, 0) + val);
+                }
             }
         }
     }
@@ -3008,7 +3023,10 @@ public class Equip extends Item {
             if (fs == FlameStat.LevelReduction && (getrLevel() + getiIncReq() < 5)) continue;
             if ((fs == FlameStat.BossDamage || fs == FlameStat.Damage) && !ItemConstants.isWeapon(getItemId())) continue;
 
-            tier = (short) Util.getRandom(minTier, maxTier);
+            // Weighted Flame Tier probabilities (scaled 10% more challenging than standard: +0: 48%, +1: 32%, +2: 15%, +3: 5%)
+            int roll = Util.getRandom(1, 100);
+            int offset = roll <= 48 ? 0 : roll <= 80 ? 1 : roll <= 95 ? 2 : 3;
+            tier = (short) Math.min(maxTier, minTier + offset);
             int added = tier * getFlameLevel();
             int addedExt = tier * getFlameLevelExtended();
             switch (fs) {

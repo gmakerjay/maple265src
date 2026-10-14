@@ -16,17 +16,17 @@ if sm.sendAskAccept("It would be wonderful if you could help us, #h0#. Of course
     elif sm.hasQuestCompleted(34272): # [Morass] The Swamp Remains
         reqMob = 300
     if sm.sendAskAccept("Hello! I have a task for you today. Defeat " + str(reqMob) + " monsters in the #bArcana#k area."):
-        sm.completeQuest(parentID)
+        sm.completeQuestNoRewards(parentID)
         sm.setQRValueByKey(parentID, "date", time.strftime("%y/%m/%d"))
         sm.removeQuest(38463)
         sm.removeQuest(38464)
         sm.removeQuest(38465)
         if reqMob == 100:
-            sm.startQuest(38463)
+            sm.startQuestNoCheck(38463)
         elif reqMob == 300:
-            sm.startQuest(38464)
+            sm.startQuestNoCheck(38464)
         else:
-            sm.startQuest(38465)
+            sm.startQuestNoCheck(38465)
         sm.setSpeakerID(TREE_SPIRITS)
         sm.sendNext("Please return to me once you have finished the mission. Don't forget to report back #r#ebefore midnight#n#k!\r\nCurrent time is #r#e" + str(sm.getCurrentTime()) + "#k.")
     else:

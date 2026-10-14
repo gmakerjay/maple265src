@@ -7,9 +7,9 @@ sel = sm.sendAskMenu("Would you like to experience the storyline or skip the pre
 if sel == 1:
     if sm.getEmptyInventorySlots(1) >= 1:
         for qid in range(34200, 34219):
-            sm.startQuest(qid)
-            sm.completeQuest(qid)
-        sm.completeQuest(39013)
+            sm.startQuestNoCheck(qid)
+            sm.completeQuestNoRewards(qid)
+        sm.completeQuestNoRewards(39013)
         sm.giveSymbol(1712002, 1, 34218)
         chr.initDailyQuestSymbol()
         sm.sendSayOkay("You have skipped the Chu Chu Island prequests and received your #b#i1712002# #z1712002##k!")

@@ -75,7 +75,9 @@ public class DatabaseManager {
         }
 
         try {
-            DataPrinter.send(DataPrinter.HIKARICP, query, true);
+            if (ServerConfig.SQL_DEBUG) {
+                DataPrinter.send(DataPrinter.HIKARICP, query, true);
+            }
             Connection connection = DatabaseManager.getConnection();
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query);
@@ -141,7 +143,9 @@ public class DatabaseManager {
         try (Connection con = DatabaseManager.getConnection();
              PreparedStatement ps = con.prepareStatement(query)) {
 
-            DataPrinter.send(DataPrinter.HIKARICP, query, true);
+            if (ServerConfig.SQL_DEBUG) {
+                DataPrinter.send(DataPrinter.HIKARICP, query, true);
+            }
             ps.execute();
             return true;
         } catch (Exception exception) {
@@ -162,7 +166,9 @@ public class DatabaseManager {
         try (Connection con = DatabaseManager.getConnection();
              PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
-            DataPrinter.send(DataPrinter.HIKARICP, query, true);
+            if (ServerConfig.SQL_DEBUG) {
+                DataPrinter.send(DataPrinter.HIKARICP, query, true);
+            }
             ps.execute();
 
             try (ResultSet rs = ps.getGeneratedKeys()) {

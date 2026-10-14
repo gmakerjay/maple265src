@@ -5,7 +5,7 @@ NPC_ID = 3003530
 START_QUEST = 38470
 SUB_QUESTS = [38471, 38472, 38473]
 SYMBOL_ID = 1712006
-COUPON_ID = 2635509
+COUPON_ID = 2635514
 STORY_QUEST_ID = 37871
 STORY_QUESTS = list(range(34560, 34586)) + list(range(37851, 37872))
 REGION_NAME = "Esfera"
@@ -64,11 +64,12 @@ if 0 <= sel < len(options):
                 sm.sendSayOkay("Please make sure you have at least 1 empty slot in your #bEQUIP#k inventory.")
             else:
                 for q in STORY_QUESTS:
-                    sm.startQuest(q)
-                    sm.completeQuest(q)
+                    sm.startQuestNoCheck(q)
+                    sm.completeQuestNoRewards(q)
                 sm.createQuestWithQRValue(34560, "30=h1;31=h1;32=h1;33=h1;40=h0;41=h0;42=h0;44=h0;45=h0;46=h0;47=h0;48=h0;49=h0;50=h0;51=h0;52=h0;53=h0;54=h0;55=h0;56=h0;57=h0;58=h0;77=h0;78=h0;79=h0;80=h0")
                 sm.createQuestWithQRValue(37900, "01=h1")
-                if not sm.hasItem(SYMBOL_ID):
+                chr.initDailyQuestSymbol()
+                if not sm.hasItem(SYMBOL_ID) and not sm.isEquipped(SYMBOL_ID):
                     sm.giveSymbol(SYMBOL_ID, 1, STORY_QUEST_ID)
                     sm.sendSayOkay("The " + REGION_NAME + " storyline has been completed!\r\nYou have received your #b#i" + str(SYMBOL_ID) + "# #z" + str(SYMBOL_ID) + "##k (Lv. 1). You may now accept daily quests!")
                 else:

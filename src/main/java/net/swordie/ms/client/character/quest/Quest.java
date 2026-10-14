@@ -73,7 +73,9 @@ public class Quest {
                 }
                 if (!newQuests.isEmpty()) {
                     psInsert.executeBatch();
-                    DataPrinter.send(DataPrinter.HIKARICP, psInsert.toString(), true);
+                    if (net.swordie.ms.ServerConfig.SQL_DEBUG) {
+                        DataPrinter.send(DataPrinter.HIKARICP, psInsert.toString(), true);
+                    }
                     try (ResultSet rs = psInsert.getGeneratedKeys()) {
                         int idx = 0;
                         while (rs.next() && idx < newQuests.size()) {
@@ -99,7 +101,9 @@ public class Quest {
                 }
                 if (!existingQuests.isEmpty()) {
                     psUpdate.executeBatch();
-                    DataPrinter.send(DataPrinter.HIKARICP, psUpdate.toString(), true);
+                    if (net.swordie.ms.ServerConfig.SQL_DEBUG) {
+                        DataPrinter.send(DataPrinter.HIKARICP, psUpdate.toString(), true);
+                    }
                 }
                 for (Quest q : quests) {
                     long qid = q.getId();

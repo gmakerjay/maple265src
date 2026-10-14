@@ -12,17 +12,17 @@ if sm.sendAskAccept("It would be wonderful if you could help us, #h0#. Of course
     elif sm.hasQuestCompleted(34331): # [Lachelein] Decisive Battle
         reqMob = 300
     if sm.sendAskAccept("Hello! I have a task for you today. Defeat " + str(reqMob) + " monsters in the #bChu Chu Island#k area."):
-        sm.completeQuest(parentID)
+        sm.completeQuestNoRewards(parentID)
         sm.setQRValueByKey(parentID, "date", time.strftime("%y/%m/%d"))
         sm.removeQuest(38455)
         sm.removeQuest(38456)
         sm.removeQuest(38457)
         if reqMob == 100:
-            sm.startQuest(38455)
+            sm.startQuestNoCheck(38455)
         elif reqMob == 300:
-            sm.startQuest(38456)
+            sm.startQuestNoCheck(38456)
         else:
-            sm.startQuest(38457)
+            sm.startQuestNoCheck(38457)
         sm.setSpeakerID(MASTER_LYCK)
         sm.sendNext("Please return to me once you have finished the mission. Don't forget to report back #r#ebefore midnight#n#k!\r\nCurrent time is #r#e" + str(sm.getCurrentTime()) + "#k.")
     else:

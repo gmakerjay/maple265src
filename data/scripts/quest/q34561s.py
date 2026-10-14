@@ -12,12 +12,12 @@ sel = sm.sendAskMenu("Would you like to experience the storyline or skip the pre
 if sel == 1:
     if sm.getEmptyInventorySlots(1) >= 1 and sm.getEmptyInventorySlots(2) >= 1 and sm.getEmptyInventorySlots(3) >= 1:
         for qid in quests_classic:
-            sm.startQuest(qid)
-            sm.completeQuest(qid)
+            sm.startQuestNoCheck(qid)
+            sm.completeQuestNoRewards(qid)
         for qid in quests_streamlined:
-            sm.startQuest(qid)
-            sm.completeQuest(qid)
-        sm.completeQuest(34773)
+            sm.startQuestNoCheck(qid)
+            sm.completeQuestNoRewards(qid)
+        sm.completeQuestNoRewards(34773)
         sm.giveSymbol(1712006, 1, 37871)
         sm.giveItem(2438411, 1)
         sm.giveItem(3018045, 1)

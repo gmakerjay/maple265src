@@ -714,6 +714,9 @@ public class SkillHandler {
         int size2 = inPacket.decodeInt();
 
         for (int i = 0; i < size2; i++) {
+            if (inPacket.getUnreadAmount() < 16) {
+                break;
+            }
             int skillId2 = inPacket.decodeInt();
             int forceAtomKey = inPacket.decodeInt();
             Position position = inPacket.decodePositionInt();
@@ -721,6 +724,9 @@ public class SkillHandler {
         }
 
         for (int i = 0; i < size; i++) {
+            if (inPacket.getUnreadAmount() < 30) {
+                break;
+            }
             int forceAtomKey = inPacket.decodeInt();
             byte unk = inPacket.decodeByte();
             int mobObjId = inPacket.decodeInt();

@@ -119,27 +119,28 @@ public class ItemConstants {
     public static final List<Integer> BONUS_BRIGHT_CUBES = Arrays.asList(2730011, 2730012, 2730018, 2730019); // USER_BONUS_BRIGHT_CUBE_ITEM_USE_REQUEST (TODO)
 
     //Chances are out of 1k (10* typical 100 values so we don't have to use doubles)
-    public static final int[] MYSTICAL_CUBES_TIER_UP_RATES = new int[]{10, 0, 0}; //1%, 0%, 0%
-    public static final int[] HARD_CUBES_TIER_UP_RATES = new int[]{120, 40, 0}; //12%, 4%, 0%
-    public static final int[] GLOWING_CUBES_TIER_UP_RATES = new int[]{100, 50, 25}; //10%, 5%, 2.5%
-    public static final int[] BRIGHT_CUBES_TIER_UP_RATES = new int[]{150, 70, 40}; //1.5%, 0.5%, 0%
-    public static final int[] SOLID_CUBE_TIER_UP_RATES = new int[]{120, 80, 25}; //12%, 8%, 5%
-    public static final int[] MIRACLE_CUBE_TIER_UP_RATES = new int[]{60, 20, 0}; //15%, 6%, 2.5%
-    public static final int[] PREMIUM_MIRACLE_CUBE_TIER_UP_RATES = new int[]{120, 40, 0}; //15%, 6%, 2.5%
-    public static final int[] SUPER_MIRACLE_CUBE_TIER_UP_RATES = new int[]{150, 80, 25}; //15%, 6%, 2.5%
-    public static final int[] REVOLUTIONARY_MIRACLE_CUBE_TIER_UP_RATES = new int[]{150, 100, 45}; //15%, 6%, 2.5%
-    public static final int[] ENLIGHTENING_MIRACLE_CUBE_TIER_UP_RATES = new int[]{150, 120, 65}; //15%, 6%, 2.5%
-    public static final int[] PLATINUM_MIRACLE_CUBE_TIER_UP_RATES = new int[]{150, 150, 85}; //15%, 6%, 2.5%
-    public static final int[] RED_CUBE_TIER_UP_RATES = new int[]{150, 60, 25}; //15%, 6%, 2.5%
-    public static final int[] BLACK_CUBE_TIER_UP_RATES = new int[]{150, 120, 50}; //15%, 12%, 5%
-    public static final int[] VIOLET_CUBE_TIER_UP_RATES = new int[]{30, 12, 5}; //3%, 1.2%, 0.5%
-    public static final int[] MEMORY_CUBE_TIER_UP_RATES = new int[]{15, 6, 2}; //1.5%, 0.6%, 0.2%
-    public static final int[] BONUS_OCCULT_CUBE_TIER_UP_RATES = new int[]{20, 0, 0}; //2%, 0%, 0%
-    public static final int[] BONUS_MYSTICAL_CUBE_TIER_UP_RATES = new int[]{20, 0, 0}; //2%, 0%, 0%
-    public static final int[] BONUS_GLOWING_CUBE_TIER_UP_RATES = new int[]{100, 75, 25}; //2%, 0%, 0%
-    public static final int[] BONUS_POT_CUBE_TIER_UP_RATE = new int[]{200, 100, 50}; //20%, 10%, 5%
-    public static final int[] BONUS_BRIGHT_CUBE_TIER_UP_RATES = new int[]{200, 150, 50}; //20%, 15%, 7.5%
-    public static final int[] DEFAULT_CUBE_TIER_UP_RATES = new int[]{100, 50, 25}; //10%, 5%, 2.5%
+    // Scaled 10% more challenging than standard rates (rate * 0.90)
+    public static final int[] MYSTICAL_CUBES_TIER_UP_RATES = new int[]{9, 0, 0}; //0.9%, 0%, 0%
+    public static final int[] HARD_CUBES_TIER_UP_RATES = new int[]{108, 36, 0}; //10.8%, 3.6%, 0%
+    public static final int[] GLOWING_CUBES_TIER_UP_RATES = new int[]{90, 45, 22}; //9%, 4.5%, 2.2%
+    public static final int[] BRIGHT_CUBES_TIER_UP_RATES = new int[]{135, 63, 36}; //13.5%, 6.3%, 3.6%
+    public static final int[] SOLID_CUBE_TIER_UP_RATES = new int[]{108, 72, 22}; //10.8%, 7.2%, 2.2%
+    public static final int[] MIRACLE_CUBE_TIER_UP_RATES = new int[]{54, 18, 0}; //5.4%, 1.8%, 0%
+    public static final int[] PREMIUM_MIRACLE_CUBE_TIER_UP_RATES = new int[]{108, 36, 0}; //10.8%, 3.6%, 0%
+    public static final int[] SUPER_MIRACLE_CUBE_TIER_UP_RATES = new int[]{135, 72, 22}; //13.5%, 7.2%, 2.2%
+    public static final int[] REVOLUTIONARY_MIRACLE_CUBE_TIER_UP_RATES = new int[]{135, 90, 40}; //13.5%, 9.0%, 4.0%
+    public static final int[] ENLIGHTENING_MIRACLE_CUBE_TIER_UP_RATES = new int[]{135, 108, 58}; //13.5%, 10.8%, 5.8%
+    public static final int[] PLATINUM_MIRACLE_CUBE_TIER_UP_RATES = new int[]{135, 135, 76}; //13.5%, 13.5%, 7.6%
+    public static final int[] RED_CUBE_TIER_UP_RATES = new int[]{135, 54, 22}; //13.5%, 5.4%, 2.2%
+    public static final int[] BLACK_CUBE_TIER_UP_RATES = new int[]{135, 108, 45}; //13.5%, 10.8%, 4.5%
+    public static final int[] VIOLET_CUBE_TIER_UP_RATES = new int[]{27, 11, 4}; //2.7%, 1.1%, 0.4%
+    public static final int[] MEMORY_CUBE_TIER_UP_RATES = new int[]{13, 5, 2}; //1.3%, 0.5%, 0.2%
+    public static final int[] BONUS_OCCULT_CUBE_TIER_UP_RATES = new int[]{18, 0, 0}; //1.8%, 0%, 0%
+    public static final int[] BONUS_MYSTICAL_CUBE_TIER_UP_RATES = new int[]{18, 0, 0}; //1.8%, 0%, 0%
+    public static final int[] BONUS_GLOWING_CUBE_TIER_UP_RATES = new int[]{90, 67, 22}; //9.0%, 6.7%, 2.2%
+    public static final int[] BONUS_POT_CUBE_TIER_UP_RATE = new int[]{180, 90, 45}; //18%, 9%, 4.5%
+    public static final int[] BONUS_BRIGHT_CUBE_TIER_UP_RATES = new int[]{180, 135, 45}; //18%, 13.5%, 4.5%
+    public static final int[] DEFAULT_CUBE_TIER_UP_RATES = new int[]{90, 45, 22}; //9%, 4.5%, 2.2%
 
     public static final int NEBILITE_BASE_ID = 3060000;
     public static final int[] HORNTAIL_NECKLACE = {
@@ -4311,9 +4312,12 @@ public class ItemConstants {
                 }
             }
 
-            ScrollUpgradeInfo inno = new ScrollUpgradeInfo(4, "Innocence Scroll 100%", SpellTraceScrollType.Innocence, 1, new TreeMap<>(), INNOCENCE_ST_COST, 100);
-            ScrollUpgradeInfo css = new ScrollUpgradeInfo(5, "Clean Slate Scroll 100%", SpellTraceScrollType.CleanSlate, 0, new TreeMap<>(), CLEAN_SLATE_ST_COST, 100);
-            ScrollUpgradeInfo ark = new ScrollUpgradeInfo(6, "Ark Innocence Scroll 100%", SpellTraceScrollType.Innocence, 4, new TreeMap<>(), ARK_INNOCENCE_ST_COST, 100);
+            int innoChance = Math.min(27 + guildBonus, 100);
+            int cssChance = Math.min(9 + guildBonus, 100);
+            int arkChance = Math.min(27 + guildBonus, 100);
+            ScrollUpgradeInfo inno = new ScrollUpgradeInfo(4, "Innocence Scroll " + innoChance + "%", SpellTraceScrollType.Innocence, 1, new TreeMap<>(), INNOCENCE_ST_COST, innoChance);
+            ScrollUpgradeInfo css = new ScrollUpgradeInfo(5, "Clean Slate Scroll " + cssChance + "%", SpellTraceScrollType.CleanSlate, 0, new TreeMap<>(), CLEAN_SLATE_ST_COST, cssChance);
+            ScrollUpgradeInfo ark = new ScrollUpgradeInfo(6, "Ark Innocence Scroll " + arkChance + "%", SpellTraceScrollType.Innocence, 4, new TreeMap<>(), ARK_INNOCENCE_ST_COST, arkChance);
             scrolls.add(inno);
             scrolls.add(css);
             scrolls.add(ark);
@@ -4466,17 +4470,19 @@ public class ItemConstants {
             }
         }
 
-        // Configure by body part
+        // Configure by body part (Base chances scaled 10% more challenging: 100/70/30/15 -> 90/63/27/14)
         if (bp == BodyPart.Weapon) {
             plusFromLevel = rLevel >= 120 ? 2 : rLevel >= 60 ? 1 : 0;
-            chances = new int[]{100, 70, 30, 15};
+            chances = new int[]{90, 63, 27, 14};
 
             if (fevertime) {
-                chances[1] = Math.min(chances[1] + 25, 100);
-                chances[2] = Math.min(chances[2] + 15, 100);
-                chances[3] = Math.min(chances[3] + 10, 100);
+                chances[0] = Math.min(chances[0] + 10, 100);
+                chances[1] = Math.min(chances[1] + 22, 100);
+                chances[2] = Math.min(chances[2] + 13, 100);
+                chances[3] = Math.min(chances[3] + 9, 100);
             }
             if (guildBonus != 0) {
+                chances[0] = Math.min(chances[0] + guildBonus, 100);
                 chances[1] = Math.min(chances[1] + guildBonus, 100);
                 chances[2] = Math.min(chances[2] + guildBonus, 100);
                 chances[3] = Math.min(chances[3] + guildBonus, 100);
@@ -4486,13 +4492,15 @@ public class ItemConstants {
             stat = new int[]{0, 0, 1, 2, 3, 4};
         } else if (bp == BodyPart.Gloves) {
             plusFromLevel = rLevel <= 70 ? 0 : 1;
-            chances = new int[]{100, 70, 30};
+            chances = new int[]{90, 63, 27};
 
             if (fevertime) {
-                chances[1] = Math.min(chances[1] + 25, 100);
-                chances[2] = Math.min(chances[2] + 15, 100);
+                chances[0] = Math.min(chances[0] + 10, 100);
+                chances[1] = Math.min(chances[1] + 22, 100);
+                chances[2] = Math.min(chances[2] + 13, 100);
             }
             if (guildBonus != 0) {
+                chances[0] = Math.min(chances[0] + guildBonus, 100);
                 chances[1] = Math.min(chances[1] + guildBonus, 100);
                 chances[2] = Math.min(chances[2] + guildBonus, 100);
             }
@@ -4501,13 +4509,15 @@ public class ItemConstants {
             stat = new int[]{3, 0, 0, 0};
         } else if (ItemConstants.isAccessory(equip.getItemId())) {
             plusFromLevel = rLevel >= 120 ? 2 : rLevel >= 60 ? 1 : 0;
-            chances = new int[]{100, 70, 30};
+            chances = new int[]{90, 63, 27};
 
             if (fevertime) {
-                chances[1] = Math.min(chances[1] + 25, 100);
-                chances[2] = Math.min(chances[2] + 15, 100);
+                chances[0] = Math.min(chances[0] + 10, 100);
+                chances[1] = Math.min(chances[1] + 22, 100);
+                chances[2] = Math.min(chances[2] + 13, 100);
             }
             if (guildBonus != 0) {
+                chances[0] = Math.min(chances[0] + guildBonus, 100);
                 chances[1] = Math.min(chances[1] + guildBonus, 100);
                 chances[2] = Math.min(chances[2] + guildBonus, 100);
             }
@@ -4516,13 +4526,15 @@ public class ItemConstants {
         } else {
             armor = true;
             plusFromLevel = rLevel >= 120 ? 2 : rLevel >= 60 ? 1 : 0;
-            chances = new int[]{100, 70, 30};
+            chances = new int[]{90, 63, 27};
 
             if (fevertime) {
-                chances[1] = Math.min(chances[1] + 25, 100);
-                chances[2] = Math.min(chances[2] + 15, 100);
+                chances[0] = Math.min(chances[0] + 10, 100);
+                chances[1] = Math.min(chances[1] + 22, 100);
+                chances[2] = Math.min(chances[2] + 13, 100);
             }
             if (guildBonus != 0) {
+                chances[0] = Math.min(chances[0] + guildBonus, 100);
                 chances[1] = Math.min(chances[1] + guildBonus, 100);
                 chances[2] = Math.min(chances[2] + guildBonus, 100);
             }
@@ -4603,9 +4615,12 @@ public class ItemConstants {
         }
 
         if (equip.hasUsedSlots()) {
-            ScrollUpgradeInfo inno = new ScrollUpgradeInfo(4, "Innocence Scroll 100%", SpellTraceScrollType.Innocence, 1, new TreeMap<>(), INNOCENCE_ST_COST, 100);
-            ScrollUpgradeInfo css = new ScrollUpgradeInfo(5, "Clean Slate Scroll 100%", SpellTraceScrollType.CleanSlate, 0, new TreeMap<>(), CLEAN_SLATE_ST_COST, 100);
-            ScrollUpgradeInfo ark = new ScrollUpgradeInfo(6, "Ark Innocence Scroll 100%", SpellTraceScrollType.Innocence, 4, new TreeMap<>(), ARK_INNOCENCE_ST_COST, 100);
+            int innoChance = Math.min((fevertime ? 40 : 27) + guildBonus, 100);
+            int cssChance = Math.min((fevertime ? 18 : 9) + guildBonus, 100);
+            int arkChance = Math.min((fevertime ? 40 : 27) + guildBonus, 100);
+            ScrollUpgradeInfo inno = new ScrollUpgradeInfo(4, "Innocence Scroll " + innoChance + "%", SpellTraceScrollType.Innocence, 1, new TreeMap<>(), INNOCENCE_ST_COST, innoChance);
+            ScrollUpgradeInfo css = new ScrollUpgradeInfo(5, "Clean Slate Scroll " + cssChance + "%", SpellTraceScrollType.CleanSlate, 0, new TreeMap<>(), CLEAN_SLATE_ST_COST, cssChance);
+            ScrollUpgradeInfo ark = new ScrollUpgradeInfo(6, "Ark Innocence Scroll " + arkChance + "%", SpellTraceScrollType.Innocence, 4, new TreeMap<>(), ARK_INNOCENCE_ST_COST, arkChance);
             scrolls.add(inno);
             scrolls.add(css);
             scrolls.add(ark);

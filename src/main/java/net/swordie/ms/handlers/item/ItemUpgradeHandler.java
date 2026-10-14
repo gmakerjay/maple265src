@@ -208,7 +208,8 @@ public class ItemUpgradeHandler {
                 chr.dispose();
                 return;
             }
-            boolean success = Util.succeedProp(vals.getOrDefault(ScrollStat.success, 100));
+            int baseHammerChance = (int) Math.max(1, Math.round(vals.getOrDefault(ScrollStat.success, 100) * 0.90));
+            boolean success = Util.succeedProp(baseHammerChance);
             equip.addStat(iuc, 1); // +1 hammer used regardless of outcome
             if (zeroEquip != null) {
                 zeroEquip.addStat(iuc, 1);
@@ -336,8 +337,10 @@ public class ItemUpgradeHandler {
                 return;
         }
         chr.write(UserLocal.hyperEnchantScrollRegister(true, scrollID, equip.getItemId()));
+        equip.saveToSQL();
         equip.updateToChar(chr);
         if (zeroWeapon != null) {
+            zeroWeapon.saveToSQL();
             zeroWeapon.updateToChar(chr);
         }
         chr.consumeItem(scroll, 1);
@@ -386,8 +389,8 @@ public class ItemUpgradeHandler {
         boolean protection = false;
         Map<ScrollStat, Integer> vals = ItemData.getItemInfoByID(scrollID).getScrollStats();
         if (vals.size() > 0) {
-            int chance = vals.getOrDefault(ScrollStat.success, 100);
-            int boomChance = vals.getOrDefault(ScrollStat.cursed, 0);
+            int chance = (int) Math.max(1, Math.round(vals.getOrDefault(ScrollStat.success, 100) * 0.90));
+            int boomChance = (int) Math.round(vals.getOrDefault(ScrollStat.cursed, 0) * 1.10);
             if (!ItemConstants.isCleanStateScroll(scrollID) && !ItemConstants.isInnocenceScroll(scrollID)) {
                 if (equip.hasAttribute(EquipAttribute.LuckyDay)) {
                     chance += 10;
@@ -453,8 +456,6 @@ public class ItemUpgradeHandler {
                 equip.updateToChar(chr);
                 zeroWeapon.updateToChar(chr);
 
-                //chr.write(UserPacket.showItemUpgradeEffect(chr.getId(), success, false, scrollID, equip.getItemId(), false));
-                //chr.write(FieldPacket.showItemUpgradeEffect(chr.getId(), success, false, scrollID, zeroWeapon.getItemId(), false));
                 if (!equip.hasAttribute(EquipAttribute.ScrollProtection) || !zeroWeapon.hasAttribute(EquipAttribute.ScrollProtection)) {
                     chr.consumeItem(scrollID, 1);
                 } else {
@@ -538,9 +539,10 @@ public class ItemUpgradeHandler {
             return;
         }
         Map<ScrollStat, Integer> vals = itemInfo.getScrollStats();
-        int chance = vals.getOrDefault(ScrollStat.success, 100);
-        int curse = vals.getOrDefault(ScrollStat.cursed, 0);
+        int chance = (int) Math.max(1, Math.round(vals.getOrDefault(ScrollStat.success, 100) * 0.90));
+        int curse = (int) Math.round(vals.getOrDefault(ScrollStat.cursed, 0) * 1.10);
         boolean success = Util.succeedProp(chance);
+        boolean boom = false;
         if (success) {
             short val;
             int thirdLineChance = ItemConstants.THIRD_LINE_CHANCE;
@@ -568,25 +570,30 @@ public class ItemUpgradeHandler {
                     return;
                 }
             }
-        }
-        // Phiên bản này thì không còn hidden nữa.
-        boolean base = equip.getOptionBase(0) < 0;
-        boolean bonus = equip.getOptionBonus(0) < 0;
-        if (base && bonus) {
-            equip.releaseOptions(true);
             equip.releaseOptions(false);
-        } else {
-            equip.releaseOptions(bonus);
+        } else if (curse > 0 && Util.succeedProp(curse)) {
+            if (!equip.hasAttribute(EquipAttribute.ProtectionScroll) && !ItemConstants.isLongOrBigSword(equip.getItemId())) {
+                boom = true;
+                chr.consumeItem(equip);
+            }
         }
+        equip.removeAttribute(EquipAttribute.ProtectionScroll);
         if (zeroEquip != null) {
-            zeroEquip.setOptions(equip.getOptions());
+            zeroEquip.removeAttribute(EquipAttribute.ProtectionScroll);
+            if (success) {
+                zeroEquip.setOptions(equip.getOptions());
+                chr.write(UserPacket.showItemReleaseEffect(chr.getId(), nEquipPosition, false));
+                chr.write(UserPacket.showItemReleaseEffect(chr.getId(), (short) -11, false));
+            }
             chr.write(UserLocal.hyperEnchantScrollRegister(success, scrollID, zeroEquip.getItemId()));
-            chr.write(UserPacket.showItemReleaseEffect(chr.getId(), nEquipPosition, bonus));
-            chr.write(UserPacket.showItemReleaseEffect(chr.getId(), (short) -11, bonus));
+            zeroEquip.saveToSQL();
             zeroEquip.updateToChar(chr);
         }
         chr.write(UserLocal.hyperEnchantScrollRegister(success, scrollID, equip.getItemId()));
-        equip.updateToChar(chr);
+        if (!boom) {
+            equip.saveToSQL();
+            equip.updateToChar(chr);
+        }
         if (!equip.hasAttribute(EquipAttribute.ScrollProtection)) {
             chr.consumeItem(scrollID, 1);
         } else {
@@ -615,7 +622,7 @@ public class ItemUpgradeHandler {
         } else if (JobConstants.isZero(chr.getJob()) && ItemConstants.isLongOrBigSword(equip.getItemId())) {
             zeroEquip = (Equip) chr.getInventoryByType(invType).getItemBySlot(-11);
             if (zeroEquip == null) {
-                chr.chatPopup("Đã xảy ra lỗiไม่ xác định.");
+                chr.chatPopup("Đã xảy ra lỗi không xác định.");
                 chr.dispose();
                 return;
             }
@@ -637,7 +644,7 @@ public class ItemUpgradeHandler {
             chr.dispose();
             return;
         }
-        int successChance = itemInfo.getScrollStats().getOrDefault(ScrollStat.success, 100);
+        int successChance = (int) Math.max(1, Math.round(itemInfo.getScrollStats().getOrDefault(ScrollStat.success, 100) * 0.90));
         boolean success = Util.succeedProp(successChance);
         if (success) {
             switch (stampID) {
@@ -673,7 +680,6 @@ public class ItemUpgradeHandler {
         }
         chr.consumeItem(stampID, 1);
         chr.write(UserLocal.itemSlotExtendItemUse(success, stampID, equip.getItemId()));
-        //chr.write(UserPacket.showItemUpgradeEffect(chr.getId(), success, false, stampID, equip.getItemId(), false));
         chr.dispose();
     }
 
@@ -714,8 +720,10 @@ public class ItemUpgradeHandler {
             return;
         }
         short val;
-        int successChance = itemInfo.getScrollStats().getOrDefault(ScrollStat.success, 100);
+        int successChance = (int) Math.max(1, Math.round(itemInfo.getScrollStats().getOrDefault(ScrollStat.success, 100) * 0.90));
+        int curse = (int) Math.round(itemInfo.getScrollStats().getOrDefault(ScrollStat.cursed, 0) * 1.10);
         boolean success = Util.succeedProp(successChance);
+        boolean boom = false;
         if (success) {
             switch (scrollID) {
                 case 2048305: // Bonus Pot
@@ -738,6 +746,7 @@ public class ItemUpgradeHandler {
                     // Special Bonus Pot
                     val = ItemGrade.HiddenRare.getVal();
                     if (!ItemConstants.canEquipHavePotential(equip)) {
+                        chr.dispose();
                         return;
                     }
                     equip.setOptionBonus(0, -val);
@@ -749,27 +758,30 @@ public class ItemUpgradeHandler {
                     chr.dispose();
                     return;
             }
-        }
-        // Phiên bản này thì không còn hidden nữa.
-        boolean base = equip.getOptionBase(0) < 0;
-        boolean bonus = equip.getOptionBonus(0) < 0;
-        if (base && bonus) {
             equip.releaseOptions(true);
-            equip.releaseOptions(false);
-        } else {
-            equip.releaseOptions(bonus);
+        } else if (curse > 0 && Util.succeedProp(curse)) {
+            if (!equip.hasAttribute(EquipAttribute.ProtectionScroll) && !ItemConstants.isLongOrBigSword(equip.getItemId())) {
+                boom = true;
+                chr.consumeItem(equip);
+            }
         }
+        equip.removeAttribute(EquipAttribute.ProtectionScroll);
         if (zeroEquip != null) {
-            zeroEquip.setOptions(equip.getOptions());
-            //For Scroll Effect of Zero Second Equip.
-            chr.write(UserLocal.hyperEnchantScrollRegister(true, scrollID, zeroEquip.getItemId()));
-            //For release Option.
-            chr.write(UserPacket.showItemReleaseEffect(chr.getId(), nEquipPosition, bonus));
-            chr.write(UserPacket.showItemReleaseEffect(chr.getId(), (short) -11, bonus));
+            zeroEquip.removeAttribute(EquipAttribute.ProtectionScroll);
+            if (success) {
+                zeroEquip.setOptions(equip.getOptions());
+                chr.write(UserPacket.showItemReleaseEffect(chr.getId(), nEquipPosition, true));
+                chr.write(UserPacket.showItemReleaseEffect(chr.getId(), (short) -11, true));
+            }
+            chr.write(UserLocal.hyperEnchantScrollRegister(success, scrollID, zeroEquip.getItemId()));
+            zeroEquip.saveToSQL();
             zeroEquip.updateToChar(chr);
         }
         chr.write(UserLocal.hyperEnchantScrollRegister(success, scrollID, equip.getItemId()));
-        equip.updateToChar(chr);
+        if (!boom) {
+            equip.saveToSQL();
+            equip.updateToChar(chr);
+        }
         if (!equip.hasAttribute(EquipAttribute.ScrollProtection)) {
             chr.consumeItem(scrollID, 1);
         } else {
@@ -826,9 +838,10 @@ public class ItemUpgradeHandler {
             chr.dispose();
             return;
         }
-        int successChance = itemInfo.getScrollStats().getOrDefault(ScrollStat.success, 100);
+        int successChance = (int) Math.max(1, Math.round(itemInfo.getScrollStats().getOrDefault(ScrollStat.success, 100) * 0.90));
         boolean noCursed = itemInfo.isNoCursed();
         boolean success = Util.succeedProp(successChance);
+        boolean boom = false;
         if (success) {
             int line = equip.getOptionBonus(1) == 0 ? 1 : 2;
             equip.setOption(line, equip.getRandomOption(true, line, ItemConstants.SYSTEM_DEFAULT_CUBE_INDICATOR, ItemConstants.getAdditionalPrimeCountForCube(ItemConstants.SYSTEM_DEFAULT_CUBE_INDICATOR)), true);
@@ -838,6 +851,7 @@ public class ItemUpgradeHandler {
         } else {
             if (!noCursed) {
                 if (!equip.hasAttribute(EquipAttribute.ProtectionScroll)) {
+                    boom = true;
                     chr.consumeItem(equip);
                     if (zeroEquip != null) {
                         chr.consumeItem(zeroEquip);
@@ -845,11 +859,15 @@ public class ItemUpgradeHandler {
                 }
             }
         }
-        if (zeroEquip != null) {
+        if (zeroEquip != null && !boom) {
+            zeroEquip.saveToSQL();
             zeroEquip.updateToChar(chr);
         }
         chr.write(UserLocal.itemSlotExtendItemUse(success, item.getItemId(), equip.getItemId()));
-        equip.updateToChar(chr);
+        if (!boom) {
+            equip.saveToSQL();
+            equip.updateToChar(chr);
+        }
         chr.consumeItem(itemID, 1);
         chr.dispose();
     }
@@ -880,6 +898,7 @@ public class ItemUpgradeHandler {
             equip.releaseOptions(bonus);
         }
         chr.write(UserPacket.showItemReleaseEffect(chr.getId(), ePos, bonus));
+        equip.saveToSQL();
         equip.updateToChar(chr);
         chr.deductMoney(cost);
         chr.dispose();
@@ -1018,7 +1037,8 @@ public class ItemUpgradeHandler {
             return;
         }
         int setId = scrollInfo.getScrollStats().getOrDefault(ScrollStat.setItemCategory, 0);
-        boolean success = Util.succeedProp(scrollInfo.getScrollStats().getOrDefault(ScrollStat.success, 100));
+        int luckChance = (int) Math.max(1, Math.round(scrollInfo.getScrollStats().getOrDefault(ScrollStat.success, 100) * 0.90));
+        boolean success = Util.succeedProp(luckChance);
         if (setId != 0 && success) {
             if (chr.hasQuestInProgress(QuestConstants.ZERO_SET_QUEST) || chr.hasQuestCompleted(QuestConstants.ZERO_SET_QUEST)) {
                 chr.removeQuest(QuestConstants.ZERO_SET_QUEST);
@@ -1065,13 +1085,14 @@ public class ItemUpgradeHandler {
         if (vals.size() > 0) {
             int rLevel = equip.getrLevel() + equip.getiIncReq();
             int forceUpgrade = vals.getOrDefault(ScrollStat.forceUpgrade, 0);
-            int curse = vals.getOrDefault(ScrollStat.cursed, 0);
+            int curse = (int) Math.round(vals.getOrDefault(ScrollStat.cursed, 0) * 1.10);
             if (equip.isSuperiorEqp() && rLevel <= 94 && forceUpgrade > 3) {
                 chr.chatMessage(SystemNotice, "Unabled to use enchancement scroll on superior equip.");
                 chr.dispose();
                 return;
             }
-            success = Util.succeedProp(vals.getOrDefault(ScrollStat.success, 100));
+            int hyperChance = (int) Math.max(1, Math.round(vals.getOrDefault(ScrollStat.success, 100) * 0.90));
+            success = Util.succeedProp(hyperChance);
             if (success) {
                 equip.setChuc((short) forceUpgrade, true);
             } else {
@@ -1089,6 +1110,7 @@ public class ItemUpgradeHandler {
             chr.write(UserLocal.hyperEnchantScrollRegister(success, scroll.getItemId(), equip.getItemId()));
             if (!boom) {
                 equip.recalcEnchantmentStats();
+                equip.saveToSQL();
                 equip.updateToChar(chr);
             }
             if (!equip.hasAttribute(EquipAttribute.ScrollProtection)) {

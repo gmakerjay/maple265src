@@ -360,14 +360,19 @@ public class ScriptManagerImpl implements ScriptManager {
                 entry.getValue().reset();
             }
         }
-        setSpeakerID(0);
+        boolean handedOffToOtherScript = getLastActiveScriptType() != scriptType
+                && getLastActiveScriptType() != ScriptType.None
+                && isActive(getLastActiveScriptType());
         if (getLastActiveScriptType() == scriptType) {
             setLastActiveScriptType(ScriptType.None);
             setLastActiveScriptName(null);
         }
-        getNpcScriptInfo().reset();
-        getMemory().clear();
-        unlockUI();
+        if (!handedOffToOtherScript) {
+            setSpeakerID(0);
+            getNpcScriptInfo().reset();
+            getMemory().clear();
+            unlockUI();
+        }
     }
 
     private void undefined(ScriptType scriptType, int parentID) {
@@ -557,6 +562,18 @@ public class ScriptManagerImpl implements ScriptManager {
     @Override
     public int sendSayOkay(String text) {
         return sendGeneralSay(text, SayOk);
+    }
+
+    public int sendOkay(String text) {
+        return sendSayOkay(text);
+    }
+
+    public int senSayOkay(String text) {
+        return sendSayOkay(text);
+    }
+
+    public int sendAskMenu(String text) {
+        return sendNext(text);
     }
 
     public int sendSayNextIllustration(String text, int faceIndex, boolean isLeft) {
@@ -1875,6 +1892,10 @@ public class ScriptManagerImpl implements ScriptManager {
         chr.write(FieldPacket.fieldEffect(FieldEffect.getOffFieldEffectFromWz(dir, 0)));
     }
 
+    public void getOffFieldEffectFromWz(String dir, int delay) {
+        chr.write(FieldPacket.fieldEffect(FieldEffect.getOffFieldEffectFromWz(dir, delay)));
+    }
+
     public void showFieldBackgroundEffect(String dir) {
         showFieldBackgroundEffect(dir, 0);
     }
@@ -2203,6 +2224,10 @@ public class ScriptManagerImpl implements ScriptManager {
             return;
         }
         chr.write(NpcPool.npcResetSpecialAction(life.getObjectId()));
+    }
+
+    public void resetNpcSpecialActionByTemplateId(int npcTemplateId) {
+        stopNpcSpecialActionByTemplateId(npcTemplateId);
     }
 
     public int getNpcObjectIdByTemplateId(int npcTemplateId) {
@@ -2742,18 +2767,7 @@ public class ScriptManagerImpl implements ScriptManager {
                 }
             }
             chr.addItemToInventory(equip.getInvType(), equip, false, false);
-            chr.getClient().write(WvsContext.inventoryOperation(true, false, Add, (short) equip.getBagIndex(), (byte) -1, 0, equip));
             chr.write(WvsContext.dropPickupMessage(itemId, (short) 1));
-        }
-        if (questId != 0) {
-            for (Char other : chr.getAccount().getCharacters()) {
-                if (other.getId() != chr.getId()) {
-                    if (other.getRewardSystem() == null) {
-                        other.initRewardSystem();
-                    }
-                    other.sendRewardToChar(itemId, quantity, 0, "Character " + chr.getName() + " completed quest " + getQuestNameByQuestId(questId) + ".", 30);
-                }
-            }
         }
     }
 
@@ -3626,6 +3640,14 @@ public class ScriptManagerImpl implements ScriptManager {
         return (int) response;
     }
 
+    public void zoomCameraNoResponse(int inZoomDuration, int scale, int timePos, int x, int y) {
+        chr.write(UserLocal.inGameDirectionEvent(InGameDirectionEvent.cameraZoom(inZoomDuration, scale, timePos, new Position(x, y))));
+    }
+
+    public void zoomCameraNoResponse(int inZoomDuration, int scale, int x, int y) {
+        zoomCameraNoResponse(inZoomDuration, scale, 1000, x, y);
+    }
+
     @Override
     public void resetCamera() {
         chr.write(UserLocal.inGameDirectionEvent(InGameDirectionEvent.cameraOnCharacter(0))); // 0 resets the Camera
@@ -4079,6 +4101,10 @@ public class ScriptManagerImpl implements ScriptManager {
 
     public void speechBalloon(boolean normal, int range, int nameHeight, String speech, int time, int origin, int x, int y, int z, int lineSpace, int templateID) {
         chr.write(UserPacket.effect(Effect.speechBalloon(normal, range, nameHeight, speech, time, origin, x, y, z, lineSpace, templateID, chr.getId())));
+    }
+
+    public void speechBalloon(boolean normal, int range, int nameHeight, String speech, int time, int origin, int x, int y, int z, int lineSpace, int templateID, int charID) {
+        chr.write(UserPacket.effect(Effect.speechBalloon(normal, range, nameHeight, speech, time, origin, x, y, z, lineSpace, templateID, charID)));
     }
 
     public String formatNumber(String number) {

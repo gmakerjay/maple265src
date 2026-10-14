@@ -7,10 +7,10 @@ sel = sm.sendAskMenu("Would you like to experience the storyline or skip the pre
 if sel == 1:
     if sm.getEmptyInventorySlots(1) >= 1:
         for qid in range(34249, 34273):
-            sm.startQuest(qid)
-            sm.completeQuest(qid)
-        sm.completeQuest(34243)
-        sm.completeQuest(34275)
+            sm.startQuestNoCheck(qid)
+            sm.completeQuestNoRewards(qid)
+        sm.completeQuestNoRewards(34243)
+        sm.completeQuestNoRewards(34275)
         sm.createQuestWithQRValue(34271, "20=h0;21=h0;22=h0;23=h0;28=h0;29=h0;30=h0;31=h0;32=h0;33=h1;36=h0;53=h0;54=h0")
         sm.giveSymbol(1712005, 1, 34272)
         chr.initDailyQuestSymbol()

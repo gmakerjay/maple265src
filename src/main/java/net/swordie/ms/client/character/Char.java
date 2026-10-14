@@ -1795,6 +1795,32 @@ public class Char {
                     }
                     petItem.setDateDead(item.getDateExpire());
                 }
+                if (item instanceof Equip equip && ItemConstants.isSymbol(item.getItemId())
+                        && (equip.getSymbol() == null || equip.getSymbol().getLevel() < 1)) {
+                    if (equip.getSymbol() == null) {
+                        equip.setSymbol(new EquipSymbol());
+                    }
+                    equip.getSymbol().setLevel(1);
+                    equip.getSymbol().setExp(1);
+                    if (ItemConstants.isArcaneSymbol(item.getItemId())) {
+                        equip.getSymbol().setInc((short) 30);
+                    } else {
+                        equip.getSymbol().setInc((short) 10);
+                    }
+                    if (JobConstants.isDemonAvenger(getJob())) {
+                        equip.setiMaxHp((short) (ItemConstants.isArcaneSymbol(item.getItemId()) ? (item.getItemId() == 1712000 ? 4200 : 5250) : 10500));
+                    } else if (JobConstants.isXenon(getJob())) {
+                        short statVal = (short) (ItemConstants.isArcaneSymbol(item.getItemId()) ? 117 : 240);
+                        equip.setiStr(statVal);
+                        equip.setiDex(statVal);
+                        equip.setiLuk(statVal);
+                    } else {
+                        EquipBaseStat mainStat = calculateMainStatForChar();
+                        if (mainStat != null) {
+                            equip.setBaseStat(mainStat, ItemConstants.isArcaneSymbol(item.getItemId()) ? 300L : 500L);
+                        }
+                    }
+                }
                 inventory.addItem(item, getId());
                 item.saveToSQL();
                 write(WvsContext.inventoryOperation(!isPetLoot, false, Add, (short) item.getBagIndex(), (byte) -1, 0, item));
@@ -10951,9 +10977,11 @@ public class Char {
             List<Integer> selected = new ArrayList<>();
             for (int i = 0; i < count; i++) {
                 int randomQuest;
+                int guard = 0;
                 do {
                     randomQuest = Util.getRandom(minQuest, maxQuest);
-                } while (selected.contains(randomQuest));
+                    guard++;
+                } while ((selected.contains(randomQuest) || QuestData.getQuestInfoById(randomQuest) == null) && guard < 100);
                 selected.add(randomQuest);
             }
             StringBuilder sb = new StringBuilder();
@@ -10983,9 +11011,13 @@ public class Char {
             final LocalDateTime now = LocalDateTime.now();
             final int currentDay = Integer.parseInt(DateTimeFormatter.ofPattern("dd").format(now));
             boolean shouldRenew = false;
-            if (date != null) {
-                int lastDay = Integer.parseInt(date.substring(6, 8));
-                if (lastDay != currentDay) {
+            if (date != null && date.length() >= 8) {
+                try {
+                    int lastDay = Integer.parseInt(date.substring(6, 8));
+                    if (lastDay != currentDay) {
+                        shouldRenew = true;
+                    }
+                } catch (Exception ignored) {
                     shouldRenew = true;
                 }
             } else {
@@ -13096,9 +13128,9 @@ public class Char {
         }
         boolean hasQuestStart = questStartReq.isEmpty() || questStartReq.stream().anyMatch(q -> q.hasRequirements(this));
         boolean hasCorrectJob = false;
-        if (questStartJobReq.isEmpty()) {
+        if (questStartJobReq.isEmpty() || (questID >= 34100 && questID <= 39999) || JobConstants.isRen(getJob())) {
             hasCorrectJob = true;
-        } else if (questID == 1460) { //Không biết còn dạng nào khác không nên làm cố định một dạng trước
+        } else if (questID == 1460) {
             for (QuestStartJobRequirement questStartJobRequirement : questStartJobReq) {
                 if (questStartJobRequirement.hasRequirements(this)) {
                     hasCorrectJob = true;

@@ -1,4 +1,5 @@
 # id 940200111 (Hidden Street : Elluel), field 940200111
+from net.swordie.ms.world.field.fieldeffect import GreyFieldType
 sm.lockInGameUI(True, False)
 sm.hideUser(True)
 sm.removeAdditionalEffect()

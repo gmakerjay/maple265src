@@ -3236,7 +3236,7 @@ public class WvsContext {
         outPacket.encodeInt(equip.getItemId());
         outPacket.encodeInt(equip.getInvType().getVal() == EQUIPPED.getVal() ? -equip.getBagIndex() : equip.getBagIndex());
         outPacket.encodeByte(1);
-        outPacket.encodeByte(equip.getGrade());
+        outPacket.encodeByte(bonus ? equip.getBonusGrade() : equip.getBaseGrade());
         for (int i = 0; i < 7; i++) {
             outPacket.encodeShort(equip.getOptions().get(i)); // 7x, last is fusion anvil
         }

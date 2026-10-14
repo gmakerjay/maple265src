@@ -615,39 +615,40 @@ public class GameConstants {
 
     private static void initEnchantRates() {
         enchantRates = new int[30][2];
-        setRate(0,  9500, 0);
-        setRate(1,  9000, 0);
-        setRate(2,  8500, 0);
-        setRate(3,  8500, 0);
-        setRate(4,  8000, 0);
+        // Scaled 10% more challenging than official rates (success * 0.90, destroy * 1.10)
+        setRate(0,  8550, 0);
+        setRate(1,  8100, 0);
+        setRate(2,  7650, 0);
+        setRate(3,  7650, 0);
+        setRate(4,  7200, 0);
 
-        setRate(5,  7500, 0);
-        setRate(6,  7000, 0);
-        setRate(7,  6500, 0);
-        setRate(8,  6000, 0);
-        setRate(9,  5500, 0);
+        setRate(5,  6750, 0);
+        setRate(6,  6300, 0);
+        setRate(7,  5850, 0);
+        setRate(8,  5400, 0);
+        setRate(9,  4950, 0);
 
-        setRate(10, 4500, 0);
-        setRate(11, 3500, 0);
-        setRate(12, 3000, 0);
-        setRate(13, 3000, 0);
-        setRate(14, 3000, 0);
+        setRate(10, 4050, 0);
+        setRate(11, 3150, 0);
+        setRate(12, 2700, 0);
+        setRate(13, 2700, 0);
+        setRate(14, 2700, 0);
 
-        setRate(15, 3000,  210);
-        setRate(16, 3000,  210);
-        setRate(17, 1500,  680);
-        setRate(18, 1500,  680);
-        setRate(19, 1500,  850);
-        setRate(20, 3000, 1050);
-        setRate(21, 1500, 1275);
-        setRate(22, 1500, 1700);
-        setRate(23, 1000, 1800);
-        setRate(24, 1000, 1800);
-        setRate(25, 1000, 1800);
-        setRate(26,  700, 1860);
-        setRate(27,  500, 1900);
-        setRate(28,  300, 1940);
-        setRate(29,  100, 1980);
+        setRate(15, 2700,  231);
+        setRate(16, 2700,  231);
+        setRate(17, 1350,  748);
+        setRate(18, 1350,  748);
+        setRate(19, 1350,  935);
+        setRate(20, 2700, 1155);
+        setRate(21, 1350, 1403);
+        setRate(22, 1350, 1870);
+        setRate(23,  900, 1980);
+        setRate(24,  900, 1980);
+        setRate(25,  900, 1980);
+        setRate(26,  630, 2046);
+        setRate(27,  450, 2090);
+        setRate(28,  270, 2134);
+        setRate(29,   90, 2178);
     }
 
     private static void setRate(int star, int success, int destroy) {
@@ -740,24 +741,25 @@ public class GameConstants {
     }
 
     private static void initEnchantRatesSuperior() {
+        // Scaled 10% more challenging than official rates (success * 0.90, destroy * 1.10)
         enchantSuccessRatesSuperior = new int[][]{
-                {500, 0},
-                {500, 0},
                 {450, 0},
-                {400, 0},
-                {400, 0},
+                {450, 0},
+                {405, 0},
+                {360, 0},
+                {360, 0},
 
-                {400, 18},
-                {400, 30},
-                {400, 42},
-                {400, 60},
-                {370, 95},
+                {360, 20},
+                {360, 33},
+                {360, 46},
+                {360, 66},
+                {333, 105},
 
-                {350, 130},
-                {350, 162},
-                {30, 485},
-                {20, 490},
-                {10, 500},
+                {315, 143},
+                {315, 178},
+                {27, 534},
+                {18, 539},
+                {9, 550},
         };
     }
 
@@ -837,7 +839,7 @@ public class GameConstants {
             return RATE_SCALE;
         }
         int chuc = equip.getChuc();
-        if (chuc < 0 || chuc > 24) {
+        if (chuc < 0 || chuc >= enchantRates.length) {
             return 0;
         } else if (equip.isSuperiorEqp()) {
             return chuc < enchantSuccessRatesSuperior.length ? enchantSuccessRatesSuperior[chuc][0] * 10 : 0;
@@ -944,10 +946,10 @@ public class GameConstants {
         // att gains for weapons
         if (ItemConstants.isWeapon(equip.getItemId()) && !ItemConstants.isSecondary(equip.getItemId())) {
             if (chuc <= 14) {
-                if (es == EnchantStat.PAD) {
-                    stat += equip.getiPad() * 0.02;
-                } else if (es == EnchantStat.MAD) {
-                    stat += equip.getiMad() * 0.02;
+                if (es == EnchantStat.PAD && equip.getiPad() > 0) {
+                    stat += (int) (equip.getiPad() * 0.02) + 1;
+                } else if (es == EnchantStat.MAD && equip.getiMad() > 0) {
+                    stat += (int) (equip.getiMad() * 0.02) + 1;
                 }
             } else if (es == EnchantStat.PAD || es == EnchantStat.MAD) {
                 switch (chuc) {
@@ -963,6 +965,7 @@ public class GameConstants {
                     case 25:
                         stat += 10;
                         break;
+                    case 26:
                     case 27:
                         stat += 9;
                         break;

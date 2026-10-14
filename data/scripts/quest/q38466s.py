@@ -16,17 +16,17 @@ if sm.sendAskAccept("It would be wonderful if you could help us, #h0#. Of course
     elif sm.hasQuestCompleted(37871): # [Esfera] Mirrors in Mirrors
         reqMob = 300
     if sm.sendAskAccept("Hello! Please help me defeat " + str(reqMob) + " monsters in the #bMorass#k area."):
-        sm.completeQuest(parentID)
+        sm.completeQuestNoRewards(parentID)
         sm.setQRValueByKey(parentID, "date", time.strftime("%y/%m/%d"))
         sm.removeQuest(38467)
         sm.removeQuest(38468)
         sm.removeQuest(38469)
         if reqMob == 100:
-            sm.startQuest(38467)
+            sm.startQuestNoCheck(38467)
         elif reqMob == 300:
-            sm.startQuest(38468)
+            sm.startQuestNoCheck(38468)
         else:
-            sm.startQuest(38469)
+            sm.startQuestNoCheck(38469)
         sm.setSpeakerID(JEAN)
         sm.sendNext("Please return to me once you have finished the mission. Don't forget to report back #r#ebefore midnight#n#k!\r\nCurrent time is #r#e" + str(sm.getCurrentTime()) + "#k.")
     else:

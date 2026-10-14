@@ -1,5 +1,6 @@
 # Adele - General Store, Potions & Boss Buff Depot NPC
 import sys
+from imp import reload
 for p in ["data/scripts/npc", "data/scripts"]:
     if p not in sys.path:
         sys.path.append(p)

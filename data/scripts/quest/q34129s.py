@@ -12,11 +12,11 @@ def accept():
     sm.setQuestStatus(questID, 1)
     sm.setQRValueByKey(questID, "date", str(now.strftime("%y/%m/%d")))
     sm.createQuestWithQRValue(count, "count=0")
-    sm.startQuest(int(sm.getQRValueByKey(questID, "q1")))
-    sm.startQuest(int(sm.getQRValueByKey(questID, "q2")))
-    sm.startQuest(int(sm.getQRValueByKey(questID, "q3")))
-    sm.startQuest(int(sm.getQRValueByKey(questID, "q4")))
-    sm.startQuest(int(sm.getQRValueByKey(questID, "q5")))
+    sm.startQuestNoCheck(int(sm.getQRValueByKey(questID, "q1")))
+    sm.startQuestNoCheck(int(sm.getQRValueByKey(questID, "q2")))
+    sm.startQuestNoCheck(int(sm.getQRValueByKey(questID, "q3")))
+    sm.startQuestNoCheck(int(sm.getQRValueByKey(questID, "q4")))
+    sm.startQuestNoCheck(int(sm.getQRValueByKey(questID, "q5")))
     sm.sendSayOkay("Come to me when you've finished your missions. Remember, you have to turn them in before midnight. Well then, see you later.")
 
 def random(selection):
@@ -31,7 +31,7 @@ def random(selection):
     elif selection == 4:
         sm.setQRValueByKey(questID, "q5", str(sm.randomDailyQuest(questID, selection)))
 
-if quest is None:
+if quest is None or sm.getQRValueByKey(questID, "q1") is None:
     chr.initDailyQuestSymbol()
 if sm.sendAskAccept("Hi, #h0#. I have 5 missions for you today. Would you like to take care of them now? If there is a mission you don't like, you can press the Exchange button to trade it for something else.\r\n\r\n#e#b " + str(sm.getQuestNameByQuestId(sm.getQRValueByKey(questID, "q1"))) + " \r\n " + str(sm.getQuestNameByQuestId(sm.getQRValueByKey(questID, "q2"))) + " \r\n " + str(sm.getQuestNameByQuestId(sm.getQRValueByKey(questID, "q3"))) + " \r\n " + str(sm.getQuestNameByQuestId(sm.getQRValueByKey(questID, "q4"))) + " \r\n " + str(sm.getQuestNameByQuestId(sm.getQRValueByKey(questID, "q5"))) + " #k#n"):
     accept()

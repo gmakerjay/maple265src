@@ -64,9 +64,10 @@ if 0 <= sel < len(options):
                 sm.sendSayOkay("Please make sure you have at least 1 empty slot in your #bEQUIP#k inventory.")
             else:
                 for q in STORY_QUESTS:
-                    sm.startQuest(q)
-                    sm.completeQuest(q)
-                if not sm.hasItem(SYMBOL_ID):
+                    sm.startQuestNoCheck(q)
+                    sm.completeQuestNoRewards(q)
+                chr.initDailyQuestSymbol()
+                if not sm.hasItem(SYMBOL_ID) and not sm.isEquipped(SYMBOL_ID):
                     sm.giveSymbol(SYMBOL_ID, 1, STORY_QUEST_ID)
                     sm.sendSayOkay("The " + REGION_NAME + " storyline has been completed!\r\nYou have received your #b#i" + str(SYMBOL_ID) + "# #z" + str(SYMBOL_ID) + "##k (Lv. 1). You may now accept daily quests!")
                 else:
