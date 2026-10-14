@@ -32,7 +32,7 @@ public class Lotus {
 
         ScriptManagerImpl sm = chr.getScriptManager();
         Field field = chr.getOrCreateFieldByCurrentInstanceType(chr.getField().getId());
-        int lotusId = BossConstants.LOTUS_CORE + phase.getVal() + mode.getVal() * 100; // phases start from 0 to 2
+        int lotusId = BossConstants.LOTUS_CORE + phase.getVal() + (mode == LotusMode.NORMAL ? 100 : 0); // Normal: 8950100..8950102, Hard: 8950000..8950002
         long hp = BossConstants.LOTUS_HP_PHASE_DIFFICULTY[phase.getVal()][mode.getVal()];
         if (!field.isBossSpawned()) {
             field.setBossSpawned(true);
@@ -99,14 +99,14 @@ public class Lotus {
         Field field = chr.getOrCreateFieldByCurrentInstanceType(chr.getField().getId());
         switch (field.getId()) {
             case 350060700 -> {
-                if (field.hasMobById(8950000)) {
+                if (field.hasMobById(8950100) || field.hasMobById(8950000)) {
                     sm.createObstacleAtom(ObtacleAtomEnum.LotusBlueDebris, 1, BossConstants.LOTUS_BLUE_ATOM_DAMAGE, 15, 0, BossConstants.LOTUS_BLUE_ATOM_AMOUNT, BossConstants.LOTUS_BLUE_ATOM_PROP);
                     sm.createObstacleAtom(ObtacleAtomEnum.LotusYellowDebris, 1, BossConstants.LOTUS_YELLOW_ATOM_DAMAGE, 20, 0,  BossConstants.LOTUS_YELLOW_ATOM_AMOUNT, BossConstants.LOTUS_YELLOW_ATOM_PROP);
                     sm.createObstacleAtom(ObtacleAtomEnum.LotusBlueDebris, 1, BossConstants.LOTUS_PURPLE_ATOM_DAMAGE, 25, 0,  BossConstants.LOTUS_PURPLE_ATOM_AMOUNT, BossConstants.LOTUS_PURPLE_ATOM_PROP);
                 }
             }
             case 350060800 -> {
-                if (field.hasMobById(8950001)) {
+                if (field.hasMobById(8950101) || field.hasMobById(8950001)) {
                     sm.createObstacleAtom(ObtacleAtomEnum.LotusBlueDebris, 1, BossConstants.LOTUS_BLUE_ATOM_DAMAGE, 15, 0,  BossConstants.LOTUS_BLUE_ATOM_AMOUNT, BossConstants.LOTUS_BLUE_ATOM_PROP);
                     sm.createObstacleAtom(ObtacleAtomEnum.LotusYellowDebris, 1, BossConstants.LOTUS_YELLOW_ATOM_DAMAGE, 20, 0,  BossConstants.LOTUS_YELLOW_ATOM_AMOUNT, BossConstants.LOTUS_YELLOW_ATOM_PROP);
                     sm.createObstacleAtom(ObtacleAtomEnum.LotusBlueDebris, 1, BossConstants.LOTUS_PURPLE_ATOM_DAMAGE, 25, 0,  BossConstants.LOTUS_PURPLE_ATOM_AMOUNT, BossConstants.LOTUS_PURPLE_ATOM_PROP);
@@ -114,7 +114,7 @@ public class Lotus {
                 }
             }
             case 350060900 -> {
-                if (field.hasMobById(8950002)) {
+                if (field.hasMobById(8950102) || field.hasMobById(8950002)) {
                     sm.createObstacleAtom(ObtacleAtomEnum.LotusBlueDebris, 1, BossConstants.LOTUS_BLUE_ATOM_DAMAGE, 15, 0,  BossConstants.LOTUS_BLUE_ATOM_AMOUNT, BossConstants.LOTUS_BLUE_ATOM_PROP);
                     sm.createObstacleAtom(ObtacleAtomEnum.LotusYellowDebris, 1, BossConstants.LOTUS_YELLOW_ATOM_DAMAGE, 20, 0,  BossConstants.LOTUS_YELLOW_ATOM_AMOUNT, BossConstants.LOTUS_YELLOW_ATOM_PROP);
                     sm.createObstacleAtom(ObtacleAtomEnum.LotusBlueDebris, 1, BossConstants.LOTUS_PURPLE_ATOM_DAMAGE, 25, 0,  BossConstants.LOTUS_PURPLE_ATOM_AMOUNT, BossConstants.LOTUS_PURPLE_ATOM_PROP);
@@ -123,7 +123,7 @@ public class Lotus {
                 }
             }
             case 350060400 -> {
-                if (field.hasMobById(8950100)) {
+                if (field.hasMobById(8950000) || field.hasMobById(8950100)) {
                     sm.createObstacleAtom(ObtacleAtomEnum.LotusBlueDebris, 1, BossConstants.LOTUS_BLUE_ATOM_DAMAGE, 15, 0,  BossConstants.LOTUS_BLUE_ATOM_AMOUNT, BossConstants.LOTUS_BLUE_ATOM_PROP);
                     sm.createObstacleAtom(ObtacleAtomEnum.LotusYellowDebris, 1, BossConstants.LOTUS_YELLOW_ATOM_DAMAGE, 20, 0,  BossConstants.LOTUS_YELLOW_ATOM_AMOUNT, BossConstants.LOTUS_YELLOW_ATOM_PROP);
                     sm.createObstacleAtom(ObtacleAtomEnum.LotusBlueDebris, 1, BossConstants.LOTUS_PURPLE_ATOM_DAMAGE, 25, 0,  BossConstants.LOTUS_PURPLE_ATOM_AMOUNT, BossConstants.LOTUS_PURPLE_ATOM_PROP);
@@ -131,7 +131,7 @@ public class Lotus {
                 }
             }
             case 350060500 -> {
-                if (field.hasMobById(8950101)) {
+                if (field.hasMobById(8950001) || field.hasMobById(8950101)) {
                     sm.createObstacleAtom(ObtacleAtomEnum.LotusBlueDebris, 1, BossConstants.LOTUS_BLUE_ATOM_DAMAGE, 15, 0,  BossConstants.LOTUS_BLUE_ATOM_AMOUNT, BossConstants.LOTUS_BLUE_ATOM_PROP);
                     sm.createObstacleAtom(ObtacleAtomEnum.LotusYellowDebris, 1, BossConstants.LOTUS_YELLOW_ATOM_DAMAGE, 20, 0,  BossConstants.LOTUS_YELLOW_ATOM_AMOUNT, BossConstants.LOTUS_YELLOW_ATOM_PROP);
                     sm.createObstacleAtom(ObtacleAtomEnum.LotusBlueDebris, 1, BossConstants.LOTUS_PURPLE_ATOM_DAMAGE, 25, 0,  BossConstants.LOTUS_PURPLE_ATOM_AMOUNT, BossConstants.LOTUS_PURPLE_ATOM_PROP);
@@ -139,7 +139,7 @@ public class Lotus {
                 }
             }
             case 350060600 -> {
-                if (field.hasMobById(8950102)) {
+                if (field.hasMobById(8950002) || field.hasMobById(8950102)) {
                     sm.createObstacleAtom(ObtacleAtomEnum.LotusBlueDebris, 1, BossConstants.LOTUS_BLUE_ATOM_DAMAGE, 15, 0,  BossConstants.LOTUS_BLUE_ATOM_AMOUNT, BossConstants.LOTUS_BLUE_ATOM_PROP);
                     sm.createObstacleAtom(ObtacleAtomEnum.LotusYellowDebris, 1, BossConstants.LOTUS_YELLOW_ATOM_DAMAGE, 20, 0,  BossConstants.LOTUS_YELLOW_ATOM_AMOUNT, BossConstants.LOTUS_YELLOW_ATOM_PROP);
                     sm.createObstacleAtom(ObtacleAtomEnum.LotusBlueDebris, 1, BossConstants.LOTUS_PURPLE_ATOM_DAMAGE, 25, 0,  BossConstants.LOTUS_PURPLE_ATOM_AMOUNT, BossConstants.LOTUS_PURPLE_ATOM_PROP);

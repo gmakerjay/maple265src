@@ -67,7 +67,8 @@ public class BossConstants {
             case CYGNUS_EASY -> 271041100;
             case CYGNUS_NORMAL -> 271040100;
             case LOTUS_NORMAL -> 350060700;                 // blackHeavenBoss1n_summon (NORMAL)
-            case LOTUS_HARD, LOTUS_EXTREME -> 350060400;    // blackHeavenBoss1_summon (HARD)
+            case LOTUS_HARD -> 350060400;                   // blackHeavenBoss1_summon (HARD)
+            case LOTUS_EXTREME -> 350068100;                // Remastered Extreme Lotus Phase 1
             case URSUS -> URSUS_FIGHT_MAP;
             case DAMIEN_NORMAL -> 350160200;
             case DAMIEN_HARD -> 350160100;
@@ -78,11 +79,13 @@ public class BossConstants {
             case LUCID_EASY, LUCID_NORMAL, LUCID_HARD -> 450004150;
             case OMNI_CLN_NORMAL -> 221030910;
             case PAPULATUS_EASY, PAPULATUS_NORMAL, PAPULATUS_CHAOS -> 220080001;
-            case WILL_EASY, WILL_NORMAL -> 450008750;
+            case WILL_EASY -> 450007850;
+            case WILL_NORMAL -> 450008750;
             case WILL_HARD -> 450008150;
-            case VERUS_HILLA_NORMAL -> 450010500;
-            case VERUS_HILLA_HARD -> 450010930;
-            case BLACK_MAGE_HARD, BLACK_MAGE_EXTREME -> 450013100;
+            case VERUS_HILLA_NORMAL -> 450010930;
+            case VERUS_HILLA_HARD -> 450010500;
+            case BLACK_MAGE_HARD -> 450013100;
+            case BLACK_MAGE_EXTREME -> 450013910;
             case GLOOM_NORMAL -> 450009400;
             case GLOOM_CHAOS -> 450009450;
             case DARKNELL_NORMAL -> 450012210;
@@ -96,10 +99,10 @@ public class BossConstants {
             case KALOS_NORMAL -> 410006020;
             case KALOS_CHAOS -> 410006320;
             case KALOS_EXTREME -> 410006420;
-            case KALING_EASY -> 410008160;
-            case KALING_NORMAL -> 410007260;
-            case KALING_HARD -> 410008460;
-            case KALING_EXTREME -> 410008760;
+            case KALING_EASY -> 410008120;
+            case KALING_NORMAL -> 410007220;
+            case KALING_HARD -> 410008420;
+            case KALING_EXTREME -> 410008720;
             case LIMBO_NORMAL -> 410009100;
             case LIMBO_HARD -> 410011100;
             case BALDRIX_NORMAL -> 410014100;
@@ -110,6 +113,15 @@ public class BossConstants {
             case FIRST_ADVERSARY_EXTREME -> 410023100;
             case AKECHI_MITSUHIDE -> AKECHI_BATTLE_MAP;
             default -> 0;
+        };
+    }
+
+    public static int getBossDeathCount(BossPartyType boss) {
+        return switch (boss) {
+            case MAGNUS_EASY, MAGNUS_NORMAL, MAGNUS_HARD -> MAGNUS_DEATHCOUNT;
+            case BLACK_MAGE_HARD, BLACK_MAGE_EXTREME -> 12;
+            case VERUS_HILLA_NORMAL, VERUS_HILLA_HARD -> 5;
+            default -> 10;
         };
     }
 
@@ -145,10 +157,12 @@ public class BossConstants {
             case WILL_EASY, WILL_NORMAL, WILL_HARD -> WILL_ENTRACE_MAP;
             case AKECHI_MITSUHIDE -> AKECHI_ENTRANCE_MAP;
             case CHOSEN_SEREN_NORMAL, CHOSEN_SEREN_HARD, CHOSEN_SEREN_EXTREME -> 410000670;
-            case SLIME_NORMAL, SLIME_CHAOS -> 160080000;
+            case SLIME_NORMAL, SLIME_CHAOS -> 160000000;
             case KALOS_EASY, KALOS_NORMAL, KALOS_CHAOS, KALOS_EXTREME -> 410005000;
-            case KALING_EASY, KALING_NORMAL, KALING_HARD, KALING_EXTREME -> 410005000;
-            case LIMBO_NORMAL, LIMBO_HARD -> 410031000;
+            case KALING_EASY, KALING_NORMAL, KALING_HARD, KALING_EXTREME -> 410007025;
+            case LIMBO_NORMAL, LIMBO_HARD -> 410007601;
+            case BALDRIX_NORMAL, BALDRIX_HARD -> 410013608;
+            case FIRST_ADVERSARY_EASY, FIRST_ADVERSARY_NORMAL, FIRST_ADVERSARY_HARD, FIRST_ADVERSARY_EXTREME -> 410007019;
             default -> 0;
         };
     }
@@ -300,7 +314,7 @@ public class BossConstants {
     public static final int EASY_HILLA_TIME = 30 * 60; // 1 hr, 15 min timer
     public static final int NORMAL_HILLA_TIME = 150 * 60; // 2 hrs, 30 min timer
     // VERUS HILLA -----------------------------------------------------------------------------------------------------
-    public static final int VERUS_HILLA_ENTRANCE_MAP = 940500100;
+    public static final int VERUS_HILLA_ENTRANCE_MAP = 450011990;
     public static final int VERUS_HILLA_TIME = 30 * 60;
     // VON LEON --------------------------------------------------------------------------------------------------------
     public static final int VON_LEON_ENTRACE_MAP = 211070000;

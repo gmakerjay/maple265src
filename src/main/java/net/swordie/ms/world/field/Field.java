@@ -2210,18 +2210,21 @@ public class Field {
         if (exp > 0) {
             mob.setExp(exp);
         }
-        if (id == 8880300 || id == 8880303 || id == 8880304 || id == 8880340) {
+        if (id == 8880300 || id == 8880303 || id == 8880304
+                || id == 8880340 || id == 8880343 || id == 8880344
+                || id == 8880360 || id == 8880363 || id == 8880364) {
             mob.getWillHPlist().add(666);
             mob.getWillHPlist().add(333);
             mob.getWillHPlist().add(3);
-            broadcast(WillPacket.setHp(mob.getWillHPlist(), this, id, id + 3, id + 4));
+            int baseWillId = (id / 10) * 10;
+            broadcast(WillPacket.setHp(mob.getWillHPlist(), this, baseWillId, baseWillId + 3, baseWillId + 4));
         }
-        if (id == 8880301 || id == 8880341) {
+        if (id == 8880301 || id == 8880341 || id == 8880361) {
             mob.getWillHPlist().add(500);
             mob.getWillHPlist().add(3);
             broadcast(WillPacket.setHp(mob.getWillHPlist()));
         }
-        if (id == 8880400 || id == 8880405 || id == 8880415) {
+        if (id == 8880400 || id == 8880405 || id == 8880410 || id == 8880415 || id == 8880450) {
             MobSkill mobSkill = new MobSkill();
             mobSkill.setSkillID(MobSkillID.VHillaSlash.getVal());
             mobSkill.setLevel(1);

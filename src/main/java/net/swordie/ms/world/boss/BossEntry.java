@@ -105,7 +105,8 @@ public class BossEntry {
             returnField = chr.getFieldID();
         }
 
-        // Record quest state and difficulty for all online party members
+        // Record quest state, death count, and difficulty for all online party members
+        int deathCount = BossConstants.getBossDeathCount(boss);
         for (Char pm : party.getOnlineChars()) {
             if (pm == null) continue;
             unlockBossPrerequisites(pm);
@@ -113,6 +114,7 @@ public class BossEntry {
             if (boss == BossPartyType.LUCID_EASY || boss == BossPartyType.LUCID_NORMAL || boss == BossPartyType.LUCID_HARD) {
                 pm.setLucidMode(boss.getDifficulty().getVal());
             }
+            pm.setDeathCount(deathCount);
             pm.setPracticeMode(practice);
         }
 
@@ -131,6 +133,12 @@ public class BossEntry {
                 time = 30 * 60;
             }
             instance.setTimeout(time, true);
+        }
+
+        for (Char pm : party.getOnlineChars()) {
+            if (pm != null && pm.getDeathCount() > 0) {
+                pm.showDeathCount(pm.getDeathCount());
+            }
         }
 
         chr.write(FieldPacket.closeUI(7));
@@ -264,63 +272,69 @@ public class BossEntry {
                 field.setBossSpawned(true);
             }
             case VERUS_HILLA_NORMAL -> {
-                spawnSnappedMob(field, 8880405, 0, 266);
-                field.setBossSpawned(true);
+                VerusHilla.spawn(field, chr, false);
             }
             case VERUS_HILLA_HARD -> {
-                spawnSnappedMob(field, 8880410, 0, 266);
-                field.setBossSpawned(true);
+                VerusHilla.spawn(field, chr, true);
             }
             case CHOSEN_SEREN_NORMAL -> {
-                spawnSnappedMob(field, 8880600, 0, 275);
+                spawnSnappedMob(field, 8880630, 0, 275);
                 field.setBossSpawned(true);
             }
             case CHOSEN_SEREN_HARD -> {
-                spawnSnappedMob(field, 8880602, 0, 275);
+                spawnSnappedMob(field, 8880600, 0, 275);
                 field.setBossSpawned(true);
             }
             case CHOSEN_SEREN_EXTREME -> {
-                spawnSnappedMob(field, 8880604, 0, 275);
+                spawnSnappedMob(field, 8880650, 0, 275);
                 field.setBossSpawned(true);
             }
             case SLIME_NORMAL -> {
-                spawnSnappedMob(field, 8880700, 715, -1382);
+                spawnSnappedMob(field, 8880711, 553, -1382);
                 field.setBossSpawned(true);
             }
             case SLIME_CHAOS -> {
-                spawnSnappedMob(field, 8880711, 715, -1382);
+                spawnSnappedMob(field, 8880700, 553, -1382);
                 field.setBossSpawned(true);
             }
             case KALOS_EASY -> {
-                spawnSnappedMob(field, 8881010, -300, 398);
+                spawnSnappedMob(field, 8881010, 0, 398);
                 field.setBossSpawned(true);
             }
             case KALOS_NORMAL -> {
-                spawnSnappedMob(field, 8880800, -300, 398);
+                spawnSnappedMob(field, 8880800, 0, 398);
                 field.setBossSpawned(true);
             }
             case KALOS_CHAOS -> {
-                spawnSnappedMob(field, 8881030, -300, 398);
+                spawnSnappedMob(field, 8881030, 0, 398);
                 field.setBossSpawned(true);
             }
             case KALOS_EXTREME -> {
-                spawnSnappedMob(field, 8881050, -300, 398);
+                spawnSnappedMob(field, 8881050, 0, 398);
                 field.setBossSpawned(true);
             }
             case KALING_EASY -> {
-                spawnSnappedMob(field, 8880907, 900, 106);
+                spawnSnappedMob(field, 8880900, 350, 106);
+                spawnSnappedMob(field, 8880901, 634, 106);
+                spawnSnappedMob(field, 8880902, 950, 106);
                 field.setBossSpawned(true);
             }
             case KALING_NORMAL -> {
-                spawnSnappedMob(field, 8880837, 900, 106);
+                spawnSnappedMob(field, 8880830, 350, 106);
+                spawnSnappedMob(field, 8880831, 634, 106);
+                spawnSnappedMob(field, 8880832, 950, 106);
                 field.setBossSpawned(true);
             }
             case KALING_HARD -> {
-                spawnSnappedMob(field, 8880937, 900, 106);
+                spawnSnappedMob(field, 8880930, 350, 106);
+                spawnSnappedMob(field, 8880931, 634, 106);
+                spawnSnappedMob(field, 8880932, 950, 106);
                 field.setBossSpawned(true);
             }
             case KALING_EXTREME -> {
-                spawnSnappedMob(field, 8880967, 900, 106);
+                spawnSnappedMob(field, 8880960, 350, 106);
+                spawnSnappedMob(field, 8880961, 634, 106);
+                spawnSnappedMob(field, 8880962, 950, 106);
                 field.setBossSpawned(true);
             }
             case LIMBO_NORMAL -> {
@@ -387,8 +401,12 @@ public class BossEntry {
                 Lotus.spawn(chr, Lotus.LotusPhase.FIRST, Lotus.LotusMode.NORMAL);
                 field.setBossSpawned(true);
             }
-            case LOTUS_HARD, LOTUS_EXTREME -> {
+            case LOTUS_HARD -> {
                 Lotus.spawn(chr, Lotus.LotusPhase.FIRST, Lotus.LotusMode.HARD);
+                field.setBossSpawned(true);
+            }
+            case LOTUS_EXTREME -> {
+                spawnSnappedMob(field, 8881200, 0, -16);
                 field.setBossSpawned(true);
             }
             case DAMIEN_NORMAL, DAMIEN_HARD -> {

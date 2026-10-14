@@ -1340,37 +1340,44 @@ public class Mob extends Life {
             } else {
                 chr.createQuestWithQRValue(QuestConstants.INFERNO_WOLF_DAMAGE_RECORD, "damage=" + totalDamage);
             }
-        } else if (templateID == 8880303 || templateID == 8880304 || templateID == 8880343 || templateID == 8880344) {
-            if (this.hp - totalDamage > 0) {
-                Mob will = field.getMobByTemplateId(8880300);
-                if (will == null) {
-                    will = field.getMobByTemplateId(8880340);
-                }
+        } else if (templateID == 8880303 || templateID == 8880304 || templateID == 8880343 || templateID == 8880344 || templateID == 8880363 || templateID == 8880364) {
+            int baseId = (templateID / 10) * 10;
+            Mob will = field.getMobByTemplateId(baseId);
+            if (this.hp - totalDamage > 0 && will != null) {
                 long nowhp = this.hp - totalDamage;
-                double HPPercent = nowhp * 100.0D / this.hp;
+                double HPPercent = nowhp * 100.0D / Math.max(1L, getMaxHp());
+                long clampedHp = -1;
                 if (HPPercent <= 66.6D && will.getWillHPlist().contains(666)) {
-                    setHp((long) (getMaxHp() * 66.6D / 100.0D));
-                    field.broadcast(FieldPacket.fieldEffect(FieldEffect.mobHPTagFieldEffect(this)));
-                    return false;
+                    will.getWillHPlist().remove((Integer) 666);
+                    clampedHp = (long) (getMaxHp() * 66.6D / 100.0D);
+                } else if (HPPercent <= 33.3D && will.getWillHPlist().contains(333)) {
+                    will.getWillHPlist().remove((Integer) 333);
+                    clampedHp = (long) (getMaxHp() * 33.3D / 100.0D);
+                } else if (HPPercent <= 0.3D && will.getWillHPlist().contains(3)) {
+                    will.getWillHPlist().remove((Integer) 3);
+                    clampedHp = (long) (getMaxHp() * 0.3D / 100.0D);
                 }
-                if (HPPercent <= 33.3D && will.getWillHPlist().contains(333)) {
-                    setHp((long) (getMaxHp() * getBonusHp() * 33.3D / 100.0D));
+                if (clampedHp > 0) {
+                    setHp(clampedHp);
+                    will.setHp(clampedHp);
+                    Mob sub1 = field.getMobByTemplateId(baseId + 3);
+                    Mob sub2 = field.getMobByTemplateId(baseId + 4);
+                    if (sub1 != null) sub1.setHp(clampedHp);
+                    if (sub2 != null) sub2.setHp(clampedHp);
                     field.broadcast(FieldPacket.fieldEffect(FieldEffect.mobHPTagFieldEffect(this)));
-                    return false;
-                }
-                if (HPPercent <= 0.3D && will.getWillHPlist().contains(3)) {
-                    setHp((long) (getMaxHp() * 0.3D / 100.0D));
-                    field.broadcast(FieldPacket.fieldEffect(FieldEffect.mobHPTagFieldEffect(this)));
+                    field.broadcast(WillPacket.setHp(will.getWillHPlist(), field, baseId, baseId + 3, baseId + 4));
                     return false;
                 }
             }
-        } else if (templateID == 8880301 || templateID == 8880341) {
+        } else if (templateID == 8880301 || templateID == 8880341 || templateID == 8880361) {
             if (this.hp - totalDamage > 0) {
                 long nowhp = this.hp - totalDamage;
-                double HPPercent = nowhp * 100.0D / this.hp;
+                double HPPercent = nowhp * 100.0D / Math.max(1L, getMaxHp());
                 if (HPPercent <= 50.0D && getWillHPlist().contains(500)) {
+                    getWillHPlist().remove((Integer) 500);
                     setHp(getMaxHp() * 50L / 100L);
                     field.broadcast(FieldPacket.fieldEffect(FieldEffect.mobHPTagFieldEffect(this)));
+                    field.broadcast(WillPacket.setHp(getWillHPlist()));
                     if (!isUseSpecialSkill()) {
                         MobSkill mobSkill = new MobSkill();
                         mobSkill.setSkillID(MobSkillID.Will.getVal());
@@ -1386,8 +1393,10 @@ public class Mob extends Life {
                     return false;
                 }
                 if (HPPercent <= 0.3D && getWillHPlist().contains(3)) {
-                    setHp((long) (getMaxHp() * getBonusHp() * 0.3D / 100.0D));
+                    getWillHPlist().remove((Integer) 3);
+                    setHp((long) (getMaxHp() * 0.3D / 100.0D));
                     field.broadcast(FieldPacket.fieldEffect(FieldEffect.mobHPTagFieldEffect(this)));
+                    field.broadcast(WillPacket.setHp(getWillHPlist()));
                     if (!isUseSpecialSkill()) {
                         MobSkill mobSkill = new MobSkill();
                         mobSkill.setSkillID(MobSkillID.Will.getVal());
@@ -1420,14 +1429,20 @@ public class Mob extends Life {
         long maxHP = getMaxHp();
         long oldHp = this.hp;
         long newHp = oldHp - (templateID == 9834610 ? 0 : totalDamage);
-        if (templateID == BossConstants.DEMIAN_NORMAL_PHASE_1_TEMPLATE_ID || templateID == BossConstants.DEMIAN_HARD_PHASE_1_TEMPLATE_ID) {
-            long decHp = (long) (getMaxHp() * 30 / 100.0D);
-            if (newHp < decHp) {
-                newHp = decHp;
-                DemianStigma.startNextPhase(chr, false);
+        this.hp = newHp;
+        if (templateID == 8880303 || templateID == 8880304 || templateID == 8880343 || templateID == 8880344 || templateID == 8880363 || templateID == 8880364) {
+            int baseId = (templateID / 10) * 10;
+            Mob will = field.getMobByTemplateId(baseId);
+            Mob sub1 = field.getMobByTemplateId(baseId + 3);
+            Mob sub2 = field.getMobByTemplateId(baseId + 4);
+            long syncedHp = Math.max(0L, newHp);
+            if (will != null) will.setHp(syncedHp);
+            if (sub1 != null && sub1 != this) sub1.setHp(syncedHp);
+            if (sub2 != null && sub2 != this) sub2.setHp(syncedHp);
+            if (will != null && syncedHp > 0) {
+                field.broadcast(WillPacket.setHp(will.getWillHPlist(), field, baseId, baseId + 3, baseId + 4));
             }
         }
-        this.hp = newHp;
         double percDamage = ((double) newHp / maxHP);
         if (!hasProperty("triggeredEvent") && templateID / 10000 == 939 && getField().getId() != 863010600) {
             if (oldHp > 0 && this.hp <= maxHP * 0.5) {
@@ -1595,8 +1610,18 @@ public class Mob extends Life {
                     field.broadcast(WillPacket.setHp(hps, field, 8880340, 8880343, 8880344));
                 }
                 break;
+            case 8880360:
+            case 8880363:
+            case 8880364:
+                will = field.getMobByTemplateId(8880360);
+                if (will != null) {
+                    List<Integer> hps = will.getWillHPlist();
+                    field.broadcast(WillPacket.setHp(hps, field, 8880360, 8880363, 8880364));
+                }
+                break;
             case 8880301:
             case 8880341:
+            case 8880361:
                 field.broadcast(WillPacket.setHp(getWillHPlist()));
                 break;
         }

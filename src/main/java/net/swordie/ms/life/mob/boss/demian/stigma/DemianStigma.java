@@ -249,11 +249,19 @@ public class DemianStigma {
     }
 
     public static void startNextPhase(Char chr, boolean isCrystalReached) {
+        if (chr == null) {
+            return;
+        }
         Party party = chr.getParty();
         Field field = chr.getField();
-        Instance instance = party.getInstance();
+        Instance instance = (party != null && party.getInstance() != null) ? party.getInstance() : chr.getInstance();
+        if (instance == null) {
+            return;
+        }
         if (!instance.hasProperty("fullCorruption")) {
             instance.addProperty("fullCorruption", true);
+            int currentFieldId = field.getId();
+            int nextFieldId = (currentFieldId == 350160100 || currentFieldId == 350160200) ? currentFieldId + 40 : 350160240;
             if (isCrystalReached) {
                 long leftOverHP = 0;
                 for (Mob mob : field.getMobs()) {
@@ -273,8 +281,18 @@ public class DemianStigma {
                         "Damien has claimed the full power of darkness.", BossConstants.DEMIAN_PASSIVE_STIGMA_TIME));
             }
             chr.getTimer().addEvent(() -> {
-                chr.getScriptManager().warpParty(chr.getField().getId() + 40, party);
-            }, 10, TimeUnit.SECONDS);
+                if (party != null) {
+                    chr.getScriptManager().warpParty(nextFieldId, party);
+                } else {
+                    Field nextField = instance.getField(nextFieldId);
+                    if (nextField != null) {
+                        chr.warp(nextField);
+                    } else {
+                        chr.warp(nextFieldId);
+                    }
+                }
+                net.swordie.ms.world.boss.Damien.spawn(chr, net.swordie.ms.world.boss.Damien.DamienPhase.LAST);
+            }, 2, TimeUnit.SECONDS);
         }
     }
 }

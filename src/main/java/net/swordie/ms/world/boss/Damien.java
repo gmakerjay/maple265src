@@ -30,18 +30,18 @@ public class Damien {
                     return;
                 }
                 field.setBossSpawned(true);
-                sm.invokeForParty(1000, "spineScreen", false, false, true, 0, "Map/Effect2/DemianIllust/1pahseSp/demian", "animation", "");
-                sm.invokeForParty(1000, "playSound", "Sound/SoundEff.img/BossDemian/phase1");
-                field.getTimer().addEvent(() -> init(chr), 15000);
+                sm.invokeForParty(500, "spineScreen", false, false, true, 0, "Map/Effect2/DemianIllust/1pahseSp/demian", "animation", "");
+                sm.invokeForParty(500, "playSound", "Sound/SoundEff.img/BossDemian/phase1");
+                field.getTimer().addEvent(() -> init(chr), 2000);
             }
             case LAST -> {
                 if (field.isBossSpawned()) {
                     return;
                 }
                 field.setBossSpawned(true);
-                sm.invokeForParty(1000, "spineScreen", false, false, true, 0, "Map/Effect2/DemianIllust/2pahseSp/003", "animation", "");
-                sm.invokeForParty(1000, "playSound", "Sound/SoundEff.img/BossDemian/phase2");
-                field.getTimer().addEvent(() -> init(chr), 15000);
+                sm.invokeForParty(500, "spineScreen", false, false, true, 0, "Map/Effect2/DemianIllust/2pahseSp/003", "animation", "");
+                sm.invokeForParty(500, "playSound", "Sound/SoundEff.img/BossDemian/phase2");
+                field.getTimer().addEvent(() -> init(chr), 2000);
             }
         }
     }

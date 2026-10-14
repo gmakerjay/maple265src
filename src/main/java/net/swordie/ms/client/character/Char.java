@@ -7717,12 +7717,18 @@ public class Char {
         Mob will = field.getMobByTemplateId(8880300);
         if (will == null) {
             will = field.getMobByTemplateId(8880340);
-            if (will == null) {
-                will = field.getMobByTemplateId(8880301);
-                if (will == null) {
-                    will = field.getMobByTemplateId(8880341);
-                }
-            }
+        }
+        if (will == null) {
+            will = field.getMobByTemplateId(8880360);
+        }
+        if (will == null) {
+            will = field.getMobByTemplateId(8880301);
+        }
+        if (will == null) {
+            will = field.getMobByTemplateId(8880341);
+        }
+        if (will == null) {
+            will = field.getMobByTemplateId(8880361);
         }
         if (will != null) {
             if (will.isSpecialPattern()) {
@@ -8154,13 +8160,13 @@ public class Char {
             if (getFieldID() != 262030100 && getFieldID() != 262031100
                     && getFieldID() != 262030200 && getFieldID() != 262030310
                     && getFieldID() != 262031200 && getFieldID() != 262031300
-                    && getFieldID() != 262031310 && getFieldID() != 450010500) {
+                    && getFieldID() != 262031310 && getFieldID() != 450010500 && getFieldID() != 450010930) {
                 //write(UserLocal.deathCountInfo(deathCount));
                 write(UserLocal.deathCountInfo(getId(), deathCount));
             } else if (getFieldID() == 262031300) {
                 write(WvsContext.fieldValue("TotalDeathCount", "15"));
                 write(WvsContext.fieldValue("DeathCount", (15 - deathCount) + ""));
-            } else if (getFieldID() == 450010500) {
+            } else if (getFieldID() == 450010500 || getFieldID() == 450010930) {
                 write(VerusHillaPacket.encode(3, this, getField()));
             }
         }

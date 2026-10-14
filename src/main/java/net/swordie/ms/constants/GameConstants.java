@@ -1713,12 +1713,13 @@ public class GameConstants {
             case 8880167 -> BossPartyType.LUCID_NORMAL;    //	Boss Name:	Final Music Box (Hard)	|	HP:	360000000
             case 8880156 -> BossPartyType.LUCID_HARD;    //	Boss Name:	Final Music Box (Hard)	|	HP:	360000000
 
-            case 8880302 -> BossPartyType.WILL_NORMAL;    //	Boss Name:	Will (Normal)	|	HP:	1337
-            case 8880342 -> BossPartyType.WILL_HARD;    //	Boss Name:	Will (Hard)	|	HP:	1337
+            case 8880362 -> BossPartyType.WILL_EASY;
+            case 8880342 -> BossPartyType.WILL_NORMAL;    //	Boss Name:	Will (Normal)	|	HP:	1337
+            case 8880302 -> BossPartyType.WILL_HARD;    //	Boss Name:	Will (Hard)	|	HP:	1337
 
-            case 8880410 -> BossPartyType.VERUS_HILLA_HARD;    //	Boss Name:	Verus Hilla (Hard)	|	HP:	1337
+            case 8880410, 8950121 -> BossPartyType.VERUS_HILLA_HARD;    //	Boss Name:	Verus Hilla (Hard)	|	HP:	1337
 
-            case 8880504 -> BossPartyType.BLACK_MAGE_HARD;    //	Boss Name:	Black Mage	|	HP:	1337
+            case 8880504, 8880518 -> BossPartyType.BLACK_MAGE_HARD;    //	Boss Name:	Black Mage	|	HP:	1337
 
             case 8900003 -> BossPartyType.PIERRE_CHAOS;    //	Boss Name:	Chaos Pierre	|	HP:	1000
 
@@ -1728,8 +1729,8 @@ public class GameConstants {
 
             case 8930000 -> BossPartyType.VELLUM_CHAOS;    //	Boss Name:	Chaos Vellum	|	HP:	200000000000
 
-            case 8950002 -> BossPartyType.LOTUS_NORMAL;    //	Boss Name:	Lotus (Normal)	|	HP:	1337
-            case 8950102 -> BossPartyType.LOTUS_HARD;    //	Boss Name:	Lotus (Hard)	|	HP:	1337
+            case 8950102 -> BossPartyType.LOTUS_NORMAL;    //	Boss Name:	Lotus (Normal)	|	HP:	1337
+            case 8950002 -> BossPartyType.LOTUS_HARD;    //	Boss Name:	Lotus (Hard)	|	HP:	1337
 
             default -> null;
         };
@@ -1752,9 +1753,9 @@ public class GameConstants {
             case 8820001 -> 250;    //	Boss Name:	Pink Bean	|	HP:	2100000000
             case 8820212 -> 1000;    //	Boss Name:	Chaos Pink Bean	|	HP:	2100000000
 
-            case 8840000 -> 150;    //	Boss Name:	Von Leon (Easy)	|	HP:	550000000
-            case 8840007 -> 250;    //	Boss Name:	Von Leon (Normal)	|	HP:	700000000
-            case 8840014 -> 500;    //	Boss Name:	Von Leon (Hard)	|	HP:	2090000000
+            case 8840000, 8840018 -> 150;    //	Boss Name:	Von Leon (Easy)	|	HP:	550000000
+            case 8840007, 8840010 -> 250;    //	Boss Name:	Von Leon (Normal)	|	HP:	700000000
+            case 8840014, 8840013 -> 500;    //	Boss Name:	Von Leon (Hard)	|	HP:	2090000000
 
             case 8850111 -> 500;    //	Boss Name:	Cygnus (Easy)	|	HP:	10500000000
             case 8850011 -> 1000;    //	Boss Name:	Cygnus (Normal)	|	HP:	63000000000
@@ -1776,13 +1777,14 @@ public class GameConstants {
             case 8880167 -> 1500;    //	Boss Name:	Final Music Box (Normal)	|	HP:	360000000
             case 8880156 -> 1500;    //	Boss Name:	Final Music Box (Hard)	|	HP:	360000000
 
+            case 8880362 -> 1000;    //	Boss Name:	Will (Easy)
             case 8880342 -> 1500;    //	Boss Name:	Will (Normal)	|	HP:	1337
             case 8880302 -> 1500;    //	Boss Name:	Will (Hard)	|	HP:	1337
 
-            case 8880405 -> 1500;    //	Boss Name:	Verus Hilla (Normal)	|	HP:	1337
-            case 8880410 -> 1500;    //	Boss Name:	Verus Hilla (Hard)	|	HP:	1337
+            case 8880405, 8950120 -> 1500;    //	Boss Name:	Verus Hilla (Normal)	|	HP:	1337
+            case 8880410, 8950121 -> 1500;    //	Boss Name:	Verus Hilla (Hard)	|	HP:	1337
 
-            case 8880504 -> 2000;    //	Boss Name:	Black Mage	|	HP:	1337
+            case 8880504, 8880518, 8880534, 8880548 -> 2000;    //	Boss Name:	Black Mage	|	HP:	1337
 
             case 8900103 -> 150;    //	Boss Name:	Pierre's Treasure Chest	|	HP:	1000
             case 8900003 -> 1000;    //	Boss Name:	Chaos Pierre	|	HP:	1000
@@ -1796,11 +1798,11 @@ public class GameConstants {
             case 8930100 -> 150;    //	Boss Name:	Vellum	|	HP:	550000000
             case 8930000 -> 1000;    //	Boss Name:	Chaos Vellum	|	HP:	200000000000
 
-            case 8950002 -> 1500;    //	Boss Name:	Lotus (Normal)	|	HP:	1337
-            case 8950102 -> 1500;    //	Boss Name:	Lotus (Hard)	|	HP:	1337
+            case 8950102 -> 1500;    //	Boss Name:	Lotus (Normal)	|	HP:	1337
+            case 8950002, 8881203 -> 1500;    //	Boss Name:	Lotus (Hard / Extreme)	|	HP:	1337
 
             case 9421581 -> 100;    //	Boss Name:	Mori Ranmaru (Normal)	|	HP:	1000000000
-            case 9421589 -> 500;    //	Boss Name:	Mori Ranmaru (Hard)	|	HP:	2100000000
+            case 9421583, 9421589 -> 500;    //	Boss Name:	Mori Ranmaru (Hard)	|	HP:	2100000000
             default -> 1;
         };
     }
@@ -1906,62 +1908,102 @@ public class GameConstants {
     }
 
     public static int getBossRewardID(int BossTemplateID) {
-        // Explicit mapping for multi-phase and variant mob IDs (v265 Official KMS values)
+        if (intensePowerCrystal != null && intensePowerCrystal.containsKey(BossTemplateID)) {
+            return BossTemplateID;
+        }
+        // Explicit mapping for final-phase bosses and Reward Chests (v265 Official KMS values)
         switch (BossTemplateID) {
-            // Gloom
-            case 8644650 -> { return 9210042; } // Normal Gloom (49.6M)
-            case 8644655 -> { return 9210046; } // Chaos Gloom (92.4M)
-            // Darknell
-            case 8645009 -> { return 9210043; } // Normal Darknell (52.8M)
-            case 8645066 -> { return 9210047; } // Hard Darknell (96.8M)
-            // Verus Hilla
-            case 8880405, 8880450 -> { return 9210055; } // Normal Verus Hilla (89.5M)
-            case 8880410 -> { return 9210040; } // Hard Verus Hilla (110.4M)
-            // Guardian Angel Slime
-            case 8880700 -> { return 9210052; } // Normal Slime (34.3M)
-            case 8880711 -> { return 9210051; } // Chaos Slime (90.3M)
-            // Will
-            case 8880340, 8880341, 8880342 -> { return 9210053; } // Normal Will (38.2M)
-            case 8880300, 8880301, 8880302 -> { return 9210039; } // Hard Will (88.2M)
-            // Black Mage
-            case 8880500, 8880501, 8880502, 8880503, 8880504 -> { return 9210041; } // Hard Black Mage (500M)
-            case 8880530, 8880531, 8880532, 8880533, 8880534 -> { return 9210057; } // Extreme Black Mage (3.6B)
-            // Chosen Seren
-            case 8880600, 8880601, 8880630 -> { return 9210054; } // Normal Seren (133.6M)
-            case 8880602, 8880603 -> { return 9210050; } // Hard Seren (151.2M)
-            case 8880604, 8880605, 8880650 -> { return 9210058; } // Extreme Seren (847M)
-            // Kalos the Guardian
-            case 8881010, 8881011 -> { return 9210060; } // Easy Kalos (187.5M)
-            case 8880800, 8880801, 8880802 -> { return 9210056; } // Normal Kalos (200M)
-            case 8881030, 8881031 -> { return 9210061; } // Chaos Kalos (520M)
-            case 8881050, 8881051 -> { return 9210062; } // Extreme Kalos (1.04B)
-            // Kaling
-            case 8880907 -> { return 9210063; } // Easy Kaling (206.2M)
-            case 8880837, 8880845 -> { return 9210059; } // Normal Kaling (301.3M)
-            case 8880937 -> { return 9210064; } // Hard Kaling (598M)
-            case 8880967, 8880972, 8880976 -> { return 9210065; } // Extreme Kaling (1.205B)
-            // Limbo
-            case 8881304, 8881320 -> { return 9210067; } // Normal Limbo (420M)
-            case 8881354, 8881370 -> { return 9210068; } // Hard Limbo (749M)
-            // Baldrix
-            case 8881600, 8881601 -> { return 9210069; } // Normal Baldrix (560M)
-            case 8881650, 8881651 -> { return 9210070; } // Hard Baldrix (840M)
-            // First Adversary
-            case 8881710 -> { return 9210071; } // Easy First Adversary (197M)
-            case 8881740 -> { return 9210072; } // Normal First Adversary (273M)
-            case 8881770 -> { return 9210073; } // Hard First Adversary (588M)
-            case 8881800, 8881820 -> { return 9210074; } // Extreme First Adversary (1.176B)
+            // Suppress premature crystals on Phase 1 / Phase 2 intermediate mobs
+            case 8900100, 8900101, 8900102, 8900000, 8900001, 8900002,
+                 8920100, 8920101, 8920102, 8920103, 8920000, 8920001, 8920002, 8920003,
+                 8950100, 8950101, 8950000, 8950001,
+                 8881200, 8881201, 8881202,
+                 8880110, 8880100,
+                 8880142, 8880140, 8880141, 8880155, 8880150, 8880151, 8880153,
+                 8880360, 8880363, 8880364, 8880361,
+                 8880340, 8880343, 8880344, 8880341,
+                 8880300, 8880303, 8880304, 8880301,
+                 8644650, 8644655, 8645009, 8645066, 8880405, 8880450, 8880410,
+                 8880500, 8880501, 8880502, 8880503, 8880504,
+                 8880530, 8880531, 8880532, 8880533, 8880534,
+                 8880630, 8880632, 8880633, 8880600, 8880602, 8880603, 8880650, 8880652, 8880653,
+                 8880711, 8880700,
+                 8881010, 8881012, 8881013, 8880800, 8880802, 8880803, 8881030, 8881032, 8881033, 8881050, 8881052, 8881053,
+                 8880900, 8880901, 8880902, 8880907, 8880912,
+                 8880830, 8880831, 8880832, 8880837, 8880842,
+                 8880930, 8880931, 8880932, 8880937, 8880942,
+                 8880960, 8880961, 8880962, 8880967, 8880972,
+                 8881304, 8881318, 8881320, 8881354, 8881368, 8881370,
+                 8881600, 8881601, 8881614, 8881621, 8881650, 8881651, 8881664, 8881671,
+                 8881710, 8881711, 8881712, 8881740, 8881741, 8881742, 8881770, 8881771, 8881772, 8881800, 8881801, 8881802,
+                 9601622 -> { return 0; }
+            // Root Abyss Treasure Chests
+            case 8900103 -> { return 9210009; } // Normal Pierre Chest (968K)
+            case 8900003 -> { return 9210010; } // Chaos Pierre Chest (16.2M)
+            case 8920106 -> { return 9210013; } // Normal Crimson Queen Chest (968K)
+            case 8920006 -> { return 9210014; } // Chaos Crimson Queen Chest (16.2M)
+            // Von Leon
+            case 8840000, 8840018 -> { return 9210017; } // Easy Von Leon (1.058M)
+            case 8840007, 8840010 -> { return 9210018; } // Normal Von Leon (1.458M)
+            case 8840014, 8840013 -> { return 9210019; } // Hard Von Leon (2.45M)
+            // Mori Ranmaru
+            case 9421581 -> { return 9601188; } // Normal Ranmaru (840.5K)
+            case 9421583, 9421589 -> { return 9601189; } // Hard Ranmaru (2.664M)
+            // Gloom Reward Chests
+            case 8950118 -> { return 9210042; } // Normal Gloom Chest (49.6M)
+            case 8950119 -> { return 9210046; } // Chaos Gloom Chest (92.4M)
+            // Darknell Reward Chests
+            case 8950116 -> { return 9210043; } // Normal Darknell Chest (52.8M)
+            case 8950117 -> { return 9210047; } // Hard Darknell Chest (96.8M)
+            // Verus Hilla Reward Chests
+            case 8950120 -> { return 9210055; } // Normal Verus Hilla Chest (89.5M)
+            case 8950121 -> { return 9210040; } // Hard Verus Hilla Chest (110.4M)
+            // Guardian Angel Slime Reward Chests
+            case 8880726 -> { return 9210052; } // Normal Slime Chest (34.3M)
+            case 8880725 -> { return 9210051; } // Chaos Slime Chest (90.3M)
+            // Will (Final Phase 3)
+            case 8880362 -> { return 9210053; } // Easy Will (38.2M)
+            case 8880342 -> { return 9210038; } // Normal Will (46.5M)
+            case 8880302 -> { return 9210039; } // Hard Will (88.2M)
+            // Black Mage Genesis Crux Reward Boxes
+            case 8880518 -> { return 9210041; } // Hard Black Mage Crux (500M)
+            case 8880548 -> { return 9210057; } // Extreme Black Mage Crux (3.6B)
+            // Chosen Seren Reward Chests
+            case 8880644 -> { return 9210054; } // Normal Seren Chest (133.6M)
+            case 8880614 -> { return 9210050; } // Hard Seren Chest (151.2M)
+            case 8880664 -> { return 9210058; } // Extreme Seren Chest (847M)
+            // Kalos the Guardian Reward Chests
+            case 8881018 -> { return 9210060; } // Easy Kalos Chest (187.5M)
+            case 8880808 -> { return 9210056; } // Normal Kalos Chest (200M)
+            case 8881038 -> { return 9210061; } // Chaos Kalos Chest (520M)
+            case 8881058 -> { return 9210062; } // Extreme Kalos Chest (1.04B)
+            // Kaling Reward Chests
+            case 8880915 -> { return 9210063; } // Easy Kaling Chest (206.2M)
+            case 8880845 -> { return 9210059; } // Normal Kaling Chest (301.3M)
+            case 8880945 -> { return 9210064; } // Hard Kaling Chest (598M)
+            case 8880975 -> { return 9210065; } // Extreme Kaling Chest (1.205B)
+            // Limbo Reward Chests
+            case 8881334 -> { return 9210067; } // Normal Limbo Chest (420M)
+            case 8881384 -> { return 9210068; } // Hard Limbo Chest (749M)
+            // Baldrix Reward Chests
+            case 8881624 -> { return 9210069; } // Normal Baldrix Chest (560M)
+            case 8881674 -> { return 9210070; } // Hard Baldrix Chest (840M)
+            // First Adversary Reward Chests
+            case 8881715 -> { return 9210071; } // Easy First Adversary Chest (197M)
+            case 8881745 -> { return 9210072; } // Normal First Adversary Chest (273M)
+            case 8881775 -> { return 9210073; } // Hard First Adversary Chest (588M)
+            case 8881805 -> { return 9210074; } // Extreme First Adversary Chest (1.176B)
             // Lotus
-            case 8950100, 8950101, 8950102 -> { return 9210030; } // Normal Lotus (32.5M)
-            case 8950000, 8950001, 8950002 -> { return 9210031; } // Hard Lotus (67.6M)
-            case 8881300, 8881301, 8881302, 8881200 -> { return 9210066; } // Extreme Lotus (279.5M)
+            case 8950102 -> { return 9210029; } // Normal Lotus P3 (32.5M)
+            case 8950002 -> { return 9210030; } // Hard Lotus P3 (74.1M)
+            case 8881203 -> { return 9210066; } // Extreme Lotus Chest (279.5M)
             // Damien
-            case 8880110, 8880111 -> { return 9210031; } // Normal Damien (33.8M)
-            case 8880100, 8880101 -> { return 9210032; } // Hard Damien (70.3M)
-            // Lucid
-            case 8880166, 8880176, 8880156 -> { return 9210048; } // Easy Lucid (35.1M)
-            case 8880140, 8880150, 8880177 -> { return 9210033; } // Normal Lucid (40.6M)
-            case 8880141, 8880151, 8880153, 8880167 -> { return 9210034; } // Hard Lucid (80M)
+            case 8880111 -> { return 9210031; } // Normal Damien P2 (33.8M)
+            case 8880101 -> { return 9210032; } // Hard Damien P2 (70.3M)
+            // Lucid Music Boxes
+            case 8880177 -> { return 9210048; } // Easy Lucid Music Box (35.1M)
+            case 8880167 -> { return 9210033; } // Normal Lucid Music Box (40.6M)
+            case 8880156 -> { return 9210034; } // Hard Lucid Music Box (80M)
         }
         for (var entry : intensePowerCrystal.int2ObjectEntrySet()) {
             if (entry.getValue().getRealMonster() == BossTemplateID) {

@@ -35,19 +35,22 @@ public class Lucid {
                 sm.invokeForParty(500, "spineScreen", false, false, true, 0, "Map/Effect3/BossLucid/Lucid/lusi", "animation", null);
                 sm.invokeForParty(500, "playSound", "Sound/SoundEff.img/ArcaneRiver/phase1");
                 field.getTimer().addEvent(() -> {
-                    if (field.getId() == 450004150) {
+                    if (field.getId() == 450004150 || field.getId() == 450004450 || field.getId() == 450004750) {
+                        int mobId;
                         long hp;
                         if (chr.getLucidMode() == 0) {
+                            mobId = 8880142;
                             hp = 6_000_000_000_000L; // 6T
                         } else if (chr.getLucidMode() == 1) {
+                            mobId = 8880140;
                             hp = 12_000_000_000_000L; // 12T
                         } else if (chr.getLucidMode() == 2) {
+                            mobId = 8880141;
                             hp = 50_800_000_000_000L; // 50.8T
                         } else {
                             return;
                         }
-                        field.spawnMob(8880140, 1000, 48, false, hp);
-                        field.spawnMob(8880166, 1000, 48, false, hp);
+                        field.spawnMob(mobId, 1000, 43, false, hp);
                         if (field.getSpawnButterflyTimer() != null) {
                             field.getSpawnButterflyTimer().cancel(false);
                         }
@@ -68,18 +71,24 @@ public class Lucid {
                     return;
                 }
                 field.setBossSpawned(true);
-                if (field.getId() == 450004250 && !field.hasMobById(8880150)) {
+                if (field.getId() == 450004250 || field.getId() == 450004550 || field.getId() == 450004850) {
+                    int mobId;
                     long hp;
                     if (chr.getLucidMode() == 0) {
+                        mobId = 8880155;
                         hp = 6_000_000_000_000L; // 6T
                     } else if (chr.getLucidMode() == 1) {
+                        mobId = 8880150;
                         hp = 12_000_000_000_000L; // 12T
                     } else if (chr.getLucidMode() == 2) {
+                        mobId = 8880151;
                         hp = 50_800_000_000_000L; // 50.8T
                     } else {
                         return;
                     }
-                    field.spawnMob(8880150, 532, -490, false, hp);
+                    if (!field.hasMobById(mobId)) {
+                        field.spawnMob(mobId, 532, -490, false, hp);
+                    }
                     if (field.getSpawnButterflyTimer() != null) {
                         field.getSpawnButterflyTimer().cancel(false);
                     }
@@ -99,23 +108,23 @@ public class Lucid {
                     return;
                 }
                 field.setBossSpawned(true);
-                long hp = 9999999;
-                if (field.getId() == 450004300) {
+                long hp = 9_999_999L;
+                if (field.getId() == 450004300 || field.getId() == 450004600 || field.getId() == 450004900) {
                     if (!field.isLucidRewardSpawned()) {
                         int id;
                         if (chr.getLucidMode() == 0) {
                             id = 8880177;
-                            field.getTimer().addEvent(() -> field.broadcast(WvsContext.weatherEffectNotice(WeatherEffNoticeType.BossLucid, "Congratulations on defeating the Easy Lucid!", 3000)), 1000);
+                            field.getTimer().addEvent(() -> field.broadcast(WvsContext.weatherEffectNotice(WeatherEffNoticeType.BossLucid, "Congratulations on defeating Easy Lucid! Break the Music Box to claim your rewards.", 3000)), 1000);
                         } else if (chr.getLucidMode() == 1) {
                             id = 8880167;
-                            field.getTimer().addEvent(() -> field.broadcast(WvsContext.weatherEffectNotice(WeatherEffNoticeType.BossLucid, "Congratulations on defeating the Normal Lucid!", 3000)), 1000);
+                            field.getTimer().addEvent(() -> field.broadcast(WvsContext.weatherEffectNotice(WeatherEffNoticeType.BossLucid, "Congratulations on defeating Normal Lucid! Break the Music Box to claim your rewards.", 3000)), 1000);
                         } else if (chr.getLucidMode() == 2) {
                             id = 8880156;
-                            field.getTimer().addEvent(() -> field.broadcast(WvsContext.weatherEffectNotice(WeatherEffNoticeType.BossLucid, "Congratulations on defeating the Hard Lucid!", 3000)), 1000);
+                            field.getTimer().addEvent(() -> field.broadcast(WvsContext.weatherEffectNotice(WeatherEffNoticeType.BossLucid, "Congratulations on defeating Hard Lucid! Break the Music Box to claim your rewards.", 3000)), 1000);
                         } else {
                             return;
                         }
-                        field.getTimer().addEvent(() -> chr.getField().spawnMob(id, 50, 36, false, hp), 2000);
+                        field.getTimer().addEvent(() -> field.spawnMob(id, 95, 36, false, hp), 1500);
                         field.setLucidRewardSpawned(true);
                     }
                 }

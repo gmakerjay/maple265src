@@ -33,7 +33,17 @@ public class FieldEffect {
         FieldEffect fieldEffect = new FieldEffect();
         fieldEffect.setFieldEffectType(FieldEffectType.MobHPTag);
 
-        fieldEffect.setArg1(mob.getTemplateId());
+        int tagTemplateId = switch (mob.getTemplateId()) {
+            case 8880633 -> 8880632; // Normal Chosen Seren P2 -> HpLinkMob icon
+            case 8880603 -> 8880602; // Hard Chosen Seren P2 -> HpLinkMob icon
+            case 8880653 -> 8880652; // Extreme Chosen Seren P2 -> HpLinkMob icon
+            case 8881013 -> 8881012; // Easy Kalos P2 -> HpLinkMob icon
+            case 8880803 -> 8880802; // Normal Kalos P2 -> HpLinkMob icon
+            case 8881033 -> 8881032; // Chaos Kalos P2 -> HpLinkMob icon
+            case 8881053 -> 8881052; // Extreme Kalos P2 -> HpLinkMob icon
+            default -> mob.getTemplateId();
+        };
+        fieldEffect.setArg1(tagTemplateId);
         long curHp = Math.max(0, mob.getHp());
         long maxHp = Math.max(1, mob.getMaxHp());
         fieldEffect.setArg10(curHp);

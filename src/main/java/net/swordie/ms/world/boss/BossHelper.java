@@ -118,41 +118,14 @@ public class BossHelper {
                 }
             }
         }
-        // Will
-        if (mobID == 8880300 || mobID == 8880340) { // Will Phase 1 (Hard / Normal)
-            field.removeMobs();
-            int currentFieldId = field.getId();
-            int nextFieldId = currentFieldId + 50;
-            if (party != null) {
-                sm.warpParty(nextFieldId, party);
-            } else {
-                chr.warp(nextFieldId);
-            }
-        } else if (mobID == 8880301 || mobID == 8880341) { // Will Phase 2 (Hard / Normal)
-            field.removeMobs();
-            int currentFieldId = field.getId();
-            int nextFieldId = currentFieldId + 50;
-            if (party != null) {
-                sm.warpParty(nextFieldId, party);
-            } else {
-                chr.warp(nextFieldId);
-            }
-        } else if (mobID == 8880302 || mobID == 8880342) { // Will Phase 3 (Hard / Normal)
-            field.removeMobs();
-            for (SpiderWeb spiderWeb : field.getSpiderWebs()) {
-                field.removeLife(spiderWeb);
-            }
-            sm.showFieldEffect("Map/Effect.img/killing/clear");
-            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
-        }
         // Lucid
-        if (mobID == 8880140 || mobID == 8880141 || mobID == 8880151 || mobID == 8880153 || mobID == 8880155) {
+        if (mobID == 8880142 || mobID == 8880140 || mobID == 8880141) { // Lucid Phase 1 -> Phase 2
             if (instance != null) {
                 if (field.getSpawnButterflyTimer() != null) {
                     field.getSpawnButterflyTimer().cancel(false);
                 }
-                if (field.getSpawnButterflyTimer() != null) {
-                    field.getSpawnButterflyTimer().cancel(false);
+                if (field.getDestroyButterflyTimer() != null) {
+                    field.getDestroyButterflyTimer().cancel(false);
                 }
                 field.broadcast(LucidPacket.butterflyAction(ButterFlyType.Erase, 0, null, 0, 0));
                 for (Mob m : field.getMobs()) {
@@ -160,73 +133,69 @@ public class BossHelper {
                         m.removeWithAnimation();
                     }
                 }
-                if (party != null && party.getPartyMembersInSameFieldWithChr(chr).size() > 1) {
-                    chr.getTimer().addEvent(() -> sm.warpParty(chr.getField().getId() + 50, party), 2000);
-                } else {
-                    chr.getTimer().addEvent(() -> chr.warp(chr.getField().getId() + 50), 2000);
-                }
+                int nextMap = 450004250;
+                chr.getTimer().addEvent(() -> {
+                    warpPartyOrSolo(chr, party, instance, nextMap);
+                    Lucid.spawn(chr, Lucid.LucidPhase.SECOND);
+                }, 2000);
             }
-            if (mobID == 8880155) { // Easy Lucid
-                chr.createQuestWithQRValue(34360, "boss=1");
-            }
-            if (mobID == 8880151) { // Normal Lucid
-                if (!chr.hasQuest(100089)) {
-                    sm.startQuest(100089);
-                }
-                chr.completeQuest(100089);
-                chr.createQuestWithQRValue(34360, "boss=1");
-            }
-            if (mobID == 8880153) { // Hard Lucid
-                if (!chr.hasQuest(16995)) {
-                    sm.startQuest(16995);
-                }
-                chr.completeQuest(16995);
-                if (chr.hasQuest(35664)) {
-                    chr.createQuestWithQRValue(35650, "clear=7");
-                }
-                if (!chr.hasQuest(36117)) {
-                    sm.startQuest(36117);
-                }
-                chr.completeQuest(36117);
-                if (!chr.hasQuest(100102)) {
-                    sm.startQuest(100102);
-                }
-                chr.completeQuest(100102);
-                if (!chr.hasQuest(16995)) {
-                    sm.startQuest(16995);
-                }
-                chr.completeQuest(16995);
-                chr.createQuestWithQRValue(34360, "boss=1");
-            }
-        } else if (mobID == 8880150) {
-            if (instance != null) {
-                if (chr.getLucidMode() == 2) {
-                    instance.setTimeout(45, true);
-                    field.spawnMob(8880153, 600, -490, false, 11000000000000L);
-                    field.broadcast(LucidPacket.setLastPhaseTypeForHardMode(0));
-                } else {
-                    if (field.getSpawnButterflyTimer() != null) {
-                        field.getSpawnButterflyTimer().cancel(false);
-                    }
-                    if (field.getSpawnButterflyTimer() != null) {
-                        field.getSpawnButterflyTimer().cancel(false);
-                    }
-                    field.broadcast(LucidPacket.butterflyAction(ButterFlyType.Erase, 0, null, 0, 0));
-                    for (Mob m : field.getMobs()) {
-                        m.removeWithAnimation();
-                    }
-                    if (party != null && party.getPartyMembersInSameFieldWithChr(chr).size() > 1) {
-                        chr.getTimer().addEvent(() -> sm.warpParty(chr.getField().getId() + 50, party), 2000);
-                    } else {
-                        chr.getTimer().addEvent(() -> chr.warp(chr.getField().getId() + 50), 2000);
-                    }
-                }
-            }
-        } else if (mobID == 8880190 || mobID == 8880196 || mobID == 8880191) {
+        } else if (mobID == 8880155 || mobID == 8880176 || (mobID == 8880150 && chr.getLucidMode() != 2)) { // Easy / Normal Lucid Phase 2 -> Reward Room
             if (instance != null) {
                 if (field.getSpawnButterflyTimer() != null) {
                     field.getSpawnButterflyTimer().cancel(false);
                 }
+                if (field.getDestroyButterflyTimer() != null) {
+                    field.getDestroyButterflyTimer().cancel(false);
+                }
+                field.broadcast(LucidPacket.butterflyAction(ButterFlyType.Erase, 0, null, 0, 0));
+                for (Mob m : field.getMobs()) {
+                    if (m.getObjectId() != mob.getObjectId()) {
+                        m.removeWithAnimation();
+                    }
+                }
+                instance.setTimeout(300, true);
+                int nextMap = 450004300;
+                chr.getTimer().addEvent(() -> {
+                    warpPartyOrSolo(chr, party, instance, nextMap);
+                    Lucid.spawn(chr, Lucid.LucidPhase.REWARD);
+                }, 2000);
+            }
+            chr.createQuestWithQRValue(34360, "boss=1");
+        } else if (mobID == 8880151 || (mobID == 8880150 && chr.getLucidMode() == 2)) { // Hard Lucid Phase 2 -> Phase 3
+            if (instance != null) {
+                if (field.getSpawnButterflyTimer() != null) {
+                    field.getSpawnButterflyTimer().cancel(false);
+                }
+                if (field.getDestroyButterflyTimer() != null) {
+                    field.getDestroyButterflyTimer().cancel(false);
+                }
+                field.broadcast(LucidPacket.butterflyAction(ButterFlyType.Erase, 0, null, 0, 0));
+                for (Mob m : field.getMobs()) {
+                    if (m.getObjectId() != mob.getObjectId()) {
+                        m.removeWithAnimation();
+                    }
+                }
+                instance.setTimeout(45, true);
+                field.spawnMob(8880153, 600, -490, false, 13_200_000_000_000L);
+                field.broadcast(LucidPacket.setLastPhaseTypeForHardMode(0));
+            }
+        } else if (mobID == 8880153) { // Hard Lucid Phase 3 -> Reward Room
+            if (instance != null) {
+                for (Mob m : field.getMobs()) {
+                    if (m.getObjectId() != mob.getObjectId()) {
+                        m.removeWithAnimation();
+                    }
+                }
+                instance.setTimeout(300, true);
+                int nextMap = 450004300;
+                chr.getTimer().addEvent(() -> {
+                    warpPartyOrSolo(chr, party, instance, nextMap);
+                    Lucid.spawn(chr, Lucid.LucidPhase.REWARD);
+                }, 2000);
+            }
+            chr.createQuestWithQRValue(34360, "boss=1");
+        } else if (mobID == 8880190 || mobID == 8880196 || mobID == 8880191) {
+            if (instance != null) {
                 if (field.getSpawnButterflyTimer() != null) {
                     field.getSpawnButterflyTimer().cancel(false);
                 }
@@ -242,8 +211,15 @@ public class BossHelper {
         // Damien
         if (mobID == BossConstants.DEMIAN_NORMAL_PHASE_1_TEMPLATE_ID || mobID == BossConstants.DEMIAN_HARD_PHASE_1_TEMPLATE_ID) {
             DemianStigma.startNextPhase(chr, false);
+        } else if (mobID == BossConstants.DEMIAN_NORMAL_PHASE_2_TEMPLATE_ID || mobID == BossConstants.DEMIAN_HARD_PHASE_2_TEMPLATE_ID) {
+            field.removeMobs();
+            sm.showFieldEffect("Map/Effect.img/killing/clear");
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
+            if (instance != null) {
+                instance.setTimeout(300, true);
+            }
         }
-        // Lotus
+        // Lotus (Normal / Hard)
         if (mobID == 8950000 || mobID == 8950100) {
             int fieldID = field.getId();
             if (fieldID == 350060700 || fieldID == 350060400) {
@@ -254,41 +230,40 @@ public class BossHelper {
                 }
                 int nextFieldID = fieldID + 100;
                 Lotus.LotusMode nextMode = (fieldID == 350060400) ? Lotus.LotusMode.HARD : Lotus.LotusMode.NORMAL;
-                if (party != null) {
-                    chr.getTimer().addEvent(() -> {
-                        sm.warpParty(nextFieldID, party);
-                        Lotus.spawn(chr, Lotus.LotusPhase.SECOND, nextMode);
-                    }, 7360);
-                } else {
-                    chr.getTimer().addEvent(() -> {
-                        chr.warp(nextFieldID);
-                        Lotus.spawn(chr, Lotus.LotusPhase.SECOND, nextMode);
-                    }, 5100);
-                }
+                chr.getTimer().addEvent(() -> {
+                    warpPartyOrSolo(chr, party, instance, nextFieldID);
+                    Lotus.spawn(chr, Lotus.LotusPhase.SECOND, nextMode);
+                }, 2500);
             }
         } else if (mobID == 8950001 || mobID == 8950101) {
             int fieldID = field.getId();
             if (fieldID == 350060800 || fieldID == 350060500) {
                 int nextFieldID = fieldID + 100;
                 Lotus.LotusMode nextMode = (fieldID == 350060500) ? Lotus.LotusMode.HARD : Lotus.LotusMode.NORMAL;
-                if (party != null) {
-                    chr.getTimer().addEvent(() -> {
-                        sm.warpParty(nextFieldID, party);
-                        Lotus.spawn(chr, Lotus.LotusPhase.LAST, nextMode);
-                    }, 5100);
-                } else {
-                    chr.getTimer().addEvent(() -> {
-                        chr.warp(nextFieldID);
-                        Lotus.spawn(chr, Lotus.LotusPhase.LAST, nextMode);
-                    }, 5100);
-                }
+                chr.getTimer().addEvent(() -> {
+                    warpPartyOrSolo(chr, party, instance, nextFieldID);
+                    Lotus.spawn(chr, Lotus.LotusPhase.LAST, nextMode);
+                }, 2500);
             }
         } else if (mobID == 8950002 || mobID == 8950102) {
             int fieldID = field.getId();
             if (fieldID == 350060900 || fieldID == 350060600) {
                 sm.stopEvents();
+                field.removeMobs();
+                sm.showFieldEffect("Map/Effect.img/killing/clear");
                 field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
+                if (instance != null) {
+                    instance.setTimeout(300, true);
+                }
             }
+        }
+        // Remastered Extreme Lotus (P1 -> P2 -> P3 -> Reward Room)
+        if (mobID == 8881200) {
+            transitionToBossMap(chr, field, 350068300, 8881201, 0, 398, false);
+        } else if (mobID == 8881201) {
+            transitionToBossMap(chr, field, 350068500, 8881202, 0, 396, false);
+        } else if (mobID == 8881202) {
+            transitionToBossMap(chr, field, 350068600, 8881203, 0, 498, true);
         }
         // Black Mage (Hard & Extreme)
         if (mobID == 8880500 || mobID == 8880501 || mobID == 8880530 || mobID == 8880531) { // Phase 1
@@ -301,81 +276,24 @@ public class BossHelper {
                 }
             }
             if (!otherAlive) {
-                field.removeMobs();
-                field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
-                int nextMap = 450013300;
+                int nextMap = isExtreme ? 450013930 : 450013300;
                 int nextMob = isExtreme ? 8880532 : 8880502;
-                long nextHp = isExtreme ? 350000000000000L : 135000000000000L;
-                if (party != null) {
-                    chr.getTimer().addEvent(() -> {
-                        sm.warpParty(nextMap, party);
-                        Field nextField = chr.getOrCreateFieldByCurrentInstanceType(nextMap);
-                        if (nextField != null && !nextField.hasMobById(nextMob)) {
-                            nextField.spawnMob(nextMob, 0, 88, false, nextHp);
-                        }
-                    }, 2000);
-                } else {
-                    chr.getTimer().addEvent(() -> {
-                        chr.warp(nextMap);
-                        Field nextField = chr.getOrCreateFieldByCurrentInstanceType(nextMap);
-                        if (nextField != null && !nextField.hasMobById(nextMob)) {
-                            nextField.spawnMob(nextMob, 0, 88, false, nextHp);
-                        }
-                    }, 2000);
-                }
+                transitionToBossMap(chr, field, nextMap, nextMob, 0, 88, false);
             }
         } else if (mobID == 8880502 || mobID == 8880532) { // Black Mage Phase 2
-            field.removeMobs();
-            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
             boolean isExtreme = (mobID == 8880532);
-            int nextMap = 450013500;
+            int nextMap = isExtreme ? 450013950 : 450013500;
             int nextMob = isExtreme ? 8880533 : 8880503;
-            long nextHp = isExtreme ? 400000000000000L : 200000000000000L;
-            if (party != null) {
-                chr.getTimer().addEvent(() -> {
-                    sm.warpParty(nextMap, party);
-                    Field nextField = chr.getOrCreateFieldByCurrentInstanceType(nextMap);
-                    if (nextField != null && !nextField.hasMobById(nextMob)) {
-                        nextField.spawnMob(nextMob, 375, 88, false, nextHp);
-                    }
-                }, 2000);
-            } else {
-                chr.getTimer().addEvent(() -> {
-                    chr.warp(nextMap);
-                    Field nextField = chr.getOrCreateFieldByCurrentInstanceType(nextMap);
-                    if (nextField != null && !nextField.hasMobById(nextMob)) {
-                        nextField.spawnMob(nextMob, 375, 88, false, nextHp);
-                    }
-                }, 2000);
-            }
+            transitionToBossMap(chr, field, nextMap, nextMob, 0, 85, false);
         } else if (mobID == 8880503 || mobID == 8880533) { // Black Mage Phase 3
-            field.removeMobs();
-            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
             boolean isExtreme = (mobID == 8880533);
-            int nextMap = 450013700;
+            int nextMap = isExtreme ? 450013970 : 450013700;
             int nextMob = isExtreme ? 8880534 : 8880504;
-            long nextHp = isExtreme ? 250000000000000L : 100000000000000L;
-            if (party != null) {
-                chr.getTimer().addEvent(() -> {
-                    sm.warpParty(nextMap, party);
-                    Field nextField = chr.getOrCreateFieldByCurrentInstanceType(nextMap);
-                    if (nextField != null && !nextField.hasMobById(nextMob)) {
-                        nextField.spawnMob(nextMob, 375, 88, false, nextHp);
-                    }
-                }, 2000);
-            } else {
-                chr.getTimer().addEvent(() -> {
-                    chr.warp(nextMap);
-                    Field nextField = chr.getOrCreateFieldByCurrentInstanceType(nextMap);
-                    if (nextField != null && !nextField.hasMobById(nextMob)) {
-                        nextField.spawnMob(nextMob, 375, 88, false, nextHp);
-                    }
-                }, 2000);
-            }
-        } else if (mobID == 8880504 || mobID == 8880534) { // Black Mage Phase 4 (Hard / Extreme)
-            field.removeMobs();
-            sm.showFieldEffect("Map/Effect.img/killing/clear");
-            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
+            transitionToBossMap(chr, field, nextMap, nextMob, 0, 218, false);
+        } else if (mobID == 8880504) { // Hard Black Mage Phase 4 -> Genesis Crux Reward Room
+            transitionToBossMap(chr, field, 450013750, 8880518, 0, 218, true);
+        } else if (mobID == 8880534) { // Extreme Black Mage Phase 4 -> Genesis Crux Reward Room
+            transitionToBossMap(chr, field, 450013980, 8880548, 0, 218, true);
         }
         // Akechi Mitsuhide
         if (mobID == 9601622) { // Phase 1
@@ -388,126 +306,212 @@ public class BossHelper {
             field.removeMobs();
             sm.showFieldEffect("Map/Effect.img/killing/clear");
             field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
+            if (instance != null) {
+                instance.setTimeout(300, true);
+            }
         }
-        // Will (Normal & Hard)
-        if (mobID == 8880340 || mobID == 8880300) { // Will Phase 1
-            field.removeMobs();
-            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
-            int nextFieldID = field.getId() + 100;
-            if (party != null) {
+        // Will (Easy, Normal & Hard)
+        if (mobID == 8880360 || mobID == 8880363 || mobID == 8880364
+                || mobID == 8880340 || mobID == 8880343 || mobID == 8880344
+                || mobID == 8880300 || mobID == 8880303 || mobID == 8880304) { // Will Phase 1
+            if (field.isBossSpawned()) {
+                field.setBossSpawned(false);
+                field.removeMobs();
+                field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
+                int nextFieldID = (field.getId() == 450007850) ? 450007950 : ((field.getId() == 450008750) ? 450008850 : 450008250);
                 chr.getTimer().addEvent(() -> {
-                    sm.warpParty(nextFieldID, party);
-                    Will.spawn(2, chr);
-                }, 2000);
-            } else {
-                chr.getTimer().addEvent(() -> {
-                    chr.warp(nextFieldID);
+                    warpPartyOrSolo(chr, party, instance, nextFieldID);
                     Will.spawn(2, chr);
                 }, 2000);
             }
-        } else if (mobID == 8880341 || mobID == 8880301) { // Will Phase 2
+        } else if (mobID == 8880361 || mobID == 8880341 || mobID == 8880301) { // Will Phase 2
             field.removeMobs();
             field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
-            int nextFieldID = field.getId() + 100;
-            if (party != null) {
-                chr.getTimer().addEvent(() -> {
-                    sm.warpParty(nextFieldID, party);
-                    Will.spawn(3, chr);
-                }, 2000);
-            } else {
-                chr.getTimer().addEvent(() -> {
-                    chr.warp(nextFieldID);
-                    Will.spawn(3, chr);
-                }, 2000);
+            int nextFieldID = (field.getId() == 450007950) ? 450008050 : ((field.getId() == 450008850) ? 450008950 : 450008350);
+            chr.getTimer().addEvent(() -> {
+                warpPartyOrSolo(chr, party, instance, nextFieldID);
+                Will.spawn(3, chr);
+            }, 2000);
+        } else if (mobID == 8880362 || mobID == 8880342 || mobID == 8880302) { // Will Phase 3
+            field.removeMobs();
+            for (SpiderWeb spiderWeb : field.getSpiderWebs()) {
+                field.removeLife(spiderWeb);
             }
-        } else if (mobID == 8880342 || mobID == 8880302) { // Will Phase 3
-            field.removeMobs();
+            java.util.Collection<Char> members = (party != null) ? party.getOnlineChars() : java.util.List.of(chr);
+            for (Char pm : members) {
+                if (pm.getWillGaugeTimer() != null) {
+                    pm.getWillGaugeTimer().cancel(false);
+                    pm.setWillGaugeTimer(null);
+                }
+            }
             sm.showFieldEffect("Map/Effect.img/killing/clear");
             field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
+            if (instance != null) {
+                instance.setTimeout(300, true);
+            }
         }
-        // Chosen Seren (Normal / Hard / Extreme)
-        if (mobID == 8880600 || mobID == 8880602 || mobID == 8880604) {
-            field.removeMobs();
-            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
-            int nextMobId = (mobID == 8880600) ? 8880601 : ((mobID == 8880602) ? 8880603 : 8880605);
-            chr.getTimer().addEvent(() -> {
-                int y = BossEntry.snapToFootholdY(field, 0, 275);
-                field.spawnMob(nextMobId, 0, y, false);
-            }, 2500);
-        } else if (mobID == 8880601 || mobID == 8880603 || mobID == 8880605) {
-            field.removeMobs();
-            sm.showFieldEffect("Map/Effect.img/killing/clear");
-            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
+        // Gloom (Dusk) Normal / Chaos -> Reward Room
+        if (mobID == 8644650) {
+            transitionToBossMap(chr, field, 450009430, 8950118, -2686, -488, true);
+        } else if (mobID == 8644655) {
+            transitionToBossMap(chr, field, 450009480, 8950119, -2686, -488, true);
         }
-        // Kalos the Guardian (Easy / Normal / Chaos / Extreme)
-        if (mobID == 8881010 || mobID == 8880800 || mobID == 8881030 || mobID == 8881050) {
-            field.removeMobs();
-            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
-            int nextMobId = (mobID == 8881010) ? 8881011 : ((mobID == 8880800) ? 8880801 : ((mobID == 8881030) ? 8881031 : 8881051));
-            chr.getTimer().addEvent(() -> {
-                int y = BossEntry.snapToFootholdY(field, -300, 398);
-                field.spawnMob(nextMobId, -300, y, false);
-            }, 2500);
-        } else if (mobID == 8881011 || mobID == 8880801 || mobID == 8881031 || mobID == 8881051) {
-            field.removeMobs();
-            sm.showFieldEffect("Map/Effect.img/killing/clear");
-            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
+        // Darknell (Dunkel) Normal / Hard -> Reward Room
+        if (mobID == 8645009) {
+            transitionToBossMap(chr, field, 450012250, 8950116, 120, 29, true);
+        } else if (mobID == 8645066) {
+            transitionToBossMap(chr, field, 450012650, 8950117, 120, 29, true);
         }
-        // Kaling
-        if (mobID == 8880967) { // Extreme Phase 1 -> Phase 2
-            field.removeMobs();
-            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
-            chr.getTimer().addEvent(() -> {
-                int y = BossEntry.snapToFootholdY(field, 900, 106);
-                field.spawnMob(8880972, 900, y, false);
-            }, 2500);
-        } else if (mobID == 8880972) { // Extreme Phase 2 -> Phase 3
-            field.removeMobs();
-            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
-            chr.getTimer().addEvent(() -> {
-                int y = BossEntry.snapToFootholdY(field, 900, 106);
-                field.spawnMob(8880976, 900, y, false);
-            }, 2500);
-        } else if (mobID == 8880907 || mobID == 8880837 || mobID == 8880937 || mobID == 8880976) {
-            field.removeMobs();
-            sm.showFieldEffect("Map/Effect.img/killing/clear");
-            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
+        // Verus Hilla (Jin Hilla) Normal / Hard -> Reward Room
+        if (mobID == 8880405 || mobID == 8880450) {
+            transitionToBossMap(chr, field, 450010950, 8950120, 600, 206, true);
+        } else if (mobID == 8880410) {
+            transitionToBossMap(chr, field, 450010550, 8950121, 600, 206, true);
         }
-        // Limbo (Normal / Hard)
-        if (mobID == 8881304 || mobID == 8881354) { // Phase 1 -> Final Phase
-            field.removeMobs();
-            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
-            int nextMobId = (mobID == 8881304) ? 8881320 : 8881370;
-            chr.getTimer().addEvent(() -> {
-                int y = BossEntry.snapToFootholdY(field, 0, 3);
-                field.spawnMob(nextMobId, 0, y, false);
-            }, 2500);
-        } else if (mobID == 8881320 || mobID == 8881370) {
-            field.removeMobs();
-            sm.showFieldEffect("Map/Effect.img/killing/clear");
-            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
+        // Chosen Seren (Normal / Hard / Extreme: P1 -> P2 -> Reward Room)
+        if (mobID == 8880630) { // Normal P1 -> P2
+            transitionToBossMap(chr, field, 410002160, 8880633, 0, 305, false);
+        } else if (mobID == 8880633 || mobID == 8880632) { // Normal P2 -> Reward Room
+            transitionToBossMap(chr, field, 410002180, 8880644, 0, 275, true);
+        } else if (mobID == 8880600) { // Hard P1 -> P2
+            transitionToBossMap(chr, field, 410002060, 8880603, 0, 305, false);
+        } else if (mobID == 8880603 || mobID == 8880602) { // Hard P2 -> Reward Room
+            transitionToBossMap(chr, field, 410002080, 8880614, 0, 275, true);
+        } else if (mobID == 8880650) { // Extreme P1 -> P2
+            transitionToBossMap(chr, field, 410002260, 8880653, 0, 305, false);
+        } else if (mobID == 8880653 || mobID == 8880652) { // Extreme P2 -> Reward Room
+            transitionToBossMap(chr, field, 410002280, 8880664, 0, 275, true);
         }
-        // First Adversary (Easy / Normal / Hard / Extreme)
-        if (mobID == 8881800) { // Extreme Phase 1 -> Phase 2
-            field.removeMobs();
-            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
-            chr.getTimer().addEvent(() -> {
-                int y = BossEntry.snapToFootholdY(field, 0, 55);
-                field.spawnMob(8881820, 0, y, false);
-            }, 2500);
-        } else if (mobID == 8881710 || mobID == 8881740 || mobID == 8881770 || mobID == 8881820) {
-            field.removeMobs();
-            sm.showFieldEffect("Map/Effect.img/killing/clear");
-            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
+        // Guardian Angel Slime (Normal / Chaos -> Reward Room)
+        if (mobID == 8880711) { // Normal Slime
+            transitionToBossMap(chr, field, 160050000, 8880726, 150, 316, true);
+        } else if (mobID == 8880700) { // Chaos Slime
+            transitionToBossMap(chr, field, 160050000, 8880725, 150, 316, true);
         }
-        // Single Phase Late-game Bosses
-        if (mobID == 8644650 || mobID == 8644655 // Gloom
-                || mobID == 8645009 || mobID == 8645066 // Darknell
-                || mobID == 8880405 || mobID == 8880410 // Verus Hilla
-                || mobID == 8880700 || mobID == 8880711 // Guardian Angel Slime
-                || mobID == 8881600 || mobID == 8881650 // Baldrix
-        ) {
-            field.removeMobs();
+        // Kalos the Guardian (Easy / Normal / Chaos / Extreme: P1 -> P2 -> Reward Room)
+        if (mobID == 8881010) { // Easy P1 -> P2
+            transitionToBossMap(chr, field, 410006260, 8881013, 500, 399, false);
+        } else if (mobID == 8881013 || mobID == 8881012) { // Easy P2 -> Reward Room
+            transitionToBossMap(chr, field, 410006280, 8881018, 150, 399, true);
+        } else if (mobID == 8880800) { // Normal P1 -> P2
+            transitionToBossMap(chr, field, 410006060, 8880803, 500, 399, false);
+        } else if (mobID == 8880803 || mobID == 8880802) { // Normal P2 -> Reward Room
+            transitionToBossMap(chr, field, 410006080, 8880808, 150, 399, true);
+        } else if (mobID == 8881030) { // Chaos P1 -> P2
+            transitionToBossMap(chr, field, 410006360, 8881033, 500, 399, false);
+        } else if (mobID == 8881033 || mobID == 8881032) { // Chaos P2 -> Reward Room
+            transitionToBossMap(chr, field, 410006380, 8881038, 150, 399, true);
+        } else if (mobID == 8881050) { // Extreme P1 -> P2
+            transitionToBossMap(chr, field, 410006460, 8881053, 500, 399, false);
+        } else if (mobID == 8881053 || mobID == 8881052) { // Extreme P2 -> Reward Room
+            transitionToBossMap(chr, field, 410006480, 8881058, 150, 399, true);
+        }
+        // Kaling (Easy / Normal / Hard / Extreme: P1 Three Perils -> P2 Kaling -> P3 Fierce Kaling -> Reward Room)
+        if (mobID == 8880900 || mobID == 8880901 || mobID == 8880902
+                || mobID == 8880830 || mobID == 8880831 || mobID == 8880832
+                || mobID == 8880930 || mobID == 8880931 || mobID == 8880932
+                || mobID == 8880960 || mobID == 8880961 || mobID == 8880962) {
+            boolean perilRemaining = false;
+            for (Mob m : field.getMobs()) {
+                if (m.getObjectId() != mob.getObjectId() && m.isBoss() && m.getHp() > 0) {
+                    perilRemaining = true;
+                    break;
+                }
+            }
+            if (!perilRemaining) {
+                if (mobID >= 8880900 && mobID <= 8880902) { // Easy
+                    transitionToBossMap(chr, field, 410008160, 8880907, 568, 106, false);
+                } else if (mobID >= 8880830 && mobID <= 8880832) { // Normal
+                    transitionToBossMap(chr, field, 410007260, 8880837, 568, 106, false);
+                } else if (mobID >= 8880930 && mobID <= 8880932) { // Hard
+                    transitionToBossMap(chr, field, 410008460, 8880937, 568, 106, false);
+                } else { // Extreme
+                    transitionToBossMap(chr, field, 410008760, 8880967, 568, 106, false);
+                }
+            }
+        } else if (mobID == 8880907) { // Easy P2 -> P3
+            transitionToBossMap(chr, field, 410008200, 8880912, 0, 398, false);
+        } else if (mobID == 8880837) { // Normal P2 -> P3
+            transitionToBossMap(chr, field, 410007300, 8880842, 0, 398, false);
+        } else if (mobID == 8880937) { // Hard P2 -> P3
+            transitionToBossMap(chr, field, 410008500, 8880942, 0, 398, false);
+        } else if (mobID == 8880967) { // Extreme P2 -> P3
+            transitionToBossMap(chr, field, 410008800, 8880972, 0, 398, false);
+        } else if (mobID == 8880912) { // Easy P3 -> Reward Room
+            transitionToBossMap(chr, field, 410008220, 8880915, 500, 105, true);
+        } else if (mobID == 8880842) { // Normal P3 -> Reward Room
+            transitionToBossMap(chr, field, 410007320, 8880845, 500, 105, true);
+        } else if (mobID == 8880942) { // Hard P3 -> Reward Room
+            transitionToBossMap(chr, field, 410008520, 8880945, 500, 105, true);
+        } else if (mobID == 8880972) { // Extreme P3 -> Reward Room
+            transitionToBossMap(chr, field, 410008820, 8880975, 500, 105, true);
+        }
+        // Limbo (Normal / Hard: P1 -> P2 -> P3 -> Reward Room)
+        if (mobID == 8881304) { // Normal P1 -> P2
+            transitionToBossMap(chr, field, 410009300, 8881318, 0, 1, false);
+        } else if (mobID == 8881318) { // Normal P2 -> P3
+            transitionToBossMap(chr, field, 410009700, 8881320, 0, -18, false);
+        } else if (mobID == 8881320) { // Normal P3 -> Reward Room
+            transitionToBossMap(chr, field, 410009800, 8881334, 0, 754, true);
+        } else if (mobID == 8881354) { // Hard P1 -> P2
+            transitionToBossMap(chr, field, 410011300, 8881368, 0, 1, false);
+        } else if (mobID == 8881368) { // Hard P2 -> P3
+            transitionToBossMap(chr, field, 410011700, 8881370, 0, -18, false);
+        } else if (mobID == 8881370) { // Hard P3 -> Reward Room
+            transitionToBossMap(chr, field, 410011800, 8881384, 0, 754, true);
+        }
+        // Baldrix (Normal / Hard: P1 -> P2 -> P3 -> Reward Room)
+        if (mobID == 8881600) { // Normal P1 -> P2
+            transitionToBossMap(chr, field, 410014600, 8881614, 0, -16, false);
+        } else if (mobID == 8881614) { // Normal P2 -> P3
+            transitionToBossMap(chr, field, 410014900, 8881621, 0, -9, false);
+        } else if (mobID == 8881621) { // Normal P3 -> Reward Room
+            transitionToBossMap(chr, field, 410015000, 8881624, 0, 498, true);
+        } else if (mobID == 8881650) { // Hard P1 -> P2
+            transitionToBossMap(chr, field, 410015700, 8881664, 0, -16, false);
+        } else if (mobID == 8881664) { // Hard P2 -> P3
+            transitionToBossMap(chr, field, 410016000, 8881671, 0, -9, false);
+        } else if (mobID == 8881671) { // Hard P3 -> Reward Room
+            transitionToBossMap(chr, field, 410016100, 8881674, 0, 498, true);
+        }
+        // First Adversary (Easy / Normal / Hard / Extreme: P1 -> P2 -> P3 -> Reward Room)
+        if (mobID == 8881710) { // Easy P1 -> P2
+            transitionToBossMap(chr, field, 410020300, 8881711, 0, 244, false);
+        } else if (mobID == 8881711) { // Easy P2 -> P3
+            transitionToBossMap(chr, field, 410020500, 8881712, 0, 108, false);
+        } else if (mobID == 8881712) { // Easy P3 -> Reward Room
+            transitionToBossMap(chr, field, 410020600, 8881715, 0, 303, true);
+        } else if (mobID == 8881740) { // Normal P1 -> P2
+            transitionToBossMap(chr, field, 410021300, 8881741, 0, 244, false);
+        } else if (mobID == 8881741) { // Normal P2 -> P3
+            transitionToBossMap(chr, field, 410021500, 8881742, 0, 108, false);
+        } else if (mobID == 8881742) { // Normal P3 -> Reward Room
+            transitionToBossMap(chr, field, 410021600, 8881745, 0, 303, true);
+        } else if (mobID == 8881770) { // Hard P1 -> P2
+            transitionToBossMap(chr, field, 410022300, 8881771, 0, 244, false);
+        } else if (mobID == 8881771) { // Hard P2 -> P3
+            transitionToBossMap(chr, field, 410022500, 8881772, 0, 108, false);
+        } else if (mobID == 8881772) { // Hard P3 -> Reward Room
+            transitionToBossMap(chr, field, 410022600, 8881775, 0, 303, true);
+        } else if (mobID == 8881800) { // Extreme P1 -> P2
+            transitionToBossMap(chr, field, 410023300, 8881801, 0, 244, false);
+        } else if (mobID == 8881801) { // Extreme P2 -> P3
+            transitionToBossMap(chr, field, 410023500, 8881802, 0, 108, false);
+        } else if (mobID == 8881802) { // Extreme P3 -> Reward Room
+            transitionToBossMap(chr, field, 410023600, 8881805, 0, 303, true);
+        }
+        // Reward Chests / Boxes
+        if (mobID == 8880177 || mobID == 8880167 || mobID == 8880156
+                || (mobID >= 8950116 && mobID <= 8950121)
+                || mobID == 8880518 || mobID == 8880548
+                || mobID == 8880644 || mobID == 8880614 || mobID == 8880664
+                || mobID == 8880726 || mobID == 8880725
+                || mobID == 8881018 || mobID == 8880808 || mobID == 8881038 || mobID == 8881058
+                || mobID == 8880915 || mobID == 8880845 || mobID == 8880945 || mobID == 8880975
+                || mobID == 8881203
+                || mobID == 8881334 || mobID == 8881384
+                || mobID == 8881624 || mobID == 8881674
+                || mobID == 8881715 || mobID == 8881745 || mobID == 8881775 || mobID == 8881805) {
             sm.showFieldEffect("Map/Effect.img/killing/clear");
             field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
         }
@@ -896,8 +900,8 @@ public class BossHelper {
                 case 8870000 -> sm.addPartyBoss(party, BossPartyType.HILLA_NORMAL);
                 case 8870100 -> sm.addPartyBoss(party, BossPartyType.HILLA_HARD);
 
-                case 8950002 -> sm.addPartyBoss(party, BossPartyType.LOTUS_NORMAL);
-                case 8950102 -> sm.addPartyBoss(party, BossPartyType.LOTUS_HARD);
+                case 8950102 -> sm.addPartyBoss(party, BossPartyType.LOTUS_NORMAL);
+                case 8950002 -> sm.addPartyBoss(party, BossPartyType.LOTUS_HARD);
 
                 case 8880010 -> sm.addPartyBoss(party, BossPartyType.MAGNUS_EASY);
                 case 8880002 -> sm.addPartyBoss(party, BossPartyType.MAGNUS_NORMAL);
@@ -929,6 +933,7 @@ public class BossHelper {
                 case 8880167 -> sm.addPartyBoss(party, BossPartyType.LUCID_NORMAL);
                 case 8880156 -> sm.addPartyBoss(party, BossPartyType.LUCID_HARD);
 
+                case 8880362 -> sm.addPartyBoss(party, BossPartyType.WILL_EASY);
                 case 8880342 -> sm.addPartyBoss(party, BossPartyType.WILL_NORMAL);
                 case 8880302 -> sm.addPartyBoss(party, BossPartyType.WILL_HARD);
             }
@@ -946,8 +951,8 @@ public class BossHelper {
                 case 8870000 -> chr.addPartyboss(BossPartyType.HILLA_NORMAL);
                 case 8870100 -> chr.addPartyboss(BossPartyType.HILLA_HARD);
 
-                case 8950002 -> chr.addPartyboss(BossPartyType.LOTUS_NORMAL);
-                case 8950102 -> chr.addPartyboss(BossPartyType.LOTUS_HARD);
+                case 8950102 -> chr.addPartyboss(BossPartyType.LOTUS_NORMAL);
+                case 8950002 -> chr.addPartyboss(BossPartyType.LOTUS_HARD);
 
                 case 8880010 -> chr.addPartyboss(BossPartyType.MAGNUS_EASY);
                 case 8880002 -> chr.addPartyboss(BossPartyType.MAGNUS_NORMAL);
@@ -979,6 +984,7 @@ public class BossHelper {
                 case 8880167 -> chr.addPartyboss(BossPartyType.LUCID_NORMAL);
                 case 8880156 -> chr.addPartyboss(BossPartyType.LUCID_HARD);
 
+                case 8880362 -> chr.addPartyboss(BossPartyType.WILL_EASY);
                 case 8880342 -> chr.addPartyboss(BossPartyType.WILL_NORMAL);
                 case 8880302 -> chr.addPartyboss(BossPartyType.WILL_HARD);
             }
@@ -1039,6 +1045,50 @@ public class BossHelper {
                 }
             }
         }
+    }
+
+    private static void warpPartyOrSolo(Char chr, Party party, Instance instance, int nextMapId) {
+        if (party != null) {
+            chr.getScriptManager().warpParty(nextMapId, party);
+        } else if (instance != null) {
+            Field nextField = instance.getField(nextMapId);
+            if (nextField != null) {
+                chr.warp(nextField);
+            } else {
+                chr.warp(nextMapId);
+            }
+        } else {
+            chr.warp(nextMapId);
+        }
+    }
+
+    private static void transitionToBossMap(Char chr, Field currentField, int nextMapId, int nextMobId, int x, int refY, boolean isRewardRoom) {
+        currentField.removeMobs();
+        ScriptManagerImpl sm = chr.getScriptManager();
+        Party party = chr.getParty();
+        Instance instance = chr.getInstance();
+        if (isRewardRoom) {
+            sm.showFieldEffect("Map/Effect.img/killing/clear");
+            currentField.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
+            if (instance != null) {
+                instance.setTimeout(300, true);
+            }
+        } else {
+            currentField.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect2.img/blackHeavenBossDie3")));
+        }
+        chr.getTimer().addEvent(() -> {
+            warpPartyOrSolo(chr, party, instance, nextMapId);
+            Instance activeInst = chr.getInstance();
+            Field nextField = (activeInst != null) ? activeInst.getField(nextMapId) : chr.getOrCreateFieldByCurrentInstanceType(nextMapId);
+            if (nextField != null && nextMobId > 0 && !nextField.hasMobById(nextMobId)) {
+                int y = BossEntry.snapToFootholdY(nextField, x, refY);
+                nextField.spawnMob(nextMobId, x, y, false);
+                nextField.setBossSpawned(true);
+                if (isRewardRoom) {
+                    nextField.broadcast(UserLocal.chatMsg(ChatType.SystemNotice, "[Boss Clear] Attack the Reward Chest to claim your loot, then use the portal or talk to the NPC to leave."));
+                }
+            }
+        }, 2000);
     }
 
     public static void spawnHungryMutoMobs(Field field, Mob mob, ScriptManagerImpl sm, int[] mobs) {
@@ -1112,9 +1162,9 @@ public class BossHelper {
             case 9421589: // Mori Ranmaru (Hard)
             case 8840014: // Von Leon (Hard)
                 return 1; // Quà Khó < 100,000
-            case 8950002: // Lotus Normal
+            case 8950002: // Lotus Hard
             case 8880111: // Damien Normal
-            case 8950102: // Lotus Hard
+            case 8950102: // Lotus Normal
             case 8880101: // Damien Hard
             case 8880177: // Final Music Box (Lucid Easy)
             case 8880167: // Final Music Box (Lucid Normal)
@@ -1301,6 +1351,14 @@ public class BossHelper {
             case 8880352:
             case 8880355:
             case 8880356:
+            case 8880360:
+            case 8880361:
+            case 8880363:
+            case 8880364:
+            case 8880370:
+            case 8880371:
+            case 8880374:
+            case 8880375:
                 return;
         }
         mob.getField().broadcast(MobPool.mobAttackBlock(mob, blockedSkills));

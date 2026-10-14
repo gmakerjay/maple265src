@@ -1621,6 +1621,11 @@ public class ScriptManagerImpl implements ScriptManager {
             if (SOLO) {
                 instance = chr.getInstance();
                 stopEvents();
+                chr.setDeathCount(-1);
+                if (chr.getWillGaugeTimer() != null) {
+                    chr.getWillGaugeTimer().cancel(false);
+                    chr.setWillGaugeTimer(null);
+                }
                 if (instance == null) {
                     chr.setInstance(null);
                     chr.warp(fieldId, portalId, false);
@@ -1648,6 +1653,11 @@ public class ScriptManagerImpl implements ScriptManager {
                 stopEvents();
                 if (instance == null) {
                     for (Char x : party.getOnlineChars()) {
+                        x.setDeathCount(-1);
+                        if (x.getWillGaugeTimer() != null) {
+                            x.getWillGaugeTimer().cancel(false);
+                            x.setWillGaugeTimer(null);
+                        }
                         x.setInstance(null);
                         x.warp(fieldId, portalId, false);
                     }
@@ -1667,6 +1677,11 @@ public class ScriptManagerImpl implements ScriptManager {
                     instance.getChars().clear();
                     instance.getProperties().clear();
                     for (Char x : party.getOnlineChars()) {
+                        x.setDeathCount(-1);
+                        if (x.getWillGaugeTimer() != null) {
+                            x.getWillGaugeTimer().cancel(false);
+                            x.setWillGaugeTimer(null);
+                        }
                         x.setInstance(null);
                         x.warp(forcedReturn, Math.max(forcedReturnPortal, 0), false);
                     }
@@ -2529,8 +2544,9 @@ public class ScriptManagerImpl implements ScriptManager {
     public boolean checkParty() {
         Party party = chr.getParty();
         if (party == null) {
-            chat("You are not in a party.");
-            return false;
+            party = Party.createNewParty((byte) 1, chr.getName() + "'s Party", chr.getClient().getWorld());
+            party.addPartyMember(chr);
+            chr.setParty(party);
         } else if (!isPartyLeader()) {
             chat("You are not the party leader.");
             return false;

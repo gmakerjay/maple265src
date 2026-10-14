@@ -1062,14 +1062,14 @@ public class MobHandler {
 
         Field field = chr.getField();
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
-        if (chr.getFieldID() == 450008150 || chr.getFieldID() == 450008750) {
+        if (chr.getFieldID() == 450008150 || chr.getFieldID() == 450008750 || chr.getFieldID() == 450007850) {
             String name = (chr.getPosition().getY() > -1000) ? "ptup" : "ptdown";
             chr.setMoonGauge(Math.max(0, chr.getMoonGauge() - 45));
             chr.write(WillPacket.addMoonGauge(chr.getMoonGauge()));
             field.broadcast(WillPacket.teleport());
             field.broadcast(UserLocal.portalTeleport(name));
             field.broadcast(UserRemote.effect(chr.getId(), Effect.skillUse(80002421, (byte) 1, 0)));
-        } else if (chr.getFieldID() == 450008250 || chr.getFieldID() == 450008850) {
+        } else if (chr.getFieldID() == 450008250 || chr.getFieldID() == 450008850 || chr.getFieldID() == 450007950) {
             if (tsm.hasStatBySkillId(80002404)) {
                 tsm.removeStatsBySkill(80002404);
             }
@@ -1077,7 +1077,7 @@ public class MobHandler {
             chr.write(WillPacket.addMoonGauge(chr.getMoonGauge()));
             chr.write(WillPacket.cooldownMoonGauge(7000));
             chr.getTimer().addEvent(() -> field.broadcast(UserRemote.effect(chr.getId(), Effect.skillUse(80002404, (byte) 1, 0))), 7000L);
-        } else if (chr.getFieldID() == 450008350 || chr.getFieldID() == 450008950) {
+        } else if (chr.getFieldID() == 450008350 || chr.getFieldID() == 450008950 || chr.getFieldID() == 450008050) {
             chr.setMoonGauge(Math.max(0, chr.getMoonGauge() - 5));
             chr.setClearSpiderWeb(2);
             chr.write(WillPacket.addMoonGauge(chr.getMoonGauge()));
@@ -1092,7 +1092,7 @@ public class MobHandler {
         if (chr == null) return;
 
         if (chr.getMoonGauge() > 0) {
-            chr.setMoonGauge(Math.min(0, chr.getMoonGauge() - 10));
+            chr.setMoonGauge(Math.max(0, chr.getMoonGauge() - 10));
             chr.write(WillPacket.addMoonGauge(chr.getMoonGauge()));
         }
         chr.dispose();
