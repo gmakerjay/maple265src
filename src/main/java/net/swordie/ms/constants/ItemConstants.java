@@ -1730,12 +1730,12 @@ public class ItemConstants {
     }
 
     public static boolean isRebirthFlame(int itemId) {
-        return itemId >= 2048700 && itemId < 2048800;
+        return (itemId >= 2048700 && itemId < 2048900) || itemId / 1000 == 2536;
     }
 
     public static boolean isBlackRebirthFlame(int itemId) {
         return switch (itemId) {
-            case 2048753, 2048755, 2048766, 2048767, 2048768, 2048786, 2048799 -> true;
+            case 2048753, 2048755, 2048766, 2048767, 2048768, 2048786, 2048799, 2536001 -> true;
             default -> false;
         };
     }
@@ -1744,11 +1744,46 @@ public class ItemConstants {
         return itemId == 2048794 || itemId == 2048796;
     }
 
+    public static boolean isMemorialRebirthFlame(int itemId) {
+        return isBlackRebirthFlame(itemId) || isAbyssalRebirthFlame(itemId);
+    }
+
     public static boolean isEternalRebirthFlame(int itemId) {
         return switch (itemId) {
-            case 2048717, 2048721, 2048723, 2048746, 2048747, 2048752, 2048757, 2048758, 2048762, 2048764, 2048765, 2048785, 2048798 -> true;
+            case 2048717, 2048721, 2048723, 2048746, 2048747, 2048757, 2048758, 2048762, 2048764, 2048765, 2048785, 2048787, 2048798 -> true;
             default -> false;
         };
+    }
+
+    public static boolean isPowerfulRebirthFlame(int itemId) {
+        return switch (itemId) {
+            case 2048716, 2048720, 2048724, 2048744, 2048745, 2048751, 2048752, 2048756, 2048759, 2048761, 2048763, 2048777, 2048780, 2048788, 2048795 -> true;
+            default -> false;
+        };
+    }
+
+    public static boolean isAnyCube(int itemId) {
+        return isCube(itemId)
+                || isSpecialCube(itemId)
+                || isBonusCube(itemId)
+                || itemId == KARMA_BONUS_GLOWING_CUBE
+                || MYSTICAL_CUBES.contains(itemId)
+                || HARD_CUBES.contains(itemId)
+                || SOLID_CUBES.contains(itemId)
+                || BRIGHT_CUBES.contains(itemId)
+                || BONUS_MYSTICAL_CUBES.contains(itemId)
+                || BONUS_BRIGHT_CUBES.contains(itemId)
+                || itemId / 10000 == 271
+                || itemId / 10000 == 273;
+    }
+
+    public static boolean isMemorialCube(int itemId) {
+        return itemId == BRIGHT_CUBE
+                || itemId == BLACK_CUBE
+                || itemId == BONUS_BRIGHT_CUBE_1
+                || itemId == BONUS_BRIGHT_CUBE_2
+                || BRIGHT_CUBES.contains(itemId)
+                || BONUS_BRIGHT_CUBES.contains(itemId);
     }
 
     public static boolean isNebulite(int itemId) {
@@ -1913,107 +1948,150 @@ public class ItemConstants {
         };
     }
 
-    public static List<ItemOption> getOptionsByEquip(Equip equip, boolean bonus, int line, int cubeId, int additionalPrimes) {
-        int id = equip.getItemId();
+    private static volatile Map<Integer, List<ItemOption>> CACHED_OPTIONS_BY_KEY;
+
+    private static int getOptionCacheKey(int optionType, int normalizedGrade, boolean bonus) {
+        return (optionType << 8) | ((normalizedGrade & 0x3F) << 1) | (bonus ? 1 : 0);
+    }
+
+    private static int normalizeOptionGradeVal(int gradeVal) {
+        ItemGrade ig = ItemGrade.getGradeByVal(gradeVal);
+        if (ig == null) {
+            return 0;
+        }
+        return switch (ig) {
+            case RareSecondary -> RareSecondary.getVal();
+            case HiddenRare, Rare, RareBonusHidden -> Rare.getVal();
+            case HiddenEpic, Epic, EpicBonusHidden -> Epic.getVal();
+            case HiddenUnique, Unique, UniqueBonusHidden -> Unique.getVal();
+            case HiddenLegendary, Legendary, LegendaryBonusHidden -> Legendary.getVal();
+            default -> 0;
+        };
+    }
+
+    private static Map<Integer, List<ItemOption>> getOptionCache() {
+        Map<Integer, List<ItemOption>> cache = CACHED_OPTIONS_BY_KEY;
         Collection<ItemOption> data = ItemData.getFilteredItemOptions();
-        ItemGrade grade = getLineTier(line, getGradeByVal(bonus ? equip.getBonusGrade() : equip.getBaseGrade()), additionalPrimes);
-        // need a list, as we take a random item from it later on
-        List<ItemOption> res = data.stream().filter(
-                io -> io.getOptionType() == ItemOptionType.AnyEquip.getVal() &&
-                        io.hasMatchingGrade(grade.getVal()) && io.isBonus() == bonus
-        ).collect(Collectors.toList());
-
-        if (isShield(id) || isSecondary(id)) {
-            res.addAll(data.stream().filter(
-                    io -> (io.getOptionType() == ItemOptionType.Armor.getVal() || io.getOptionType() == ItemOptionType.Weapon.getVal())
-                            && io.hasMatchingGrade(grade.getVal())
-                            && io.isBonus() == bonus
-                            && io.getId() != 42060 //Armor's Crit Damage (Secondary Specific Filter)
-            ).collect(Collectors.toList()));
-        } else if (isWeapon(id)) {
-            res.addAll(data.stream().filter(
-                    io -> io.getOptionType() == ItemOptionType.Weapon.getVal()
-                            && io.hasMatchingGrade(grade.getVal())
-                            && io.isBonus() == bonus
-            ).collect(Collectors.toList()));
-        } else if (isEmblem(id)) {
-            res.addAll(data.stream().filter(
-                    io -> io.getOptionType() == ItemOptionType.Weapon.getVal()
-                            && io.hasMatchingGrade(grade.getVal())
-                            && io.isBonus() == bonus
-                            && !io.getString().contains("Boss") //(Emblem Specific Filter)
-            ).collect(Collectors.toList()));
-        } else {
-            res.addAll(data.stream().filter(
-                    io -> io.getOptionType() == ItemOptionType.AnyExceptWeapon.getVal()
-                            && io.hasMatchingGrade(grade.getVal())
-                            && io.isBonus() == bonus
-            ).collect(Collectors.toList()));
-
-            if (isRing(id) || isPendant(id) || isFaceAccessory(id) || isEyeAccessory(id) || isEarrings(id)) {
-                res.addAll(data.stream().filter(
-                        io -> io.getOptionType() == ItemOptionType.Accessory.getVal()
-                                && io.hasMatchingGrade(grade.getVal())
-                                && io.isBonus() == bonus
-                ).collect(Collectors.toList()));
-            } else {
-                if (isHat(id)) {
-                    res.addAll(data.stream().filter(
-                            io -> io.getOptionType() == ItemOptionType.Hat.getVal()
-                                    && io.hasMatchingGrade(grade.getVal())
-                                    && io.isBonus() == bonus
-                    ).collect(Collectors.toList()));
-                }
-                if (isTop(id) || isOverall(id)) {
-                    res.addAll(data.stream().filter(
-                            io -> io.getOptionType() == ItemOptionType.Top.getVal()
-                                    && io.hasMatchingGrade(grade.getVal())
-                                    && io.isBonus() == bonus
-                    ).collect(Collectors.toList()));
-                }
-                if (isBottom(id)) {
-                    res.addAll(data.stream().filter(
-                            io -> io.getOptionType() == ItemOptionType.Bottom.getVal()
-                                    && io.hasMatchingGrade(grade.getVal())
-                                    && io.isBonus() == bonus
-                    ).collect(Collectors.toList()));
-                }
-                if (isShoe(id)) {
-                    res.addAll(data.stream().filter(
-                            io -> io.getOptionType() == ItemOptionType.Shoes.getVal()
-                                    && io.hasMatchingGrade(grade.getVal())
-                                    && io.isBonus() == bonus
-                    ).collect(Collectors.toList()));
-                }
-                if (isGlove(id)) {
-                    if (grade == HiddenUnique || grade == Unique || grade == HiddenLegendary || grade == Legendary || grade == UniqueBonusHidden || grade == LegendaryBonusHidden) {
-                        res.addAll(data.stream().filter(io ->
-                                (io.getOptionType() == ItemOptionType.Glove.getVal() || io.getOptionType() == ItemOptionType.Armor.getVal())
-                                        && io.hasMatchingGrade(grade.getVal()) && io.isBonus() == bonus
-                                        && io.getId() != 42060 //Bonus - Armor's 1% Crit Damage (Glove Specific Filter)
-                        ).collect(Collectors.toList()));
-                        if (!SOLID_CUBES.contains(cubeId) && !HARD_CUBES.contains(cubeId) && (cubeId != SYSTEM_DEFAULT_CUBE_INDICATOR)) {
-                            res = res.stream().filter(
-                                            io -> !io.getString().contains("Auto Steal")) //(Glove Specific Filter)
-                                    .collect(Collectors.toList());
-                        }
-                    } else {
-                        res.addAll(data.stream().filter(
-                                io -> io.getOptionType() == ItemOptionType.Glove.getVal()
-                                        && io.hasMatchingGrade(grade.getVal())
-                                        && io.isBonus() == bonus
-                        ).collect(Collectors.toList()));
+        if (cache == null && data != null && !data.isEmpty()) {
+            synchronized (ItemConstants.class) {
+                cache = CACHED_OPTIONS_BY_KEY;
+                if (cache == null) {
+                    Map<Integer, List<ItemOption>> built = new HashMap<>();
+                    for (ItemOption io : data) {
+                        ItemGrade optGrade = ItemGrade.getGradeByOption(io.getId());
+                        int normGrade = normalizeOptionGradeVal(optGrade.getVal());
+                        int key = getOptionCacheKey(io.getOptionType(), normGrade, io.isBonus());
+                        built.computeIfAbsent(key, k -> new ArrayList<>()).add(io);
                     }
-                } else if (isArmor(id) || isShoulder(id) || isBelt(id)) {
-                    res.addAll(data.stream().filter(
-                            io -> io.getOptionType() == ItemOptionType.Armor.getVal()
-                                    && io.hasMatchingGrade(grade.getVal())
-                                    && io.isBonus() == bonus
-                    ).collect(Collectors.toList()));
+                    CACHED_OPTIONS_BY_KEY = cache = built;
                 }
             }
         }
-        return res.stream().filter(io -> io.getReqLevel() <= equip.getrLevel() + equip.getiIncReq()).collect(Collectors.toList());
+        return cache;
+    }
+
+    private static void addCachedOptions(List<ItemOption> target, Map<Integer, List<ItemOption>> cache,
+                                         int optionType, int normGrade, boolean bonus, int maxReqLevel) {
+        List<ItemOption> bucket = cache.get(getOptionCacheKey(optionType, normGrade, bonus));
+        if (bucket != null) {
+            for (ItemOption io : bucket) {
+                if (io.getReqLevel() <= maxReqLevel) {
+                    target.add(io);
+                }
+            }
+        }
+    }
+
+    public static List<ItemOption> getOptionsByEquip(Equip equip, boolean bonus, int line, int cubeId, int additionalPrimes) {
+        int id = equip.getItemId();
+        ItemGrade baseOrBonusGrade = getGradeByVal(bonus ? equip.getBonusGrade() : equip.getBaseGrade());
+        if (baseOrBonusGrade == null) {
+            baseOrBonusGrade = Rare;
+        }
+        ItemGrade grade = getLineTier(line, baseOrBonusGrade, additionalPrimes);
+        int normGrade = normalizeOptionGradeVal(grade.getVal());
+        int maxReqLevel = equip.getrLevel() + equip.getiIncReq();
+        Map<Integer, List<ItemOption>> cache = getOptionCache();
+        if (cache == null) {
+            return Collections.emptyList();
+        }
+        List<ItemOption> res = new ArrayList<>(64);
+        addCachedOptions(res, cache, ItemOptionType.AnyEquip.getVal(), normGrade, bonus, maxReqLevel);
+
+        if (isShield(id) || isSecondary(id)) {
+            List<ItemOption> armorBucket = cache.get(getOptionCacheKey(ItemOptionType.Armor.getVal(), normGrade, bonus));
+            if (armorBucket != null) {
+                for (ItemOption io : armorBucket) {
+                    if (io.getId() != 42060 && io.getReqLevel() <= maxReqLevel) {
+                        res.add(io);
+                    }
+                }
+            }
+            List<ItemOption> weaponBucket = cache.get(getOptionCacheKey(ItemOptionType.Weapon.getVal(), normGrade, bonus));
+            if (weaponBucket != null) {
+                for (ItemOption io : weaponBucket) {
+                    if (io.getId() != 42060 && io.getReqLevel() <= maxReqLevel) {
+                        res.add(io);
+                    }
+                }
+            }
+        } else if (isWeapon(id)) {
+            addCachedOptions(res, cache, ItemOptionType.Weapon.getVal(), normGrade, bonus, maxReqLevel);
+        } else if (isEmblem(id)) {
+            List<ItemOption> weaponBucket = cache.get(getOptionCacheKey(ItemOptionType.Weapon.getVal(), normGrade, bonus));
+            if (weaponBucket != null) {
+                for (ItemOption io : weaponBucket) {
+                    if (io.getReqLevel() <= maxReqLevel && !io.getString().contains("Boss")) {
+                        res.add(io);
+                    }
+                }
+            }
+        } else {
+            addCachedOptions(res, cache, ItemOptionType.AnyExceptWeapon.getVal(), normGrade, bonus, maxReqLevel);
+
+            if (isRing(id) || isPendant(id) || isFaceAccessory(id) || isEyeAccessory(id) || isEarrings(id)) {
+                addCachedOptions(res, cache, ItemOptionType.Accessory.getVal(), normGrade, bonus, maxReqLevel);
+            } else {
+                if (isHat(id)) {
+                    addCachedOptions(res, cache, ItemOptionType.Hat.getVal(), normGrade, bonus, maxReqLevel);
+                }
+                if (isTop(id) || isOverall(id)) {
+                    addCachedOptions(res, cache, ItemOptionType.Top.getVal(), normGrade, bonus, maxReqLevel);
+                }
+                if (isBottom(id)) {
+                    addCachedOptions(res, cache, ItemOptionType.Bottom.getVal(), normGrade, bonus, maxReqLevel);
+                }
+                if (isShoe(id)) {
+                    addCachedOptions(res, cache, ItemOptionType.Shoes.getVal(), normGrade, bonus, maxReqLevel);
+                }
+                if (isGlove(id)) {
+                    if (grade == HiddenUnique || grade == Unique || grade == HiddenLegendary || grade == Legendary || grade == UniqueBonusHidden || grade == LegendaryBonusHidden) {
+                        boolean filterAutoSteal = !SOLID_CUBES.contains(cubeId) && !HARD_CUBES.contains(cubeId) && (cubeId != SYSTEM_DEFAULT_CUBE_INDICATOR);
+                        List<ItemOption> gloveBucket = cache.get(getOptionCacheKey(ItemOptionType.Glove.getVal(), normGrade, bonus));
+                        if (gloveBucket != null) {
+                            for (ItemOption io : gloveBucket) {
+                                if (io.getId() != 42060 && io.getReqLevel() <= maxReqLevel && (!filterAutoSteal || !io.getString().contains("Auto Steal"))) {
+                                    res.add(io);
+                                                                }
+                            }
+                        }
+                        List<ItemOption> armorBucket = cache.get(getOptionCacheKey(ItemOptionType.Armor.getVal(), normGrade, bonus));
+                        if (armorBucket != null) {
+                            for (ItemOption io : armorBucket) {
+                                if (io.getId() != 42060 && io.getReqLevel() <= maxReqLevel && (!filterAutoSteal || !io.getString().contains("Auto Steal"))) {
+                                    res.add(io);
+                                }
+                            }
+                        }
+                    } else {
+                        addCachedOptions(res, cache, ItemOptionType.Glove.getVal(), normGrade, bonus, maxReqLevel);
+                    }
+                } else if (isArmor(id) || isShoulder(id) || isBelt(id)) {
+                    addCachedOptions(res, cache, ItemOptionType.Armor.getVal(), normGrade, bonus, maxReqLevel);
+                }
+            }
+        }
+        return res;
     }
 
     public static List<Integer> getWeightedOptionsByEquip(Equip equip, boolean bonus, int line, int cubeId, int additionalPrimes) {

@@ -541,7 +541,8 @@ CUBE_ITEMS = [
 FLAME_SCROLL_ITEMS = [
     (2048716, "Powerful Rebirth Flame", 2000, "Adds powerful bonus stats (Tier 3 - 6) to equipment."),
     (2048717, "Eternal Rebirth Flame", 3500, "Adds highest-tier bonus stats (Tier 4 - 7) to equipment."),
-    (2048744, "Black Rebirth Flame", 5000, "Adds bonus stats with the option to keep existing stats."),
+    (2048753, "Black Rebirth Flame", 5000, "Adds Tier 4 - 7 bonus stats with Before / After selection."),
+    (2048796, "Abyssal Rebirth Flame", 8000, "Adds Tier 5 - 7 bonus stats with Before / After selection."),
     (5064000, "Protection Scroll", 3000, "Prevents item destruction on scroll failure (Level <= 150)."),
     (5064100, "Safety Scroll", 3000, "Prevents upgrade count deduction on scroll failure."),
     (5064300, "Return Scroll", 4000, "Allows keeping or discarding the results of a scroll attempt."),

@@ -504,6 +504,7 @@ public class Equip extends Item {
 
     public Equip deepCopy() {
         Equip ret = new Equip();
+        ret.setId(getId());
         ret.quantity = quantity;
         ret.bagIndex = bagIndex;
         ret.serialNumber = serialNumber;

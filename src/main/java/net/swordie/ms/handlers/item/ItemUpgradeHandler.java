@@ -34,6 +34,33 @@ import static net.swordie.ms.enums.InvType.*;
 
 public class ItemUpgradeHandler {
 
+    private static FlameType resolveFlameType(int flameID) {
+        if (ItemConstants.isAbyssalRebirthFlame(flameID)) {
+            return FlameType.Abyssal;
+        }
+        if (ItemConstants.isBlackRebirthFlame(flameID)) {
+            return FlameType.Black;
+        }
+        if (ItemConstants.isEternalRebirthFlame(flameID)) {
+            return FlameType.Eternal;
+        }
+        if (ItemConstants.isPowerfulRebirthFlame(flameID)) {
+            return FlameType.Powerful;
+        }
+        String rawName = StringData.getItemStringById(flameID);
+        String itemName = rawName != null ? rawName.toLowerCase() : "";
+        if (itemName.contains("abyssal")) {
+            return FlameType.Abyssal;
+        }
+        if (itemName.contains("black")) {
+            return FlameType.Black;
+        }
+        if (itemName.contains("eternal")) {
+            return FlameType.Eternal;
+        }
+        return FlameType.Powerful;
+    }
+
     @Handler(op = InHeader.USER_MEMORIAL_EX_UPGRADE_ITEM_USE_REQUEST)
     public static void handleMemorialExUpgradeItemUseRequest(Char chr, InPacket inPacket) {
         inPacket.decodeInt(); //tick
@@ -44,10 +71,16 @@ public class ItemUpgradeHandler {
         inPacket.decodeByte(); //boolean
         inPacket.decodeByte(); //boolean
         Item flame = chr.getInventoryByType(InvType.CONSUME).getItemBySlot(usePosition);
+        if (flame == null || flame.getItemId() != flameID) {
+            flame = chr.getInventoryByType(InvType.CONSUME).getItemByItemID(flameID);
+        }
         InvType invType = eqpPosition < 0 ? EQUIPPED : EQUIP;
         Equip equip = (Equip) chr.getInventoryByType(invType).getItemBySlot(eqpPosition);
+        if (equip == null && eqpPosition < 0) {
+            equip = (Equip) chr.getEquippedInventory().getItemBySlot(-eqpPosition);
+        }
         if (flame == null || equip == null || (flame.getItemId() != flameID)) {
-            chr.chatPopup("Đã xảy ra lỗi không xác định.");
+            chr.chatPopup("An unknown error has occurred.");
             chr.write(WvsContext.blackFlameOfResurrectionModifed());
             chr.dispose();
             return;
@@ -67,67 +100,84 @@ public class ItemUpgradeHandler {
             return;
         }
         if (!ii.getReqItemIds().contains(equip.getItemId()) && ii.getReqItemIds().size() > 0) {
-            chr.chatPopup("Vật phẩm này không dùng được trên trang bi này.");
+            chr.chatPopup("This item cannot be used on this equipment.");
             chr.write(WvsContext.blackFlameOfResurrectionModifed());
             chr.dispose();
             return;
         }
         Map<ScrollStat, Integer> vals = ii.getScrollStats();
-        if (!vals.isEmpty()) {
-            int reqEquipLevelMax = vals.getOrDefault(ScrollStat.reqEquipLevelMax, 250);
-            if (equip.getrLevel() + equip.getiIncReq() > reqEquipLevelMax) {
-                chr.chatPopup("Cấp độ trang bị không đáp ứng yêu cầu vật phẩm.");
-                chr.write(WvsContext.blackFlameOfResurrectionModifed());
-                chr.dispose();
-                return;
+        int reqEquipLevelMax = vals != null ? vals.getOrDefault(ScrollStat.reqEquipLevelMax, 250) : 250;
+        if (equip.getrLevel() + equip.getiIncReq() > reqEquipLevelMax) {
+            chr.chatPopup("Equipment level does not meet the item requirements.");
+            chr.write(WvsContext.blackFlameOfResurrectionModifed());
+            chr.dispose();
+            return;
+        }
+        FlameType flameType = resolveFlameType(flameID);
+        boolean isMemorial = (flameType == FlameType.Black || flameType == FlameType.Abyssal || ItemConstants.isMemorialRebirthFlame(flameID));
+        if (isMemorial) {
+            Equip equipCopy = equip.deepCopy();
+            short tier = equipCopy.flame(flameType);
+            long oldEx = equip.getExGradeOption();
+            long newEx = equipCopy.getExGradeOption();
+            chr.write(WvsContext.blackFlameOfResurrectionModifed(1, equip, equipCopy, flameID, tier));
+            chr.createQuestWithQRValue(QuestConstants.FLAME_QR,
+                    "flameid=" + flameID + ";epos=" + eqpPosition + ";oldex=" + oldEx + ";newex=" + newEx + ";tier=" + tier + ";eid=" + equip.getId() + ";memorial=1");
+            chr.consumeItem(flame, 1);
+        } else {
+            int successRate = vals != null ? vals.getOrDefault(ScrollStat.success, 100) : 100;
+            long oldEx = equip.getExGradeOption();
+            short tier = 6;
+            if (Util.succeedProp(successRate)) {
+                tier = equip.flame(flameType);
             }
-            String itemName = StringData.getItemStringById(flameID).toLowerCase();
-            FlameType flameType = null;
-            if (ii.isExNew()) {
-                if (ItemConstants.isBlackRebirthFlame(flameID)) {
-                    flameType = FlameType.Black;
-                } else if (ItemConstants.isAbyssalRebirthFlame(flameID)) {
-                    flameType = FlameType.Abyssal;
-                } else if (ItemConstants.isEternalRebirthFlame(flameID)) {
-                    flameType = FlameType.Eternal;
-                } else if (itemName.contains("powerful")) {
-                    flameType = FlameType.Powerful;
-                } else if (itemName.contains("eternal")) {
-                    flameType = FlameType.Eternal;
-                } else if (itemName.contains("black")) {
-                    flameType = FlameType.Black;
-                } else if (itemName.contains("abyssal")) {
-                    flameType = FlameType.Abyssal;
-                } else {
-                    flameType = FlameType.Powerful;
+            long newEx = equip.getExGradeOption();
+            equip.saveToSQL();
+            equip.updateToChar(chr);
+            if (JobConstants.isZero(chr.getJob()) && ItemConstants.isLongOrBigSword(equip.getItemId())) {
+                Equip zeroEquip = (Equip) chr.getEquippedInventory().getItemBySlot(-11);
+                if (zeroEquip == null) {
+                    zeroEquip = (Equip) chr.getEquippedInventory().getItemBySlot(11);
                 }
-                Equip equipCopy = equip.deepCopy();
-                short tier = equipCopy.flame(flameType);
-                long oldEx = equip.getExGradeOption();
-                long newEx = equipCopy.getExGradeOption();
-                chr.write(WvsContext.blackFlameOfResurrectionModifed(1, equip, equipCopy, flameID, tier));
-                chr.createQuestWithQRValue(QuestConstants.FLAME_QR,
-                        "flameid=" + flameID + ";epos=" + eqpPosition + ";oldex=" + oldEx + ";newex=" + newEx + ";tier=" + tier + ";eid=" + equip.getId());
-                chr.consumeItem(flameID, 1);
+                if (zeroEquip != null) {
+                    zeroEquip.flame(newEx);
+                    zeroEquip.saveToSQL();
+                    zeroEquip.updateToChar(chr);
+                }
             }
+            chr.write(WvsContext.blackFlameOfResurrectionModifed(1, equip, equip, flameID, tier));
+            chr.createQuestWithQRValue(QuestConstants.FLAME_QR,
+                    "flameid=" + flameID + ";epos=" + eqpPosition + ";oldex=" + oldEx + ";newex=" + newEx + ";tier=" + tier + ";eid=" + equip.getId() + ";memorial=0");
+            chr.consumeItem(flame, 1);
         }
         chr.dispose();
     }
 
     @Handler(op = InHeader.USER_MEMORIAL_EX_UPGRADE_ITEM_OPTION_REQUEST)
     public static void handleMemorialExUpgradeItemOptionRequest(Char chr, InPacket inPacket) {
-        int choice = inPacket.decodeInt(); // 0/7/-1 = Before (Keep previous), 1/6 = After (Apply new)
+        int firstVal = inPacket.getUnreadAmount() >= 4 ? inPacket.decodeInt()
+                : (inPacket.getUnreadAmount() >= 1 ? inPacket.decodeByte() : -1);
+        int secondVal = inPacket.getUnreadAmount() >= 4 ? inPacket.decodeInt()
+                : (inPacket.getUnreadAmount() >= 1 ? inPacket.decodeByte() : firstVal);
         short equipBagIndex = 0;
         long SN = 0;
         long oldEx = 0;
         long newEx = 0;
+        int flameID = 0;
+        boolean isMemorial = false;
         try {
             equipBagIndex = Short.parseShort(chr.getQRValueByKey(QuestConstants.FLAME_QR, "epos"));
             SN = Long.parseLong(chr.getQRValueByKey(QuestConstants.FLAME_QR, "eid"));
+            String flameIdStr = chr.getQRValueByKey(QuestConstants.FLAME_QR, "flameid");
+            if (flameIdStr != null && !flameIdStr.isEmpty()) {
+                flameID = Integer.parseInt(flameIdStr);
+            }
+            String memStr = chr.getQRValueByKey(QuestConstants.FLAME_QR, "memorial");
+            isMemorial = "1".equals(memStr) || ItemConstants.isMemorialRebirthFlame(flameID);
             String oldExStr = chr.getQRValueByKey(QuestConstants.FLAME_QR, "oldex");
             String newExStr = chr.getQRValueByKey(QuestConstants.FLAME_QR, "newex");
             if (newExStr == null || newExStr.isEmpty()) {
-                newExStr = chr.getQRValueByKey(QuestConstants.FLAME_QR, "ex"); // fallback to legacy qr
+                newExStr = chr.getQRValueByKey(QuestConstants.FLAME_QR, "ex");
             }
             oldEx = oldExStr != null && !oldExStr.isEmpty() ? Long.parseLong(oldExStr) : 0;
             newEx = newExStr != null && !newExStr.isEmpty() ? Long.parseLong(newExStr) : 0;
@@ -138,22 +188,30 @@ public class ItemUpgradeHandler {
             return;
         }
         InvType invType = equipBagIndex < 0 ? EQUIPPED : EQUIP;
-        Equip equip = (Equip) chr.getInventoryByType(invType).getItemBySN(SN);
+        Equip equip = (Equip) chr.getInventoryByType(invType).getItemBySlot(equipBagIndex);
+        if (equip == null && equipBagIndex < 0) {
+            equip = (Equip) chr.getEquippedInventory().getItemBySlot(-equipBagIndex);
+        }
+        if (equip == null && SN > 0) {
+            equip = (Equip) chr.getInventoryByType(invType).getItemBySN(SN);
+        }
         if (equip == null) {
             chr.chatPopup("An unknown error occurred.");
             chr.write(WvsContext.blackFlameOfResurrectionModifed());
             chr.dispose();
             return;
         }
-        // choice: 1 = After (Select New), 6 = After (Current)
-        // choice: 0 = Before (Keep Previous), 7 = Before, -1 = Cancel
-        boolean selectAfter = (choice == 1 || choice == 6);
-        if (selectAfter) {
+        if (!isMemorial) {
             equip.flame(newEx);
-            chr.chatMessage(SystemNotice, "You selected the new bonus stats.");
         } else {
-            equip.flame(oldEx);
-            chr.chatMessage(SystemNotice, "You kept the previous bonus stats.");
+            boolean selectAfter = (firstVal == 1 || firstVal == 6 || secondVal == 1 || secondVal == 6);
+            if (selectAfter) {
+                equip.flame(newEx);
+                chr.chatMessage(SystemNotice, "You selected the new bonus stats.");
+            } else {
+                equip.flame(oldEx);
+                chr.chatMessage(SystemNotice, "You kept the previous bonus stats.");
+            }
         }
         equip.saveToSQL();
         equip.updateToChar(chr);
@@ -163,7 +221,7 @@ public class ItemUpgradeHandler {
                 zeroEquip = (Equip) chr.getEquippedInventory().getItemBySlot(11);
             }
             if (zeroEquip != null) {
-                zeroEquip.flame(selectAfter ? newEx : oldEx);
+                zeroEquip.flame(equip.getExGradeOption());
                 zeroEquip.saveToSQL();
                 zeroEquip.updateToChar(chr);
             }
@@ -367,6 +425,22 @@ public class ItemUpgradeHandler {
         int scrollID = scroll.getItemId();
         if (ItemConstants.isLongOrBigSword(equip.getItemId()) && JobConstants.isZero(chr.getJob())) {
             zeroWeapon = (Equip) chr.getEquippedInventory().getItemBySlot(11);
+        }
+        if (ItemConstants.isRebirthFlame(scrollID)) {
+            FlameType flameType = resolveFlameType(scrollID);
+            equip.flame(flameType);
+            equip.saveToSQL();
+            equip.updateToChar(chr);
+            if (zeroWeapon != null) {
+                zeroWeapon.flame(equip.getExGradeOption());
+                zeroWeapon.saveToSQL();
+                zeroWeapon.updateToChar(chr);
+            }
+            chr.consumeItem(scroll, 1);
+            chr.write(UserPacket.showItemUpgradeEffect(chr.getId(), true, false, scrollID, equip.getItemId(), false));
+            chr.write(FieldPacket.scrollTimerEffective());
+            chr.dispose();
+            return;
         }
         if (equip.getTuc() == 0 && !ItemConstants.isCleanStateScroll(scrollID) && !ItemConstants.isInnocenceScroll(scrollID)) {
             chr.chatMessage("Vật phẩm này không dùng được trên trang bị này.");

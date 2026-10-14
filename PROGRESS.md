@@ -2,6 +2,50 @@
 
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
+
+## 📅 [2026-10-15 00:50 น.] Complete Resolution of Green Cube Lag/Freeze, Mutual Regression between Green Cube & Bright Cube (Bonus Poten Cube), and Full Rebirth Flame Before/After Audit Across All Tiers
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: Permanent Fix for Green Cube Freeze/Lag, Elimination of Mutual Slot-Shadowing Regression between Green Cube (`5062505`/`5062500`/`2730007`) and Bright Cube / Bonus Bright Cube (`5062029`/`5062506`/`5062503`), O(1) Cube Potential Lookup Engine, and Complete Rebirth Flame Before/After Selection Overhaul
+- **รายละเอียด**:
+  1. **แก้ไขปัญหาแก้ลูกบาศก์เขียวแล้ว Bright Cube (Bonus Poten Cube) พังสลับไปมา (Mutual Regression between Green Cube & Bright Cube)**:
+     - **ปัญหาที่พบ (Problem)**:
+       - เมื่อแก้ให้ลูกบาศก์เขียวใช้งานได้ ลูกบาศก์ Bright Cube / Bonus Bright Cube (`5062506`, `5062503`, `5062029`) จะกดใช้ไม่ได้ พอสลับไปแก้ Bright Cube ให้ใช้ได้ พอกลับมาแก้ลูกบาศก์เขียวอีกครั้ง Bright Cube ก็กลับมาพังซ้ำวนลูปหลายรอบ
+     - **สาเหตุเชิงเทคนิค (Root Cause)**:
+       1. **การชนกันของหมายเลขช่องกระเป๋า (`Slot Shadowing` ระหว่าง `ConsumeInventory` และ `CashInventory`)**:
+          - ใน [`CubeHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/CubeHandler.java) เมธอด `handleUserCashCubeItemUseRequest (1863)` และ `handleUserBonusBrightCubeItemUseRequest (371)` เดิมใช้วิธีดึงไอเทมจาก `ConsumeInventory.getItemBySlot(pos)` ก่อน แล้วเช็คแค่ `if (item == null)` จึงค่อยไปดึงจาก `CashInventory.getItemBySlot(pos)` (หรือสลับลำดับกันในคอมมิตก่อนหน้า)โดย**ไม่ตรวจสอบว่าไอเทมในช่อง `pos` นั้นเป็นลูกบาศก์จริงหรือไม่ (`ItemConstants.isAnyCube`)**
+          - ส่งผลให้เมื่อผู้เล่นมีไอเทมทั่วไปในช่อง `Use / Consume` (เช่น Power Elixir, Nodestone, หรือหิน Flame ในสล็อตที่ 1–10) แล้วกดใช้ **Bright Cube / Bonus Bright Cube** ที่อยู่ในช่อง `Cash` สล็อตเดียวกัน โค้ดจะหยิบยาหรือหินในช่อง `Consume` มาแทนลูกบาศก์ในช่อง `Cash` ทำให้เซิร์ฟเวอร์มองว่าไม่ใช่ลูกบาศก์และยกเลิกการทำงานทันที! ในทางกลับกัน พอสลับให้เช็คช่อง `Cash` ก่อน ลูกบาศก์เขียวที่อยู่ในช่อง `Consume` (`2730007` Bonus Mystical Cube) ก็จะถูกไอเทมในช่อง `Cash` สล็อตเดียวกันบังจนกดใช้ไม่ได้สลับไปมา!
+       2. **การส่งแพ็กเก็ตผิด Opcode และการลบกองลูกบาศก์ทิ้งกลางคันใน `handleCube`**:
+          - ใน `handleCube` เดิมมีการส่ง `UserLocal.brightCubeResult` (`OutHeader.BRIGHT_CUBE_RESULT = 1519`) ซึ่งสำหรับลูกบาศก์เขียว (`5062500` Bonus Potential Cube) ไคลเอนต์ไม่ได้เปิดหน้าต่าง Memorial Before/After ทำให้ UI ค้างรอแพ็กเก็ต `UserLocal.itemSlotExtendItemUse` (`OutHeader.ITEM_SLOT_EXTEND_RESULT = 1518`)
+          - นอกจากนี้โค้ดแปลงรหัสลูกบาศก์เก่า (`chr.consumeItem(cube, remainingQty); chr.addItemToInventory(normalizedCubeId, remainingQty);`) ไปลบกองลูกบาศก์ที่หน้าต่าง UI กำลังอ้างอิง `uPos` อยู่ทิ้งกลางคัน ทำให้กดสุ่มครั้งถัดไปไม่ได้และเกมค้าง
+     - **วิธีแก้ (Fix/Implementation)**:
+       - สร้างเมธอดกลาง `findCubeItem(Char chr, int pos, int expectedCubeId, boolean preferCash)` ใน [`CubeHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/CubeHandler.java#L232-L280) และเพิ่ม `ItemConstants.isAnyCube(int itemId)` / `ItemConstants.isMemorialCube(int itemId)` ใน [`ItemConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/ItemConstants.java#L1735-L1765):
+         - ตรวจสอบทั้ง `item.getItemId() == expectedCubeId` และ `ItemConstants.isAnyCube(item.getItemId())` ในช่องกระเป๋าที่ระบุก่อนเสมอ หากสล็อต `pos` ในกระเป๋าแรกเป็นไอเทมอื่นที่ไม่ใช่ลูกบาศก์ (เช่น ยา/หิน) ระบบจะข้ามไปค้นหาลูกบาศก์ในอีกกระเป๋าหนึ่งโดยอัตโนมัติ และมี Fallback ค้นหาด้วย `expectedCubeId` ทำให้ `Consume` และ `Cash` ไม่บังกันอีกต่อไป 100%
+       - คืนค่าการส่ง `UserLocal.itemSlotExtendItemUse(true, cubeID, equip.getItemId())` (`1518`) ใน `handleCube` และนำโค้ดที่ลบกองลูกบาศก์กลางคันออก
+  2. **แก้ไขอาการเกมหน่วง/กระตุกเวลาสุ่มลูกบาศก์ (O(1) Potential Option Cache & O(1) ItemGrade Lookup)**:
+     - **ปัญหาที่พบ (Problem)**: ทุกครั้งที่กดสุ่มลูกบาศก์ (โดยเฉพาะลูกบาศก์เขียวและลูกบาศก์ที่สุ่มรัวๆ) เกมจะมีอาการหน่วงและกระตุกสะสม
+     - **สาเหตุเชิงเทคนิค (Root Cause)**:
+       - ใน [`ItemConstants.getOptionsByEquip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/ItemConstants.java#L2015-L2095) ทุกครั้งที่สุ่มออปชั่น 1 แถว โค้ดจะวนลูป `for (ItemOption io : data)` สแกนรายการ `ItemOption` นับพันรายการถึง **6 รอบต่อแถว (18 รอบต่อการกดลูกบาศก์ 1 คลิก)**
+       - ยิ่งไปกว่านั้น ภายในลูปยังเรียก [`ItemGrade.getGradeByOption(io.getId())`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/enums/ItemGrade.java#L50-L90) ซึ่งข้างในเรียก `Arrays.stream(values()).filter(...).findFirst()` สร้างอ็อบเจกต์ Stream ใหม่หลายหมื่นครั้งต่อการกดลูกบาศก์เพียง 1 ครั้ง!
+     - **วิธีแก้ (Fix/Implementation)**:
+       - แก้ไข [`ItemGrade.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/enums/ItemGrade.java#L50-L90): เปลี่ยน `getGradeByVal` และ `getGradeByOption` จาก `Arrays.stream` เป็น `switch` และเงื่อนไขเปรียบเทียบค่าโดยตรงระดับ **O(1)** (Zero Allocation)
+       - แก้ไข [`ItemConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/ItemConstants.java#L2015-L2095): สร้างตาราง Pre-indexed Cache `CACHED_OPTIONS_BY_KEY` แยกตาม `(optionType, normalizedGrade, bonus)` ทำให้การดึงรายการออปชั่นของลูกบาศก์ทุกชนิดทำงานในเวลา **O(1)** ทันที ปราศจากอาการหน่วง 100%
+  3. **ตรวจสอบและแก้ไขระบบ Rebirth Flame ทุกขั้น ทุกหิน ให้เลือกสเตตัสก่อน / หลังได้จริง 100% (Full Rebirth Flame Before/After Audit)**:
+     - **ปัญหาที่พบ (Problem)**: การใช้หิน Rebirth Flame เพื่อเลือกสเตตัสก่อน/หลัง (Before / After) มีปัญหาเลือกไม่ได้จริงในบางกรณี หรือกดใช้หินจากร้านค้าแล้วไม่เปิดหน้าต่าง Before / After
+     - **สาเหตุเชิงเทคนิค (Root Cause)**:
+       1. ใน [`Equip.deepCopy()`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/items/Equip.java#L505-L512) ไม่ได้คัดลอก `ret.setId(getId())` ทำให้ `equipCopy` ที่ส่งไปแสดงผลฝั่ง `After` ในแพ็กเก็ต `blackFlameOfResurrectionModifed` มี `SN = 0` ไม่ตรงกับอุปกรณ์จริง
+       2. ใน [`WvsContext.blackFlameOfResurrectionModifed`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/connection/packet/WvsContext.java#L1529-L1548) ส่งค่า `equip.getBagIndex()` เป็นค่าบวกเสมอแม้ผู้เล่นจะตี Flame ใส่อุปกรณ์ที่สวมใส่อยู่ (`InvType.EQUIPPED`) ซึ่งไคลเอนต์ต้องการค่าติดลบ (`-equip.getBagIndex()`)
+       3. ใน [`ItemUpgradeHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemUpgradeHandler.java#L64-L231) เดิมบันทึกแค่ค่า `ex` ใหม่ลงใน `FLAME_QR` โดยไม่บันทึก `oldex` และใน `handleMemorialExUpgradeItemOptionRequest (1629)` อ่านเฉพาะ `bSelect == 1` หรือ `6` แบบตายตัว รวมถึงไม่รองรับกรณีลากหิน Rebirth Flame ระดับทั่วไปใส่ไอเทมโดยตรงผ่าน `USER_UPGRADE_ITEM_USE_REQUEST (350)` (ซึ่งเคยติดเงื่อนไข `equip.getTuc() == 0`)
+       4. ใน [`ItemConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/ItemConstants.java#L1765-L1855) รหัส `2048752` (Powerful Rebirth Flame) ถูกใส่ผิดอยู่ใน `isEternalRebirthFlame`, ขาด `2536001` (Karma Black Rebirth Flame) และ `2048787` (Eternal Rebirth Flame)
+       5. ในร้านค้า [`point_shop.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/data/scripts/npc/point_shop.py#L541-L551) รายการ `"Black Rebirth Flame"` เดิมผูกกับรหัส `2048744` ซึ่งใน WZ แท้จริงคือ `Powerful Rebirth Flame` (ไม่ใช่ Black Flame!) ทำให้ผู้เล่นที่ซื้อไปกดใช้ได้แต่สุ่มทับทันทีโดยไม่มีหน้าต่างเลือก Before / After
+     - **วิธีแก้ (Fix/Implementation)**:
+       - แก้ไข [`Equip.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/items/Equip.java#L505-L512) ให้ `deepCopy()` คัดลอก `ret.setId(getId())` เสมอ
+       - แก้ไข [`WvsContext.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/connection/packet/WvsContext.java#L1529-L1548) ให้เข้ารหัส `-equip.getBagIndex()` เมื่ออุปกรณ์อยู่ในช่อง `EQUIPPED`
+       - แก้ไข [`ItemUpgradeHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemUpgradeHandler.java#L37-L231):
+         - แยกการทำงานของ Memorial Rebirth Flames (`Black Rebirth Flame` Tier 4–7 และ `Abyssal Rebirth Flame` Tier 5–7) ให้สุ่มบน `equipCopy` โดยไม่เขียนทับอุปกรณ์จริงจนกว่าผู้เล่นจะกดเลือก **Before** (`oldex`) หรือ **After** (`newex`) พร้อมข้อความยืนยันชัดเจน
+         - รองรับ Non-Memorial Rebirth Flames (`Powerful`, `Eternal`, และ `Level 110–150` ทุกก้อน) ทั้งการกดผ่านหน้าต่าง UI (`1628`/`1629` รองรับปุ่ม Use Again ต่อเนื่อง) และการลากวางใส่อุปกรณ์โดยตรง (`350`) โดยไม่ติดเงื่อนไข `tuc == 0`
+       - แก้ไข [`ItemConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/ItemConstants.java#L1765-L1855) จัดหมวดหมู่รหัสหิน Rebirth Flame ทุกก้อนใน WZ ให้ตรงระดับ Tier 100% และอัปเดต [`point_shop.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/data/scripts/npc/point_shop.py#L541-L551) ให้จำหน่าย `2048753` (`Black Rebirth Flame` ของแท้ที่เปิดหน้าต่าง Before/After) และเพิ่ม `2048796` (`Abyssal Rebirth Flame` Tier 5–7 Before/After)
+
 ## 📅 [2026-10-14 22:12 น.] Deep Fix for Green Bonus Potential Cube & All Cubes UI Freeze/Lag (UICubeWz2 Migration & Async Item SQL), Arcane Symbols Quest & Daily Script Full Audit, and Equipment Upgrade & Enhancement Full Audit (+10% Challenging Balance)
 
 ### 🎯 Scope & Technical Details

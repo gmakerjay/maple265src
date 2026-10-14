@@ -48,30 +48,46 @@ public enum ItemGrade {
     }
 
     public static ItemGrade getGradeByVal(int grade) {
-        return Arrays.stream(values()).filter(ig -> ig.getVal() == grade).findFirst().orElse(null);
+        return switch (grade) {
+            case -12 -> LegendaryBonusHidden;
+            case -13 -> UniqueBonusHidden;
+            case -14 -> EpicBonusHidden;
+            case -15 -> RareBonusHidden;
+            case 4 -> HiddenLegendary;
+            case 3 -> HiddenUnique;
+            case 2 -> HiddenEpic;
+            case 1 -> HiddenRare;
+            case 0 -> None;
+            case 16 -> RareSecondary;
+            case 17 -> Rare;
+            case 18 -> Epic;
+            case 19 -> Unique;
+            case 20 -> Legendary;
+            default -> null;
+        };
     }
 
     public static ItemGrade getGradeByOption(int option) {
-        ItemGrade itemGrade = None;
         if (option < 0) {
-            itemGrade = Arrays.stream(values()).filter(is -> is.getVal() == Math.abs(option)).findFirst().orElse(None);
+            ItemGrade ig = getGradeByVal(Math.abs(option));
+            return ig != null ? ig : None;
         }
-        if ((option > 0 && option < 10000)) {
-            itemGrade = RareSecondary;
+        if (option > 0 && option < 10000) {
+            return RareSecondary;
         }
         if (option > 10000 && option < 20000) {
-            itemGrade = Rare;
+            return Rare;
         }
         if (option > 20000 && option < 30000) {
-            itemGrade = Epic;
+            return Epic;
         }
         if (option > 30000 && option < 40000) {
-            itemGrade = Unique;
+            return Unique;
         }
         if (option > 40000 && option < 50000) {
-            itemGrade = Legendary;
+            return Legendary;
         }
-        return itemGrade;
+        return None;
     }
 
     public static boolean isMatching(short first, short second) {

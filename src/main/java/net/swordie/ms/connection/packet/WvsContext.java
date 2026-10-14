@@ -1534,7 +1534,7 @@ public class WvsContext {
             // MemorialFlame::Decode
             outPacket.encodeByte(1);
             outPacket.encodeLong(equip.getId());
-            outPacket.encodeShort(equip.getBagIndex());
+            outPacket.encodeShort(equip.getInvType() == EQUIPPED ? -equip.getBagIndex() : equip.getBagIndex());
             outPacket.encodeInt(flameID); // Karma Black Rebirth Flame => 6,7
             outPacket.encodeShort(tier); // tier
             outPacket.encodeByte(1);

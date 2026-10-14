@@ -229,6 +229,53 @@ public class CubeHandler {
         chr.dispose();
     }
 
+    private static Item findCubeItem(Char chr, int pos, int expectedCubeId, boolean preferCash) {
+        int absPos = Math.abs(pos);
+        if (expectedCubeId > 0) {
+            Item cashAtPos = chr.getCashInventory().getItemBySlot(pos);
+            if (cashAtPos == null && pos < 0) {
+                cashAtPos = chr.getCashInventory().getItemBySlot(absPos);
+            }
+            if (cashAtPos != null && cashAtPos.getItemId() == expectedCubeId) {
+                return cashAtPos;
+            }
+            Item consumeAtPos = chr.getConsumeInventory().getItemBySlot(pos);
+            if (consumeAtPos == null && pos < 0) {
+                consumeAtPos = chr.getConsumeInventory().getItemBySlot(absPos);
+            }
+            if (consumeAtPos != null && consumeAtPos.getItemId() == expectedCubeId) {
+                return consumeAtPos;
+            }
+            Item byIdConsume = chr.getConsumeInventory().getItemByItemID(expectedCubeId);
+            if (byIdConsume != null) {
+                return byIdConsume;
+            }
+            Item byIdCash = chr.getCashInventory().getItemByItemID(expectedCubeId);
+            if (byIdCash != null) {
+                return byIdCash;
+            }
+        }
+        Inventory firstInv = preferCash ? chr.getCashInventory() : chr.getConsumeInventory();
+        Inventory secondInv = preferCash ? chr.getConsumeInventory() : chr.getCashInventory();
+
+        Item item = firstInv.getItemBySlot(pos);
+        if (item == null && pos < 0) {
+            item = firstInv.getItemBySlot(absPos);
+        }
+        if (item != null && ItemConstants.isAnyCube(item.getItemId())) {
+            return item;
+        }
+
+        Item fallback = secondInv.getItemBySlot(pos);
+        if (fallback == null && pos < 0) {
+            fallback = secondInv.getItemBySlot(absPos);
+        }
+        if (fallback != null && ItemConstants.isAnyCube(fallback.getItemId())) {
+            return fallback;
+        }
+        return null;
+    }
+
     @Handler(op = InHeader.USER_CASH_CUBE_ITEM_USE_REQUEST)
     public static void handleUserCashCubeItemUseRequest(Char chr, InPacket inPacket) {
         inPacket.decodeInt(); // tick
@@ -241,7 +288,7 @@ public class CubeHandler {
             byte invTypeVal = 5;
             if (type == 3) {
                 pos = inPacket.decodeShort();
-                item = chr.getCashInventory().getItemBySlot(pos);
+                item = findCubeItem(chr, pos, ItemConstants.VIOLET_CUBE, true);
                 if (item == null) {
                     chr.dispose();
                     return;
@@ -252,17 +299,7 @@ public class CubeHandler {
                 invTypeVal = inPacket.decodeByte(); // 2 = Consume, 5 = Cash
                 pos = inPacket.decodeInt();
             }
-            if (invTypeVal == 2) {
-                item = chr.getConsumeInventory().getItemBySlot(pos);
-                if (item == null) {
-                    item = chr.getCashInventory().getItemBySlot(pos);
-                }
-            } else {
-                item = chr.getCashInventory().getItemBySlot(pos);
-                if (item == null) {
-                    item = chr.getConsumeInventory().getItemBySlot(pos);
-                }
-            }
+            item = findCubeItem(chr, pos, 0, invTypeVal != 2);
             if (item == null) {
                 chr.dispose();
                 return;
@@ -277,16 +314,7 @@ public class CubeHandler {
     public static void handleUserConsumeCubeItemUserRequest(Char chr, InPacket inPacket) {
         inPacket.decodeInt(); // tick
         int pos = inPacket.decodeShort();
-        var item = chr.getConsumeInventory().getItemBySlot(pos);
-        if (item == null) {
-            item = chr.getCashInventory().getItemBySlot(pos);
-        }
-        if (item == null && pos < 0) {
-            item = chr.getConsumeInventory().getItemBySlot(Math.abs(pos));
-            if (item == null) {
-                item = chr.getCashInventory().getItemBySlot(Math.abs(pos));
-            }
-        }
+        var item = findCubeItem(chr, pos, 0, false);
         if (item == null) {
             chr.dispose();
             return;
@@ -357,13 +385,13 @@ public class CubeHandler {
     public static void handleUserBonusMysticalCubeItemUseRequest(Char chr, InPacket inPacket) {
         inPacket.decodeInt(); // tick
         int uPos = inPacket.decodeShort();
-        Item item = chr.getConsumeInventory().getItemBySlot(uPos);
-        if (item == null) {
-            item = chr.getCashInventory().getItemBySlot(uPos);
-        }
-        int cubeID = item != null ? item.getItemId() : ItemConstants.BONUS_MYSTICAL_CUBE;
+        int cubeID = 0;
         if (inPacket.getUnreadAmount() >= 6) {
             cubeID = inPacket.decodeInt();
+        }
+        Item item = findCubeItem(chr, uPos, cubeID, false);
+        if (cubeID <= 0) {
+            cubeID = item != null ? item.getItemId() : ItemConstants.BONUS_MYSTICAL_CUBE;
         }
         handleCube(chr, item, cubeID, ItemConstants.getCubeType(cubeID), inPacket, ItemGrade.Epic, true);
     }
@@ -371,16 +399,18 @@ public class CubeHandler {
     @Handler(op = InHeader.USER_BONUS_BRIGHT_CUBE_ITEM_USE_REQUEST)
     public static void handleUserBonusCubeItemUseRequest(Char chr, InPacket inPacket) {
         inPacket.decodeInt(); // tick
+        int cubeID = 0;
         short uPos;
         if (inPacket.getUnreadAmount() >= 6) {
-            inPacket.decodeInt(); // cubeID
+            cubeID = inPacket.decodeInt();
             uPos = inPacket.decodeShort();
         } else {
             uPos = inPacket.decodeShort();
         }
-        var item = chr.getConsumeInventory().getItemBySlot(uPos);
+        var item = findCubeItem(chr, uPos, cubeID, false);
         if (item == null) {
-            item = chr.getCashInventory().getItemBySlot(uPos);
+            chr.dispose();
+            return;
         }
         handleBrightCube(chr, item, inPacket, ItemGrade.Legendary, true, true);
     }
@@ -480,12 +510,6 @@ public class CubeHandler {
         chr.deductMoney(cost);
         if (cube != null) {
             chr.consumeItem(cube, 1);
-            int normalizedCubeId = ItemConstants.normalizeLegacyCubeItemId(cubeID);
-            if (normalizedCubeId != cubeID && cube.getQuantity() > 0) {
-                int remainingQty = cube.getQuantity();
-                chr.consumeItem(cube, remainingQty);
-                chr.addItemToInventory(normalizedCubeId, remainingQty);
-            }
         } else {
             chr.consumeItem(cubeID, 1);
         }
@@ -504,21 +528,13 @@ public class CubeHandler {
             }
             if (zeroEquip != null) {
                 zeroEquip.setOptions(equip.getOptions());
+                zeroEquip.updateOptionsInSQL();
                 zeroEquip.updateToChar(chr);
             }
         }
-        chr.write(UserLocal.brightCubeResult(true, cubeID, equip.getItemId()));
+        chr.write(UserLocal.itemSlotExtendItemUse(true, cubeID, equip.getItemId()));
         equip.updateOptionsInSQL();
         equip.updateToChar(chr);
-        if (JobConstants.isZero(chr.getJob()) && ItemConstants.isLongOrBigSword(equip.getItemId())) {
-            Equip zeroEquip = (Equip) chr.getEquippedInventory().getItemBySlot(-11);
-            if (zeroEquip == null) {
-                zeroEquip = (Equip) chr.getEquippedInventory().getItemBySlot(11);
-            }
-            if (zeroEquip != null) {
-                zeroEquip.updateOptionsInSQL();
-            }
-        }
         if (cubeType == 0 && (cubeID / 10000 == 271 || cubeID / 10000 == 273)) {
             chr.write(FieldPacket.inGameCubeResult(chr.getId(), tierUp, cubeID, ePos, equip, cubeCount));
         }
@@ -616,12 +632,6 @@ public class CubeHandler {
             chr.deductMoney(cost);
             if (cube != null) {
                 chr.consumeItem(cube, 1);
-                int normalizedCubeId = ItemConstants.normalizeLegacyCubeItemId(cubeID);
-                if (normalizedCubeId != cubeID && cube.getQuantity() > 0) {
-                    int remainingQty = cube.getQuantity();
-                    chr.consumeItem(cube, remainingQty);
-                    chr.addItemToInventory(normalizedCubeId, remainingQty);
-                }
             } else {
                 chr.consumeItem(cubeID, 1);
             }
@@ -643,12 +653,7 @@ public class CubeHandler {
             var memorialCubeInfo = chr.getMemorialCubeInfo();
             if (memorialCubeInfo != null) {
                 int cubeID = memorialCubeInfo.getCubeItemID();
-                if (!ItemConstants.BRIGHT_CUBES.contains(cubeID)
-                        && !ItemConstants.BONUS_BRIGHT_CUBES.contains(cubeID)
-                        && cubeID != ItemConstants.BRIGHT_CUBE
-                        && cubeID != ItemConstants.BLACK_CUBE
-                        && cubeID != ItemConstants.BONUS_BRIGHT_CUBE_1
-                        && cubeID != ItemConstants.BONUS_BRIGHT_CUBE_2) {
+                if (!ItemConstants.isMemorialCube(cubeID)) {
                     chr.dispose();
                     return;
                 }
