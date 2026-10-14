@@ -29,7 +29,7 @@ public class FoxManHandler {
 
     @Handler(op = InHeader.FOX_MAN_ACTION_SET_USE_REQUEST)
     public static void handleFoxManActionSetUseRequest(Char chr, InPacket inPacket) {
-        if (!chr.hasSkill(Kanna.HAKU) && !chr.hasSkill(Kanna.HAKU_REBORN) && chr.getTemporaryStatManager().hasStat(ChangeFoxMan)) {
+        if ((!chr.hasSkill(Kanna.HAKU) && !chr.hasSkill(Kanna.HAKU_REBORN)) || !chr.getTemporaryStatManager().hasStat(ChangeFoxMan) || chr.getFoxMan() == null) {
             return;
         }
         FoxMan foxMan = chr.getFoxMan();

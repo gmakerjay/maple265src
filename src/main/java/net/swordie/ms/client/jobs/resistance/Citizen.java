@@ -44,7 +44,7 @@ public class Citizen extends Job {
     public Citizen(Char chr) {
         super(chr);
 
-        if (chr.getId() != 0 && isHandlerOfJob(chr.getJob())) {
+        if (chr != null && chr.getId() != 0 && isHandlerOfJob(chr.getJob())) {
             for (int id : addedSkills) {
                 if (!chr.hasSkill(id)) {
                     Skill skill = SkillData.getSkillDeepCopyById(id);
@@ -52,6 +52,7 @@ public class Citizen extends Job {
                         skill.setRootId(3000);
                         skill.setMasterLevel(3);
                         skill.setMaxLevel(3);
+                        skill.setCurrentLevel(3);
                         chr.addSkill(skill);
                     }
                 }

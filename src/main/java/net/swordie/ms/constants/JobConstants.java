@@ -1894,9 +1894,9 @@ public class JobConstants {
         }
         if (isCygnusKnight(job)) return 1000;
         if (isMihile(job)) return 5000;
-        if (isResistance(job)) return 3000;
         if (isDemon(job)) return 3001;
         if (isXenon(job)) return 3002;
+        if (isResistance(job)) return 3000;
         if (isAran(job)) return 2000;
         if (isEvan(job)) return 2001;
         if (isMercedes(job)) return 2002;

@@ -8725,6 +8725,9 @@ public class Char {
         }
         int curMp = getStat(Stat.mp);
         int mpCon = JobConstants.isKanna(getJob()) ? si.getValue(epCon, slv) : si.getValue(SkillStat.mpCon, slv);
+        if (JobConstants.isKanna(getJob()) && tsm.hasStat(CharacterTemporaryStat.KannaSiksinAutoAttack)) {
+            mpCon /= 2;
+        }
         int mpRCon = si.getValue(SkillStat.mpRCon, slv);
         if (mpRCon > 0) {
             mpCon = (int) (getMaxMP() * mpRCon / 100.0D);
@@ -8738,27 +8741,30 @@ public class Char {
         } else {
             if (JobConstants.isDemonSlayer(getJob()) || JobConstants.isZero(getJob())) {
                 mpCon = si.getValue(forceCon, slv);
+                if ((skillID == DemonSlayer.DARK_METAMORPHOSIS || skillID == 31141009) && tsm.hasStatBySkillId(DemonSlayer.DEMON_AWAKENING)) {
+                    mpCon = 0;
+                }
                 if (hasSkill(DemonSlayer.BLUE_BLOOD)) {
                     SkillInfo dsi = SkillData.getSkillInfoById(DemonSlayer.BLUE_BLOOD);
                     if (dsi != null) {
-                        mpCon *= (int) ((100 - dsi.getValue(reduceForceR, getSkillLevel(DemonSlayer.BLUE_BLOOD))) / 100.0D);
+                        mpCon = (int) (mpCon * (100 - dsi.getValue(reduceForceR, getSkillLevel(DemonSlayer.BLUE_BLOOD))) / 100.0D);
                     }
                 }
-                if (skillID == DemonSlayer.DEMON_IMPACT && hasSkill(31120051)) {
+                if ((skillID == DemonSlayer.DEMON_IMPACT || skillID == 31141000 || skillID == 31141001) && hasSkill(31120051)) {
                     // Demon Impact - Reduce Fury
                     SkillInfo dsi = SkillData.getSkillInfoById(31120051);
                     if (dsi != null) {
-                        mpCon *= (int) ((100 - dsi.getValue(reduceForceR, getSkillLevel(31120051))) / 100.0D);
+                        mpCon = (int) (mpCon * (100 - dsi.getValue(reduceForceR, getSkillLevel(31120051))) / 100.0D);
                     }
                 }
-                if (skillID == DemonSlayer.DARK_METAMORPHOSIS && hasSkill(31120048)) {
+                if ((skillID == DemonSlayer.DARK_METAMORPHOSIS || skillID == 31141009) && hasSkill(31120048)) {
                     // Dark Metamorphosis - Reduced Fury
                     SkillInfo dsi = SkillData.getSkillInfoById(31120048);
                     if (dsi != null) {
-                        mpCon *= (int) ((100 - dsi.getValue(reduceForceR, getSkillLevel(31120048))) / 100.0D);
+                        mpCon = (int) (mpCon * (100 - dsi.getValue(reduceForceR, getSkillLevel(31120048))) / 100.0D);
                     }
                 }
-                if (skillID == DemonSlayer.DARK_METAMORPHOSIS && !isUserSkillUseRequest) {
+                if ((skillID == DemonSlayer.DARK_METAMORPHOSIS || skillID == 31141009) && !isUserSkillUseRequest) {
                     return true;
                 }
             } else {

@@ -115,7 +115,7 @@ public class SkillConstants {
             HoYoung.MASTER_ELIXIR,
             182001001, // Stellar I - Antares
             Job.WEAPON_AURA,
-            DemonAvenger.DEMONIC_FRENZY, DemonAvenger.REVENANT,
+            DemonAvenger.DEMONIC_FRENZY, DemonAvenger.REVENANT, 500061054, // HEXA Revenant
             BlazeWizard.INFERNO_SPHERE,
             WindArcher.HOWLING_GALE,
             WildHunter.PRIMAL_GRENADE,
@@ -1329,6 +1329,8 @@ public class SkillConstants {
                 return Shade.FIRE_FOX_SPIRIT_MASTERY;
             case DemonAvenger.NETHER_SHIELD_ATOM:
                 return DemonAvenger.NETHER_SHIELD;
+            case 31241001: // HEXA Nether Shield Atom
+                return 31241000; // HEXA Nether Shield
             case Phantom.ACE_IN_THE_HOLE_ATOM:
                 return Phantom.ACE_IN_THE_HOLE;
             default:
@@ -2035,6 +2037,18 @@ public class SkillConstants {
             case 31221012: //DA - Exceed Execution Purple
                 return 31221000; //DA - Exceed Execution 1
 
+            case 31241003: //DA - HEXA Exceed Execution 2
+            case 31241004: //DA - HEXA Exceed Execution 3
+            case 31241005: //DA - HEXA Exceed Execution 4
+            case 31241006: //DA - HEXA Exceed Execution Purple
+                return 31241002; //DA - HEXA Exceed Execution 1
+
+            case 31241008: //DA - HEXA Exceed Lunar Slash 2
+            case 31241009: //DA - HEXA Exceed Lunar Slash 3
+            case 31241010: //DA - HEXA Exceed Lunar Slash 4
+            case 31241011: //DA - HEXA Exceed Lunar Slash Purple
+                return 31241007; //DA - HEXA Exceed Lunar Slash 1
+
             case 31211002: //DA - Shield Charge (Spikes)
                 return 31211011; //DA - Shield Charge (Rush)
 
@@ -2121,18 +2135,40 @@ public class SkillConstants {
             case 41001005:
             case 41001007:
             case 41001008:
+            case 41001009: // Sanrenzan Blade Flash
                 return 41001000; // Sanrenzan 1st Job
+
+            case 41001014: // Rising Slash Link
+                return 41001002; // Rising Slash
+
+            case 41001015: // Surging Blade Link
+                return 41001013; // Surging Blade
 
             case 41101008:
             case 41101009:
+            case 41101011: // Jin Blade Flash
                 return 41101000; // Jin Sanrenzan 2nd Job
+
+            case 41101014: // Falcon Dive Link
+                return 41101012; // Falcon Dive
+
+            case 41101015: // Shouryuusen Link
+                return 41101013; // Shouryuusen
 
             case 41111011:
             case 41111012:
+            case 41111014: // Fuu Blade Flash
                 return 41111000; // Fuu Sanrenzan 3rd Job
+
+            case 41111017: // Sweeping Sword Link
+                return 41111001; // Sweeping Sword
+
+            case 41111018: // Whirlwind Cut Link
+                return 41111015; // Whirlwind Cut
 
             case 41121011:
             case 41121012:
+            case 41121016: // Rai Blade Flash
                 return 41121000; // Rai Sanrenzan 4th Job
 
             case 41141001: // HEXA Rai Sanrenzan 2nd Hit
@@ -2194,6 +2230,9 @@ public class SkillConstants {
 
             case 42121101: // Orochi Unbound Hit
                 return 42121100; // Orochi Unbound
+
+            case 400021115: // Great Oni Lord's Legion Sub
+                return 400021114; // Great Oni Lord's Legion
 
             case 14101021: // NW - Triple Throw Finisher
                 return 14101020; // NW - Triple Throw
@@ -2681,6 +2720,181 @@ public class SkillConstants {
             case 500061044:
             case 500061045:
                 return 500061041; // HEXA Elemental Barrage
+            // Illium Sub-Skills & 6th Job Mappings
+            case 152001006:
+                return 152001002; // Radiant Orb II -> Radiant Orb
+            case 152101006:
+                return 152101003; // Glory Wings: Mortal Wingbeat
+            case 152110004:
+            case 152120016:
+            case 152120017:
+                return 152110002; // Glory Wings: Javelin
+            case 152120001:
+            case 152120002:
+            case 152120003:
+                return 152001001; // Radiant Javelin II -> Radiant Javelin
+            case 152141001:
+            case 152141002:
+                return 152141000; // HEXA Radiant Javelin
+            case 152141004:
+            case 152141005:
+            case 152141006:
+                return 152141003; // HEXA Glory Wings: Javelin
+            case 152141011:
+                return 152141010; // HEXA Machina
+            case 152141013:
+                return 152141012; // HEXA Crystal Skill: Deus
+            case 152141501:
+            case 152141502:
+            case 152141503:
+            case 152141504:
+            case 152141505:
+            case 152141506:
+                return 152141500; // Mytocrystal Expanse
+            case 152141508:
+            case 152141509:
+                return 152141508; // Excidium (2nd 6th Job Ascent)
+            // Kain Sub-Skills & 6th Job Mappings
+            case 63101003:
+                return 63101002; // Strike Arrow II
+            case 63111005:
+                return 63111003; // Shaft Break
+            case 63111010:
+                return 63111009; // Remain Incense
+            case 63111013:
+                return 63110002; // Death's Blessing Realization
+            case 63121005:
+                return 63121004; // Falling Dust
+            case 63121007:
+                return 63121006; // Poison Needle
+            case 63141001:
+            case 63141002:
+            case 63141003:
+                return 63141000; // HEXA Strike Arrow
+            case 63141005:
+                return 63141004; // HEXA Scattering Shot
+            case 63141008:
+                return 63141007; // HEXA Shaft Break
+            case 63141010:
+                return 63141009; // HEXA Falling Dust
+            case 63141012:
+                return 63141011; // HEXA Chain Sickle
+            case 63141015:
+            case 63141016:
+            case 63141017:
+                return 63141014; // HEXA Poison Needle / Death Blessing
+            case 63141019:
+            case 63141020:
+                return 63141018; // HEXA Sneak Attack / Unseen Sniper
+            case 63141023:
+                return 63141022; // HEXA Remain Incense
+            case 63141501:
+            case 63141502:
+            case 63141503:
+            case 63141504:
+            case 63141505:
+                return 63141500; // Total Annihilation
+            case 63141506:
+            case 63141507:
+            case 63141508:
+                return 63141506; // Churning Malice (2nd 6th Job Ascent)
+            // Resistance 6th Job & Ascent Mappings
+            case 37141002:
+            case 37141003:
+            case 37141004:
+            case 37141005:
+            case 37141006:
+            case 37141007:
+                return 37141000; // Blaster HEXA Bunker Buster Explosion -> HEXA Magnum Punch
+            case 37141010:
+                return 37141009; // Blaster HEXA Hammer Smash
+            case 37141013:
+            case 37141014:
+                return 37141012; // Blaster HEXA Revolving Cannon
+            case 37141502:
+            case 37141503:
+                return 37141502; // Blaster 2nd 6th Job Ascent
+            case 32141003:
+                return 32141002; // Battle Mage HEXA Sweeping Staff
+            case 32141006:
+            case 32141007:
+                return 32141005; // Battle Mage HEXA Dark Shock
+            case 32141009:
+            case 32141010:
+                return 32141008; // Battle Mage HEXA Dark Genesis
+            case 32141502:
+            case 32141503:
+                return 32141502; // Battle Mage 2nd 6th Job Ascent
+            case 33141001:
+            case 33141002:
+            case 33141003:
+            case 33141004:
+            case 33141005:
+                return 33141000; // Wild Hunter HEXA Wild Arrow Blast
+            case 33141007:
+                return 33141006; // Wild Hunter HEXA Swipe
+            case 33141009:
+                return 33141008; // Wild Hunter HEXA Dash 'n Slash
+            case 33141011:
+                return 33141010; // Wild Hunter HEXA Sonic Roar
+            case 33141013:
+                return 33141012; // Wild Hunter HEXA Jaguar Rampage
+            case 33141504:
+            case 33141505:
+                return 33141504; // Wild Hunter 2nd 6th Job Ascent
+            case 35141001:
+            case 35141002:
+                return 35141000; // Mechanic HEXA AP Salvo Plus
+            case 35141005:
+            case 35141010:
+                return 35141004; // Mechanic HEXA Distortion Bomb
+            case 35141504:
+                return 35141504; // Mechanic 2nd 6th Job Ascent
+            case 36141001:
+            case 36141002:
+            case 36141003:
+                return 36141000; // Xenon HEXA Mecha Purge
+            case 36141008:
+                return 36141007; // Xenon HEXA Beam Dance
+            case 36141010:
+            case 36141011:
+                return 36141009; // Xenon HEXA Pinpoint Salvo
+            case 36141015:
+                return 36141014; // Xenon HEXA Aegis System
+            case 36141504:
+            case 36141505:
+            case 36141506:
+                return 36141504; // Xenon 2nd 6th Job Ascent
+            case 31001006:
+            case 31001007:
+            case 31001008:
+                return 31000004; // Demon Slayer Demon Lash
+            case 31121057:
+            case 31121058:
+            case 31121059:
+            case 31121060:
+                return 31120057; // Demon Slayer Enhanced Demon Lash
+            case 31141001:
+                return 31141000; // Demon Slayer HEXA Demon Impact
+            case 31141002:
+                return 31141002; // Demon Slayer HEXA Demon Impact: Demon Chain
+            case 31141004:
+            case 31141005:
+            case 31141006:
+            case 31141007:
+                return 31141003; // Demon Slayer HEXA Demon Lash
+            case 31141011:
+                return 31141010; // Demon Slayer HEXA Infernal Concussion
+            case 31141015:
+                return 31141014; // Demon Slayer HEXA Cerberus Chomp
+            case 31141504:
+            case 31141505:
+            case 31141506:
+                return 31141504; // Demon Slayer Amethystine Incursion (2nd 6th Job Ascent)
+            case 31241503:
+            case 31241504:
+            case 31241505:
+                return 31241503; // Demon Avenger 2nd 6th Job Ascent
             default:
                 // Universal 6th Job Origin Sub-Skill Redirection (xxx41501-xxx41599 -> xxx41500)
                 int subOrigin = skillID % 100000;
@@ -3489,8 +3703,8 @@ public class SkillConstants {
             case AngelicBuster.DAY_DREAMER:
                 // Kaiser
             case Demon.SECRET_ASSEMBLY: // All Resistance
-                // Hayato
-                // Kanna
+            case 40011227: // Hayato - Return of the Five Planets
+            case 40021227: // Kanna - Return of the Five Planets
             case Zero.TEMPLE_RECALL:
 
                 return true;
@@ -4340,6 +4554,18 @@ public class SkillConstants {
             // Adele 5th Job
             case Adele.RUIN:
             case Adele.STORM:
+            // 6th Job HEXA No-Cooldown / Multi-Hit Skills
+            case 35141003: // Mechanic HEXA Homing Beacon
+            case 35141004: // Mechanic HEXA Distortion Bomb
+            case 35141005: // Mechanic HEXA Distortion Bomb Sub
+            case 35141010: // Mechanic HEXA Distortion Bomb Sub 2
+            case 33141023: // Wild Hunter HEXA Hunting Assistant Unit
+            case 33141024: // Wild Hunter HEXA Drill Salvo
+            case 37141015: // Blaster HEXA Ballistic Hurricane
+            case 152141007: // Illium HEXA Reaction: Destruction
+            case 152141008: // Illium HEXA Reaction: Domination
+            case 152141009: // Illium HEXA Longinus Spear
+            case 31141012: // Demon Slayer HEXA Demon Cry
                 return true;
             default:
                 return SkillConstants.isZeroAttackSkill(skillID) || SkillConstants.isKeyDownSkill(skillID);
@@ -4468,11 +4694,14 @@ public class SkillConstants {
                 // Resistance
                 // Demon Avenger
             case DemonAvenger.NETHER_SHIELD_ATOM:
+            case 31241001: // HEXA Nether Shield Atom
                 // Battle Mage
             case BattleMage.GRIM_HARVEST:
                 // Mechanic
             case Mechanic.MOBILE_MISSILE_BATTERY:
             case Mechanic.HOMING_BEACON:
+            case Mechanic.ADV_HOMING_BEACON:
+            case 35141003: // HEXA Homing Beacon
                 // Kaiser
             case Kaiser.BLADEFALL_ATTACK:
             case Kaiser.BLADEFALL_ATTACK_FF:
@@ -4487,6 +4716,19 @@ public class SkillConstants {
             case Illium.RADIANT_JAVELIN:
             case Illium.RADIANT_JAVELIN_II:
             case Illium.RADIANT_JAVELIN_ENHANCED:
+            case 152001011: // Radiant Javelin Fragment
+            case 152120002: // Radiant Javelin II Enhanced
+            case 152120003: // Radiant Javelin II Fragment
+            case 152120016: // Glory Wings: Javelin II
+            case 152120017: // Glory Wings: Javelin II Fragment
+            case 400021062: // Reaction: Spectrum
+            case 152141000: // HEXA Radiant Javelin
+            case 152141001: // HEXA Radiant Javelin Enhanced
+            case 152141002: // HEXA Radiant Javelin Fragment
+            case 152141003: // HEXA Glory Wings: Javelin
+            case 152141004: // HEXA Glory Wings: Javelin Fragment
+            case 152141005: // HEXA Glory Wings: Javelin Extra
+            case 152141006: // HEXA Glory Wings: Javelin Extra 2
                 // Ark
             case Ark.IMPENDING_DEATH_ATOM:
             case Ark.VENGEFUL_HATE:

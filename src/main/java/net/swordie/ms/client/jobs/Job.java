@@ -775,6 +775,9 @@ public abstract class Job {
             applyNdTime(chr, si, slv);
             // 6th Job Origin Skill: 7s Absolute Invincibility (IndieNotDamaged) & Party Cutscene
             if (SkillConstants.isOriginSkill(skillID)) {
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
                 o1.nReason = skillID;
                 o1.nValue = 1;
                 o1.tTerm = 7;
@@ -1718,6 +1721,13 @@ public abstract class Job {
 
     public void applyHpCost(int skillID) {
         if (skillID == 0 || !chr.hasSkill(skillID)) {
+            return;
+        }
+        if (chr.getTemporaryStatManager().hasStatBySkillId(31221054) // DemonAvenger.FORBIDDEN_CONTRACT
+                && skillID != 400011010 // DEMONIC_FRENZY
+                && skillID != 400011112 // REVENANT
+                && skillID != 500061054 // HEXA_REVENANT
+                && skillID != 400011038) { // BLOOD_FEAST / DEMONIC_BLAST
             return;
         }
         Skill skill = chr.getSkill(SkillConstants.getActualSkillIDfromSkillID(skillID));
@@ -3076,9 +3086,21 @@ public abstract class Job {
         } else if (JobConstants.isXenon(job)) {
             secondaryId = 1353003; // Controller
         } else if (JobConstants.isDemonSlayer(job)) {
-            secondaryId = 1352003; // Force Shield
+            secondaryId = 1099015; // Ruin Force Shield
         } else if (JobConstants.isDemonAvenger(job)) {
-            secondaryId = 1352004; // Demon Shield
+            secondaryId = 1099015; // Ruin Force Shield
+        } else if (JobConstants.isBattleMage(job)) {
+            secondaryId = 1352952; // Ultimate Magic Marble
+        } else if (JobConstants.isWildHunter(job)) {
+            secondaryId = 1352962; // Wild Heron
+        } else if (JobConstants.isMechanic(job)) {
+            secondaryId = 1352703; // Eternal Magnum
+        } else if (JobConstants.isBlaster(job)) {
+            secondaryId = 1353403; //Charge Mk. IV
+        } else if (JobConstants.isIllium(job)) {
+            secondaryId = 1353503; // Glory Lucent Wings
+        } else if (JobConstants.isHayato(job)) {
+            secondaryId = 1352803; // Wakizashi
         } else if (JobConstants.isKaiser(job)) {
             secondaryId = 1352503; // Nova Truth Essence (4th Job)
         } else if (JobConstants.isAngelicBuster(job)) {

@@ -103,26 +103,29 @@ public class Demon extends Job {
     public void handleHit(Client c, InPacket inPacket, HitInfo hitInfo) {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         Option o1 = new Option();
-        if (tsm.hasStatBySkillId(DEFENDER_OF_THE_DEMON_MASTEMA_MARK)) {
+        if (tsm.hasStatBySkillId(DEFENDER_OF_THE_DEMON_MASTEMA_MARK) && tsm.getOption(MastemaGuard) != null) {
             if (hitInfo.hpDamage > 0) {
                 Skill skill = chr.getSkill(DEFENDER_OF_THE_DEMON);
-                SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
-                int slv = skill.getCurrentLevel();
-                int dmgIntakeReduction = si.getValue(s, slv);
-                int count = tsm.getOption(MastemaGuard).xOption;
+                if (skill != null) {
+                    SkillInfo markSi = SkillData.getSkillInfoById(DEFENDER_OF_THE_DEMON_MASTEMA_MARK);
+                    SkillInfo si = markSi != null ? markSi : SkillData.getSkillInfoById(skill.getSkillId());
+                    int slv = skill.getCurrentLevel();
+                    int dmgIntakeReduction = si != null ? (si.getValue(y, slv) > 0 ? si.getValue(y, slv) : si.getValue(s, slv)) : 25;
+                    int count = tsm.getOption(MastemaGuard).xOption;
 
-                hitInfo.hpDamage -= (hitInfo.hpDamage * dmgIntakeReduction) / 100;
+                    hitInfo.hpDamage -= (hitInfo.hpDamage * dmgIntakeReduction) / 100;
 
-                if (count > 0) {
-                    count--;
-                    o1.setInMillis(true);
-                    o1.nOption = 1;
-                    o1.rOption = DEFENDER_OF_THE_DEMON_MASTEMA_MARK;
-                    o1.tOption = (int) (mastemaMarkTime - System.currentTimeMillis());
-                    o1.xOption = count;
-                    tsm.sendStat(MastemaGuard, o1);
-                } else {
-                    tsm.removeStatsBySkill(DEFENDER_OF_THE_DEMON_MASTEMA_MARK);
+                    if (count > 1) {
+                        count--;
+                        o1.setInMillis(true);
+                        o1.nOption = 1;
+                        o1.rOption = DEFENDER_OF_THE_DEMON_MASTEMA_MARK;
+                        o1.tOption = (int) Math.max(1000L, mastemaMarkTime - System.currentTimeMillis());
+                        o1.xOption = count;
+                        tsm.sendStat(MastemaGuard, o1);
+                    } else {
+                        tsm.removeStatsBySkill(DEFENDER_OF_THE_DEMON_MASTEMA_MARK);
+                    }
                 }
             }
         }
@@ -136,15 +139,23 @@ public class Demon extends Job {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         Option o = new Option();
         Skill skill = chr.getSkill(DEFENDER_OF_THE_DEMON);
+        if (skill == null) {
+            return;
+        }
+        SkillInfo markSi = SkillData.getSkillInfoById(DEFENDER_OF_THE_DEMON_MASTEMA_MARK);
         SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
         int slv = skill.getCurrentLevel();
+        int durationSec = markSi != null && markSi.getValue(time, slv) > 0
+                ? markSi.getValue(time, slv)
+                : (si != null && si.getValue(q, slv) > 0 ? si.getValue(q, slv) : 6);
+        int count = markSi != null && markSi.getValue(x, slv) > 0 ? markSi.getValue(x, slv) : 2;
 
         o.nOption = 1;
         o.rOption = DEFENDER_OF_THE_DEMON_MASTEMA_MARK;
-        o.tOption = si.getValue(q, slv);
-        o.xOption = 2;
+        o.tOption = durationSec;
+        o.xOption = count;
         tsm.sendStat(MastemaGuard, o);
-        mastemaMarkTime = System.currentTimeMillis() + (1000L * si.getValue(q, slv));
+        mastemaMarkTime = System.currentTimeMillis() + (1000L * durationSec);
     }
 
     @Override

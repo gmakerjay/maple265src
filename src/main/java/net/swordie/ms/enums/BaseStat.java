@@ -101,8 +101,10 @@ public enum BaseStat {
                 stats.put(mad, o.nOption);
                 break;
             case IndiePDD:
-            case FoxBless:
                 stats.put(pdd, o.nValue);
+                break;
+            case FoxBless:
+                stats.put(pdd, o.nValue != 0 ? o.nValue : o.nOption);
                 break;
             case PDD:
             case EPDD:

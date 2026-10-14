@@ -1078,6 +1078,7 @@ public class AttackHandler {
                 }
                 break;
             case DemonAvenger.REVENANT:
+            case 500061054: // HEXA Revenant
                 if (chr.hasSkill(skillID)) {
                     ((DemonAvenger) chr.getJobHandler()).reduceFuryRevenant();
                 }

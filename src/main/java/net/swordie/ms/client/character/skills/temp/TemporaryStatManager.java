@@ -424,7 +424,8 @@ public class TemporaryStatManager {
                         if (o.nReason == Kanna.GHOST_YAKSHA_TRAINEE
                                 || o.nReason == Kanna.GHOST_YAKSHA_BROTHER
                                 || o.nReason == Kanna.GHOST_YAKSHA_LIEUTENANT
-                                || o.nReason == Kanna.GHOST_YAKSHA_BOSS) {
+                                || o.nReason == Kanna.GHOST_YAKSHA_BOSS
+                                || o.nReason == 42141015) {
                             startTime.set(o.startTime);
                         }
                         summons.add(o.summon);
@@ -574,7 +575,8 @@ public class TemporaryStatManager {
                         if (o.nReason == Kanna.GHOST_YAKSHA_TRAINEE
                                 || o.nReason == Kanna.GHOST_YAKSHA_BROTHER
                                 || o.nReason == Kanna.GHOST_YAKSHA_LIEUTENANT
-                                || o.nReason == Kanna.GHOST_YAKSHA_BOSS) {
+                                || o.nReason == Kanna.GHOST_YAKSHA_BOSS
+                                || o.nReason == 42141015) {
                             startTime.set(o.startTime);
                         }
                         summons.add(o.summon);
@@ -662,7 +664,8 @@ public class TemporaryStatManager {
                         if (o.nReason == Kanna.GHOST_YAKSHA_TRAINEE
                                 || o.nReason == Kanna.GHOST_YAKSHA_BROTHER
                                 || o.nReason == Kanna.GHOST_YAKSHA_LIEUTENANT
-                                || o.nReason == Kanna.GHOST_YAKSHA_BOSS) {
+                                || o.nReason == Kanna.GHOST_YAKSHA_BOSS
+                                || o.nReason == 42141015) {
                             startTime.set(o.startTime);
                         }
                         summons.add(o.summon);

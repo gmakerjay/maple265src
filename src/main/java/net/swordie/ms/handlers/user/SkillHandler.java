@@ -745,7 +745,7 @@ public class SkillHandler {
                 }
             }
 
-            if (skillId != DemonAvenger.NETHER_SHIELD_ATOM && skillId != Phantom.LUCK_OF_THE_DRAW_ATOM) {
+            if (skillId != DemonAvenger.NETHER_SHIELD_ATOM && skillId != 31241001 && skillId != Phantom.LUCK_OF_THE_DRAW_ATOM) {
                 if ((skillId != NightWalker.SHADOW_BAT_FROM_MOB_ATOM || success != 0) && forceAtomType != 33) {
                     if (forceAtomType == 37 || forceAtomType == 38 || forceAtomType == 44 || forceAtomType == 45) {
                         if (inPacket.getUnreadAmount() >= 4) {

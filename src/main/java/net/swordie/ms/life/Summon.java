@@ -652,6 +652,15 @@ public class Summon extends Life {
             case WildHunter.SUMMON_JAGUAR_SNOW_WHITE:
             case WildHunter.SUMMON_JAGUAR_ONYX:
             case WildHunter.SUMMON_JAGUAR_CRIMSON:
+            case 33141014: // HEXA Summon Jaguar (Grey)
+            case 33141015: // HEXA Summon Jaguar (Yellow)
+            case 33141016: // HEXA Summon Jaguar (Red)
+            case 33141017: // HEXA Summon Jaguar (Purple)
+            case 33141018: // HEXA Summon Jaguar (Blue)
+            case 33141019: // HEXA Summon Jaguar (Jaira)
+            case 33141020: // HEXA Summon Jaguar (Snow White)
+            case 33141021: // HEXA Summon Jaguar (Onyx)
+            case 33141022: // HEXA Summon Jaguar (Crimson)
                 // Invincible
                 return;
             case Marksman.ARROW_ILLUSION:
@@ -714,7 +723,8 @@ public class Summon extends Life {
                 ((BattleMage) job).getAnnihilationAltarList().remove(this);
                 break;
             case Kanna.SPIRITS_DOMAIN:
-                AffectedArea aa = field.getAffectedAreas().stream().filter(sdaa -> sdaa.getCharID() == owner.getId() && sdaa.getSkillID() == Kanna.SPIRITS_DOMAIN).findFirst().orElse(null);
+            case 500061069: // HEXA Spirit's Domain
+                AffectedArea aa = field.getAffectedAreas().stream().filter(sdaa -> sdaa.getCharID() == owner.getId() && (sdaa.getSkillID() == Kanna.SPIRITS_DOMAIN || sdaa.getSkillID() == 500061069)).findFirst().orElse(null);
                 if (aa != null) {
                     field.removeLife(aa);
                 }

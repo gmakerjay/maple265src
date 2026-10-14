@@ -86,31 +86,41 @@ public class Xenon extends Job {
 
     // HEXA Skills
     public static final int ARTIFICIAL_EVOLUTION = 36141500;
+    public static final int ARTIFICIAL_EVOLUTION_ATTACK = 36141501;
     public static final int ENHANCED_LIBERTY_BOOSTERS = 36141502;
     public static final int ARTIFICIAL_EVOLUTION_BUFF = 36141503;
-    public static final int HEXA_ORBITAL_CATACLYSM = 36141012;
-    public static final int HEXA_ORBITAL_CATACLYSM_BUFF = 36141013;
-    public static final int HEXA_TRIANGULATION = 36141007;
-    public static final int HEXA_TRIANGULATION_ATT = 36141008;
+    public static final int ASCENT_XENON_1 = 36141504;
+    public static final int ASCENT_XENON_2 = 36141505;
+    public static final int ASCENT_XENON_3 = 36141506;
+    public static final int HEXA_MECHA_PURGE_SNIPE = 36141000;
     public static final int HEXA_MECHA_PURGE_EXECUTE = 36141001;
+    public static final int HEXA_MECHA_PURGE_BOMBARDMENT = 36141002;
     public static final int HEXA_MECHA_PURGE_FIRE = 36141003;
-    public static final int HEXA_BEAM_DANCE = 36141014;
-    public static final int HEXA_BEAM_DANCE_EXTRA = 36140015;
-    public static final int HEXA_BEAM_DANCE_SUMMON = 36140016;
     public static final int HEXA_HYPOGRAM_FIELD_PENETRATE = 36141004;
     public static final int HEXA_HYPOGRAM_FIELD_FORCE_FIELD = 36141005;
     public static final int HEXA_HYPOGRAM_FIELD_SUPPORT = 36141006;
+    public static final int HEXA_TRIANGULATION = 36141007;
+    public static final int HEXA_TRIANGULATION_ATT = 36141008;
+    public static final int HEXA_SALVO_SYSTEM = 36141009;
+    public static final int HEXA_SALVO_SYSTEM_1 = 36141010;
+    public static final int HEXA_SALVO_SYSTEM_2 = 36141011;
+    public static final int HEXA_ORBITAL_CATACLYSM = 36141012;
+    public static final int HEXA_ORBITAL_CATACLYSM_BUFF = 36141013;
+    public static final int HEXA_BEAM_DANCE = 36141014;
+    public static final int HEXA_BEAM_DANCE_EXTRA = 36140015;
+    public static final int HEXA_BEAM_DANCE_SUMMON = 36140016;
 
     // HEXA Boosts
     public static final int CORE_OVERLOAD_BOOST = 500004125;
     public static final int CORE_OVERLOAD_BOOST_SKILL = 500061059;
 
-    private static ScheduledFuture<?> temporalPodTimer;
+    private ScheduledFuture<?> temporalPodTimer;
     private int incSupply;
     private int supplyProp = 0;
     private int hybridDefenseCount;
     private long pinPointDelay = 0;
     private long nextSixthBeamDance = 0;
+    private long nextArtificialEvolutionAttack = 0;
 
     private final int[] addedSkills = new int[]{
             SUPPLY_SURPLUS,
@@ -135,19 +145,22 @@ public class Xenon extends Job {
         }
     }
 
-    public static void temporalPodTimer(Char chr) {
+    public void temporalPodTimer(Char chr) {
+        if (temporalPodTimer != null && !temporalPodTimer.isDone()) {
+            temporalPodTimer.cancel(false);
+        }
         ScheduledFuture<?> sf = chr.getTimer().addFixedRateEvent(() -> temporalPodEffect(chr), 1000, 1000, false);
         temporalPodTimer = sf;
         GlobalTimerManager.addCharTimer(chr.getId(), sf);
     }
 
-    public static void temporalPodEffect(Char chr) {
+    public void temporalPodEffect(Char chr) {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         if (tsm.hasStatBySkillId(TEMPORAL_POD)) {
             for (int skillId : chr.getSkillCoolTimes().keySet()) {
                 chr.reduceSkillCoolTime(skillId, 1000);
             }
-        } else {
+        } else if (temporalPodTimer != null) {
             temporalPodTimer.cancel(false);
         }
     }
@@ -162,7 +175,11 @@ public class Xenon extends Job {
         if (skillID == PINPOINT_SALVO
                 || skillID == PINPOINT_SALVO_REDESIGN_A
                 || skillID == PINPOINT_SALVO_REDESIGN_B
-                || skillID == PINPOINT_SALVO_PERFECT_DESIGN) {
+                || skillID == PINPOINT_SALVO_PERFECT_DESIGN
+                || skillID == HEXA_SALVO_SYSTEM
+                || skillID == HEXA_SALVO_SYSTEM_1
+                || skillID == HEXA_SALVO_SYSTEM_2
+                || skillID == ARTIFICIAL_EVOLUTION_ATTACK) {
             return;
         }
         if (!tsm.hasStat(AmaranthGenerator)) {
@@ -198,7 +215,9 @@ public class Xenon extends Job {
     public void incrementSupply(int amount) {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         if (incSupply < getMaxSupply()) {
-            incSupply = tsm.getOption(SurplusSupply).nOption;
+            if (tsm.hasStat(SurplusSupply) && tsm.getOption(SurplusSupply) != null) {
+                incSupply = tsm.getOption(SurplusSupply).nOption;
+            }
             incSupply += amount;
             incSupply = Math.min(getMaxSupply(), incSupply);
             updateSupply();
@@ -268,7 +287,7 @@ public class Xenon extends Job {
         MobTemporaryStat mts = mob.getTemporaryStat();
         EnumMap<MobStat, Option> map = new EnumMap<>(MobStat.class);
         // Triangulation
-        applyTriangulationOnMob(mob);
+        applyTriangulationOnMob(mob, skillID);
         switch (skillID) {
             case ENTANGLISH_LASH:
                 o1.nOption = 1;
@@ -307,7 +326,8 @@ public class Xenon extends Job {
         if (hasHitMobs) {
             // Increment Supply on attack
             if (supplyProp == 0) {
-                supplyProp = SkillData.getSkillInfoById(SUPPLY_SURPLUS).getValue(prop, 1);
+                SkillInfo supplySi = SkillData.getSkillInfoById(SUPPLY_SURPLUS);
+                supplyProp = supplySi != null ? supplySi.getValue(prop, 1) : 60;
             }
             if (Util.succeedProp(supplyProp)
                     && skillID != 0
@@ -315,38 +335,41 @@ public class Xenon extends Job {
                     && skillID != PINPOINT_SALVO_REDESIGN_A
                     && skillID != PINPOINT_SALVO_REDESIGN_B
                     && skillID != PINPOINT_SALVO_PERFECT_DESIGN
-                    && skillID != TRIANGULATION
-                    && skillID != HEXA_TRIANGULATION
-                    && skillID != HEXA_TRIANGULATION_ATT) {
-                incrementSupply(1);
-            }
-            if (skillID != PINPOINT_SALVO
-                    && skillID != PINPOINT_SALVO_REDESIGN_B
-                    && skillID != PINPOINT_SALVO_REDESIGN_A
-                    && skillID != PINPOINT_SALVO_PERFECT_DESIGN
+                    && skillID != HEXA_SALVO_SYSTEM
+                    && skillID != HEXA_SALVO_SYSTEM_1
+                    && skillID != HEXA_SALVO_SYSTEM_2
                     && skillID != TRIANGULATION
                     && skillID != HEXA_TRIANGULATION
                     && skillID != HEXA_TRIANGULATION_ATT
-                    && tsm.hasStatBySkillId(PINPOINT_SALVO)) {
-                if (now - pinPointDelay >= 2000) { //2 sec delay
-                    createPinPointSalvoForceAtom();
-                    pinPointDelay = now;
-                }
+                    && skillID != ARTIFICIAL_EVOLUTION_ATTACK) {
+                incrementSupply(1);
             }
             if (skillID != PINPOINT_SALVO
                     && skillID != PINPOINT_SALVO_REDESIGN_A
                     && skillID != PINPOINT_SALVO_REDESIGN_B
                     && skillID != PINPOINT_SALVO_PERFECT_DESIGN
+                    && skillID != HEXA_SALVO_SYSTEM
+                    && skillID != HEXA_SALVO_SYSTEM_1
+                    && skillID != HEXA_SALVO_SYSTEM_2
                     && skillID != TRIANGULATION
                     && skillID != HEXA_TRIANGULATION
                     && skillID != HEXA_TRIANGULATION_ATT
                     && skillID != CORE_OVERLOAD_ATTACK
                     && skillID != HYPOGRAM_FIELD_FORCE_FIELD
                     && skillID != HYPOGRAM_FIELD_PENETRATE
-                    && skillID != HYPOGRAM_FIELD_FUSION) {
+                    && skillID != HYPOGRAM_FIELD_FUSION
+                    && skillID != HEXA_HYPOGRAM_FIELD_PENETRATE
+                    && skillID != HEXA_HYPOGRAM_FIELD_FORCE_FIELD
+                    && skillID != ARTIFICIAL_EVOLUTION_ATTACK) {
                 coreOverloadSkillManaConsumption();
-                if (!chr.hasSkillOnCooldown(PINPOINT_SALVO)) {
+                if (tsm.hasStatBySkillId(PINPOINT_SALVO) && !chr.hasSkillOnCooldown(PINPOINT_SALVO) && now - pinPointDelay >= 2000) {
                     createPinPointSalvoForceAtom();
+                    pinPointDelay = now;
+                }
+                if (tsm.hasStat(ArtificialEvolution) && now >= nextArtificialEvolutionAttack) {
+                    nextArtificialEvolutionAttack = now + 1800;
+                    int mobObjId = attackInfo.mobAttackInfo.getFirst().mobId;
+                    chr.write(UserLocal.userBonusAttackRequest(ARTIFICIAL_EVOLUTION_ATTACK, mobObjId));
                 }
             }
         }
@@ -354,22 +377,54 @@ public class Xenon extends Job {
         Option o1 = new Option();
         Option o2 = new Option();
         switch (skillID) {
+            case ARTIFICIAL_EVOLUTION:
+            case ARTIFICIAL_EVOLUTION_ATTACK:
+            case ASCENT_XENON_1:
+            case ASCENT_XENON_2:
+            case ASCENT_XENON_3:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob != null && mob.getHp() > 0) {
+                        MobTemporaryStat mts = mob.getTemporaryStat();
+                        EnumMap<MobStat, Option> map = new EnumMap<>(MobStat.class);
+                        Option optFreeze = new Option();
+                        optFreeze.nOption = 1;
+                        optFreeze.rOption = skillID;
+                        optFreeze.tOption = 10;
+                        optFreeze.cOption = chr.getId();
+                        map.put(MobStat.Freeze, optFreeze);
+
+                        Option optOrigin = new Option();
+                        optOrigin.nOption = 1;
+                        optOrigin.rOption = skillID;
+                        optOrigin.tOption = 20;
+                        optOrigin.cOption = chr.getId();
+                        map.put(MobStat.OriginDebuff, optOrigin);
+                        mts.addStatOptions(mob, map);
+                    }
+                }
+                break;
             case ORBITAL_CATACLYSM:
             case HEXA_ORBITAL_CATACLYSM:
                 int buffID = skillID == HEXA_ORBITAL_CATACLYSM ? HEXA_ORBITAL_CATACLYSM_BUFF : ORBITAL_CATACLYSM_BUFF;
                 EnumMap<CharacterTemporaryStat, Option> newStats = new EnumMap<>(CharacterTemporaryStat.class);
                 SkillInfo buff = SkillData.getSkillInfoById(buffID);
-                o1.nReason = buffID;
-                o1.nValue = buff.getValue(indieDamR, slv);
-                o1.tTerm = buff.getValue(time, slv);
-                newStats.put(IndieDamR, o1);
+                if (buff != null) {
+                    o1.nReason = buffID;
+                    o1.nValue = buff.getValue(indieDamR, slv);
+                    o1.tTerm = buff.getValue(time, slv);
+                    newStats.put(IndieDamR, o1);
+                }
+                o2.nOption = 1;
+                o2.rOption = skillID;
+                o2.tOption = 3;
                 o2.nReason = skillID;
                 o2.nValue = 1;
                 o2.tTerm = 3;
                 newStats.put(IndieNotDamaged, o2);
                 tsm.sendStat(newStats);
                 break;
-            case HEXA_BEAM_DANCE: // biggest meme ever
+            case HEXA_BEAM_DANCE:
                 Summon summon;
                 int summonID = HEXA_BEAM_DANCE_SUMMON;
                 int extraAttackID = HEXA_BEAM_DANCE_EXTRA;
@@ -393,25 +448,34 @@ public class Xenon extends Job {
         }
     }
 
-    public void applyTriangulationOnMob(Mob mob) {
-        if (!chr.hasSkill(TRIANGULATION)) {
+    public void applyTriangulationOnMob(Mob mob, int attackSkillId) {
+        if (!chr.hasSkill(TRIANGULATION)
+                || attackSkillId == TRIANGULATION
+                || attackSkillId == HEXA_TRIANGULATION
+                || attackSkillId == HEXA_TRIANGULATION_ATT) {
             return;
         }
         int skillID = chr.hasSkill(HEXA_TRIANGULATION) ? HEXA_TRIANGULATION : TRIANGULATION;
         Skill skill = chr.getSkill(skillID);
+        if (skill == null) {
+            return;
+        }
         int slv = skill.getCurrentLevel();
         SkillInfo si = SkillData.getSkillInfoById(skillID);
+        if (si == null) {
+            return;
+        }
         int proc = si.getValue(prop, slv);
         Option o1 = new Option();
         Option o2 = new Option();
         Option o3 = new Option();
-        int amount = 1;
+        int amount = 0;
         MobTemporaryStat mts = mob.getTemporaryStat();
         MobStat mobStat = MobStat.IndieTriangleFormation;
         if (skillID == HEXA_TRIANGULATION) {
             mobStat = MobStat.IndieSixthTriangleFormation;
         }
-        if (mts.hasCurrentMobStat(mobStat)) {
+        if (mts.hasCurrentMobStat(mobStat) && mts.getCurrentOptionsByMobStat(mobStat) != null) {
             amount = mts.getCurrentOptionsByMobStat(mobStat).nValue;
         }
         if (amount == 3 && chr.hasSkill(HEXA_TRIANGULATION)) {
@@ -446,10 +510,17 @@ public class Xenon extends Job {
     }
 
     private void createPinPointSalvoForceAtom() {
-        TemporaryStatManager tsm = chr.getTemporaryStatManager();
         Field field = chr.getField();
-        SkillInfo si = SkillData.getSkillInfoById(PINPOINT_SALVO);
-        int slv = chr.getSkillLevel(PINPOINT_SALVO);
+        int pinPointSkillId = getPinPointSkill();
+        SkillInfo si = SkillData.getSkillInfoById(pinPointSkillId);
+        int slv = chr.getSkillLevel(pinPointSkillId);
+        if (si == null || slv <= 0) {
+            si = SkillData.getSkillInfoById(PINPOINT_SALVO);
+            slv = Math.max(1, chr.getSkillLevel(PINPOINT_SALVO));
+        }
+        if (si == null) {
+            return;
+        }
         Rect rect = chr.getPosition().getRectAround(si.getFirstRect());
         if (!chr.isLeft()) {
             rect = rect.horizontalFlipAround(chr.getPosition().getX());
@@ -457,7 +528,8 @@ public class Xenon extends Job {
         List<Integer> targetList = new ArrayList<>();
         List<ForceAtomInfo> faiList = new ArrayList<>();
         ForceAtomEnum fae = ForceAtomEnum.XENON_ROCKET_3;
-        for (int i = 0; i < si.getValue(bulletCount, slv); i++) {
+        int bullets = Math.max(4, si.getValue(bulletCount, slv));
+        for (int i = 0; i < bullets; i++) {
             Mob mob = Util.getRandomFromCollection(field.getMobsInRect(rect));
             if (mob != null && mob.getHp() >= 0) {
                 int angle = new Random().nextInt(90) + 45;
@@ -472,9 +544,11 @@ public class Xenon extends Job {
             }
         }
         chr.createForceAtom(new ForceAtom(false, 0, chr.getId(), fae,
-                true, targetList, PINPOINT_SALVO, faiList, rect, 0, 300,
-                new Position(), PINPOINT_SALVO, new Position(), 0));
-        chr.addSkillCooldown(PINPOINT_SALVO, si.getValue(x, slv) * 1000);
+                true, targetList, pinPointSkillId, faiList, rect, 0, 300,
+                new Position(), pinPointSkillId, new Position(), 0));
+        SkillInfo baseSi = SkillData.getSkillInfoById(PINPOINT_SALVO);
+        int cdSec = baseSi != null ? Math.max(2, baseSi.getValue(x, 1)) : 2;
+        chr.addSkillCooldown(PINPOINT_SALVO, cdSec * 1000);
     }
 
     public int getPinPointSkill() {
@@ -487,6 +561,9 @@ public class Xenon extends Job {
         }
         if (chr.hasSkill(PINPOINT_SALVO_PERFECT_DESIGN)) {
             skill = PINPOINT_SALVO_PERFECT_DESIGN;
+        }
+        if (chr.hasSkill(HEXA_SALVO_SYSTEM)) {
+            skill = HEXA_SALVO_SYSTEM;
         }
         return skill;
     }
@@ -508,6 +585,30 @@ public class Xenon extends Job {
         AffectedArea aa;
         Field field;
         switch (skillID) {
+            case ARTIFICIAL_EVOLUTION:
+            case ASCENT_XENON_1:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
+                o1.nReason = skillID;
+                o1.nValue = 1;
+                o1.tTerm = 7;
+                newStats.put(IndieNotDamaged, o1);
+                if (skillID == ARTIFICIAL_EVOLUTION) {
+                    o2.nOption = 1;
+                    o2.rOption = ARTIFICIAL_EVOLUTION_BUFF;
+                    o2.tOption = si != null && si.getValue(time, slv) > 0 ? si.getValue(time, slv) : 30;
+                    newStats.put(ArtificialEvolution, o2);
+                }
+                tsm.sendStat(newStats);
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                } else {
+                    chr.write(UserLocal.showHexaSkillEff(chr));
+                }
+                break;
             case EMERGENCY_RESUPPLY:
                 incrementSupply(si.getValue(x, slv));
                 break;
@@ -570,14 +671,16 @@ public class Xenon extends Job {
                 tsm.sendStat(ShadowPartner, o1);
                 break;
             case OOPARTS_CODE:
+                int pmdr = si.getValue(indiePMdR, slv) > 0 ? si.getValue(indiePMdR, slv) : si.getValue(indieDamR, slv);
+                int bdr = si.getValue(indieBDR, slv) > 0 ? si.getValue(indieBDR, slv) : si.getValue(x, slv);
                 o1.nReason = skillID;
-                o1.nValue = si.getValue(indieDamR, slv);
+                o1.nValue = pmdr;
                 o1.tTerm = si.getValue(time, slv);
-                newStats.put(IndieDamR, o1);
-                o2.nOption = si.getValue(x, slv);
-                o2.rOption = skillID;
-                o2.tOption = si.getValue(time, slv);
-                newStats.put(BdR, o2);
+                newStats.put(IndiePMdR, o1);
+                o2.nReason = skillID;
+                o2.nValue = bdr;
+                o2.tTerm = si.getValue(time, slv);
+                newStats.put(IndieBDR, o2);
                 tsm.sendStat(newStats);
                 break;
             case AMARANTH_GENERATOR:
@@ -607,10 +710,11 @@ public class Xenon extends Job {
                         tsm.removeStatsBySkill(id);
                     }
                 }
-                Position position = inPacket.decodePosition();
+                Position position = inPacket.getUnreadAmount() >= 4 ? inPacket.decodePosition() : chr.getPosition();
                 summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
                 summon.setPosition(position);
-                summon.setCurFoothold((short) chr.getField().findFootHoldBelow(summon.getPosition()).getId());
+                var fh = chr.getField().findFootHoldBelow(summon.getPosition());
+                summon.setCurFoothold((short) (fh != null ? fh.getId() : 0));
                 summon.setFlyMob(false);
                 summon.setMoveAction((byte) 0);
                 summon.setMoveAbility(MoveAbility.Stop);
@@ -655,16 +759,19 @@ public class Xenon extends Job {
                 o1.tOption = si.getValue(u2, slv);
                 tsm.sendStat(OverloadMode, o1);
                 updateSupply();
+                break;
             case CORE_OVERLOAD_BOOST_SKILL:
                 int boostID = CORE_OVERLOAD_BOOST;
                 si = SkillData.getSkillInfoById(boostID);
                 slv = chr.getSkillLevel(boostID);
-                o1.nOption = si.getValue(w, slv);
-                o1.rOption = skillID;
-                o1.xOption = 91; // from sniff, stayed the same but unsure what it means
-                o1.tOption = si.getValue(z, slv);
-                tsm.sendStat(OverloadMode, o1);
-                updateSupply();
+                if (si != null) {
+                    o1.nOption = si.getValue(w, slv);
+                    o1.rOption = skillID;
+                    o1.xOption = 91; // from sniff, stayed the same but unsure what it means
+                    o1.tOption = si.getValue(z, slv);
+                    tsm.sendStat(OverloadMode, o1);
+                    updateSupply();
+                }
                 break;
             case PHOTON_RAY:
                 o1.nOption = 1;
@@ -681,33 +788,36 @@ public class Xenon extends Job {
                     if (!chr.isLeft()) {
                         rect = rect.horizontalFlipAround(chr.getPosition().getX());
                     }
-                    int bossID = 0;
                     final var mobs = chr.getField().getMobsInRect(rect);
-                    var sai = si.getSecondAtomInfos().get(0);
-                    if (sai != null) {
-                        final var pos = chr.getPosition(); // nếu Position mutable -> copy()
-                        int key = 0;
-                        final long start = System.currentTimeMillis();
-                        for (int i = 0; i < bulletCount; i++) {
-                            var mob = Util.getRandomFromCollection(mobs);
-                            SecondAtom fa = new SecondAtom(sai, chr.getNewSecondAtomKey(), chr.getId(),
-                                    mob.getObjectId(), key, si.getSkillId(), pos, start);
-                            fa.setCustoms(sai.getCustoms());
-                            secondAtoms.add(fa);
-                            key++;
+                    if (!mobs.isEmpty() && !si.getSecondAtomInfos().isEmpty()) {
+                        var sai = si.getSecondAtomInfos().get(0);
+                        if (sai != null) {
+                            final var pos = chr.getPosition();
+                            int key = 0;
+                            final long start = System.currentTimeMillis();
+                            for (int i = 0; i < bulletCount; i++) {
+                                var mob = Util.getRandomFromCollection(mobs);
+                                if (mob != null) {
+                                    SecondAtom fa = new SecondAtom(sai, chr.getNewSecondAtomKey(), chr.getId(),
+                                            mob.getObjectId(), key, si.getSkillId(), pos, start);
+                                    fa.setCustoms(sai.getCustoms());
+                                    secondAtoms.add(fa);
+                                    key++;
+                                }
+                            }
                         }
                     }
-                    chr.createSecondAtom(secondAtoms);
                     if (!secondAtoms.isEmpty()) {
+                        chr.createSecondAtom(secondAtoms);
                         tsm.removeStatsBySkill(PHOTON_RAY);
                     }
                 }
                 break;
             case ARTIFICIAL_EVOLUTION_BUFF:
-                slv = chr.getSkillLevel(ARTIFICIAL_EVOLUTION);
+                slv = Math.max(1, chr.getSkillLevel(ARTIFICIAL_EVOLUTION));
                 o1.nOption = 1;
                 o1.rOption = skillID;
-                o1.tOption = si.getValue(time, slv);
+                o1.tOption = si != null && si.getValue(time, slv) > 0 ? si.getValue(time, slv) : 30;
                 tsm.sendStat(ArtificialEvolution, o1);
                 break;
         }
@@ -762,22 +872,29 @@ public class Xenon extends Job {
     public void handleOmegaBlaster(boolean start) {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         if (!start || tsm.hasStat(ArtificialEvolution)) {
-            if (tsm.getOption(MegaSmasher).nOption == 1) {
+            if (tsm.hasStat(MegaSmasher) && tsm.getOption(MegaSmasher).nOption == 1) {
                 return;
             }
             Skill skill = chr.getSkill(OMEGA_BLASTER);
+            if (skill == null) {
+                return;
+            }
             SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
+            if (si == null) {
+                return;
+            }
             int slv = skill.getCurrentLevel();
             Option o1 = new Option();
             Option o2 = new Option();
 
-            long secPerXSec = si.getValue(y, slv) * 1000L;
+            long secPerXSec = Math.max(1000L, si.getValue(y, slv) * 1000L);
             long cap = si.getValue(z, slv) * 1000L;
 
-            long chargingDuration = Util.getCurrentTimeLong() - tsm.getOptByCTSAndSkill(MegaSmasher, OMEGA_BLASTER).startTime;
+            Option chargeOpt = tsm.getOptByCTSAndSkill(MegaSmasher, OMEGA_BLASTER);
+            long chargingDuration = chargeOpt != null ? Util.getCurrentTimeLong() - chargeOpt.startTime : 0L;
             long addedDuration = (chargingDuration / secPerXSec) * 1000;
             long initDuration = si.getValue(time, slv) * 1000L;
-            long fullDuration = tsm.hasStat(ArtificialEvolution) ? 10000: initDuration + (Math.min(addedDuration, cap));
+            long fullDuration = tsm.hasStat(ArtificialEvolution) ? 10000 : initDuration + (Math.min(addedDuration, cap));
 
             o1.nOption = 1;
             o1.rOption = skill.getSkillId();
@@ -787,6 +904,9 @@ public class Xenon extends Job {
             o2.nOption = 1;
             o2.rOption = skill.getSkillId();
             o2.tOption = (int) fullDuration;
+            o2.nValue = 1;
+            o2.nReason = skill.getSkillId();
+            o2.tTerm = (int) fullDuration;
             o2.setInMillis(true);
             tsm.sendStat(IndieNotDamaged, o2); // invincibility
         }
@@ -797,6 +917,7 @@ public class Xenon extends Job {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         switch (skillID) {
             case CORE_OVERLOAD_BUFF:
+            case CORE_OVERLOAD_BOOST_SKILL:
                 tsm.removeStatsBySkill(CORE_OVERLOAD_BUFF + 100);
                 tsm.removeStatsBySkill(skillID);
                 incSupply = incSupply > 20 ? 20 : incSupply;
@@ -846,12 +967,18 @@ public class Xenon extends Job {
     @Override
     public int handleSetCoolDownSkill(int skillId) {
         switch (skillId) {
-            case HYPOGRAM_FIELD_PENETRATE -> { // Hypogram Field: Force Field
-                chr.setSkillCooldown(skillId, chr.getSkillLevel(HYPOGRAM_FIELD_FORCE_FIELD));
+            case HYPOGRAM_FIELD_FORCE_FIELD, HYPOGRAM_FIELD_PENETRATE, HYPOGRAM_FIELD_SUPPORT -> {
+                int slv = Math.max(1, chr.getSkillLevel(HYPOGRAM_FIELD_FORCE_FIELD));
+                chr.setSkillCooldown(HYPOGRAM_FIELD_FORCE_FIELD, slv);
+                chr.setSkillCooldown(HYPOGRAM_FIELD_PENETRATE, slv);
+                chr.setSkillCooldown(HYPOGRAM_FIELD_SUPPORT, slv);
                 return 1;
             }
-            case HYPOGRAM_FIELD_SUPPORT -> { // Hypogram Field: Support
-                chr.setSkillCooldown(skillId, chr.getSkillLevel(HYPOGRAM_FIELD_FORCE_FIELD));
+            case HEXA_HYPOGRAM_FIELD_PENETRATE, HEXA_HYPOGRAM_FIELD_FORCE_FIELD, HEXA_HYPOGRAM_FIELD_SUPPORT -> {
+                int slv = Math.max(1, chr.getSkillLevel(HEXA_HYPOGRAM_FIELD_PENETRATE));
+                chr.setSkillCooldown(HEXA_HYPOGRAM_FIELD_PENETRATE, slv);
+                chr.setSkillCooldown(HEXA_HYPOGRAM_FIELD_FORCE_FIELD, slv);
+                chr.setSkillCooldown(HEXA_HYPOGRAM_FIELD_SUPPORT, slv);
                 return 1;
             }
             case HEXA_ORBITAL_CATACLYSM -> {

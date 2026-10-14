@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 import static net.swordie.ms.client.character.skills.SkillStat.*;
 import static net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat.*;
 
-public class DemonSlayer extends Job {
+public class DemonSlayer extends Demon {
 
     public static final int CURSE_OF_FURY = 30010111;
 
@@ -85,12 +85,23 @@ public class DemonSlayer extends Job {
 
     // ===== 6th Job HEXA Matrix Skills =====
     public static final int NIGHTMARE = 31141500; // Origin Skill
+    public static final int NIGHTMARE_FLAME = 31141501;
+    public static final int NIGHTMARE_END = 31141502;
+    public static final int NIGHTMARE_BUFF = 31141503;
     public static final int AMETHYSTINE_INCURSION = 31141504; // Origin Second Skill
+    public static final int AMETHYSTINE_INCURSION_2 = 31141505;
+    public static final int AMETHYSTINE_INCURSION_3 = 31141506;
     public static final int HEXA_DEMON_IMPACT = 31141000;
+    public static final int HEXA_DEMON_IMPACT_AWAKENING = 31141001;
     public static final int HEXA_DEMON_LASH = 31141002;
+    public static final int HEXA_DEMON_LASH_1 = 31141003;
+    public static final int HEXA_DEMON_LASH_2 = 31141004;
+    public static final int HEXA_DEMON_LASH_3 = 31141005;
+    public static final int HEXA_DEMON_LASH_4 = 31141006;
+    public static final int HEXA_GERYON = 31141007;
     public static final int HEXA_INFERNAL_CONCUSSION = 31141008;
-    public static final int HEXA_DEMON_CRY = 31141012;
     public static final int HEXA_DARK_METAMORPHOSIS = 31141009;
+    public static final int HEXA_DEMON_CRY = 31141012;
     public static final int HEXA_CERBERUS_CHOMP = 31141013;
     public static final int HEXA_DEMONIC_PLUME = 31140016;
 
@@ -126,17 +137,14 @@ public class DemonSlayer extends Job {
     }
 
     public void regenDFInterval() {
-        if (MaxFuryRecoveryTimer != null) {
-            if ((MaxFuryRecoveryTimer.isDone() && chr.getMP() < chr.getMaxMP())) {
-                MaxFuryRecoveryTimer = chr.getTimer().addEvent(()
-                        -> chr.healMP(chr.getSkill(MAX_FURY).getCurrentLevel() * 2), 4, TimeUnit.SECONDS);
-            }
-        } else {
-            if (chr.getMP() < chr.getMaxMP()) {
-                MaxFuryRecoveryTimer = chr.getTimer().addEvent(()
-                        -> chr.healMP(chr.getSkill(MAX_FURY).getCurrentLevel() * 2), 4, TimeUnit.SECONDS);
-            }
+        if (MaxFuryRecoveryTimer != null && !MaxFuryRecoveryTimer.isDone()) {
+            return;
         }
+        MaxFuryRecoveryTimer = chr.getTimer().addFixedRateEvent(() -> {
+            if (chr.hasSkill(MAX_FURY) && chr.getMP() < chr.getMaxMP()) {
+                chr.healMP(chr.getSkillLevel(MAX_FURY) * 2);
+            }
+        }, 4000, 4000, false);
     }
 
     // Attack related methods ------------------------------------------------------------------------------------------
@@ -197,6 +205,7 @@ public class DemonSlayer extends Job {
                 break;
             case DEMON_IMPACT:
             case HEXA_DEMON_IMPACT:
+            case HEXA_DEMON_IMPACT_AWAKENING:
                 if (!mts.hasCurrentMobStatBySkillId(skillID)) {
                     o1.nOption = -20;
                     o1.rOption = skillID;
@@ -221,8 +230,12 @@ public class DemonSlayer extends Job {
             createDemonFuryForceAtom(attackInfo);
             //Max Fury
             if (chr.hasSkill(MAX_FURY)) {
+                regenDFInterval();
                 switch (attackInfo.skillId) {
-                    case DEMON_LASH, DEMON_LASH_3, DEMON_LASH_4, DEMON_AWAKENING_LASH_1, DEMON_AWAKENING_LASH_2, DEMON_AWAKENING_LASH_3, DEMON_AWAKENING_LASH_4, HEXA_DEMON_LASH -> {
+                    case DEMON_LASH, DEMON_LASH_2, DEMON_LASH_3, DEMON_LASH_4,
+                            DEMON_AWAKENING_LASH_1, DEMON_AWAKENING_LASH_2, DEMON_AWAKENING_LASH_3, DEMON_AWAKENING_LASH_4,
+                            HEXA_DEMON_LASH, HEXA_DEMON_LASH_1, HEXA_DEMON_LASH_2, HEXA_DEMON_LASH_3, HEXA_DEMON_LASH_4,
+                            HEXA_GERYON -> {
                         SkillInfo maxFuryInfo = SkillData.getSkillInfoById(MAX_FURY);
                         if (maxFuryInfo != null) {
                             if (Util.succeedProp(maxFuryInfo.getValue(prop, chr.getSkillLevel(MAX_FURY)))) {
@@ -234,55 +247,58 @@ public class DemonSlayer extends Job {
             }
             //Leech Aura
             leechAuraHealing(attackInfo, now);
+            // HEXA Demonic Plume (31140016)
+            if (chr.hasSkill(HEXA_DEMONIC_PLUME) && skillID != HEXA_DEMONIC_PLUME && !chr.hasSkillOnCooldown(HEXA_DEMONIC_PLUME)) {
+                chr.addSkillCooldown(HEXA_DEMONIC_PLUME, 3000);
+                int mobObjId = attackInfo.mobAttackInfo.getFirst().mobId;
+                chr.write(UserLocal.userBonusAttackRequest(HEXA_DEMONIC_PLUME, mobObjId));
+            }
         }
         switch (attackInfo.skillId) {
             case NIGHTMARE:
+            case NIGHTMARE_FLAME:
+            case NIGHTMARE_END:
             case AMETHYSTINE_INCURSION:
+            case AMETHYSTINE_INCURSION_2:
+            case AMETHYSTINE_INCURSION_3:
                 for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
                     Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
                     if (mob != null && mob.getHp() > 0) {
                         MobTemporaryStat mts = mob.getTemporaryStat();
-                        Option opt1 = new Option();
-                        opt1.nOption = 1;
-                        opt1.rOption = skillID;
-                        opt1.tOption = 10; // 10s Absolute Freeze / Bind
-                        opt1.cOption = chr.getId();
-                        mts.addStatOptions(mob, MobStat.Freeze, opt1);
+                        EnumMap<MobStat, Option> map = new EnumMap<>(MobStat.class);
+                        Option optFreeze = new Option();
+                        optFreeze.nOption = 1;
+                        optFreeze.rOption = skillID;
+                        optFreeze.tOption = 10; // 10s Absolute Freeze / Bind
+                        optFreeze.cOption = chr.getId();
+                        map.put(MobStat.Freeze, optFreeze);
+
+                        Option optOrigin = new Option();
+                        optOrigin.nOption = 1;
+                        optOrigin.rOption = skillID;
+                        optOrigin.tOption = 20;
+                        optOrigin.cOption = chr.getId();
+                        map.put(MobStat.OriginDebuff, optOrigin);
+                        mts.addStatOptions(mob, map);
                     }
                 }
                 break;
             case CERBERUS_CHOMP:
             case HEXA_CERBERUS_CHOMP:
-                int furyabsorbed = si.getValue(x, slv);
+                int furyabsorbed = si != null ? si.getValue(x, slv) : 50;
                 chr.healMP(furyabsorbed);
                 break;
             case RAVEN_STORM:
-                int hpheal = (int) (chr.getMaxHP() / ((double) 100 / si.getValue(x, slv)));
-                chr.heal(hpheal);
+                if (si != null && si.getValue(x, slv) > 0) {
+                    int hpheal = (int) (chr.getMaxHP() * (si.getValue(x, slv) / 100.0D));
+                    chr.heal(hpheal);
+                }
                 break;
             case DEMON_CRY:
             case HEXA_DEMON_CRY:
                 chr.setSkillCooldown(skillID, slv);
                 break;
         }
-    }
-
-    public void sendHpUpdate() {
-        // Used for client side damage calculation for DAs
-        TemporaryStatManager tsm = chr.getTemporaryStatManager();
-        Option o = new Option();
-        o.nOption = 3; // Hp -> damage conversion
-        o.mOption = chr.getTotalStat(BaseStat.mhp);
-        tsm.sendStat(LifeTidal, o);
-    }
-
-    public void giveExceedOverload(int skillid) {
-        TemporaryStatManager tsm = chr.getTemporaryStatManager();
-        Option o = new Option();
-        o.nOption = skillid;
-        o.rOption = skillid;
-        o.tOption = 8;
-        tsm.sendStat(ExceedOverload, o);
     }
 
     public void leechAuraHealing(AttackInfo attackInfo, long now) {
@@ -292,11 +308,14 @@ public class DemonSlayer extends Job {
                 Skill skill = chr.getSkill(LEECH_AURA);
                 int slv = skill.getCurrentLevel();
                 SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
+                if (si == null) {
+                    return;
+                }
                 int cd = si.getValue(y, slv) * 1000;
                 if (cd + leechAuraCD < now) {
                     for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
                         long totalDMG = Arrays.stream(mai.damages).sum();
-                        int hpheal = (int) (totalDMG * ((double) 100 / si.getValue(x, slv)));
+                        int hpheal = (int) (totalDMG * (si.getValue(x, slv) / 100.0D));
                         if (hpheal >= (chr.getMaxHP() / 4)) {
                             hpheal = (chr.getMaxHP() / 4);
                         }
@@ -317,20 +336,17 @@ public class DemonSlayer extends Job {
                 int mobID = mai.mobId;
                 int angle = new Random().nextInt(40) + 30;
                 int speed = new Random().nextInt(31) + 29;
+                boolean isFourthOrSixth = JobConstants.getJobLevel(chr.getJob()) >= 4;
 
                 //Attacking with Demon Lash
                 switch (attackInfo.skillId) {
-                    case DEMON_LASH, DEMON_LASH_2, DEMON_LASH_3, DEMON_LASH_4, DEMON_AWAKENING_LASH_1, DEMON_AWAKENING_LASH_2, DEMON_AWAKENING_LASH_3, DEMON_AWAKENING_LASH_4, HEXA_DEMON_LASH -> {
-                        ForceAtomEnum fae = ForceAtomEnum.DEMON_SLAYER_FURY_1;
-                        if (mob.isBoss()) {
-                            fae = ForceAtomEnum.DEMON_SLAYER_FURY_1_BOSS;
-                        }
-                        if (chr.getJob() == JobConstants.JobEnum.DEMON_SLAYER4.getJobId()) {
-                            fae = ForceAtomEnum.DEMON_SLAYER_FURY_2;
-                            if (mob.isBoss()) {
-                                fae = ForceAtomEnum.DEMON_SLAYER_FURY_2_BOSS;
-                            }
-                        }
+                    case DEMON_LASH, DEMON_LASH_2, DEMON_LASH_3, DEMON_LASH_4,
+                            DEMON_AWAKENING_LASH_1, DEMON_AWAKENING_LASH_2, DEMON_AWAKENING_LASH_3, DEMON_AWAKENING_LASH_4,
+                            HEXA_DEMON_LASH, HEXA_DEMON_LASH_1, HEXA_DEMON_LASH_2, HEXA_DEMON_LASH_3, HEXA_DEMON_LASH_4,
+                            HEXA_GERYON -> {
+                        ForceAtomEnum fae = isFourthOrSixth
+                                ? (mob.isBoss() ? ForceAtomEnum.DEMON_SLAYER_FURY_2_BOSS : ForceAtomEnum.DEMON_SLAYER_FURY_2)
+                                : (mob.isBoss() ? ForceAtomEnum.DEMON_SLAYER_FURY_1_BOSS : ForceAtomEnum.DEMON_SLAYER_FURY_1);
                         ForceAtomInfo forceAtomInfo = new ForceAtomInfo(1, fae.getInc(), speed, 5,
                                 angle, 50, Util.getCurrentTime(), 1, 0,
                                 new Position(0, 0));
@@ -343,16 +359,9 @@ public class DemonSlayer extends Job {
                         //Attacking with another skill
                         long totalDMG = Arrays.stream(mai.damages).sum();
                         if (totalDMG > mob.getHp()) {
-                            ForceAtomEnum fae = ForceAtomEnum.DEMON_SLAYER_FURY_1;
-                            if (mob.isBoss()) {
-                                fae = ForceAtomEnum.DEMON_SLAYER_FURY_1_BOSS;
-                            }
-                            if (chr.getJob() == JobConstants.JobEnum.DEMON_SLAYER4.getJobId()) {
-                                fae = ForceAtomEnum.DEMON_SLAYER_FURY_2;
-                                if (mob.isBoss()) {
-                                    fae = ForceAtomEnum.DEMON_SLAYER_FURY_2_BOSS;
-                                }
-                            }
+                            ForceAtomEnum fae = isFourthOrSixth
+                                    ? (mob.isBoss() ? ForceAtomEnum.DEMON_SLAYER_FURY_2_BOSS : ForceAtomEnum.DEMON_SLAYER_FURY_2)
+                                    : (mob.isBoss() ? ForceAtomEnum.DEMON_SLAYER_FURY_1_BOSS : ForceAtomEnum.DEMON_SLAYER_FURY_1);
                             ForceAtomInfo forceAtomInfo = new ForceAtomInfo(1, fae.getInc(), speed, 5,
                                     angle, 50, Util.getCurrentTime(), 1, 0,
                                     new Position(0, 0));
@@ -382,10 +391,9 @@ public class DemonSlayer extends Job {
         if (life instanceof Mob) {
             int angle = new Random().nextInt(40) + 30;
             int speed = new Random().nextInt(31) + 29;
-            ForceAtomEnum fae = ForceAtomEnum.DEMON_SLAYER_FURY_1;
-            if (chr.getJob() == JobConstants.JobEnum.DEMON_SLAYER4.getJobId()) {
-                fae = ForceAtomEnum.DEMON_SLAYER_FURY_2;
-            }
+            ForceAtomEnum fae = JobConstants.getJobLevel(chr.getJob()) >= 4
+                    ? ForceAtomEnum.DEMON_SLAYER_FURY_2
+                    : ForceAtomEnum.DEMON_SLAYER_FURY_1;
             ForceAtomInfo forceAtomInfo = new ForceAtomInfo(1, fae.getInc(), speed, 4,
                     angle, 50, Util.getCurrentTime(), 1, 0,
                     new Position(0, 0));
@@ -414,14 +422,27 @@ public class DemonSlayer extends Job {
         switch (skillID) {
             case NIGHTMARE:
             case AMETHYSTINE_INCURSION:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
                 o1.nReason = skillID;
                 o1.nValue = 1;
                 o1.tTerm = 7;
-                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                newStats.put(CharacterTemporaryStat.IndieNotDamaged, o1);
+                if (skillID == NIGHTMARE) {
+                    SkillInfo buffSi = SkillData.getSkillInfoById(NIGHTMARE_BUFF);
+                    o2.nReason = NIGHTMARE_BUFF;
+                    o2.nValue = buffSi != null && buffSi.getValue(indiePMdR, slv) > 0 ? buffSi.getValue(indiePMdR, slv) : 15;
+                    o2.tTerm = buffSi != null && buffSi.getValue(time, slv) > 0 ? buffSi.getValue(time, slv) : 20;
+                    newStats.put(IndiePMdR, o2);
+                }
+                tsm.sendStat(newStats);
                 if (chr.getParty() != null) {
                     for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
                         other.write(UserLocal.showHexaSkillEff(chr));
                     }
+                } else {
+                    chr.write(UserLocal.showHexaSkillEff(chr));
                 }
                 chr.chatMessage(ChatType.Notice, "[Origin] Nightmare activated! Dark fury overwhelms the battlefield.");
                 chr.dispose();
@@ -439,7 +460,9 @@ public class DemonSlayer extends Job {
                 tsm.sendStat(PowerGuard, o1);
                 break;
             case DARK_METAMORPHOSIS:
-                o1.nOption = si.getValue(damR, slv);
+            case HEXA_DARK_METAMORPHOSIS:
+                int damRVal = si.getValue(indieDamR, slv) > 0 ? si.getValue(indieDamR, slv) : si.getValue(damR, slv);
+                o1.nOption = damRVal;
                 o1.rOption = skillID;
                 o1.tOption = si.getValue(time, slv);
                 newStats.put(DamR, o1);
@@ -503,19 +526,28 @@ public class DemonSlayer extends Job {
 
                 Summon demonAwakening = Summon.getSummonByAndSetStat(c.getChr(), skillID, slv);
                 demonAwakening.setFlyMob(false);
-                //demonAwakening.setAvatarLook(chr.getAvatarData().getAvatarLook());
                 demonAwakening.setMoveAbility(MoveAbility.Walk);
                 demonAwakening.setAssistType(AssistType.Attack);
                 chr.getField().spawnSummon(demonAwakening);
-
+                break;
+            case DEMON_BANE:
+            case DEMON_BANE_2:
+                int iframeSec = si != null && si.getValue(time, slv) > 0 ? si.getValue(time, slv) : 4;
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = iframeSec;
+                o1.nReason = skillID;
+                o1.nValue = 1;
+                o1.tTerm = iframeSec;
+                tsm.sendStat(IndieNotDamaged, o1);
                 break;
             case SPIRIT_OF_RAGE:
                 summon = Summon.getSummonByAndSetStat(c.getChr(), skillID, slv);
                 summon.setFlyMob(false);
                 summon.setMoveAction((byte) 0);
                 summon.setMoveAbility(MoveAbility.Stop);
-                summon.setPosition(inPacket.decodePosition());
-                summon.setFlip(inPacket.decodeByte() == 0);
+                summon.setPosition(inPacket.getUnreadAmount() >= 4 ? inPacket.decodePosition() : chr.getPosition());
+                summon.setFlip(inPacket.getUnreadAmount() >= 1 && inPacket.decodeByte() == 0);
                 chr.getField().spawnSummon(summon);
                 break;
             case ORTHRUS:
@@ -539,8 +571,8 @@ public class DemonSlayer extends Job {
             SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
             int slv = skill.getCurrentLevel();
 
-            if (skillId == DEMON_CRY) {
-                if (tsm.hasStat(InfinityForce)) {
+            if (skillId == DEMON_CRY || skillId == HEXA_DEMON_CRY) {
+                if (tsm.hasStat(InfinityForce) && si != null) {
                     return si.getValue(s, slv) * 1000;
                 }
             }
@@ -558,22 +590,21 @@ public class DemonSlayer extends Job {
         if (tsm.getOptByCTSAndSkill(PowerGuard, VENGEANCE) != null) {
             if (hitInfo.hpDamage != 0) {
                 Skill skill = chr.getSkill(VENGEANCE);
-                int slv = skill.getCurrentLevel();
-                SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
-                int mobID = hitInfo.mobID;
-                Life life = chr.getField().getLifeByObjectID(mobID);
-                if (life == null) {
-                    return;
-                }
-                if (life instanceof Mob mob) {
-                    MobTemporaryStat mts = mob.getTemporaryStat();
-                    if (!mts.hasCurrentMobStatBySkillId(skill.getSkillId())) {
-                        if (Util.succeedProp(si.getValue(prop, slv))) {
-                            o1.nOption = 1;
-                            o1.rOption = skill.getSkillId();
-                            o1.tOption = si.getValue(subTime, slv);
-                            o1.bOption = 1;
-                            mts.addStatOptions(mob, MobStat.Freeze, o1);
+                if (skill != null) {
+                    int slv = skill.getCurrentLevel();
+                    SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
+                    int mobID = hitInfo.mobID;
+                    Life life = chr.getField().getLifeByObjectID(mobID);
+                    if (life instanceof Mob mob && si != null) {
+                        MobTemporaryStat mts = mob.getTemporaryStat();
+                        if (!mts.hasCurrentMobStatBySkillId(skill.getSkillId())) {
+                            if (Util.succeedProp(si.getValue(prop, slv))) {
+                                o1.nOption = 1;
+                                o1.rOption = skill.getSkillId();
+                                o1.tOption = si.getValue(subTime, slv);
+                                o1.bOption = 1;
+                                mts.addStatOptions(mob, MobStat.Freeze, o1);
+                            }
                         }
                     }
                 }
@@ -587,14 +618,16 @@ public class DemonSlayer extends Job {
                 Skill skill = chr.getSkill(POSSESSED_AEGIS);
                 int slv = skill.getCurrentLevel();
                 SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
-                int propz = si.getValue(x, slv);
-                if (Util.succeedProp(propz)) {
-                    hitInfo.hpDamage = 0;
-                    hitInfo.mpDamage = 0;
-                    int mobID = hitInfo.mobID;
-                    createPossessedAegisFuryForceAtom(mobID);
-                    chr.heal((int) (chr.getMaxHP() / ((double) 100 / si.getValue(y, slv))));
-                    chr.healMP(si.getValue(z, slv));
+                if (si != null) {
+                    int propz = si.getValue(x, slv);
+                    if (Util.succeedProp(propz)) {
+                        hitInfo.hpDamage = 0;
+                        hitInfo.mpDamage = 0;
+                        int mobID = hitInfo.mobID;
+                        createPossessedAegisFuryForceAtom(mobID);
+                        chr.heal((int) (chr.getMaxHP() * (si.getValue(y, slv) / 100.0D)));
+                        chr.healMP(si.getValue(z, slv));
+                    }
                 }
             }
         }
@@ -617,7 +650,7 @@ public class DemonSlayer extends Job {
         } else if (level >= 60 && chr.getStat(Stat.mmp) == 30) {
             chr.setStatAndSendPacket(Stat.mmp, 60);
             stats.put(Stat.mmp, chr.getStat(Stat.mmp));
-        } else if (level >= 100 && chr.getStat(Stat.mmp) == 60 || chr.getStat(Stat.mmp) == 30) {
+        } else if (level >= 100 && (chr.getStat(Stat.mmp) == 60 || chr.getStat(Stat.mmp) == 30)) {
             chr.setStatAndSendPacket(Stat.mmp, 100);
             stats.put(Stat.mmp, chr.getStat(Stat.mmp));
         }
@@ -626,17 +659,11 @@ public class DemonSlayer extends Job {
 
     @Override
     public void handleAddCTS(CharacterTemporaryStat cts, List<Option> options) {
-        if (cts != LifeTidal && JobConstants.isDemonAvenger(chr.getJob())) {
-            sendHpUpdate();
-        }
         super.handleAddCTS(cts, options);
     }
 
     @Override
     public void handleRemoveCTS(CharacterTemporaryStat cts, List<Option> options) {
-        if (JobConstants.isDemonAvenger(chr.getJob())) {
-            sendHpUpdate();
-        }
         super.handleRemoveCTS(cts, options);
     }
 

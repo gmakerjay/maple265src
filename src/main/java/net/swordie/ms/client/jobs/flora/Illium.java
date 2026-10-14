@@ -172,7 +172,7 @@ public class Illium extends Job {
                 if (!chr.hasSkill(id)) {
                     Skill skill = SkillData.getSkillDeepCopyById(id);
                     if (skill != null) {
-                        skill.setCurrentLevel(skill.getMasterLevel());
+                        skill.setCurrentLevel(skill.getMaxLevel() > 0 ? skill.getMaxLevel() : skill.getMasterLevel());
                         chr.addSkill(skill);
                     }
                 }
@@ -187,19 +187,24 @@ public class Illium extends Job {
 
 
     public Summon getCrystal() {
+        if (chr == null || chr.getField() == null) {
+            return null;
+        }
         return chr.getField().getSummons().stream().filter(s -> s.getSkillID() == DEPLOY_CRYSTAL && s.getOwnerId() == chr.getId()).findAny().orElse(null);
     }
 
     private int getCrystalCharge() {
-        if (getCrystal() == null) {
+        Summon crystal = getCrystal();
+        if (crystal == null) {
             return 0;
         }
-        return getCrystal().getCount();
+        return crystal.getCount();
     }
 
     private void setCrystalCharge(int charge) {
-        if (getCrystal() != null) {
-            getCrystal().setCount(charge);
+        Summon crystal = getCrystal();
+        if (crystal != null) {
+            crystal.setCount(charge);
         }
     }
 
@@ -233,14 +238,22 @@ public class Illium extends Job {
         this.crystalSkillMap.put(CRYSTAL_SKILL_ID_RESONANCE, true);
         this.crystalSkillMap.put(CRYSTAL_SKILL_ID_DEUS, true);
         this.crystalSkillMap.put(CRYSTAL_SKILL_ID_WINGS_OF_GLORY, true);
-        chr.getField().broadcast(Summoned.stateChanged(getCrystal(), 2, crystalSkillMap));
-        chr.getField().broadcast(Summoned.upgradeStage(getCrystal(), 3)); // resets crystal attacks
+        this.crystalSkillMap.put(CRYSTAL_SKILL_ID_VORTEX_WINGS, true);
+        Summon crystal = getCrystal();
+        if (crystal != null) {
+            chr.getField().broadcast(Summoned.stateChanged(crystal, 2, crystalSkillMap));
+            chr.getField().broadcast(Summoned.upgradeStage(crystal, 3)); // resets crystal attacks
+        }
     }
 
     public void doResonanceSkill() {
+        Summon crystal = getCrystal();
+        if (crystal == null) {
+            return;
+        }
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         Option o = new Option();
-        chr.getField().broadcast(Summoned.stateChanged(getCrystal(), 1, null));
+        chr.getField().broadcast(Summoned.stateChanged(crystal, 1, null));
         if (!chr.hasSkill(RESONANCE)) {
             return;
         }
@@ -252,38 +265,53 @@ public class Illium extends Job {
         o.tOption = si.getValue(x, slv);
         tsm.sendStat(HarmonyLink, o);
         this.crystalSkillMap.put(CRYSTAL_SKILL_ID_RESONANCE, false);
-        chr.getField().broadcast(Summoned.stateChanged(getCrystal(), 2, crystalSkillMap));
-        chr.getField().broadcast(Summoned.upgradeStage(getCrystal(), 3)); // resets crystal attacks
+        chr.getField().broadcast(Summoned.stateChanged(crystal, 2, crystalSkillMap));
+        chr.getField().broadcast(Summoned.upgradeStage(crystal, 3)); // resets crystal attacks
     }
 
     public void incrementCrystal(int skillId) {
+        Summon crystal = getCrystal();
+        if (crystal == null) {
+            return;
+        }
         int increment = (getIncrementBySkillId(skillId) * (hasFlashCrystalBattery() ? 2 : 1));
         changeCrystalCharge(getCrystalCharge() + increment);
-        chr.getField().broadcast(Summoned.upgradeStage(getCrystal(), 3)); // resets crystal attacks
+        chr.getField().broadcast(Summoned.upgradeStage(crystal, 3)); // resets crystal attacks
 
-        if (!chr.hasSkillOnCooldown(REACTION_DESTRUCTION_II) && (chr.getSkillLevel(REACTION_DESTRUCTION_II) >= 1) &&
-                (skillId == RADIANT_JAVELIN_II || skillId == RADIANT_JAVELIN || skillId == LONGINUS_SPEAR ||
-                 skillId == HEXA_RADIANT_JAVELIN || skillId == HEXA_RADIANT_JAVELIN_2 || skillId == HEXA_RADIANT_ENCHANTED_JAVELIN ||
-                 skillId == HEXA_WINGED_JAVELIN || skillId == HEXA_WINGED_ENCHANTED_JAVELIN || skillId == HEXA_WINGED_JAVELIN_2 || skillId == HEXA_LONGINUS_SPEAR)) {
-            doDestructionII();
-        } else if (!chr.hasSkillOnCooldown(REACTION_DESTRUCTION) && (chr.getSkillLevel(REACTION_DESTRUCTION) >= 1) &&
-                (skillId == RADIANT_JAVELIN || skillId == HEXA_RADIANT_JAVELIN || skillId == HEXA_RADIANT_JAVELIN_2)) {
-            doDestruction();
+        boolean isJavelinOrSpear = (skillId == RADIANT_JAVELIN_II || skillId == RADIANT_JAVELIN || skillId == RADIANT_JAVELIN_ENHANCED || skillId == LONGINUS_SPEAR ||
+                skillId == HEXA_RADIANT_JAVELIN || skillId == HEXA_RADIANT_JAVELIN_2 || skillId == HEXA_RADIANT_ENCHANTED_JAVELIN ||
+                skillId == HEXA_WINGED_JAVELIN || skillId == HEXA_WINGED_ENCHANTED_JAVELIN || skillId == HEXA_WINGED_JAVELIN_2 || skillId == HEXA_LONGINUS_SPEAR);
+        if (isJavelinOrSpear) {
+            if (chr.getSkillLevel(HEXA_REACTION_DESTRUCTION) >= 1 && !chr.hasSkillOnCooldown(HEXA_REACTION_DESTRUCTION) && !chr.hasSkillOnCooldown(REACTION_DESTRUCTION_II)) {
+                doDestructionBySkill(HEXA_REACTION_DESTRUCTION);
+            } else if (!chr.hasSkillOnCooldown(REACTION_DESTRUCTION_II) && (chr.getSkillLevel(REACTION_DESTRUCTION_II) >= 1)) {
+                doDestructionII();
+            } else if (!chr.hasSkillOnCooldown(REACTION_DESTRUCTION) && (chr.getSkillLevel(REACTION_DESTRUCTION) >= 1)) {
+                doDestruction();
+            }
+        }
+    }
+
+    private void doDestructionBySkill(int destructionSkillId) {
+        Summon crystal = getCrystal();
+        if (crystal == null) {
+            return;
+        }
+        SkillInfo si = SkillData.getSkillInfoById(destructionSkillId);
+        int slv = chr.getSkillLevel(destructionSkillId);
+        chr.write(Summoned.useSpecifiedSkill(crystal, destructionSkillId));
+        if (si != null) {
+            int cdMs = si.getValue(cooltime, slv) > 0 ? si.getValue(cooltime, slv) * 1000 : 4000;
+            chr.addSkillCooldown(destructionSkillId, cdMs);
         }
     }
 
     private void doDestruction() {
-        SkillInfo si = SkillData.getSkillInfoById(REACTION_DESTRUCTION);
-        int slv = chr.getSkillLevel(REACTION_DESTRUCTION);
-        //   chr.write(Summoned.summonUseSpecifiedSkill(getCrystal(), REACTION_DESTRUCTION));
-        chr.addSkillCooldown(REACTION_DESTRUCTION, si.getValue(cooltime, slv) * 1000);
+        doDestructionBySkill(REACTION_DESTRUCTION);
     }
 
     private void doDestructionII() {
-        SkillInfo si = SkillData.getSkillInfoById(REACTION_DESTRUCTION_II);
-        int slv = chr.getSkillLevel(REACTION_DESTRUCTION_II);
-        chr.write(Summoned.useSpecifiedSkill(getCrystal(), REACTION_DESTRUCTION_II));
-        chr.addSkillCooldown(REACTION_DESTRUCTION_II, si.getValue(cooltime, slv) * 1000);
+        doDestructionBySkill(REACTION_DESTRUCTION_II);
     }
 
     public void doCrystallineDestruction(int summonObjId, int summonAttackId) {
@@ -294,17 +322,21 @@ public class Illium extends Job {
     }
 
     public void changeCrystalCharge(int charge) {
-        int curState = getCrystal().getState();
+        Summon crystal = getCrystal();
+        if (crystal == null) {
+            return;
+        }
+        int curState = crystal.getState();
 
         charge = charge < 0 ? 0 : Math.min(charge, getMaxCrystalCharge());
         setCrystalCharge(charge);
-        getCrystal().setState(getCrystalStateByCharge(charge));
-        chr.getField().broadcast(Summoned.upgradeStage(getCrystal(), 2)); // change Crystal Summon State
+        crystal.setState(getCrystalStateByCharge(charge));
+        chr.getField().broadcast(Summoned.upgradeStage(crystal, 2)); // change Crystal Summon State
 
-        if (curState != getCrystal().getState()) {
-            chr.getField().broadcast(Summoned.effect(getCrystal(), 3)); // new form effect
+        if (curState != crystal.getState()) {
+            chr.getField().broadcast(Summoned.effect(crystal, 3)); // new form effect
         } else {
-            chr.getField().broadcast(Summoned.effect(getCrystal(), 2)); // increment effect
+            chr.getField().broadcast(Summoned.effect(crystal, 2)); // increment effect
         }
 
         if (getCrystalCharge() >= getMaxCrystalCharge() && !chr.getTemporaryStatManager().hasStat(CharacterTemporaryStat.CrystalChargeBuffIcon)) {
@@ -317,7 +349,7 @@ public class Illium extends Job {
         if (chr.hasSkill(CRYSTAL_BATTERY)) {
             maxCrystalCharge = 30;
         }
-        if (chr.hasSkill(CRYSTAL_BATTERY_II)) {
+        if (chr.hasSkill(CRYSTAL_BATTERY_II) || chr.hasSkill(CRYSTAL_BATTERY_III)) {
             maxCrystalCharge = 150;
         }
         return maxCrystalCharge;
@@ -343,10 +375,14 @@ public class Illium extends Job {
     }
 
     private void giveCrystalBatteryBuff() {
+        Skill batterySkill = getCrystalBatterySkill();
+        if (batterySkill == null) {
+            return;
+        }
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         Option o = new Option();
         o.nOption = 1;
-        o.rOption = getCrystalBatterySkill().getSkillId();
+        o.rOption = batterySkill.getSkillId();
         o.tOption = 10;
         tsm.sendStat(CrystalChargeBuffIcon, o);
     }
@@ -355,6 +391,7 @@ public class Illium extends Job {
         switch (skillId) {
             case RADIANT_JAVELIN:
             case RADIANT_JAVELIN_II:
+            case RADIANT_JAVELIN_ENHANCED:
             case HEXA_RADIANT_JAVELIN:
             case HEXA_RADIANT_JAVELIN_2:
             case HEXA_RADIANT_ENCHANTED_JAVELIN:
@@ -393,14 +430,14 @@ public class Illium extends Job {
     }
 
     public void applyUmbralBrand(int oid) {
-        int skillId = UMBRAL_BRAND;
-        Skill skill = chr.getSkill(skillId);
+        Skill skill = chr.getSkill(UMBRAL_BRAND);
         if (skill == null) {
             return;
         }
         Option o1 = new Option();
-        int maxstack = chr.hasSkill(UMBRAL_BRAND_III) ? 5 : chr.hasSkill(UMBRAL_BRAND_II) ? 3 : 1;
-        int skillID = chr.hasSkill(UMBRAL_BRAND_III) ? UMBRAL_BRAND_III : chr.hasSkill(UMBRAL_BRAND_II) ? UMBRAL_BRAND_II : UMBRAL_BRAND;
+        boolean hasBrand3 = chr.hasSkill(HEXA_UMBRAL_BRAND_III) || chr.hasSkill(UMBRAL_BRAND_III);
+        int maxstack = hasBrand3 ? 5 : chr.hasSkill(UMBRAL_BRAND_II) ? 3 : 1;
+        int skillID = chr.hasSkill(HEXA_UMBRAL_BRAND_III) ? HEXA_UMBRAL_BRAND_III : chr.hasSkill(UMBRAL_BRAND_III) ? UMBRAL_BRAND_III : chr.hasSkill(UMBRAL_BRAND_II) ? UMBRAL_BRAND_II : UMBRAL_BRAND;
         Mob mob = (Mob) chr.getField().getLifeByObjectID(oid);
         if (mob != null) {
             MobTemporaryStat mts = mob.getTemporaryStat();
@@ -411,7 +448,9 @@ public class Illium extends Job {
                 o1.nOption = 1;
             }
             o1.rOption = UMBRAL_BRAND_HIDDEN;
-            o1.tOption = chr.hasSkill(UMBRAL_BRAND_III) ? 50 : chr.hasSkill(UMBRAL_BRAND_II) ? 30 : 10; //TODO fix this
+            SkillInfo ubsi = SkillData.getSkillInfoById(skillID);
+            int dur = ubsi != null ? ubsi.getValue(time, chr.getSkillLevel(skillID)) : 0;
+            o1.tOption = dur > 0 ? dur : 15;
             o1.xOption = 4;
             o1.zOption = skillID;
             mts.addStatOptions(mob, MobStat.LefDebuff, o1);
@@ -438,23 +477,6 @@ public class Illium extends Job {
         switch (skillID) {
             case EXCIDIUM:
             case EXCIDIUM_ATTACK:
-                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
-                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
-                    if (mob == null) continue;
-                    MobTemporaryStat mts = mob.getTemporaryStat();
-                    Option opt1 = new Option();
-                    opt1.nOption = 1;
-                    opt1.rOption = skillID;
-                    opt1.tOption = 10; // 10s Absolute Freeze / Bind
-                    opt1.cOption = chr.getId();
-                    mts.addStatOptions(mob, MobStat.Freeze, opt1);
-                }
-                if (chr.getParty() != null) {
-                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
-                        other.write(UserLocal.showHexaSkillEff(chr));
-                    }
-                }
-                break;
             case MYTOCRYSTAL_EXPANSE:
             case MYTOCRYSTAL_EXPANSE_ATTACK_1:
             case MYTOCRYSTAL_EXPANSE_ATTACK_2:
@@ -464,10 +486,33 @@ public class Illium extends Job {
             case MYTOCRYSTAL_EXPANSE_ATTACK_6:
                 for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
                     applyUmbralBrand(mai.mobId);
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob == null) continue;
+                    MobTemporaryStat mts = mob.getTemporaryStat();
+                    EnumMap<MobStat, Option> newMobStats = new EnumMap<>(MobStat.class);
+                    Option opt1 = new Option();
+                    opt1.nOption = 1;
+                    opt1.rOption = skillID;
+                    opt1.tOption = 10; // 10s Absolute Freeze / Bind
+                    opt1.cOption = chr.getId();
+                    newMobStats.put(MobStat.Freeze, opt1);
+                    Option opt2 = new Option();
+                    opt2.nOption = 1;
+                    opt2.rOption = skillID;
+                    opt2.tOption = 20; // 20s Origin Debuff
+                    opt2.cOption = chr.getId();
+                    newMobStats.put(MobStat.OriginDebuff, opt2);
+                    mts.addStatOptions(mob, newMobStats);
+                }
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
                 }
                 break;
             case RADIANT_JAVELIN:
             case RADIANT_JAVELIN_II:
+            case RADIANT_JAVELIN_ENHANCED:
             case HEXA_RADIANT_JAVELIN:
             case HEXA_RADIANT_JAVELIN_2:
             case HEXA_RADIANT_ENCHANTED_JAVELIN:
@@ -476,6 +521,11 @@ public class Illium extends Job {
             case HEXA_WINGED_JAVELIN_2:
             case LONGINUS_SPEAR:
             case HEXA_LONGINUS_SPEAR:
+            case RADIANT_ORB:
+            case RADIANT_ORB_II:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    applyUmbralBrand(mai.mobId);
+                }
                 if (getCrystal() != null) {
                     incrementCrystal(skillID);
                 }
@@ -489,20 +539,26 @@ public class Illium extends Job {
                         slv = chr.getSkillLevel(attackingSkillId);
                         chr.setSkillCooldown(attackingSkillId, slv);
                         si = SkillData.getSkillInfoById(attackingSkillId);
-                        chr.addSkillCooldown(attackingSkillId, si.getValue(cooltime, slv) * 1000);
+                        if (si != null) {
+                            chr.addSkillCooldown(attackingSkillId, si.getValue(cooltime, slv) * 1000);
+                        }
                         for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
                             applyUmbralBrand(mai.mobId);
                         }
                         break;
                     case VORTEX_OF_LIGHT:
                         crystalSkillMap.put(CRYSTAL_SKILL_ID_VORTEX_OF_LIGHT, false);
-                        chr.getField().broadcast(Summoned.stateChanged(getCrystal(), 2, crystalSkillMap));
+                        if (getCrystal() != null) {
+                            chr.getField().broadcast(Summoned.stateChanged(getCrystal(), 2, crystalSkillMap));
+                        }
                         break;
                     case REFLECTION_SPECTRAL_BLAST:
                         chr.setSkillCooldown(attackingSkillId, chr.getSkillLevel(CRYSTAL_IGNITION));
                         break;
                 }
-                chr.getField().broadcast(Summoned.upgradeStage(getCrystal(), 3)); // resets crystal attacks
+                if (getCrystal() != null) {
+                    chr.getField().broadcast(Summoned.upgradeStage(getCrystal(), 3)); // resets crystal attacks
+                }
                 break;
             case VORTEX_WINGS:
             case HEXA_VORTEX_WINGS:
@@ -653,7 +709,7 @@ public class Illium extends Job {
                 o1.cOption = 1;
                 newStats.put(LefGloryWing, o1);
                 o2.nReason = skillID;
-                o2.nValue = 19; //Bugged
+                o2.nValue = si != null && si.getValue(indiePMdR, slv) > 0 ? si.getValue(indiePMdR, slv) : 25;
                 o2.tTerm = si.getValue(time, slv);
                 newStats.put(IndiePMdR, o2);
                 o3.nReason = skillID;
@@ -670,8 +726,10 @@ public class Illium extends Job {
                 newStats.put(NewFlying, o5);
                 tsm.sendStat(newStats);
                 crystalSkillMap.put(CRYSTAL_SKILL_ID_WINGS_OF_GLORY, false);
-                chr.getField().broadcast(Summoned.stateChanged(getCrystal(), 2, crystalSkillMap));
-                chr.getField().broadcast(Summoned.upgradeStage(getCrystal(), 3)); // resets crystal attacks
+                if (getCrystal() != null) {
+                    chr.getField().broadcast(Summoned.stateChanged(getCrystal(), 2, crystalSkillMap));
+                    chr.getField().broadcast(Summoned.upgradeStage(getCrystal(), 3)); // resets crystal attacks
+                }
                 break;
             case EX:
                 summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
@@ -685,8 +743,8 @@ public class Illium extends Job {
                 summon.setAssistType(AssistType.Attack);
                 field.spawnSummon(summon);
                 break;
-            case CRYSTAL_SKILL_DEUS: // TODO
-                field.getSummons().stream().filter(s -> s.getOwnerId() == chr.getId() && (s.getSkillID() == MACHINA || s.getSkillID() == EX)).forEach(field::removeLife);
+            case CRYSTAL_SKILL_DEUS:
+                field.getSummons().stream().filter(s -> s.getOwnerId() == chr.getId() && (s.getSkillID() == MACHINA || s.getSkillID() == EX || s.getSkillID() == HEXA_MACHINA || s.getSkillID() == HEXA_EX)).forEach(field::removeLife);
                 summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
                 summon.setMoveAbility(MoveAbility.Walk);
                 field.spawnSummon(summon);
@@ -699,8 +757,10 @@ public class Illium extends Job {
                 }
 
                 crystalSkillMap.put(CRYSTAL_SKILL_ID_DEUS, false);
-                chr.getField().broadcast(Summoned.stateChanged(getCrystal(), 2, crystalSkillMap));
-                chr.getField().broadcast(Summoned.upgradeStage(getCrystal(), 3)); // resets crystal attacks
+                if (getCrystal() != null) {
+                    chr.getField().broadcast(Summoned.stateChanged(getCrystal(), 2, crystalSkillMap));
+                    chr.getField().broadcast(Summoned.upgradeStage(getCrystal(), 3)); // resets crystal attacks
+                }
                 break;
             case DEPLOY_CRYSTAL:
                 Summon crystal = Summon.getSummonByAndSetStat(chr, skillID, slv);
@@ -713,7 +773,9 @@ public class Illium extends Job {
                 tsm.sendStat(IndieEmpty, o1);
                 field.spawnSummon(crystal);
                 resetCrystalBattery();
-                chr.getField().broadcast(Summoned.upgradeStage(getCrystal(), 3)); // resets crystal attacks
+                if (getCrystal() != null) {
+                    chr.getField().broadcast(Summoned.upgradeStage(getCrystal(), 3)); // resets crystal attacks
+                }
                 break;
             case CONVERSION_OVERDRIVE:
                 o1.nOption = 1;
@@ -751,8 +813,6 @@ public class Illium extends Job {
                 field.spawnSummon(summon);
                 break;
             case CRYSTALLINE_BULWARK:
-                o1.nOption = 1;
-                o1.rOption = skillID;
                 int stack = 1;
                 if (tsm.hasStat(CharacterTemporaryStat.LefBuffMastery)) {
                     stack = tsm.getOption(CharacterTemporaryStat.LefBuffMastery).nOption;
@@ -760,10 +820,19 @@ public class Illium extends Job {
                         stack++;
                     }
                 }
-                o1.tOption = stack;
-                tsm.sendStat(NotDamaged, o1);
+                int bulwarkSec = Math.max(3, (2500 + stack * 400) / 1000);
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = bulwarkSec;
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = bulwarkSec;
+                tsm.sendStat(IndieNotDamaged, o1);
                 break;
             case LONGINUS_ZONE:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 3;
                 o1.nValue = 1;
                 o1.nReason = skillID;
                 o1.tTerm = 3;
@@ -771,13 +840,17 @@ public class Illium extends Job {
                 chr.dispose();
                 break;
             case CRYSTALLINE_SPIRIT:
+                if (getCrystal() == null) {
+                    chr.chatMessage("You must deploy your Ancient Crystal first.");
+                    return;
+                }
                 if (getShards() > 0) {
                     updateVSkillStackBuff(chr, getShards() - 1);
                 } else {
                     chr.chatMessage("You don't have enough Charges to use this.");
+                    return;
                 }
-                Summon Shard;
-                Shard = Summon.getSummonByAndSetStat(chr, skillID, slv);
+                Summon Shard = Summon.getSummonByAndSetStat(chr, skillID, slv);
                 Shard.setMoveAbility(MoveAbility.Crystal);
                 Shard.setAssistType(AssistType.AttackCounter);
                 Shard.setSummonTerm(30);
@@ -792,7 +865,10 @@ public class Illium extends Job {
                 chr.dispose();
                 break;
             case EXCIDIUM:
-                // Origin Skill 6th Job: 7 seconds invincibility (iframe) during cast animation
+                // 2nd 6th Job Origin/Ascent Skill: 7 seconds invincibility (iframe)
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
                 o1.nValue = 1;
                 o1.nReason = skillID;
                 o1.tTerm = 7;
@@ -804,13 +880,24 @@ public class Illium extends Job {
                 }
                 break;
             case MYTOCRYSTAL_EXPANSE:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
                 o1.nValue = 1;
                 o1.nReason = skillID;
-                o1.tTerm = 6;
+                o1.tTerm = 7;
                 tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
                 chr.dispose();
                 break;
             case HEXA_LONGINUS_ZONE:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 3;
                 o1.nValue = 1;
                 o1.nReason = skillID;
                 o1.tTerm = 3;
@@ -831,20 +918,22 @@ public class Illium extends Job {
                 break;
             case HEXA_CRYSTAL_SKILL_DEUS:
                 field.getSummons().stream().filter(s -> s.getOwnerId() == chr.getId() && (s.getSkillID() == MACHINA || s.getSkillID() == EX || s.getSkillID() == HEXA_MACHINA || s.getSkillID() == HEXA_EX)).forEach(field::removeLife);
-                summon = Summon.getSummonByAndSetStat(chr, CRYSTAL_SKILL_DEUS, slv);
+                summon = Summon.getSummonByAndSetStat(chr, HEXA_CRYSTAL_SKILL_DEUS, slv);
                 summon.setMoveAbility(MoveAbility.Walk);
                 field.spawnSummon(summon);
 
                 for (int i = 0; i < 5; i++) {
-                    summon = Summon.getSummonByAndSetStat(chr, DEUS_SUB, slv);
+                    summon = Summon.getSummonByAndSetStat(chr, HEXA_CRYSTAL_SKILL_DEUS_SUB, slv);
                     summon.setMoveAbility(MoveAbility.Fly);
                     summon.setAssistType(AssistType.AttackCounter);
                     field.spawnAddSummon(summon);
                 }
 
                 crystalSkillMap.put(CRYSTAL_SKILL_ID_DEUS, false);
-                chr.getField().broadcast(Summoned.stateChanged(getCrystal(), 2, crystalSkillMap));
-                chr.getField().broadcast(Summoned.upgradeStage(getCrystal(), 3));
+                if (getCrystal() != null) {
+                    chr.getField().broadcast(Summoned.stateChanged(getCrystal(), 2, crystalSkillMap));
+                    chr.getField().broadcast(Summoned.upgradeStage(getCrystal(), 3));
+                }
                 break;
         }
     }
@@ -861,26 +950,32 @@ public class Illium extends Job {
                 SkillInfo si = SkillData.getSkillInfoById(skillId);
                 slv = chr.getSkillLevel(skillId);
                 Option o1 = new Option();
-                Option o2 = new Option();
                 Option o3 = new Option();
-                Option o4 = new Option();
-                o1.nOption = si.getValue(y, slv);
+                o1.nOption = si != null ? si.getValue(y, slv) : 300;
                 o1.rOption = skillId;
                 o1.tOption = 2000;
                 o1.setInMillis(true);
                 o1.skillIds = new ArrayList<>();
+                o1.skillIds.add(RADIANT_JAVELIN);
                 o1.skillIds.add(RADIANT_JAVELIN_II);
+                o1.skillIds.add(RADIANT_JAVELIN_ENHANCED);
+                o1.skillIds.add(HEXA_RADIANT_JAVELIN);
+                o1.skillIds.add(HEXA_RADIANT_JAVELIN_2);
+                o1.skillIds.add(HEXA_RADIANT_ENCHANTED_JAVELIN);
+                o1.skillIds.add(HEXA_WINGED_JAVELIN);
+                o1.skillIds.add(HEXA_WINGED_ENCHANTED_JAVELIN);
+                o1.skillIds.add(HEXA_WINGED_JAVELIN_2);
                 o1.skillIds.add(400021000); // Mana Overload
                 newStats.put(NextSpecificSkillDamageUp, o1);
-                //o2.nReason = 1;
-                //o2.nValue = skillId;
-                //o2.tTerm = 2000;
-                //o2.setInMillis(true);
-                //newStats.put(IndieNuclearOption, o2);
+
+                if (getCrystal() != null) {
+                    incrementCrystal(skillId);
+                }
 
                 Skill skill = getLucentBrandSkill();
                 if (skill == null) {
-                    return;
+                    tsm.sendStat(newStats);
+                    break;
                 }
                 int stack = 1;
                 if (tsm.hasStat(CharacterTemporaryStat.LefBuffMastery)) {
@@ -891,10 +986,9 @@ public class Illium extends Job {
                 }
                 o3.nOption = stack;
                 o3.rOption = skill.getSkillId();
-                o3.tOption = 2000;
+                o3.tOption = 20; // 20 seconds (not 2000ms)
                 o3.xOption = skill.getSkillId();
                 o3.cOption = skill.getSkillId() == LUCENT_BRAND ? 3 : skill.getSkillId() == LUCENT_BRAND_II ? 6 : 10;
-                o3.setInMillis(true);
                 newStats.put(LefBuffMastery, o3);
                 tsm.sendStat(newStats);
                 break;
@@ -933,13 +1027,30 @@ public class Illium extends Job {
             Skill skill = chr.getSkill(AEGIS_OF_LIGHT);
             if (skill != null) {
                 SkillInfo si = SkillData.getSkillInfoById(AEGIS_OF_LIGHT);
-                int dmgPerc = si.getValue(x, skill.getCurrentLevel());
+                int dmgPerc = si != null ? si.getValue(x, skill.getCurrentLevel()) : 0;
                 int dmg = hitInfo.hpDamage;
-                hitInfo.hpDamage = dmg - (dmg * (dmgPerc / 100));
-                tsm.getOption(LefBuffMastery).nOption -= 1;
+                hitInfo.hpDamage = (int) (dmg - (dmg * (dmgPerc / 100.0D)));
+                Option opt = tsm.getOption(LefBuffMastery);
+                opt.nOption -= 1;
+                tsm.sendStat(LefBuffMastery, opt);
             }
         }
         super.handleHit(c, inPacket, hitInfo);
+    }
+
+    @Override
+    public void handleLevelUp(short level) {
+        super.handleLevelUp(level);
+        if (level == 30) {
+            chr.setJob(JobConstants.JobEnum.ILLIUM_2.getJobId());
+            chr.addSpToSpecificJob((short) JobConstants.JobEnum.ILLIUM_2.getJobId(), 4);
+        } else if (level == 60) {
+            chr.setJob(JobConstants.JobEnum.ILLIUM_3.getJobId());
+            chr.addSpToSpecificJob((short) JobConstants.JobEnum.ILLIUM_3.getJobId(), 4);
+        } else if (level == 100) {
+            chr.setJob(JobConstants.JobEnum.ILLIUM_4.getJobId());
+            chr.addSpToSpecificJob((short) JobConstants.JobEnum.ILLIUM_4.getJobId(), 3);
+        }
     }
 
     @Override
@@ -964,21 +1075,33 @@ public class Illium extends Job {
     public void addItemToNewCharacter(Char chr) {
         super.addItemToNewCharacter(chr);
         Item secondary = ItemData.getItemDeepCopy(1353500);
-        chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
-        secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
-        secondary.setCharID(chr.getId());
-        secondary.setInvType(EQUIPPED);
-        secondary.setBagIndex(BodyPart.Shield.getVal());
-        secondary.saveToSQL();
-        chr.getAvatarData().getAvatarLook().getHairEquips().add(secondary.getItemId());
+        if (secondary != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
+            secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            secondary.setCharID(chr.getId());
+            secondary.setInvType(EQUIPPED);
+            secondary.setBagIndex(BodyPart.Shield.getVal());
+            secondary.saveToSQL();
+            chr.getAvatarData().getAvatarLook().getHairEquips().add(secondary.getItemId());
+        }
+        if (chr.getEquippedItemByBodyPart(BodyPart.Weapon) == null) {
+            Item weapon = ItemData.getItemDeepCopy(1522000);
+            if (weapon != null) {
+                chr.addItemToInventoryToNewCharacter(EQUIPPED, weapon, true);
+                weapon.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+                weapon.setCharID(chr.getId());
+                weapon.setInvType(EQUIPPED);
+                weapon.setBagIndex(BodyPart.Weapon.getVal());
+                weapon.saveToSQL();
+                chr.getAvatarData().getAvatarLook().setWeaponId(weapon.getItemId());
+            }
+        }
         chr.getAvatarData().getAvatarLook().setDrawElfEar(true);
         chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
     }
 
-
-
     @Override
-    public void handleRemoveCTS(CharacterTemporaryStat cts,  List<Option> options) {
+    public void handleRemoveCTS(CharacterTemporaryStat cts, List<Option> options) {
         if (cts == CharacterTemporaryStat.CrystalChargeBuffIcon) {
             changeCrystalCharge(0);
             resetCrystalBattery();

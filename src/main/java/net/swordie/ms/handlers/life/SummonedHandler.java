@@ -120,14 +120,14 @@ public class SummonedHandler {
         int summonSkillId = inPacket.decodeInt(); // Skill ID the Summon originates from
         int summonAttackId = inPacket.decodeInt(); // Attack Skill Id
         if (summonSkillId == Illium.CRYSTALLINE_SPIRIT) {
-            if (summonAttackId == Illium.REACTION_DESTRUCTION_II) {
+            if (summonAttackId == Illium.REACTION_DESTRUCTION_II || summonAttackId == 152141007) {
                 if (chr.getJobHandler() instanceof Illium illium) {
                     illium.doCrystallineDestruction(summonObjId, summonAttackId);
                 }
             }
         }
         if (summonSkillId == Illium.DEPLOY_CRYSTAL) {
-            if (summonAttackId == Illium.REACTION_DESTRUCTION_II) {
+            if (summonAttackId == Illium.REACTION_DESTRUCTION_II || summonAttackId == 152141007) {
                 return;
             }
         }

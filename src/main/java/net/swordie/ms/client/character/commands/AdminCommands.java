@@ -2818,7 +2818,7 @@ public class AdminCommands {
             armors = warriorArmors;
         } else if (JobConstants.isKanna(job)) {
             weaponId = 1552119; // Arcane Umbra Fan
-            secondaryId = 1352813; // Haku Fan
+            secondaryId = 1552119; // Arcane Umbra Fan (Haku Secondary Fan)
             emblemId = 1191103; // Gold Blossom Emblem (Kanna)
             armors = mageArmors;
         } else if (JobConstants.isXenon(job)) {
@@ -2826,6 +2826,26 @@ public class AdminCommands {
             secondaryId = 1353003; // Controller
             emblemId = 1190201; // Hybrid Heart
             armors = pirateArmors;
+        } else if (JobConstants.isBattleMage(job)) {
+            weaponId = 1382265; // Arcane Umbra Staff
+            secondaryId = 1352957; // Princess No's Accursed Marble
+            emblemId = 1190601; // Gold Resistance Emblem
+            armors = mageArmors;
+        } else if (JobConstants.isWildHunter(job)) {
+            weaponId = 1462243; // Arcane Umbra Crossbow
+            secondaryId = 1352967; // Princess No's Arrowhead
+            emblemId = 1190601; // Gold Resistance Emblem
+            armors = archerArmors;
+        } else if (JobConstants.isMechanic(job)) {
+            weaponId = 1492235; // Arcane Umbra Pistol
+            secondaryId = 1352707; // Princess No's Magnum
+            emblemId = 1190601; // Gold Resistance Emblem
+            armors = pirateArmors;
+        } else if (JobConstants.isBlaster(job)) {
+            weaponId = 1582023; // Arcane Umbra Ellaha
+            secondaryId = 1353405; // Princess No's Megaton Charges
+            emblemId = 1190601; // Gold Resistance Emblem
+            armors = warriorArmors;
         } else if (JobConstants.isRen(job)) {
             weaponId = 1215018; // Arcane Umbra Plum Sword
             secondaryId = 1354043; // Radiant Spirit Heart
@@ -2898,12 +2918,12 @@ public class AdminCommands {
             armors = warriorArmors;
         } else if (JobConstants.isDemonSlayer(job)) {
             weaponId = 1312204; // Arcane Umbra One-Handed Axe
-            secondaryId = 1352003; // Force Shield
+            secondaryId = 1099015; // Ruin Force Shield
             emblemId = 1190555; // Mitra Warrior Emblem
             armors = warriorArmors;
         } else if (JobConstants.isDemonAvenger(job)) {
             weaponId = 1232114; // Arcane Umbra Desperado
-            secondaryId = 1352004; // Demon Shield
+            secondaryId = 1099015; // Ruin Force Shield
             emblemId = 1190555; // Mitra Warrior Emblem
             armors = warriorArmors;
         } else if (JobConstants.isZero(job)) {

@@ -8,6 +8,7 @@ import net.swordie.ms.client.character.quest.Quest;
 import net.swordie.ms.client.character.skills.Option;
 import net.swordie.ms.client.character.skills.Skill;
 import net.swordie.ms.client.character.skills.info.AttackInfo;
+import net.swordie.ms.client.character.skills.info.MobAttackInfo;
 import net.swordie.ms.client.character.skills.info.SkillInfo;
 import net.swordie.ms.client.character.skills.info.SkillUseInfo;
 import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
@@ -30,11 +31,11 @@ import net.swordie.ms.life.mob.Mob;
 import net.swordie.ms.life.mob.MobStat;
 import net.swordie.ms.life.mob.MobTemporaryStat;
 import net.swordie.ms.loaders.SkillData;
-import net.swordie.ms.scripts.ScriptManagerImpl;
 import net.swordie.ms.util.Position;
 import net.swordie.ms.util.Rect;
 import net.swordie.ms.util.Util;
 import net.swordie.ms.world.field.Field;
+import net.swordie.ms.world.field.Foothold;
 
 import java.util.*;
 
@@ -46,7 +47,7 @@ import static net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat
  */
 public class WildHunter extends Citizen {
 
-    //Jaguar Summon
+    // Jaguar Summon
     public static final int SUMMON_JAGUAR_GREY = 33001007;           //No Special Jaguar Stats
     public static final int SUMMON_JAGUAR_YELLOW = 33001008;         //No Special Jaguar Stats
     public static final int SUMMON_JAGUAR_RED = 33001009;            //No Special Jaguar Stats
@@ -60,7 +61,21 @@ public class WildHunter extends Citizen {
             SUMMON_JAGUAR_PURPLE, SUMMON_JAGUAR_BLUE, SUMMON_JAGUAR_JAIRA, SUMMON_JAGUAR_SNOW_WHITE, SUMMON_JAGUAR_ONYX,
             SUMMON_JAGUAR_CRIMSON};
 
-    //Jaguar Mount
+    // HEXA Jaguar Summon (6th Job)
+    public static final int HEXA_SUMMON_JAGUAR_GREY = 33141014;
+    public static final int HEXA_SUMMON_JAGUAR_YELLOW = 33141015;
+    public static final int HEXA_SUMMON_JAGUAR_RED = 33141016;
+    public static final int HEXA_SUMMON_JAGUAR_PURPLE = 33141017;
+    public static final int HEXA_SUMMON_JAGUAR_BLUE = 33141018;
+    public static final int HEXA_SUMMON_JAGUAR_JAIRA = 33141019;
+    public static final int HEXA_SUMMON_JAGUAR_SNOW_WHITE = 33141020;
+    public static final int HEXA_SUMMON_JAGUAR_ONYX = 33141021;
+    public static final int HEXA_SUMMON_JAGUAR_CRIMSON = 33141022;
+    public static final int[] HEXA_SUMMONS = new int[]{HEXA_SUMMON_JAGUAR_GREY, HEXA_SUMMON_JAGUAR_YELLOW, HEXA_SUMMON_JAGUAR_RED,
+            HEXA_SUMMON_JAGUAR_PURPLE, HEXA_SUMMON_JAGUAR_BLUE, HEXA_SUMMON_JAGUAR_JAIRA, HEXA_SUMMON_JAGUAR_SNOW_WHITE, HEXA_SUMMON_JAGUAR_ONYX,
+            HEXA_SUMMON_JAGUAR_CRIMSON};
+
+    // Jaguar Mount
     public static final int MOUNT_JAGUAR_GREY = 1932015;
     public static final int MOUNT_JAGUAR_YELLOW = 1932030;
     public static final int MOUNT_JAGUAR_RED = 1932031;
@@ -83,8 +98,8 @@ public class WildHunter extends Citizen {
     public static final int WILD_LURE = 33001025;
     public static final int ANOTHER_BITE = 33000036;
 
-    public static final int SOUL_ARROW_CROSSBOW = 3200014; //Passive
-    public static final int CROSSBOW_BOOSTER = 33101012; //Buff
+    public static final int SOUL_ARROW_CROSSBOW = 33100017; //Passive
+    public static final int CROSSBOW_BOOSTER = 33100012; //Passive in v265
     public static final int CALL_OF_THE_WILD = 33101005; //Buff
     public static final int DASH_N_SLASH_JAGUAR_SUMMONED = 33101115; //Special Attack (Stun Debuff) + (Bite Debuff)
     public static final int DASH_N_SLASH_JAGUAR_ON = 33101215; //Special Attack (Stun Debuff) + (Bite Debuff)
@@ -102,7 +117,7 @@ public class WildHunter extends Citizen {
     public static final int MAPLE_WARRIOR_WH = 33121007; //Buff
     public static final int HEROS_WILL_WH = 33121008;
 
-    //Final Attack
+    // Final Attack
     public static final int FINAL_ATTACK_WH = 33100009;
     public static final int ADVANCED_FINAL_ATTACK_WH = 33120011;
 
@@ -118,11 +133,33 @@ public class WildHunter extends Citizen {
     public static final int PRIMAL_GRENADE = 400031032;
     public static final int WILD_ARROW_BLAST_TYPE_X = 400031046;
 
-    // HEXA Skills
-    public static final int HEXA_FINAL_ATTACK_WH = 21140012;
+    // 6th Job Origin & Ascent Skills
+    public static final int NATURES_TRUTH = 33141500;
+    public static final int NATURES_TRUTH_1 = 33141501;
+    public static final int NATURES_TRUTH_2 = 33141502;
+    public static final int NATURES_TRUTH_3 = 33141503;
+    public static final int ASCENT_WH_1 = 33141504;
+    public static final int ASCENT_WH_2 = 33141505;
+
+    // HEXA Mastery Skills
+    public static final int HEXA_WILD_ARROW_BLAST = 33141000;
+    public static final int HEXA_SWIPE = 33141006;
+    public static final int HEXA_DASH_N_SLASH = 33141007;
+    public static final int HEXA_SONIC_ROAR = 33141008;
+    public static final int HEXA_SONIC_ROAR_1 = 33141009;
+    public static final int HEXA_JAGUAR_SOUL = 33141010;
+    public static final int HEXA_JAGUAR_RAMPAGE = 33141011;
+    public static final int HEXA_JAGUAR_RAMPAGE_1 = 33141012;
+    public static final int HEXA_JAGUAR_RAMPAGE_2 = 33141013;
+    public static final int HEXA_HUNTING_ASSISTANT_UNIT = 33141023;
+    public static final int HEXA_DRILL_SALVO = 33141024;
+    public static final int HEXA_ANOTHER_BITE = 33140025;
+    public static final int HEXA_FINAL_ATTACK_WH = 33140026;
 
     private final int[] addedSkills = new int[]{
-            SECRET_ASSEMBLY,};
+            SECRET_ASSEMBLY,
+            CAPTURE,
+            CALL_OF_THE_HUNTER,};
 
     private final int[] jaguarSummons = new int[]{
             SUMMON_JAGUAR_GREY,
@@ -133,23 +170,35 @@ public class WildHunter extends Citizen {
             SUMMON_JAGUAR_JAIRA,
             SUMMON_JAGUAR_SNOW_WHITE,
             SUMMON_JAGUAR_ONYX,
-            SUMMON_JAGUAR_CRIMSON,};
+            SUMMON_JAGUAR_CRIMSON,
+            HEXA_SUMMON_JAGUAR_GREY,
+            HEXA_SUMMON_JAGUAR_YELLOW,
+            HEXA_SUMMON_JAGUAR_RED,
+            HEXA_SUMMON_JAGUAR_PURPLE,
+            HEXA_SUMMON_JAGUAR_BLUE,
+            HEXA_SUMMON_JAGUAR_JAIRA,
+            HEXA_SUMMON_JAGUAR_SNOW_WHITE,
+            HEXA_SUMMON_JAGUAR_ONYX,
+            HEXA_SUMMON_JAGUAR_CRIMSON,};
 
     private int lastUsedSkill = 0;
     private long lastPrimalGrenadeCount = 0L;
 
     public WildHunter(Char chr) {
         super(chr);
-        if (chr.getId() != 0 && isHandlerOfJob(chr.getJob())) {
+        if (chr != null && chr.getId() != 0 && isHandlerOfJob(chr.getJob())) {
             if (chr.getWildHunterInfo() == null) {
-                chr.setWildHunterInfo(new WildHunterInfo());
+                WildHunterInfo whi = new WildHunterInfo();
+                whi.setIdx((byte) 0);
+                whi.setRidingType((byte) 1);
+                chr.setWildHunterInfo(whi);
             }
             for (int id : addedSkills) {
                 Skill skill = chr.getSkill(id);
                 if (!chr.hasSkill(id) || skill.getCurrentLevel() != skill.getMaxLevel()) {
                     skill = SkillData.getSkillDeepCopyById(id);
                     if (skill != null) {
-                        skill.setCurrentLevel(skill.getMaxLevel());
+                        skill.setCurrentLevel(skill.getMaxLevel() > 0 ? skill.getMaxLevel() : skill.getMasterLevel());
                         chr.addSkill(skill);
                     }
                 }
@@ -162,11 +211,27 @@ public class WildHunter extends Citizen {
         return JobConstants.isWildHunter(id);
     }
 
+    @Override
+    public void handleInitAfterMigrate(Char chr) {
+        super.handleInitAfterMigrate(chr);
+        if (chr.getWildHunterInfo() == null) {
+            chr.setWildHunterInfo(new WildHunterInfo());
+        }
+        WildHunterInfo whi = chr.getWildHunterInfo();
+        if (whi.getIdx() < 0 || whi.getIdx() >= MOUNTS.length) {
+            whi.setIdx((byte) 0);
+            whi.setRidingType((byte) 1);
+        }
+        chr.write(WvsContext.wildHunterInfo(whi));
+        initJaguarLink();
+    }
+
     // Attack related methods ------------------------------------------------------------------------------------------
     @Override
     public void handleDebuffOnMob(Client c, Mob mob, SkillInfo si, int skillID, int slv, long damage) {
         Char chr = c.getChr();
-        if (skillID >= SUMMON_JAGUAR_GREY && skillID <= SUMMON_JAGUAR_CRIMSON) {
+        if ((skillID >= SUMMON_JAGUAR_GREY && skillID <= SUMMON_JAGUAR_CRIMSON)
+                || (skillID >= HEXA_SUMMON_JAGUAR_GREY && skillID <= HEXA_SUMMON_JAGUAR_CRIMSON)) {
             skillID = lastUsedSkill;
             lastUsedSkill = 0;
         }
@@ -175,15 +240,19 @@ public class WildHunter extends Citizen {
         MobTemporaryStat mts = mob.getTemporaryStat();
         EnumMap<MobStat, Option> map = new EnumMap<>(MobStat.class);
 
-        int jaguarBleedingTime = SkillData.getSkillInfoById(SUMMON_JAGUAR_GREY).getValue(time, 1);
+        SkillInfo jagInfo = SkillData.getSkillInfoById(SUMMON_JAGUAR_GREY);
+        int jaguarBleedingTime = jagInfo != null && jagInfo.getValue(time, 1) > 0 ? jagInfo.getValue(time, 1) : 15;
+        int biteSkillId = chr.hasSkill(HEXA_ANOTHER_BITE) ? HEXA_ANOTHER_BITE : ANOTHER_BITE;
+        int procChance = si != null && si.getValue(prop, slv) > 0 ? si.getValue(prop, slv) : 100;
         switch (skillID) {
-            case DASH_N_SLASH_JAGUAR_ON: //(33101115)  //Stun + Bite Debuff
-                if (Util.succeedProp(si.getValue(prop, slv))) {
+            case DASH_N_SLASH_JAGUAR_ON:
+            case HEXA_DASH_N_SLASH:
+                if (Util.succeedProp(procChance)) {
                     if (!mts.hasCurrentMobStatBySkillId(skillID)) {
                         if (!mob.isBoss()) {
                             o2.nOption = 1;
                             o2.rOption = skillID;
-                            o2.tOption = si.getValue(time, slv);
+                            o2.tOption = si != null && si.getValue(time, slv) > 0 ? si.getValue(time, slv) : 4;
                             map.put(MobStat.Stun, o2);
                         }
                     }
@@ -193,7 +262,7 @@ public class WildHunter extends Citizen {
                     }
                     amount = Math.min(amount + 1, 3);
                     o1.nOption = amount;
-                    o1.rOption = skillID;
+                    o1.rOption = biteSkillId;
                     o1.tOption = jaguarBleedingTime;
                     map.put(MobStat.JaguarBleeding, o1);
                     mts.addStatOptions(mob, map);
@@ -202,48 +271,57 @@ public class WildHunter extends Citizen {
                         if (!mob.isBoss()) {
                             o1.nOption = 1;
                             o1.rOption = skillID;
-                            o1.tOption = si.getValue(time, slv);
+                            o1.tOption = si != null && si.getValue(time, slv) > 0 ? si.getValue(time, slv) : 4;
                             mts.addStatOptions(mob, MobStat.Stun, o1);
                         }
                     }
                 }
                 break;
-            case DASH_N_SLASH_JAGUAR_SUMMONED: //(33101215)   //Stun Debuff
+            case DASH_N_SLASH_JAGUAR_SUMMONED:
                 if (!mts.hasCurrentMobStatBySkillId(skillID)) {
-                    if (Util.succeedProp(si.getValue(prop, slv)) && !mob.isBoss()) {
+                    if (Util.succeedProp(procChance) && !mob.isBoss()) {
                         o1.nOption = 1;
                         o1.rOption = skillID;
-                        o1.tOption = si.getValue(time, slv);
+                        o1.tOption = si != null && si.getValue(time, slv) > 0 ? si.getValue(time, slv) : 4;
                         mts.addStatOptions(mob, MobStat.Stun, o1);
                     }
                 }
                 break;
-            case SWIPE: //Bite Debuff
-                if (Util.succeedProp(si.getValue(prop, slv))) {
+            case SWIPE:
+            case SONIC_ROAR:
+            case JAGUAR_RAMPAGE:
+            case HEXA_SWIPE:
+            case HEXA_SONIC_ROAR:
+            case HEXA_SONIC_ROAR_1:
+            case HEXA_JAGUAR_RAMPAGE:
+            case HEXA_JAGUAR_RAMPAGE_1:
+            case HEXA_JAGUAR_RAMPAGE_2:
+                if (Util.succeedProp(procChance)) {
                     int amount = 0;
                     if (mts.hasCurrentMobStat(MobStat.JaguarBleeding)) {
                         amount = mts.getCurrentOptionsByMobStat(MobStat.JaguarBleeding).nOption;
                     }
                     amount = Math.min(amount + 1, 3);
                     o1.nOption = amount;
-                    o1.rOption = ANOTHER_BITE;
+                    o1.rOption = biteSkillId;
                     o1.tOption = jaguarBleedingTime;
                     mts.addStatOptions(mob, MobStat.JaguarBleeding, o1);
                 }
                 break;
-            case JAGUAR_SOUL: //(Stun Debuff) + (Bite Debuff) + (Magic Crash Debuff)
-                if (Util.succeedProp(si.getValue(prop, slv))) {
+            case JAGUAR_SOUL:
+            case HEXA_JAGUAR_SOUL:
+                if (Util.succeedProp(procChance)) {
                     int amount = 0;
                     if (mts.hasCurrentMobStat(MobStat.JaguarBleeding)) {
                         amount = mts.getCurrentOptionsByMobStat(MobStat.JaguarBleeding).nOption;
                     }
                     amount = Math.min(amount + 1, 3);
                     o1.nOption = amount;
-                    o1.rOption = ANOTHER_BITE;
+                    o1.rOption = biteSkillId;
                     o1.tOption = jaguarBleedingTime;
                     o2.nOption = 1;
                     o2.rOption = skillID;
-                    o2.tOption = si.getValue(time, slv);
+                    o2.tOption = si != null && si.getValue(time, slv) > 0 ? si.getValue(time, slv) : 10;
                     map.put(MobStat.JaguarBleeding, o1);
                     map.put(MobStat.Stun, o2);
                     mts.addStatOptions(mob, map);
@@ -252,7 +330,7 @@ public class WildHunter extends Citizen {
             case PRIMAL_FURY_2:
             case PRIMAL_FURY:
                 o1.nOption = 3; // max stacks instantly
-                o1.rOption = ANOTHER_BITE;
+                o1.rOption = biteSkillId;
                 o1.tOption = jaguarBleedingTime;
                 mts.addStatOptions(mob, MobStat.JaguarBleeding, o1);
                 break;
@@ -272,13 +350,52 @@ public class WildHunter extends Citizen {
             }
         }
 
-        if (attackInfo.skillId >= SUMMON_JAGUAR_GREY && attackInfo.skillId <= SUMMON_JAGUAR_CRIMSON) {
+        if ((attackInfo.skillId >= SUMMON_JAGUAR_GREY && attackInfo.skillId <= SUMMON_JAGUAR_CRIMSON)
+                || (attackInfo.skillId >= HEXA_SUMMON_JAGUAR_GREY && attackInfo.skillId <= HEXA_SUMMON_JAGUAR_CRIMSON)) {
             attackInfo.skillId = lastUsedSkill;
             lastUsedSkill = 0;
         }
-        switch (attackInfo.skillId) {
+        int skillID = attackInfo.skillId;
+        switch (skillID) {
+            case NATURES_TRUTH:
+            case NATURES_TRUTH_1:
+            case NATURES_TRUTH_2:
+            case NATURES_TRUTH_3:
+            case ASCENT_WH_1:
+            case ASCENT_WH_2:
+                int biteSkillId = chr.hasSkill(HEXA_ANOTHER_BITE) ? HEXA_ANOTHER_BITE : ANOTHER_BITE;
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob == null) continue;
+                    MobTemporaryStat mts = mob.getTemporaryStat();
+                    EnumMap<MobStat, Option> newMobStats = new EnumMap<>(MobStat.class);
+                    Option opt1 = new Option();
+                    opt1.nOption = 1;
+                    opt1.rOption = skillID;
+                    opt1.tOption = 10;
+                    opt1.cOption = chr.getId();
+                    newMobStats.put(MobStat.Freeze, opt1);
+                    Option opt2 = new Option();
+                    opt2.nOption = 1;
+                    opt2.rOption = skillID;
+                    opt2.tOption = 20;
+                    opt2.cOption = chr.getId();
+                    newMobStats.put(MobStat.OriginDebuff, opt2);
+                    Option opt3 = new Option();
+                    opt3.nOption = 3;
+                    opt3.rOption = biteSkillId;
+                    opt3.tOption = 15;
+                    newMobStats.put(MobStat.JaguarBleeding, opt3);
+                    mts.addStatOptions(mob, newMobStats);
+                }
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
+                break;
             case PRIMAL_GRENADE:
-                updatePrimalGrenadeCount(tsm.hasStat(WildGrenade) ? tsm.getOption(WildGrenade).nOption - 1 : 0);
+                updatePrimalGrenadeCount(tsm.hasStat(WildGrenade) ? Math.max(0, tsm.getOption(WildGrenade).nOption - 1) : 0);
                 break;
         }
     }
@@ -334,7 +451,7 @@ public class WildHunter extends Citizen {
                 }
             }
             if (amount == 0) {
-                return;
+                amount = 1;
             }
             EnumMap<CharacterTemporaryStat, Option> newStats = new EnumMap<>(CharacterTemporaryStat.class);
             amount = Math.min(amount, 6);
@@ -390,6 +507,13 @@ public class WildHunter extends Citizen {
             case SONIC_ROAR:
             case JAGUAR_SOUL:
             case JAGUAR_RAMPAGE:
+            case HEXA_SWIPE:
+            case HEXA_DASH_N_SLASH:
+            case HEXA_SONIC_ROAR:
+            case HEXA_JAGUAR_SOUL:
+            case HEXA_JAGUAR_RAMPAGE:
+            case HEXA_JAGUAR_RAMPAGE_1:
+            case HEXA_JAGUAR_RAMPAGE_2:
                 lastUsedSkill = skillID;
                 c.write(UserLocal.jaguarSkill(skillID));
                 break;
@@ -398,6 +522,7 @@ public class WildHunter extends Citizen {
                 chr.warp(toField);
                 break;
             case HUNTING_ASSISTANT_UNIT:
+            case HEXA_HUNTING_ASSISTANT_UNIT:
                 aa = AffectedArea.getPassiveAA(chr, skillID, slv);
                 aa.setMobOrigin((byte) 0);
                 aa.setPosition(chr.getPosition());
@@ -431,7 +556,6 @@ public class WildHunter extends Citizen {
                         quest.setProperty(key, "1");
                         chr.write(WvsContext.message(MessageType.QUEST_RECORD_EX_MESSAGE, quest.getQRKey(), quest.getQRValue(), (byte) 0));
                         chr.write(UserPacket.effect(Effect.showCaptureEffect(skillID, slv, 0, 0)));
-                        WildHunterInfo whi = chr.getWildHunterInfo();
                         mob.remove(true);
                     } else {
                         chr.write(UserPacket.effect(Effect.showCaptureEffect(skillID, slv, 0, 2)));
@@ -452,24 +576,35 @@ public class WildHunter extends Citizen {
             case SUMMON_JAGUAR_SNOW_WHITE:
             case SUMMON_JAGUAR_ONYX:
             case SUMMON_JAGUAR_CRIMSON:
-                if (chr.getWildHunterInfo() == null
-                        || chr.getWildHunterInfo().getIdx() < 0
-                        || chr.getWildHunterInfo().getIdx() >= MOUNTS.length) {
-                    chr.chatMessage("Bạn chưa chọn báo đốm. Vui lòng mở tab Kỹ năng và chọn lại!");
-                    return;
+            case HEXA_SUMMON_JAGUAR_GREY:
+            case HEXA_SUMMON_JAGUAR_YELLOW:
+            case HEXA_SUMMON_JAGUAR_RED:
+            case HEXA_SUMMON_JAGUAR_PURPLE:
+            case HEXA_SUMMON_JAGUAR_BLUE:
+            case HEXA_SUMMON_JAGUAR_JAIRA:
+            case HEXA_SUMMON_JAGUAR_SNOW_WHITE:
+            case HEXA_SUMMON_JAGUAR_ONYX:
+            case HEXA_SUMMON_JAGUAR_CRIMSON:
+                if (chr.getWildHunterInfo() == null) {
+                    chr.setWildHunterInfo(new WildHunterInfo());
+                }
+                if (chr.getWildHunterInfo().getIdx() < 0 || chr.getWildHunterInfo().getIdx() >= MOUNTS.length) {
+                    chr.getWildHunterInfo().setIdx((byte) 0);
                 }
                 if (tsm.hasStatBySkillId(RIDE_JAGUAR)) {
                     tsm.removeStatsBySkill(RIDE_JAGUAR);
                 }
-                Summon.summonJaguar(chr, SUMMONS[chr.getWildHunterInfo().getIdx()]);
+                int idx = chr.getWildHunterInfo().getIdx();
+                int jagSummonSkill = chr.hasSkill(HEXA_SUMMONS[idx]) ? HEXA_SUMMONS[idx] : SUMMONS[idx];
+                Summon.summonJaguar(chr, jagSummonSkill);
                 chr.write(UserLocal.jaguarActive(true)); // Makes Jaguar use normal attacks
                 break;
             case RIDE_JAGUAR:
-                if (chr.getWildHunterInfo() == null
-                        || chr.getWildHunterInfo().getIdx() < 0
-                        || chr.getWildHunterInfo().getIdx() >= MOUNTS.length) {
-                    chr.chatMessage("Bạn chưa chọn báo đốm. Vui lòng mở tab Kỹ năng và chọn lại!");
-                    return;
+                if (chr.getWildHunterInfo() == null) {
+                    chr.setWildHunterInfo(new WildHunterInfo());
+                }
+                if (chr.getWildHunterInfo().getIdx() < 0 || chr.getWildHunterInfo().getIdx() >= MOUNTS.length) {
+                    chr.getWildHunterInfo().setIdx((byte) 0);
                 }
                 for (int jaguarSummonSkill : jaguarSummons) {
                     tsm.removeStatsBySkill(jaguarSummonSkill);
@@ -517,9 +652,13 @@ public class WildHunter extends Citizen {
                 tsm.sendStat(newStats);
                 break;
             case BACKSTEP:
-                o1.nOption = 1;
-                o1.rOption = skillID;
-                tsm.sendStat(DrawBack, o1);
+                if (tsm.hasStat(DrawBack)) {
+                    tsm.removeStat(DrawBack);
+                } else {
+                    o1.nOption = 1;
+                    o1.rOption = skillID;
+                    tsm.sendStat(DrawBack, o1);
+                }
                 break;
             case SHARP_EYES: // x = crit rate%  |  y = max crit dmg%
                 int cr = si.getValue(x, slv);
@@ -538,6 +677,7 @@ public class WildHunter extends Citizen {
                 tsm.sendStat(IndieDamR, o1);
                 break;
             case DRILL_SALVO:
+            case HEXA_DRILL_SALVO:
                 aa = AffectedArea.getPassiveAA(chr, skillID, slv);
                 aa.setMobOrigin((byte) 0);
                 aa.setPosition(chr.getPosition());
@@ -561,23 +701,42 @@ public class WildHunter extends Citizen {
                 o1.tOption = si.getValue(v, slv);
                 tsm.sendStat(NotDamaged, o1);
                 break;
+            case NATURES_TRUTH:
+            case ASCENT_WH_1:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 7;
+                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
+                break;
             case JAGUAR_STORM:
                 o1.nOption = 1;
                 o1.rOption = skillID;
                 o1.tOption = si.getValue(time, slv);
                 tsm.sendStat(SlowAttack, o1);
 
-                Position pos = Util.getRandomFromCollection(chr.getField().getFootholdsInRect(chr.getRectAround(si.getFirstRect()))).getRandomPosition();
+                Collection<Foothold> fhs = chr.getField().getFootholdsInRect(chr.getRectAround(si.getFirstRect()));
+                Foothold fh = !fhs.isEmpty() ? Util.getRandomFromCollection(fhs) : chr.getField().findFootHoldBelow(chr.getPosition());
+                Position basePos = fh != null ? fh.getRandomPosition() : chr.getPosition().deepCopy();
                 Random rand = new Random();
-                int x = chr.getPosition().getX();
+                int xPos = chr.getPosition().getX();
                 int count = 0;
-                List<Integer> summon = new ArrayList<>();
+                int curIdx = chr.getWildHunterInfo() != null ? chr.getWildHunterInfo().getIdx() : 0;
+                List<Integer> summonList = new ArrayList<>();
                 while (count < 6) {
                     int random = (int) (rand.nextDouble() * 9);
-                    pos.setX(chr.isLeft() ? (x + random * 200) : (x - random * 200));
-                    if (random != chr.getWildHunterInfo().getIdx() && !summon.contains(SUMMONS[random])) {
-                        Summon.summonJaguarStorm(chr, WildHunter.SUMMONS[random], pos, si.getValue(time, slv));
-                        summon.add(SUMMONS[random]);
+                    if (random != curIdx && !summonList.contains(SUMMONS[random])) {
+                        Position spawnPos = new Position(chr.isLeft() ? (xPos + random * 100) : (xPos - random * 100), basePos.getY());
+                        int stormSkillId = chr.hasSkill(HEXA_SUMMONS[random]) ? HEXA_SUMMONS[random] : SUMMONS[random];
+                        Summon.summonJaguarStorm(chr, stormSkillId, spawnPos, si.getValue(time, slv));
+                        summonList.add(SUMMONS[random]);
                         count++;
                     }
                 }

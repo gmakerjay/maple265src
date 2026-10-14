@@ -9,6 +9,7 @@ import net.swordie.ms.client.character.skills.Option;
 import net.swordie.ms.client.character.skills.Skill;
 import net.swordie.ms.client.character.skills.info.AttackInfo;
 import net.swordie.ms.client.character.skills.info.ForceAtomInfo;
+import net.swordie.ms.client.character.skills.info.MobAttackInfo;
 import net.swordie.ms.client.character.skills.info.SkillInfo;
 import net.swordie.ms.client.character.skills.info.SkillUseInfo;
 import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
@@ -16,6 +17,7 @@ import net.swordie.ms.client.character.skills.temp.TemporaryStatBase;
 import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
 import net.swordie.ms.connection.InPacket;
 import net.swordie.ms.connection.packet.Effect;
+import net.swordie.ms.connection.packet.UserLocal;
 import net.swordie.ms.connection.packet.UserPacket;
 import net.swordie.ms.connection.packet.UserRemote;
 import net.swordie.ms.constants.JobConstants;
@@ -26,7 +28,6 @@ import net.swordie.ms.life.mob.Mob;
 import net.swordie.ms.life.mob.MobStat;
 import net.swordie.ms.life.mob.MobTemporaryStat;
 import net.swordie.ms.loaders.SkillData;
-import net.swordie.ms.scripts.ScriptManagerImpl;
 import net.swordie.ms.util.Position;
 import net.swordie.ms.util.Rect;
 import net.swordie.ms.util.Util;
@@ -56,7 +57,8 @@ public class Mechanic extends Citizen {
     public static final int HUMANOID_MECH = 35001002; //Mech Suit
     public static final int TANK_MECH = 35111003; //Tank Mech Suit
 
-    public static final int MECHANIC_RAGE = 35101006; //Buff
+    public static final int MECHANIC_RAGE = 35100006; //Passive in v265 (fallback 35101006)
+    public static final int MECHANIC_RAGE_ACTIVE = 35101006;
     public static final int PERFECT_ARMOR = 35101007; //Buff (ON/OFF)
     public static final int OPEN_PORTAL_GX9 = 35101005; //Special Skill
     public static final int ROBO_LAUNCHER_RM7 = 35101012; //Summon
@@ -70,10 +72,6 @@ public class Mechanic extends Citizen {
     public static final int ROBOT_MASTERY = 35120001;
     public static final int BOTS_N_TOTS = 35121009; //Special Summon
     public static final int BOTS_N_TOTS_SUB_SUMMON = 35121011; // Summon that spawn from the main BotsNtots
-    // HEXA (6th job) summons - own WZ summon nodes
-    public static final int HEXA_ROBO_LAUNCHER_RM7 = 35141006;
-    public static final int HEXA_BOTS_N_TOTS = 35141008;
-    public static final int HEXA_BOTS_N_TOTS_SUB_SUMMON = 35141009;
     public static final int MAPLE_WARRIOR_MECH = 35121007; //Buff
     public static final int ENHANCED_SUPPORT_UNIT = 35120002;
     public static final int HEROS_WILL_MECH = 35121008;
@@ -92,6 +90,27 @@ public class Mechanic extends Citizen {
     public static final int MECHA_CARRIER = 400051068; // Summon
     public static final int MECHA_CARRIER_2 = 400051069; // SecondAtom
 
+    // 6th Job Origin & Ascent Skills
+    public static final int GROUND_ZERO = 35141500;
+    public static final int GROUND_ZERO_1 = 35141501;
+    public static final int GROUND_ZERO_2 = 35141502;
+    public static final int GROUND_ZERO_3 = 35141503;
+    public static final int ASCENT_MECH = 35141504;
+
+    // HEXA Mastery Skills
+    public static final int HEXA_AP_SALVO_PLUS = 35141000;
+    public static final int HEXA_AP_SALVO_PLUS_1 = 35141001;
+    public static final int HEXA_AP_SALVO_PLUS_2 = 35141002;
+    public static final int HEXA_HOMING_BEACON = 35141003;
+    public static final int HEXA_DISTORTION_BOMB = 35141004;
+    public static final int HEXA_DISTORTION_BOMB_1 = 35141005;
+    public static final int HEXA_ROBO_LAUNCHER_RM7 = 35141006;
+    public static final int HEXA_ROCK_N_SHOCK = 35141007;
+    public static final int HEXA_BOTS_N_TOTS = 35141008;
+    public static final int HEXA_BOTS_N_TOTS_SUB_SUMMON = 35141009;
+    public static final int HEXA_DISTORTION_BOMB_2 = 35141010;
+    public static final int ROBO_CONVERSION_CB_P1 = 35141011;
+
     private final int[] addedSkills = new int[]{
             SECRET_ASSEMBLY,
             MECHANIC_DASH,
@@ -100,19 +119,20 @@ public class Mechanic extends Citizen {
     private final int[] homingBeacon = new int[]{
             HOMING_BEACON,
             ADV_HOMING_BEACON,
-            HOMING_BEACON_RESEARCH,};
+            HOMING_BEACON_RESEARCH,
+            HEXA_HOMING_BEACON,};
 
     private ScheduledFuture<?> supportUnitTimer;
     private byte gateId = 0;
 
     public Mechanic(Char chr) {
         super(chr);
-        if (chr.getId() != 0 && isHandlerOfJob(chr.getJob())) {
+        if (chr != null && chr.getId() != 0 && isHandlerOfJob(chr.getJob())) {
             for (int id : addedSkills) {
                 if (!chr.hasSkill(id)) {
                     Skill skill = SkillData.getSkillDeepCopyById(id);
                     if (skill != null) {
-                        skill.setCurrentLevel(skill.getMasterLevel());
+                        skill.setCurrentLevel(skill.getMaxLevel() > 0 ? skill.getMaxLevel() : skill.getMasterLevel());
                         chr.addSkill(skill);
                     }
                 }
@@ -126,15 +146,21 @@ public class Mechanic extends Citizen {
     }
 
     public void healFromSupportUnit(Summon summon) {
+        if (summon == null) {
+            return;
+        }
         Char owner = summon.getChr();
         if (owner == null) {
             return;
         }
-        if (owner.hasSkill(ENHANCED_SUPPORT_UNIT) || owner.hasSkill(SUPPORT_UNIT_HEX)) {
+        Skill suhSkill = owner.getSkill(SUPPORT_UNIT_HEX);
+        if (suhSkill != null && (owner.hasSkill(ENHANCED_SUPPORT_UNIT) || owner.hasSkill(SUPPORT_UNIT_HEX))) {
             SkillInfo si = SkillData.getSkillInfoById(SUPPORT_UNIT_HEX);
-            byte slv = (byte) owner.getSkill(SUPPORT_UNIT_HEX).getCurrentLevel();
-            int healrate = si.getValue(hp, slv);
-            chr.heal((int) (chr.getMaxHP() * ((double) healrate / 100)));
+            if (si != null) {
+                byte slv = (byte) suhSkill.getCurrentLevel();
+                int healrate = si.getValue(hp, slv);
+                chr.heal((int) (chr.getMaxHP() * ((double) healrate / 100)));
+            }
         }
     }
 
@@ -174,17 +200,49 @@ public class Mechanic extends Citizen {
         super.handleAttack(c, attackInfo, si, now);
         int slv = attackInfo.slv;
         int skillID = attackInfo.skillId;
-        if (si == null) {
-            return;
-        }
         switch (skillID) {
+            case GROUND_ZERO:
+            case GROUND_ZERO_1:
+            case GROUND_ZERO_2:
+            case GROUND_ZERO_3:
+            case ASCENT_MECH:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob == null) continue;
+                    MobTemporaryStat mts = mob.getTemporaryStat();
+                    EnumMap<MobStat, Option> newMobStats = new EnumMap<>(MobStat.class);
+                    Option opt1 = new Option();
+                    opt1.nOption = 1;
+                    opt1.rOption = skillID;
+                    opt1.tOption = 10;
+                    opt1.cOption = chr.getId();
+                    newMobStats.put(MobStat.Freeze, opt1);
+                    Option opt2 = new Option();
+                    opt2.nOption = 1;
+                    opt2.rOption = skillID;
+                    opt2.tOption = 20;
+                    opt2.cOption = chr.getId();
+                    newMobStats.put(MobStat.OriginDebuff, opt2);
+                    mts.addStatOptions(mob, newMobStats);
+                }
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
+                break;
             case DISTORTION_BOMB:
-                AffectedArea aa = AffectedArea.getPassiveAA(chr, skillID, slv);
-                aa.setPosition(chr.getPosition().deepCopy());
-                Rect rect = aa.getPosition().getRectAround(si.getRects().getFirst());
-                aa.setRect(rect);
-                aa.setFlip(!chr.isLeft());
-                chr.getField().spawnAffectedAreaAndRemoveOld(aa);
+            case HEXA_DISTORTION_BOMB:
+            case HEXA_DISTORTION_BOMB_1:
+            case HEXA_DISTORTION_BOMB_2:
+                if (si != null && !si.getRects().isEmpty()) {
+                    AffectedArea aa = AffectedArea.getPassiveAA(chr, skillID, slv);
+                    aa.setPosition(chr.getPosition().deepCopy());
+                    Rect rect = aa.getPosition().getRectAround(si.getRects().getFirst());
+                    aa.setRect(rect);
+                    aa.setFlip(!chr.isLeft());
+                    chr.getField().spawnAffectedAreaAndRemoveOld(aa);
+                }
                 break;
         }
     }
@@ -194,6 +252,9 @@ public class Mechanic extends Citizen {
             return;
         }
         SkillInfo si = SkillData.getSkillInfoById(skillId);
+        if (si == null) {
+            return;
+        }
         Field field = chr.getField();
         ForceAtomEnum fae = INVISIBLE_ATOM;
         List<Integer> targetList = new ArrayList<>();
@@ -205,7 +266,7 @@ public class Mechanic extends Citizen {
                 targetList.add(0);
                 continue;
             }
-            targetList.add(Util.getRandomFromCollection(field.getMobs()).getObjectId());
+            targetList.add(mob.getObjectId());
         }
         int totalMissileCount = si.getValue(bulletCount, slv);
         for (int i = 0; i < totalMissileCount; i++) {
@@ -221,16 +282,23 @@ public class Mechanic extends Citizen {
 
     private void createHumanoidMechRocketForceAtom() { // Humanoid Rockets are spread around
         Field field = chr.getField();
+        Skill beaconSkill = getHomingBeaconSkill();
+        if (beaconSkill == null) {
+            return;
+        }
         SkillInfo si = SkillData.getSkillInfoById((chr.hasSkill(ADV_HOMING_BEACON) ? ADV_HOMING_BEACON : HOMING_BEACON));
-        int slv = getHomingBeaconSkill().getCurrentLevel();
+        if (si == null || si.getRects().isEmpty()) {
+            return;
+        }
         Rect rect = chr.getPosition().getRectAround(si.getRects().get(0));
         if (!chr.isLeft()) {
             rect = rect.horizontalFlipAround(chr.getPosition().getX());
         }
         List<Mob> mobs = field.getMobsInRect(rect);
-        if (mobs.size() <= 0) {
+        if (mobs.isEmpty()) {
             return;
         }
+        int atomSkillId = chr.hasSkill(HEXA_HOMING_BEACON) ? HEXA_HOMING_BEACON : HOMING_BEACON;
         ForceAtomEnum fae = getHomingBeaconForceAtomEnum();
         for (int i = 0; i < getHomingBeaconBulletCount(); i++) {
             Mob mob = Util.getRandomFromCollection(mobs);
@@ -238,7 +306,7 @@ public class Mechanic extends Citizen {
                     0, 200 + (i * 2), Util.getCurrentTime(), 1, 0,
                     new Position());
             chr.createForceAtom(new ForceAtom(false, 0, chr.getId(), fae,
-                    true, mob.getObjectId(), HOMING_BEACON, forceAtomInfo, rect, 90, 30,
+                    true, mob.getObjectId(), atomSkillId, forceAtomInfo, rect, 90, 30,
                     mob.getPosition(), 0, mob.getPosition(), 0));
         }
 
@@ -246,7 +314,14 @@ public class Mechanic extends Citizen {
 
     private void createTankMechRocketForceAtom() { // Tank Rockets are focused on 1 enemy
         Field field = chr.getField();
+        Skill beaconSkill = getHomingBeaconSkill();
+        if (beaconSkill == null) {
+            return;
+        }
         SkillInfo si = SkillData.getSkillInfoById((chr.hasSkill(ADV_HOMING_BEACON) ? ADV_HOMING_BEACON : HOMING_BEACON));
+        if (si == null || si.getRects().isEmpty()) {
+            return;
+        }
         Rect rect = chr.getPosition().getRectAround(si.getRects().getFirst());
         if (!chr.isLeft()) {
             rect = rect.horizontalFlipAround(chr.getPosition().getX());
@@ -255,22 +330,24 @@ public class Mechanic extends Citizen {
         if (mob == null) {
             return;
         }
+        int atomSkillId = chr.hasSkill(HEXA_HOMING_BEACON) ? HEXA_HOMING_BEACON : HOMING_BEACON;
         ForceAtomEnum fae = getHomingBeaconForceAtomEnum();
         for (int i = 0; i < getHomingBeaconBulletCount(); i++) {
             ForceAtomInfo forceAtomInfo = new ForceAtomInfo(chr.getNewForceAtomKey(), fae.getInc(), 30, 25,
                     0, 200, Util.getCurrentTime(), 1, 0,
                     new Position());
             chr.createForceAtom(new ForceAtom(false, 0, chr.getId(), fae,
-                    true, mob.getObjectId(), HOMING_BEACON, forceAtomInfo, rect, 90, 30,
+                    true, mob.getObjectId(), atomSkillId, forceAtomInfo, rect, 90, 30,
                     mob.getPosition(), 0, mob.getPosition(), 0));
         }
     }
 
     private ForceAtomEnum getHomingBeaconForceAtomEnum() {
-        int skillId = getHomingBeaconSkill().getSkillId();
+        Skill beaconSkill = getHomingBeaconSkill();
+        int skillId = beaconSkill != null ? beaconSkill.getSkillId() : HOMING_BEACON;
         if (skillId == ADV_HOMING_BEACON) {
             return MECH_MEGA_ROCKET_1;
-        } else if (skillId == HOMING_BEACON_RESEARCH) {
+        } else if (skillId == HOMING_BEACON_RESEARCH || skillId == HEXA_HOMING_BEACON) {
             return MECH_MEGA_ROCKET_2;
         }
         return MECH_ROCKET;
@@ -290,12 +367,20 @@ public class Mechanic extends Citizen {
     private int getHomingBeaconBulletCount() {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         int forceAtomCount = 0;
-        for (int skillId : homingBeacon) {
-            if (chr.hasSkill(skillId)) {
-                Skill skill = chr.getSkill(skillId);
-                SkillInfo si = SkillData.getSkillInfoById(skillId);
-                int slv = skill.getCurrentLevel();
-                forceAtomCount += si.getValue(bulletCount, slv);
+        if (chr.hasSkill(HEXA_HOMING_BEACON)) {
+            Skill skill = chr.getSkill(HEXA_HOMING_BEACON);
+            SkillInfo si = SkillData.getSkillInfoById(HEXA_HOMING_BEACON);
+            forceAtomCount = si != null && si.getValue(bulletCount, skill.getCurrentLevel()) > 0 ? si.getValue(bulletCount, skill.getCurrentLevel()) : 10;
+        } else {
+            for (int skillId : homingBeacon) {
+                if (skillId != HEXA_HOMING_BEACON && chr.hasSkill(skillId)) {
+                    Skill skill = chr.getSkill(skillId);
+                    SkillInfo si = SkillData.getSkillInfoById(skillId);
+                    int slv = skill.getCurrentLevel();
+                    if (si != null) {
+                        forceAtomCount += si.getValue(bulletCount, slv);
+                    }
+                }
             }
         }
         if (tsm.getOptByCTSAndSkill(BombTime, FULL_SPREAD) != null) {
@@ -305,22 +390,30 @@ public class Mechanic extends Citizen {
     }
 
     private void applySupportUnitDebuffOnMob(int skillId) {
-        TemporaryStatManager tsm = chr.getTemporaryStatManager();
-        if (!chr.hasSkill(SUPPORT_UNIT_HEX) || tsm.getOptByCTSAndSkill(IndieEmpty, skillId) == null) {
+        if (chr == null || chr.getField() == null) {
             return;
         }
+        TemporaryStatManager tsm = chr.getTemporaryStatManager();
+        Skill suhSkill = chr.getSkill(SUPPORT_UNIT_HEX);
         Skill skill = chr.getSkill(skillId);
+        if (suhSkill == null || skill == null || tsm.getOptByCTSAndSkill(IndieEmpty, skillId) == null) {
+            return;
+        }
         SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
         SkillInfo suhInfo = SkillData.getSkillInfoById(SUPPORT_UNIT_HEX);
+        if (si == null || suhInfo == null) {
+            return;
+        }
         int slv = skill.getCurrentLevel();
 
         Option o = new Option();
         Field field = chr.getField();
 
-        o.nOption = -suhInfo.getValue(w, chr.getSkill(SUPPORT_UNIT_HEX).getCurrentLevel()); // enhancement doesn't contain the debuff info
+        o.nOption = -suhInfo.getValue(w, suhSkill.getCurrentLevel()); // enhancement doesn't contain the debuff info
         o.rOption = skill.getSkillId();
         o.tOption = 6;
         for (Mob mob : field.getMobs()) {
+            if (mob == null) continue;
             MobTemporaryStat mts = mob.getTemporaryStat();
             EnumMap<MobStat, Option> map = new EnumMap<>(MobStat.class);
             map.put(MobStat.PDR, o);
@@ -328,7 +421,7 @@ public class Mechanic extends Citizen {
             mts.addStatOptions(mob, map);
         }
 
-        supportUnitTimer = chr.getTimer().addEvent(() -> applySupportUnitDebuffOnMob(skillId), si.getValue(x, slv), TimeUnit.SECONDS);
+        supportUnitTimer = chr.getTimer().addEvent(() -> applySupportUnitDebuffOnMob(skillId), Math.max(1, si.getValue(x, slv)), TimeUnit.SECONDS);
     }
 
     // Skill related methods -------------------------------------------------------------------------------------------
@@ -358,7 +451,7 @@ public class Mechanic extends Citizen {
                 int duration = si.getValue(time, slv);
                 if (chr.hasSkill(ROBOT_MASTERY)) {
                     SkillInfo robotMastery = SkillData.getSkillInfoById(ROBOT_MASTERY);
-                    duration *= 1 + (double) (robotMastery.getValue(x, chr.getSkillLevel(ROBOT_MASTERY)) / 100);
+                    duration *= 1 + (double) (robotMastery.getValue(x, chr.getSkillLevel(ROBOT_MASTERY)) / 100.0);
                 }
                 OpenGate openGate = new OpenGate(chr, chr.getPosition(), chr.getParty(), gateId, duration);
                 if (gateId == 0) {
@@ -370,6 +463,7 @@ public class Mechanic extends Citizen {
                 break;
             case HOMING_BEACON: //4
             case ADV_HOMING_BEACON: // 4thJob upgrade +5 -> 9
+            case HEXA_HOMING_BEACON:
                 if (tsm.hasStat(Mechanic) && tsm.getOption(Mechanic).nOption <= 0) {
                     createHumanoidMechRocketForceAtom();
                 } else if (tsm.hasStat(Mechanic) && tsm.getOption(Mechanic).nOption == 1) {
@@ -380,18 +474,21 @@ public class Mechanic extends Citizen {
                 tsm.removeAllDebuffs();
                 break;
             case ROCK_N_SHOCK:
+            case HEXA_ROCK_N_SHOCK:
+            case ROBO_CONVERSION_CB_P1:
                 summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
                 field = chr.getField();
                 summon.setMoveAbility(MoveAbility.Stop);
-                summon.setAssistType(AssistType.None);
+                summon.setAssistType(skillID == ROBO_CONVERSION_CB_P1 ? AssistType.Attack : AssistType.None);
                 if (chr.hasSkill(ROBOT_MASTERY)) {
                     SkillInfo robotMastery = SkillData.getSkillInfoById(ROBOT_MASTERY);
-                    summon.setSummonTerm((int) (summon.getSummonTerm() * (double) (1 + (robotMastery.getValue(x, chr.getSkillLevel(ROBOT_MASTERY)) / 100))));
+                    summon.setSummonTerm((int) (summon.getSummonTerm() * (1 + (robotMastery.getValue(x, chr.getSkillLevel(ROBOT_MASTERY)) / 100.0))));
                 }
                 field.spawnAddSummon(summon);
-                List<Summon> rockNshockLifes = field.getSummons().stream().filter(s -> s.getSkillID() == ROCK_N_SHOCK && s.getOwnerId() == chr.getId()).collect(Collectors.toList());
-                field.spawnAddSummon(summon);
-                field.broadcast(UserPacket.teslaTriangle(rockNshockLifes, chr.getId()));
+                List<Summon> rockNshockLifes = field.getSummons().stream().filter(s -> (s.getSkillID() == ROCK_N_SHOCK || s.getSkillID() == HEXA_ROCK_N_SHOCK) && s.getOwnerId() == chr.getId()).collect(Collectors.toList());
+                if (!rockNshockLifes.isEmpty()) {
+                    field.broadcast(UserPacket.teslaTriangle(rockNshockLifes, chr.getId()));
+                }
                 break;
             case GIANT_ROBOT_SG_88:
                 summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
@@ -405,7 +502,7 @@ public class Mechanic extends Citizen {
                 field.spawnAddSummon(summon);
                 break;
             case HUMANOID_MECH:
-                o1.nOption = si.getCurrentLevel();
+                o1.nOption = 0;
                 o1.rOption = skillID;
                 tsm.sendStat(Mechanic, o1);
 
@@ -418,8 +515,8 @@ public class Mechanic extends Citizen {
                 o4.nOption = si.getValue(emhp, slv);
                 o4.rOption = skillID;
                 newStats.put(EMHP, o4);
-                o5.nOption = si.getValue(indieSpeed, slv);
-                o5.rOption = skillID;
+                o5.nValue = si.getValue(indieSpeed, slv);
+                o5.nReason = skillID;
                 newStats.put(IndieSpeed, o5);
 
                 tsm.sendStat(newStats);
@@ -444,9 +541,10 @@ public class Mechanic extends Citizen {
                 tsm.sendStat(newStats);
                 break;
             case MECHANIC_RAGE:
-                o1.nOption = si.getValue(x, slv);
+            case MECHANIC_RAGE_ACTIVE:
+                o1.nOption = si != null ? si.getValue(x, slv) : -2;
                 o1.rOption = skillID;
-                o1.tOption = si.getValue(time, slv);
+                o1.tOption = si != null ? si.getValue(time, slv) : 200;
                 tsm.sendStat(Booster, o1);
                 break;
             case PERFECT_ARMOR:
@@ -571,6 +669,13 @@ public class Mechanic extends Citizen {
                 field.spawnSummon(summon);
                 createMicroMissileForceAtoms(skillID, slv);
                 break;
+            case MECHA_CARRIER:
+                summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
+                summon.setFlyMob(true);
+                summon.setMoveAbility(MoveAbility.Stop);
+                summon.setAssistType(AssistType.Attack);
+                field.spawnSummon(summon);
+                break;
             case FULL_METAL_BARRAGE:
                 o1.nOption = 1;
                 o1.rOption = skillID;
@@ -581,6 +686,21 @@ public class Mechanic extends Citizen {
                 o2.tOption = si.getValue(time, slv);
                 newStats.put(IgnoreAllCounter, o2);
                 tsm.sendStat(newStats);
+                break;
+            case GROUND_ZERO:
+            case ASCENT_MECH:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 7;
+                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
                 break;
         }
     }

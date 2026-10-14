@@ -105,27 +105,29 @@ public class Kanna extends Job {
     public static final int KISHIN_SHOUKAN = 42111003; //summon
     public static final int LIFEBLOOD_RITUAL = 42110008;
     public static final int BELLFLOWER_BARRIER = 42121005; //AoE
-    public static final int BELLFLOWER_BARRIER_PERSIST_H = 42120049;
-    public static final int BELLFLOWER_BARRIER_BOSS_RUSH_H = 42120051;
+    public static final int BELLFLOWER_BARRIER_BOSS_RUSH_H = 42120046;
+    public static final int BELLFLOWER_BARRIER_COOLDOWN_CUTTER_H = 42120048;
+    public static final int VANQUISHER_CHARM_REINFORCE_H = 42120049;
+    public static final int BELLFLOWER_BARRIER_PERSIST_H = 42120051;
     public static final int AKATUSKI_HERO_KANNA = 42121006;
     public static final int NINE_TAILED_FURY = 42121102; //Attacking Skill + Buff
     public static final int NINE_TAILED_FURY_PASSIVE = 42120000;
     public static final int BINDING_TEMPEST = 42121004;
     public static final int BLOSSOMING_DAWN = 42121007;
-    public static final int FALLING_SAKURA_VITALITY_H = 42120048;
+    public static final int FALLING_SAKURA_VITALITY_H = 42120045;
     public static final int VERITABLE_PANDEMONIUM = 42121052; //Immobility Debuff
     public static final int PRINCESS_VOW_KANNA = 42121053;
     public static final int BLACKHEARTED_CURSE = 42121054;
 
     //Haku Buffs
-    public static final int HAKUS_GIFT = 80001842;
+    public static final int HAKUS_GIFT = 42101020;
     public static final int FOXFIRE = 42101021;
     public static final int HAKUS_BLESSING = 42101022;
     public static final int BREATH_UNSEEN = 42101023;
+    public static final int HAKUS_GIFT_2 = 42121020;
     public static final int FOXFIRE_2 = 42121021;
     public static final int HAKUS_BLESSING_2 = 42121022;
     public static final int BREATH_UNSEEN_2 = 42121023;
-    public static final int HAKUS_GIFT_2 = 80011056;
 
     // Hyper Skills
     public static final int GEOMANCY_SPREAD = 42120044;
@@ -164,7 +166,7 @@ public class Kanna extends Job {
     public static final int HEXA_NIGHTGHOST_GUIDE = 42141008;
 
     // HEXA Boosts
-    public static final int HEXA_SPIRITS_DOMAIN = 500061069; // TODO
+    public static final int HEXA_SPIRITS_DOMAIN = 500061069;
 
     private final int[] addedSkills = new int[]{
             RETURN_OF_THE_FIVE_PLANETS, BLESSING_OF_THE_FIVE_ELEMENTS, MANA_FLOW, HAKU
@@ -188,19 +190,17 @@ public class Kanna extends Job {
 
     public static void hakuGift(Char chr) {
         int skillID = !hasHakuPerfected(chr) ? HAKUS_GIFT : HAKUS_GIFT_2;
-        Skill skill = chr.getSkill(skillID);
-        int slv = getHakuSkillLevel(chr);
-        SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
-        if (!hasHakuPerfected(chr)) {
-            if ((chr.getMaxHP() - chr.getHP()) >= (int) (chr.getMaxHP() * 0.1)) {
-                chr.heal((int) (chr.getMaxHP() / ((double) 100 / si.getValue(hp, slv))));
+        int slv = Math.max(1, getHakuSkillLevel(chr));
+        SkillInfo si = SkillData.getSkillInfoById(skillID);
+        int healPerc = si != null && si.getValue(hp, slv) > 0 ? si.getValue(hp, slv) : (!hasHakuPerfected(chr) ? 50 : 100);
+        if (!hasHakuPerfected(chr) || chr.getParty() == null) {
+            if ((chr.getMaxHP() - chr.getHP()) >= (int) (chr.getMaxHP() * 0.1D)) {
+                chr.heal((int) (chr.getMaxHP() * healPerc / 100.0D));
             }
         } else {
-            for (Char member : chr.getParty().getOnlineChars()) {
-                if ((member.getMaxHP() - member.getHP()) < (int) (member.getMaxHP() * 0.3)) {
-                    return;
-                } else {
-                    member.heal((int) (member.getMaxHP() / ((double) 100 / si.getValue(hp, slv))));
+            for (Char member : chr.getParty().getPartyMembersInSameFieldWithChr(chr)) {
+                if ((member.getMaxHP() - member.getHP()) >= (int) (member.getMaxHP() * 0.1D)) {
+                    member.heal((int) (member.getMaxHP() * healPerc / 100.0D));
                 }
             }
         }
@@ -211,11 +211,11 @@ public class Kanna extends Job {
         if (!tsm.hasStat(FireBarrier)) {
             int skillID = !hasHakuPerfected(chr) ? FOXFIRE : FOXFIRE_2;
             SkillInfo si = SkillData.getSkillInfoById(skillID);
-            int slv = getHakuSkillLevel(chr);
+            int slv = Math.max(1, getHakuSkillLevel(chr));
             Option o1 = new Option();
             o1.nOption = 3;
-            o1.rOption = si.getSkillId();
-            o1.tOption = si.getValue(time, slv);
+            o1.rOption = skillID;
+            o1.tOption = si != null ? si.getValue(time, slv) : 60;
             tsm.sendStat(FireBarrier, o1);
         }
     }
@@ -223,14 +223,18 @@ public class Kanna extends Job {
     public static void hakuHakuBlessing(Char chr) {
         int skillID = !hasHakuPerfected(chr) ? HAKUS_BLESSING : HAKUS_BLESSING_2;
         SkillInfo si = SkillData.getSkillInfoById(skillID);
-        int slv = getHakuSkillLevel(chr);
-        int value = si.getValue(x, slv);
+        int slv = Math.max(1, getHakuSkillLevel(chr));
+        int value = si != null ? si.getValue(x, slv) : 150;
+        int duration = si != null ? si.getValue(time, slv) : 60;
         if (chr.getParty() == null) {
             TemporaryStatManager tsm = chr.getTemporaryStatManager();
             if (!tsm.hasStat(FoxBless)) {
                 Option o1 = new Option();
                 o1.nOption = value;
+                o1.nValue = value;
                 o1.rOption = skillID;
+                o1.nReason = skillID;
+                o1.tOption = duration;
                 tsm.sendStat(FoxBless, o1);
             }
         } else {
@@ -239,7 +243,10 @@ public class Kanna extends Job {
                 if (!tsm.hasStat(FoxBless)) {
                     Option o1 = new Option();
                     o1.nOption = value;
+                    o1.nValue = value;
                     o1.rOption = skillID;
+                    o1.nReason = skillID;
+                    o1.tOption = duration;
                     tsm.sendStat(FoxBless, o1);
                 }
             }
@@ -247,23 +254,28 @@ public class Kanna extends Job {
     }
 
     public static void hakuBreathUnseen(Char chr) {
-        int skillID = BREATH_UNSEEN;
+        int skillID = !hasHakuPerfected(chr) ? BREATH_UNSEEN : BREATH_UNSEEN_2;
+        SkillInfo si = SkillData.getSkillInfoById(skillID);
+        int slv = Math.max(1, getHakuSkillLevel(chr));
+        int duration = si != null ? si.getValue(time, slv) : 60;
         if (chr.getParty() == null) {
             TemporaryStatManager tsm = chr.getTemporaryStatManager();
             if (!tsm.hasStat(BlessEnsenble)) {
                 Option o1 = new Option();
                 o1.nOption = 1;
                 o1.rOption = skillID;
+                o1.tOption = duration;
                 tsm.sendStat(BlessEnsenble, o1);
             }
         } else {
             int size = chr.getParty().getPartyMembersInSameFieldWithChr(chr).size();
             for (Char player : chr.getParty().getPartyMembersInSameFieldWithChr(chr)) {
                 TemporaryStatManager tsm = player.getTemporaryStatManager();
-                if (!tsm.hasStat(FoxBless)) {
+                if (!tsm.hasStat(BlessEnsenble)) {
                     Option o1 = new Option();
                     o1.nOption = size;
                     o1.rOption = skillID;
+                    o1.tOption = duration;
                     tsm.sendStat(BlessEnsenble, o1);
                 }
             }
@@ -325,18 +337,20 @@ public class Kanna extends Job {
             case HEXA_SHIKIGAMI_HAUNTING:
             case HEXA_SHIKIGAMI_HAUNTING_1:
             case HEXA_SHIKIGAMI_HAUNTING_2:
-                si = SkillData.getSkillInfoById(SHIKIGAMI_HAUNTING_2_SLOW);
-                if (si != null) {
-                    if (!mts.hasCurrentMobStatBySkillId(SHIKIGAMI_HAUNTING_2_SLOW)) {
-                        if (Util.succeedProp(si.getValue(prop, slv))) {
-                            slv = 1;
-                            o1.nOption = si.getValue(x, slv);
-                            o1.rOption = SHIKIGAMI_HAUNTING_2_SLOW;
-                            o1.tOption = si.getValue(time, slv);
+                boolean isHexaHaunting = skillID == HEXA_SHIKIGAMI_HAUNTING || skillID == HEXA_SHIKIGAMI_HAUNTING_1 || skillID == HEXA_SHIKIGAMI_HAUNTING_2;
+                int slowSkillId = isHexaHaunting ? HEXA_SHIKIGAMI_HAUNTING_SLOW : SHIKIGAMI_HAUNTING_2_SLOW;
+                int slowSlv = isHexaHaunting ? Math.max(1, chr.getSkillLevel(HEXA_SHIKIGAMI_HAUNTING)) : 1;
+                SkillInfo slowSi = SkillData.getSkillInfoById(slowSkillId);
+                if (slowSi != null) {
+                    if (!mts.hasCurrentMobStatBySkillId(slowSkillId)) {
+                        if (Util.succeedProp(slowSi.getValue(prop, slowSlv))) {
+                            o1.nOption = slowSi.getValue(x, slowSlv);
+                            o1.rOption = slowSkillId;
+                            o1.tOption = slowSi.getValue(time, slowSlv);
                             mts.addStatOptions(mob, MobStat.Speed, o1);
                             if (chr.hasSkill(SHIKIGAMI_ACTIVATION_SKILL)) {
-                                BurnedInfo bi = BurnedInfo.createBurnInfo(chr, SHIKIGAMI_HAUNTING_2_SLOW, chr.getSkillLevel(SHIKIGAMI_ACTIVATION_SKILL), damage);
-                                mts.createAndAddBurnedInfo(mob, bi, SHIKIGAMI_HAUNTING_2_SLOW);
+                                BurnedInfo bi = BurnedInfo.createBurnInfo(chr, slowSkillId, isHexaHaunting ? slowSlv : chr.getSkillLevel(SHIKIGAMI_ACTIVATION_SKILL), damage);
+                                mts.createAndAddBurnedInfo(mob, bi, slowSkillId);
                             }
                         }
                     }
@@ -383,7 +397,18 @@ public class Kanna extends Job {
         boolean hasHitMobs = !attackInfo.mobAttackInfo.isEmpty();
         int slv = attackInfo.slv;
 
+        int mpUsed = getManaConsumptionBySkill(skillID);
+        if (mpUsed > 0) {
+            chargeMPShikigami(mpUsed);
+            createSpiritDomainForceAtom(skillID);
+        }
+
         if (hasHitMobs) {
+            if (skillID == SHIKIGAMI_HAUNTING_4_3 || skillID == HEXA_SHIKIGAMI_HAUNTING_2) {
+                chr.healMP(5);
+                chargeMPShikigami(15);
+                createSpiritDomainForceAtom(SHIKIGAMI_HAUNTING_4_1);
+            }
             if (skillID != YOSUZUME && skillID != HEXA_YOSUZUME && skillID != 0) {
                 yosuzume();
             }
@@ -429,14 +454,14 @@ public class Kanna extends Job {
                 }
                 break;
             case NINE_TAILED_FURY:
-                o1.nReason = NINE_TAILED_FURY_PASSIVE;
+                o1.nReason = NINE_TAILED_FURY;
                 o1.nValue = si.getValue(indieDamR, slv);
                 o1.tTerm = si.getValue(time, slv);
                 tsm.sendStat(IndieDamR, o1);
                 chr.setSkillCooldown(skillID, slv);
                 break;
             case HEXA_NINE_TAILED_FURY:
-                o1.nReason = HEXA_NINE_TAILED_FURY_PASSIVE;
+                o1.nReason = HEXA_NINE_TAILED_FURY;
                 o1.nValue = si.getValue(indieDamR, slv);
                 o1.tTerm = si.getValue(time, slv);
                 tsm.sendStat(IndieDamR, o1);
@@ -460,6 +485,12 @@ public class Kanna extends Job {
             case HAKUMENKONMOU_JUUBI_1:
             case HAKUMENKONMOU_JUUBI_2:
                 chr.healMP(chr.getMaxMP());
+                if (!tsm.hasStat(SixthHakuman)) {
+                    o1.nOption = 1;
+                    o1.rOption = HAKUMENKONMOU_JUUBI;
+                    o1.tOption = 30;
+                    tsm.sendStat(SixthHakuman, o1);
+                }
                 chr.setSkillCooldown(HAKUMENKONMOU_JUUBI, slv);
                 break;
         }
@@ -479,6 +510,13 @@ public class Kanna extends Job {
         Option o1 = new Option();
         Option o2 = new Option();
         Option o3 = new Option();
+
+        int mpUsed = getManaConsumptionBySkill(skillID);
+        if (mpUsed > 0) {
+            chargeMPShikigami(mpUsed);
+            createSpiritDomainForceAtom(skillID);
+        }
+
         switch (skillID) {
             case HAKU_REBORN:
                 if (chr.getFoxMan().isTranformed()) {
@@ -592,8 +630,12 @@ public class Kanna extends Job {
                     summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
                     summon.setMoveAbility(MoveAbility.Stop);
                     summon.setAssistType(AssistType.Attack);
-                    summon.setPosition(fh.getRandomPosition());
-                    summon.setCurFoothold((short) field.findFootHoldBelow(summon.getPosition()).getId());
+                    Position spawnPos = fh != null ? fh.getRandomPosition() : endPosition;
+                    summon.setPosition(spawnPos);
+                    Foothold fhBelow = field.findFootHoldBelow(spawnPos);
+                    if (fhBelow != null) {
+                        summon.setCurFoothold((short) fhBelow.getId());
+                    }
                     field.spawnAddSummon(summon);
                 }
                 break;
@@ -614,10 +656,13 @@ public class Kanna extends Job {
                 tsm.sendStat(IndieDamR, o1);
                 break;
             case BLACKHEARTED_CURSE:
-                o1.nOption = 1;
-                o1.rOption = skillID;
-                o1.tOption = si.getValue(time, slv);
-                tsm.sendStat(AntiEvilShield, o1);
+                if (tsm.hasStat(AntiEvilShield)) {
+                    tsm.removeStatsBySkill(skillID);
+                } else {
+                    o1.nOption = 1;
+                    o1.rOption = skillID;
+                    tsm.sendStat(AntiEvilShield, o1);
+                }
                 break;
             case SPIRITS_DOMAIN:
             case HEXA_SPIRITS_DOMAIN:
@@ -639,6 +684,10 @@ public class Kanna extends Job {
                 tsm.sendStat(IndiePMdR, o1);
                 break;
             case YUKI_MUSUME_SHOUKAN:
+                o1.nOption = si.getValue(x, slv);
+                o1.rOption = skillID;
+                o1.tOption = si.getValue(time, slv);
+                tsm.sendStat(KannaSiksinAutoAttack, o1);
                 summon = Summon.getSummonByAndSetStat(c.getChr(), YUKI_MUSUME_SHOUKAN_SUMMON, slv);
                 summon.setFlyMob(true);
                 summon.setMoveAbility(MoveAbility.Walk);
@@ -646,6 +695,13 @@ public class Kanna extends Job {
                 summon.setAttackActive(true);
                 chr.getField().spawnSummon(summon);
                 chr.addSkillCooldown(YUKI_MUSUME_SHOUKAN, si.getValue(cooltime, slv) * 1000);
+                break;
+            case HAKUMENKONMOU_JUUBI:
+                chr.healMP(chr.getMaxMP());
+                o1.nOption = 1;
+                o1.rOption = HAKUMENKONMOU_JUUBI;
+                o1.tOption = 30;
+                tsm.sendStat(SixthHakuman, o1);
                 break;
             case GHOST_YAKSHA_GREAT_ONI_LORD_LEGION:
                 if (!tsm.hasStatBySkillId(skillID)) {
@@ -656,6 +712,9 @@ public class Kanna extends Job {
                     summon.setLeaveType(LeaveType.ATTACK_AFTER_DEAD);
                     summon.setAttackActive(true);
                     chr.getField().spawnSummon(summon);
+                    o1.nOption = 1;
+                    o1.rOption = skillID;
+                    o1.tOption = 2;
                     o1.nValue = 1;
                     o1.nReason = skillID;
                     o1.tTerm = 2;
@@ -780,7 +839,7 @@ public class Kanna extends Job {
 
     private void spawnManaVein() {
         Skill skill = chr.getSkill(GEOMANCY);
-        if (!chr.hasSkill(skill.getSkillId())) {
+        if (skill == null || !chr.hasSkill(skill.getSkillId())) {
             return;
         }
         SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
@@ -811,7 +870,7 @@ public class Kanna extends Job {
     private void yosuzume() {
         int skillID = chr.hasSkill(HEXA_YOSUZUME) ? HEXA_YOSUZUME : YOSUZUME;
         Skill skill = chr.getSkill(skillID);
-        if (!chr.hasSkill(skillID)) {
+        if (skill == null || !chr.hasSkill(skillID)) {
             return;
         }
         SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
@@ -877,9 +936,10 @@ public class Kanna extends Job {
     }
 
     private int getManaConsumptionBySkill(int skillId) {
-        SkillInfo si = SkillData.getSkillInfoById(skillId);
+        int actualSkillId = SkillConstants.getActualSkillIDfromSkillID(skillId);
+        SkillInfo si = SkillData.getSkillInfoById(actualSkillId);
         if (si != null) {
-            return si.getValue(epCon, chr.getSkillLevel(skillId));
+            return si.getValue(epCon, Math.max(1, chr.getSkillLevel(actualSkillId)));
         }
         return 0;
     }
@@ -889,9 +949,10 @@ public class Kanna extends Job {
         if (summon == null) {
             return;
         }
+        int domainSkillID = summon.getSkillID();
         ForceAtomEnum fae = ForceAtomEnum.SPIRIT_DOMAIN;
         List<ForceAtomInfo> faiList = new ArrayList<>();
-        int atomsCreated = getManaConsumptionBySkill(skillID) / 5;
+        int atomsCreated = Math.max(1, getManaConsumptionBySkill(skillID) / 5);
         int angle = chr.isLeft() ? 220 : 140;
         for (int i = 0; i < atomsCreated; i++) {
             int fImpact = new Random().nextInt(7) + 23;
@@ -901,8 +962,8 @@ public class Kanna extends Job {
             faiList.add(fai);
         }
         chr.createForceAtom(new ForceAtom(false, chr.getId(), chr.getId(), fae,
-                false, Collections.singletonList(0), SPIRITS_DOMAIN, faiList, new Rect(), 0, 0,
-                summon.getPosition(), SPIRITS_DOMAIN, summon.getPosition(), 0));
+                false, Collections.singletonList(0), domainSkillID, faiList, new Rect(), 0, 0,
+                summon.getPosition(), domainSkillID, summon.getPosition(), 0));
     }
 
     private void incrementSpiritDomainCount() {
@@ -911,10 +972,10 @@ public class Kanna extends Job {
             return;
         }
         int countPerAtom = 3;
-        int skillID = chr.hasSkill(HEXA_SPIRITS_DOMAIN) ? HEXA_SPIRITS_DOMAIN : SPIRITS_DOMAIN;
+        int skillID = summon.getSkillID();
         SkillInfo si = SkillData.getSkillInfoById(skillID);
         int slv = chr.getSkillLevel(skillID);
-        int stateIncReq = si.getValue(z, slv);
+        int stateIncReq = si != null && si.getValue(z, slv) > 0 ? si.getValue(z, slv) : 9;
         summon.incCount(countPerAtom);
         if (summon.getCount() >= stateIncReq) {
             incrementSpiritDomainState();
@@ -930,7 +991,7 @@ public class Kanna extends Job {
             summon.incState();
             summon.setCount(0);
             createSpiritDomainAA(summon);
-            broadcastSpiritDomainState(getSpiritDomainSummon().getState());
+            broadcastSpiritDomainState(summon.getState());
         }
     }
 
@@ -941,7 +1002,8 @@ public class Kanna extends Job {
         SkillInfo si = SkillData.getSkillInfoById(summon.getSkillID());
         AffectedArea aa = AffectedArea.getPassiveAA(chr, summon.getSkillID(), summon.getSlv());
         aa.setPosition(summon.getPosition());
-        aa.setRect(aa.getRectAround(si.getRects().get(summon.getState())));
+        int rectIdx = Math.min(summon.getState(), si.getRects().size() - 1);
+        aa.setRect(aa.getRectAround(si.getRects().get(rectIdx)));
         aa.setOption(summon.getState());
         aa.activateTimer(3000, 3000);
         chr.getField().spawnAffectedAreaAndRemoveOld(aa);
@@ -950,12 +1012,13 @@ public class Kanna extends Job {
     private void broadcastSpiritDomainState(int state) {
         Field field = chr.getField();
         for (Char otherChr : field.getChars()) {
-            chr.write(Summoned.spiritDomainState(otherChr.getId(), chr.getId(), state));
+            otherChr.write(Summoned.spiritDomainState(otherChr.getId(), chr.getId(), state));
         }
     }
 
     private Summon getSpiritDomainSummon() {
-        return chr.getField().getSummonBySkillId(chr, SPIRITS_DOMAIN);
+        Summon s = chr.getField().getSummonBySkillId(chr, SPIRITS_DOMAIN);
+        return s != null ? s : chr.getField().getSummonBySkillId(chr, HEXA_SPIRITS_DOMAIN);
     }
 
     public void handleForceAtomCollision(int faKey, int skillId, int mobObjId, Position position, InPacket inPacket) {
@@ -963,7 +1026,7 @@ public class Kanna extends Job {
         if (fa == null) {
             return;
         }
-        if (fa.getSkillId() == SPIRITS_DOMAIN) {
+        if (fa.getSkillId() == SPIRITS_DOMAIN || fa.getSkillId() == HEXA_SPIRITS_DOMAIN) {
             incrementSpiritDomainCount();
         }
         super.handleForceAtomCollision(faKey, skillId, mobObjId, position, inPacket);
@@ -1012,20 +1075,16 @@ public class Kanna extends Job {
     @Override
     public void handleHit(Client c, InPacket inPacket, HitInfo hitInfo) {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
-        Option o = new Option();
-        int foxfires = 6;
-        if (tsm.hasStat(FireBarrier)) {
-            if (foxfires > 1) {
-                foxfires = foxfires - 1;
-            }
-            if (foxfires == 4 || foxfires == 3) {
-                o.nOption = 2;
-                tsm.sendStat(FireBarrier, o);
-            } else if (foxfires == 2) {
-                o.nOption = 1;
-                tsm.sendStat(FireBarrier, o);
-            } else if (foxfires == 1) {
+        if (tsm.hasStat(FireBarrier) && hitInfo.hpDamage > 0) {
+            Option cur = tsm.getOption(FireBarrier);
+            int foxfires = cur.nOption - 1;
+            if (foxfires <= 0) {
                 resetFireBarrier();
+            } else {
+                Option o = new Option();
+                o.nOption = foxfires;
+                o.rOption = cur.rOption;
+                o.tOption = (int) Math.max(1, tsm.getRemainingTime(FireBarrier, cur.rOption));
                 tsm.sendStat(FireBarrier, o);
             }
         }

@@ -520,6 +520,7 @@ public class AffectedArea extends Life {
                 }
                 break;
             case Kanna.SPIRITS_DOMAIN:
+            case 500061069: // HEXA Spirit's Domain
                 if (tsm.getOptByCTSAndSkill(IndiePMdR, skillID) != null) {
                     tsm.removeIndieStat(IndiePMdR, tsm.getOptByCTSAndSkill(IndiePMdR, skillID));
                     tsm.removeIndieStat(IndieAsrR, tsm.getOptByCTSAndSkill(IndieAsrR, skillID));
@@ -648,7 +649,7 @@ public class AffectedArea extends Life {
             case Xenon.HYPOGRAM_FIELD_FUSION:
                 if (tsm.getOptByCTSAndSkill(IndieDamR, skillID) == null) {
                     o1.nReason = skillID;
-                    o1.nValue = si.getValue(indieDamR, slv);
+                    o1.nValue = si.getValue(SkillStat.s, slv) > 0 ? si.getValue(SkillStat.s, slv) : si.getValue(indieDamR, slv);
                     o1.wOption = getCharID();
                     o1.tTerm = si.getValue(time, slv);
                     newStats.put(IndieDamR, o1);
@@ -673,6 +674,7 @@ public class AffectedArea extends Life {
                 }
                 break;
             case Kanna.SPIRITS_DOMAIN:
+            case 500061069: // HEXA Spirit's Domain
                 if (tsm.getOptByCTSAndSkill(IndiePMdR, skillID) == null) {
                     int stateMultiplier = getOption() + 1;
                     o1.nValue = si.getValue(SkillStat.x, slv) * stateMultiplier;
@@ -683,8 +685,8 @@ public class AffectedArea extends Life {
                     o2.nReason = skillID;
                     o2.tTerm = si.getValue(time, slv);
                     newStats.put(IndieAsrR, o2);
-                    if (stateMultiplier == 3) {
-                        o3.nValue = -2;
+                    if (stateMultiplier >= 2) {
+                        o3.nValue = stateMultiplier == 3 ? -2 : -1;
                         o3.nReason = skillID;
                         o3.tTerm = si.getValue(time, slv);
                         newStats.put(IndieBooster, o3);
@@ -838,6 +840,7 @@ public class AffectedArea extends Life {
                 }
                 break;
             case Kanna.SPIRITS_DOMAIN:
+            case 500061069: // HEXA Spirit's Domain
                 int stateMultiplier = getOption() + 1;
                 int healed = si.getValue(SkillStat.y, slv) * stateMultiplier;
                 for (Char chr : chrList) {

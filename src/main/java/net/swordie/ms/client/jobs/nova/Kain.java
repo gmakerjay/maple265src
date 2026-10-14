@@ -62,7 +62,7 @@ public class Kain extends Job {
     public static final int BREATH_SHOOTER_MASTERY = 63100011; // Passive Mastery
     public static final int PHYSICAL_TRAINING = 63100012; // Passive
     public static final int STRIKE_ARROW_POSSESS_PASSIVE = 63100100; // Upgrade on StrikeArrowPossess? (disable=1)
-    public static final int SCATTERING_SHOT_POSSESS_PASSIVE = 63101001; // Upgrade on ScatteringShotPossess? (disable=1)
+    public static final int SCATTERING_SHOT_POSSESS_PASSIVE = 63100104; // Upgrade on ScatteringShotPossess? (disable=1)
     public static final int POSSESSION = 63101001; // Kain Energy/Gauge Skill
     public static final int STRIKE_ARROW_2 = 63101003; // Upgrade on StrikeArrow. Added Sequential Attack after StrikeArrow
     public static final int SCATTERING_SHOT = 63101004; // TODO [2] Handle Stack Inc Request
@@ -136,10 +136,10 @@ public class Kain extends Job {
     public static final int GRIP_OF_AGONY = 400031066; // Second Atom
 
     // 6th Job (HEXA Matrix)
-    public static final int CHURNING_MALICE = 63141506; // Origin Skill Cast
+    public static final int CHURNING_MALICE = 63141506; // 2nd 6th Job Ascent/Origin Skill Cast
     public static final int CHURNING_MALICE_ATTACK_1 = 63141507;
     public static final int CHURNING_MALICE_ATTACK_2 = 63141508;
-    public static final int TOTAL_ANNIHILATION = 63141500; // 6th Job Active
+    public static final int TOTAL_ANNIHILATION = 63141500; // 6th Job Origin Skill
     public static final int TOTAL_ANNIHILATION_ATTACK_1 = 63141501;
     public static final int TOTAL_ANNIHILATION_ATTACK_2 = 63141502;
     public static final int TOTAL_ANNIHILATION_ATTACK_3 = 63141503;
@@ -187,7 +187,13 @@ public class Kain extends Job {
             STRIKE_ARROW_2_POSSESS,
             SCATTERING_SHOT_POSSESS,
             SHAFT_BREAK_POSSESS,
+            SHAFT_BREAK_VACUUM_POSSESS,
+            SHAFT_BREAK_EXPLOSION_POSSESS,
+            SHAFT_BREAK_AFTER_EFFECT_POSSESS,
             FALLING_DUST_POSSESS,
+            FALLING_DUST_2_POSSESS,
+            SNEAKY_SNIPING_POSSESS,
+            SNEAKY_SNIPING_2_POSSESS,
 
             HEXA_STRIKE_ARROW_POSSESS,
             HEXA_SCATTERING_SHOT_POSSESS,
@@ -200,6 +206,8 @@ public class Kain extends Job {
             HEXA_UNSEEN_SNIPER_POSSESS,
             HEXA_UNSEEN_SNIPER_POSSESS_1,
             CHURNING_MALICE,
+            CHURNING_MALICE_ATTACK_1,
+            CHURNING_MALICE_ATTACK_2,
 
             DRAGON_BURST,
     };
@@ -208,6 +216,8 @@ public class Kain extends Job {
             TEARING_KNIFE,
             PHANTOM_BLADE,
             CHAIN_SICKLE,
+            CHAIN_SICKLE_2,
+            POISON_NEEDLE,
             POISON_NEEDLE_2,
 
             HEXA_TEARING_KNIFE,
@@ -219,6 +229,8 @@ public class Kain extends Job {
             HEXA_POISON_NEEDLE_2,
             HEXA_UNSEEN_SNIPER,
             HEXA_UNSEEN_SNIPER_1,
+            HEXA_UNSEEN_SNIPER_POSSESS,
+            HEXA_UNSEEN_SNIPER_POSSESS_1,
 
             SNEAKY_SNIPING_POSSESS,
             SNEAKY_SNIPING_2_POSSESS,
@@ -227,11 +239,17 @@ public class Kain extends Job {
 
     public static final int[] whisperShotSkills = new int[]{
             STRIKE_ARROW,
+            STRIKE_ARROW_EXTRA_HIT,
             STRIKE_ARROW_2,
             SCATTERING_SHOT,
             STRIKE_ARROW_3,
             SHAFT_BREAK,
+            SHAFT_BREAK_VACUUM,
+            SHAFT_BREAK_EXPLOSION,
             FALLING_DUST,
+            CHASING_SHOT,
+            SNEAKY_SNIPING,
+            SNEAKY_SNIPING_2,
 
             HEXA_STRIKE_ARROW,
             HEXA_STRIKE_ARROW_1,
@@ -252,12 +270,12 @@ public class Kain extends Job {
 
     public Kain(Char chr) {
         super(chr);
-        if (chr.getId() != 0 && isHandlerOfJob(chr.getJob())) {
+        if (chr != null && chr.getId() != 0 && isHandlerOfJob(chr.getJob())) {
             for (int id : addedSkills) {
                 if (!chr.hasSkill(id)) {
                     Skill skill = SkillData.getSkillDeepCopyById(id);
                     if (skill != null) {
-                        skill.setCurrentLevel(skill.getMasterLevel());
+                        skill.setCurrentLevel(skill.getMaxLevel() > 0 ? skill.getMaxLevel() : skill.getMasterLevel());
                         chr.addSkill(skill);
                     }
                 }
@@ -268,6 +286,109 @@ public class Kain extends Job {
     @Override
     public boolean isHandlerOfJob(short id) {
         return JobConstants.isKain(id);
+    }
+
+    public boolean isPossessionSkill(int skillId) {
+        for (int id : possessionSkills) {
+            if (id == skillId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isExecutionSkill(int skillId) {
+        for (int id : executionSkills) {
+            if (id == skillId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isWhisperShotSkill(int skillId) {
+        for (int id : whisperShotSkills) {
+            if (id == skillId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void addMalice(int amount) {
+        TemporaryStatManager tsm = chr.getTemporaryStatManager();
+        int maxGauge = chr.hasSkill(POSSESSION_2) ? 500 : 200;
+        int curGauge = tsm.hasStat(CharacterTemporaryStat.NADragonGauge) ? tsm.getOption(CharacterTemporaryStat.NADragonGauge).nOption : 0;
+        int newGauge = Math.max(0, Math.min(maxGauge, curGauge + amount));
+        Option o = new Option();
+        o.nOption = newGauge;
+        o.rOption = POSSESSION;
+        tsm.sendStat(CharacterTemporaryStat.NADragonGauge, o);
+    }
+
+    private void applyDeathBlessing(AttackInfo attackInfo) {
+        if (!chr.hasSkill(DEATH_BLESSING)) {
+            return;
+        }
+        int maxStacks = chr.hasSkill(ADVANCED_DEATH_BLESSING) ? 15 : 10;
+        int blessingSkillId = chr.hasSkill(HEXA_DEATH_BLESSING) ? HEXA_DEATH_BLESSING : chr.hasSkill(ADVANCED_DEATH_BLESSING) ? ADVANCED_DEATH_BLESSING : DEATH_BLESSING;
+        for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+            Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+            if (mob == null) {
+                continue;
+            }
+            MobTemporaryStat mts = mob.getTemporaryStat();
+            int curStack = mts.hasCurrentMobStat(MobStat.IndieDummyBuffIcon) ? mts.getCurrentOptionsByMobStat(MobStat.IndieDummyBuffIcon).nValue : 0;
+            Option o = new Option();
+            o.nValue = Math.min(maxStacks, curStack + 1);
+            o.nReason = blessingSkillId;
+            o.tTerm = 30;
+            mts.addStatOptions(mob, MobStat.IndieDummyBuffIcon, o);
+        }
+        TemporaryStatManager tsm = chr.getTemporaryStatManager();
+        Option charOpt = new Option();
+        charOpt.nOption = 1;
+        charOpt.rOption = blessingSkillId;
+        charOpt.tOption = 30;
+        tsm.sendStat(CharacterTemporaryStat.NADeathBlessing, charOpt);
+    }
+
+    private void realizeDeathBlessing(AttackInfo attackInfo) {
+        if (!chr.hasSkill(DEATH_BLESSING)) {
+            return;
+        }
+        boolean realizedAny = false;
+        int blessingSkillId = chr.hasSkill(HEXA_DEATH_BLESSING) ? HEXA_DEATH_BLESSING : chr.hasSkill(ADVANCED_DEATH_BLESSING) ? ADVANCED_DEATH_BLESSING : DEATH_BLESSING;
+        for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+            Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+            if (mob == null) {
+                continue;
+            }
+            MobTemporaryStat mts = mob.getTemporaryStat();
+            if (mts.hasCurrentMobStat(MobStat.IndieDummyBuffIcon)) {
+                int curStack = mts.getCurrentOptionsByMobStat(MobStat.IndieDummyBuffIcon).nValue;
+                realizedAny = true;
+                if (curStack > 1) {
+                    Option o = new Option();
+                    o.nValue = curStack - 1;
+                    o.nReason = blessingSkillId;
+                    o.tTerm = 30;
+                    mts.addStatOptions(mob, MobStat.IndieDummyBuffIcon, o);
+                } else {
+                    mts.removeMobStat(mob, MobStat.IndieDummyBuffIcon);
+                }
+            }
+        }
+        if (realizedAny) {
+            TemporaryStatManager tsm = chr.getTemporaryStatManager();
+            int buffSkillId = chr.hasSkill(HEXA_DEATH_BLESSING) ? HEXA_DEATH_BLESSING_2 : DEATH_BLESSING_BUFF;
+            Option o = new Option();
+            o.nReason = buffSkillId;
+            o.nValue = chr.hasSkill(ADVANCED_DEATH_BLESSING) ? 10 : 5;
+            o.tTerm = 5;
+            tsm.sendStat(CharacterTemporaryStat.IndiePMdR, o);
+            chr.resetSkillCoolTime(SHADOW_STEP_HORIZONTAL);
+        }
     }
 
     @Override
@@ -295,19 +416,15 @@ public class Kain extends Job {
         if (level == 10) {
             chr.setJob(JobConstants.JobEnum.KAIN_1.getJobId());
             chr.addSpToSpecificJob((short) JobConstants.JobEnum.KAIN_1.getJobId(), 5);
-            chr.addStatAndSendPacket(Stat.ap, 5);
         } else if (level == 30) {
             chr.setJob(JobConstants.JobEnum.KAIN_2.getJobId());
             chr.addSpToSpecificJob((short) JobConstants.JobEnum.KAIN_2.getJobId(), 4);
-            chr.addStatAndSendPacket(Stat.ap, 4);
         } else if (level == 60) {
             chr.setJob(JobConstants.JobEnum.KAIN_3.getJobId());
             chr.addSpToSpecificJob((short) JobConstants.JobEnum.KAIN_3.getJobId(), 4);
-            chr.addStatAndSendPacket(Stat.ap, 5);
         } else if (level == 100) {
             chr.setJob(JobConstants.JobEnum.KAIN_4.getJobId());
             chr.addSpToSpecificJob((short) JobConstants.JobEnum.KAIN_4.getJobId(), 3);
-            chr.addStatAndSendPacket(Stat.ap, 5);
         }
     }
 
@@ -355,6 +472,24 @@ public class Kain extends Job {
         Option o2 = new Option();
 
         switch (skillID) {
+            case POSSESSION:
+                o1.nOption = 1;
+                o1.rOption = POSSESSION;
+                o1.tOption = 15;
+                tsm.sendStat(CharacterTemporaryStat.NADragonEnchant, o1);
+                addMalice(-100);
+                break;
+            case DRAGON_FANG:
+            case HEXA_DRAGON_FANG:
+                if (tsm.hasStatBySkillId(DRAGON_FANG) || tsm.hasStatBySkillId(HEXA_DRAGON_FANG)) {
+                    tsm.removeStatsBySkill(DRAGON_FANG);
+                    tsm.removeStatsBySkill(HEXA_DRAGON_FANG);
+                } else {
+                    o1.nValue = 1;
+                    o1.nReason = skillID;
+                    tsm.sendStat(CharacterTemporaryStat.IndieCheckTimeByClient, o1);
+                }
+                break;
             case BREATH_SHOOTER_BOOSTER:
                 o1.nOption = si != null ? si.getValue(SkillStat.x, slv) : -2;
                 o1.rOption = skillID;
@@ -371,33 +506,71 @@ public class Kain extends Job {
                 tsm.removeAllDebuffs();
                 break;
             case INCARNATION:
+                int incDur = si != null && si.getValue(SkillStat.time, slv) > 0 ? si.getValue(SkillStat.time, slv) : 30;
+                EnumMap<CharacterTemporaryStat, Option> incStats = new EnumMap<>(CharacterTemporaryStat.class);
                 o1.nReason = skillID;
-                o1.nValue = si != null ? si.getValue(SkillStat.indieDamR, slv) : 15;
-                o1.tTerm = si != null ? si.getValue(SkillStat.time, slv) : 40;
-                tsm.sendStat(CharacterTemporaryStat.IndieDamR, o1);
+                o1.nValue = si != null && si.getValue(SkillStat.indieDamR, slv) > 0 ? si.getValue(SkillStat.indieDamR, slv) : 15;
+                o1.tTerm = incDur;
+                incStats.put(CharacterTemporaryStat.IndieDamR, o1);
                 o2.nReason = skillID;
                 o2.nValue = 100;
-                o2.tTerm = o1.tTerm;
-                tsm.sendStat(CharacterTemporaryStat.IndieStance, o2);
+                o2.tTerm = incDur;
+                incStats.put(CharacterTemporaryStat.IndieStance, o2);
+                Option o3 = new Option();
+                o3.nReason = skillID;
+                o3.nValue = si != null && si.getValue(SkillStat.indiePadR, slv) > 0 ? si.getValue(SkillStat.indiePadR, slv) : 15;
+                o3.tTerm = incDur;
+                incStats.put(CharacterTemporaryStat.IndiePADR, o3);
+                Option o4 = new Option();
+                o4.nOption = 1;
+                o4.rOption = skillID;
+                o4.tOption = incDur;
+                incStats.put(CharacterTemporaryStat.NovaArcherIncanation, o4);
+                tsm.sendStat(incStats);
                 break;
             case DRAGON_SCALE:
-                o1.nReason = skillID;
+                int scaleDur = si != null && si.getValue(SkillStat.time, slv) > 0 ? si.getValue(SkillStat.time, slv) : 3;
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = scaleDur;
                 o1.nValue = 1;
-                o1.tTerm = si != null ? si.getValue(SkillStat.time, slv) : 3;
+                o1.nReason = skillID;
+                o1.tTerm = scaleDur;
                 tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
                 break;
             case THANATOS_DESCENT:
+                int thanatosDur = si != null && si.getValue(SkillStat.time, slv) > 0 ? si.getValue(SkillStat.time, slv) : 35;
+                EnumMap<CharacterTemporaryStat, Option> tdStats = new EnumMap<>(CharacterTemporaryStat.class);
                 o1.nReason = skillID;
-                o1.nValue = si != null ? si.getValue(SkillStat.indieDamR, slv) : 30;
-                o1.tTerm = si != null ? si.getValue(SkillStat.time, slv) : 35;
-                tsm.sendStat(CharacterTemporaryStat.IndieDamR, o1);
+                o1.nValue = si != null && si.getValue(SkillStat.indieDamR, slv) > 0 ? si.getValue(SkillStat.indieDamR, slv) : 30;
+                o1.tTerm = thanatosDur;
+                tdStats.put(CharacterTemporaryStat.IndieDamR, o1);
                 o2.nReason = skillID;
                 o2.nValue = 100;
-                o2.tTerm = o1.tTerm;
-                tsm.sendStat(CharacterTemporaryStat.IndieStance, o2);
+                o2.tTerm = thanatosDur;
+                tdStats.put(CharacterTemporaryStat.IndieStance, o2);
+                Option tdOpt = new Option();
+                tdOpt.nOption = 1;
+                tdOpt.rOption = skillID;
+                tdOpt.tOption = thanatosDur;
+                tdStats.put(CharacterTemporaryStat.NAThanatosDescent, tdOpt);
+                tsm.sendStat(tdStats);
+                break;
+            case THANATOS_DESCENT_3:
+                tsm.removeStatsBySkill(THANATOS_DESCENT);
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 3;
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 3;
+                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
                 break;
             case CHURNING_MALICE:
-                // Origin Skill 6th Job: 7 seconds invincibility (iframe) during cast animation
+                // 2nd 6th Job Origin/Ascent Skill: 7 seconds invincibility (iframe) during cast animation
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
                 o1.nValue = 1;
                 o1.nReason = skillID;
                 o1.tTerm = 7;
@@ -409,19 +582,35 @@ public class Kain extends Job {
                 }
                 break;
             case TOTAL_ANNIHILATION:
-                // 6th Job Active: 6s invincibility (ndTime: 5200)
+                // 6th Job Origin Skill: 7s invincibility + NAAnnihilation domain buff
+                EnumMap<CharacterTemporaryStat, Option> taStats = new EnumMap<>(CharacterTemporaryStat.class);
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
                 o1.nValue = 1;
                 o1.nReason = skillID;
-                o1.tTerm = 6;
-                tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                o1.tTerm = 7;
+                taStats.put(CharacterTemporaryStat.IndieNotDamaged, o1);
+                o2.nOption = 1;
+                o2.rOption = skillID;
+                o2.tOption = 30;
+                taStats.put(CharacterTemporaryStat.NAAnnihilation, o2);
+                tsm.sendStat(taStats);
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
                 break;
             case REMAIN_INCENSE:
-                if (tsm.hasStatBySkillId(REMAIN_INCENSE)) {
+            case HEXA_LASTING_GRUDGE:
+                if (tsm.hasStat(CharacterTemporaryStat.NARemainIncense)) {
                     tsm.removeStatsBySkill(REMAIN_INCENSE);
+                    tsm.removeStatsBySkill(HEXA_LASTING_GRUDGE);
                 } else {
                     o1.nOption = 1;
-                    o1.rOption = REMAIN_INCENSE;
-                    tsm.sendStat(CharacterTemporaryStat.IndieEmpty, o1);
+                    o1.rOption = skillID;
+                    tsm.sendStat(CharacterTemporaryStat.NARemainIncense, o1);
                 }
                 break;
         }
@@ -432,39 +621,59 @@ public class Kain extends Job {
         Char chr = c.getChr();
         super.handleAttack(c, attackInfo, si, now);
         int skillID = attackInfo.skillId;
+        TemporaryStatManager tsm = chr.getTemporaryStatManager();
+
+        if (!attackInfo.mobAttackInfo.isEmpty()) {
+            if (isWhisperShotSkill(skillID)) {
+                addMalice(chr.hasSkill(GRINDING_2) ? 35 : chr.hasSkill(GRINDING) ? 25 : 18);
+            }
+            if (isPossessionSkill(skillID) || skillID == DEATH_BLESSING_ATTACK || skillID == HEXA_DEATH_BLESSING_1) {
+                applyDeathBlessing(attackInfo);
+                if (isPossessionSkill(skillID) && skillID != DRAGON_BURST
+                        && skillID != CHURNING_MALICE && skillID != CHURNING_MALICE_ATTACK_1 && skillID != CHURNING_MALICE_ATTACK_2) {
+                    tsm.removeStatsBySkill(POSSESSION);
+                }
+            }
+            if (isExecutionSkill(skillID)) {
+                realizeDeathBlessing(attackInfo);
+            }
+        }
+
         switch (skillID) {
             case CHURNING_MALICE:
             case CHURNING_MALICE_ATTACK_1:
             case CHURNING_MALICE_ATTACK_2:
-                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
-                    Mob targetMob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
-                    if (targetMob == null) continue;
-                    MobTemporaryStat mts = targetMob.getTemporaryStat();
-                    Option opt1 = new Option();
-                    opt1.nOption = 1;
-                    opt1.rOption = skillID;
-                    opt1.tOption = 10; // 10s Absolute Freeze / Bind
-                    opt1.cOption = chr.getId();
-                    mts.addStatOptions(targetMob, MobStat.Freeze, opt1);
-                    Option opt2 = new Option();
-                    opt2.nOption = 1;
-                    opt2.rOption = skillID;
-                    opt2.tOption = 20; // 20s Origin Debuff
-                    opt2.cOption = chr.getId();
-                    mts.addStatOptions(targetMob, MobStat.OriginDebuff, opt2);
-                }
-                if (chr.getParty() != null) {
-                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
-                        other.write(UserLocal.showHexaSkillEff(chr));
-                    }
-                }
-                break;
             case TOTAL_ANNIHILATION:
             case TOTAL_ANNIHILATION_ATTACK_1:
             case TOTAL_ANNIHILATION_ATTACK_2:
             case TOTAL_ANNIHILATION_ATTACK_3:
             case TOTAL_ANNIHILATION_ATTACK_4:
             case TOTAL_ANNIHILATION_ATTACK_5:
+                applyDeathBlessing(attackInfo);
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob targetMob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (targetMob == null) continue;
+                    MobTemporaryStat mts = targetMob.getTemporaryStat();
+                    EnumMap<MobStat, Option> newMobStats = new EnumMap<>(MobStat.class);
+                    Option opt1 = new Option();
+                    opt1.nOption = 1;
+                    opt1.rOption = skillID;
+                    opt1.tOption = 10; // 10s Absolute Freeze / Bind
+                    opt1.cOption = chr.getId();
+                    newMobStats.put(MobStat.Freeze, opt1);
+                    Option opt2 = new Option();
+                    opt2.nOption = 1;
+                    opt2.rOption = skillID;
+                    opt2.tOption = 20; // 20s Origin Debuff
+                    opt2.cOption = chr.getId();
+                    newMobStats.put(MobStat.OriginDebuff, opt2);
+                    mts.addStatOptions(targetMob, newMobStats);
+                }
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        other.write(UserLocal.showHexaSkillEff(chr));
+                    }
+                }
                 break;
         }
     }
