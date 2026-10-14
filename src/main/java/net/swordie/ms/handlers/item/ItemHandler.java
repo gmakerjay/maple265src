@@ -873,14 +873,22 @@ public class ItemHandler {
                     // Spiegelmann's Ordinary Necklace | Spiegelmann's Sparkling Necklace
                     spellTraceCost = 0;
                 }
+                if (spellTraceCost > 0 && !chr.hasItemCount(ItemConstants.SPELL_TRACE_ID, spellTraceCost)) {
+                    chr.chatMessage(SystemNotice, "You do not have enough Spell Traces.");
+                    chr.write(FieldPacket.showScrollUpgradeResult(feverTime, 0, "You do not have enough Spell Traces.", prevEquip, equip));
+                    chr.dispose();
+                    return;
+                }
                 chr.consumeItem(ItemConstants.SPELL_TRACE_ID, spellTraceCost);
 
                 boolean success = sui.applyTo(chr, sui.getType() == SpellTraceScrollType.Innocence && sui.getIconID() == 6, equip, zeroWeapon);
                 equip.recalcEnchantmentStats();
                 if (zeroWeapon != null) {
                     zeroWeapon.recalcEnchantmentStats();
+                    zeroWeapon.saveToSQL();
                     zeroWeapon.updateToChar(chr);
                 }
+                equip.saveToSQL();
                 String desc = success ? "Your item has been upgraded." : "Your upgrade has failed.";
                 chr.write(FieldPacket.showScrollUpgradeResult(feverTime, success ? 1 : 0, desc, prevEquip, equip));
                 equip.updateToChar(chr);
@@ -942,6 +950,8 @@ public class ItemHandler {
                 Equip oldEquip = equip.deepCopy();
                 GameConstants.EnchantResult res = GameConstants.rollEnchant(
                         equip.getChuc(),
+                        equip.isSuperiorEqp(),
+                        equip.getDropStreak(),
                         vipGrade,
                         extraChanceFromMiniGame,
                         safeGuard,
@@ -950,6 +960,7 @@ public class ItemHandler {
 
                 boolean upgrade = res == GameConstants.EnchantResult.SUCCESS;
                 boolean boom    = res == GameConstants.EnchantResult.DESTROY;
+                boolean drop    = res == GameConstants.EnchantResult.DROP;
 
                 short oldChuc = equip.getChuc();
                 short newChuc = oldChuc;
@@ -980,6 +991,7 @@ public class ItemHandler {
                         }
                     }
                     if (boom) {
+                        equip.setDropStreak(0);
                         if (!ItemConstants.isLongOrBigSword(equip.getItemId())) {
                             equip.addSpecialAttribute(EquipSpecialAttribute.Vestige);
                             if (invType == EQUIPPED) {
@@ -991,7 +1003,7 @@ public class ItemHandler {
                                         (short) eqpPos, (short) equip.getBagIndex(), 0, equip));
                             }
                             if (!equip.isSuperiorEqp()) {
-                                newChuc = (short) Math.min(30, oldChuc);
+                                newChuc = (short) Math.min(12, oldChuc);
                                 equip.setChuc(newChuc, true);
                             } else {
                                 equip.setChuc((short) 0, true);
@@ -1002,7 +1014,7 @@ public class ItemHandler {
                             vestigeEquip.addSpecialAttribute(EquipSpecialAttribute.Vestige);
                             vestigeEquip.setInvType(EQUIP);
                             if (!vestigeEquip.isSuperiorEqp()) {
-                                newChuc = (short) Math.min(30, oldChuc);
+                                newChuc = (short) Math.min(12, oldChuc);
                                 vestigeEquip.setChuc(newChuc, true);
                             } else {
                                 vestigeEquip.setChuc((short) 0, true);
@@ -1011,10 +1023,20 @@ public class ItemHandler {
                             chr.addItemToInventory(vestigeEquip);
                             chr.getScriptManager().startScript(chr, 2400009, "ZeroRefund", ScriptType.Npc);
                         }
+                    } else {
+                        equip.setDropStreak(0);
                     }
+                } else if (drop) {
+                    newChuc = (short) Math.max(0, oldChuc - 1);
+                    equip.setChuc(newChuc, true);
+                    equip.setDropStreak(equip.getDropStreak() + 1);
+                    Equip.notifyUnionChuc(chr, equip, oldChuc, newChuc);
+                } else {
+                    equip.setDropStreak(0);
                 }
                 if (zeroWeapon != null) {
                     zeroWeapon.setChuc(equip.getChuc(), true);
+                    zeroWeapon.setDropStreak(equip.getDropStreak());
                     zeroWeapon.recalcEnchantmentStats();
                     zeroWeapon.updateToChar(chr);
                 }
@@ -1027,8 +1049,10 @@ public class ItemHandler {
                         zeroWeapon.removeAttribute(EquipAttribute.ProtectionScroll);
                     }
                 }
+                equip.saveToSQL();
                 equip.updateToChar(chr);
                 if (zeroWeapon != null) {
+                    zeroWeapon.saveToSQL();
                     zeroWeapon.updateToChar(chr);
                 }
                 chr.write(FieldPacket.showUpgradeResult(upgrade, boom));
@@ -1131,9 +1155,9 @@ public class ItemHandler {
                     costBeforeMVP = cost;
                     costFinal = (long) (cost * (100 - vipGrade * 5L) / 100.0D);
                 }
-                int successProp = GameConstants.enchantRates[equip.getChuc()][0];
-                int destroyProp = GameConstants.enchantRates[equip.getChuc()][1];
-                if (vipGrade > 0) {
+                int successProp = GameConstants.getEnchantmentSuccessRate(equip);
+                int destroyProp = GameConstants.getEnchantmentDestroyRate(equip);
+                if (vipGrade > 0 && equip.getDropStreak() < 2) {
                     successProp = (int) Math.round(successProp * (1.0 + 0.025 * vipGrade));
                 }
                 if (useSafe) {
@@ -2506,7 +2530,7 @@ public class ItemHandler {
                 } else if (JobConstants.isXenon(chr.getJob())) {
                     item.setiStr((short) (item.getiStr() + 48));
                     item.setiDex((short) (item.getiDex() + 48));
-                    item.setiLuk((short) (item.getiDex() + 48));
+                    item.setiLuk((short) (item.getiLuk() + 48));
                 } else {
                     item.setBaseStat(chr.calculateMainStatForChar(), item.getBaseStat(chr.calculateMainStatForChar()) + 100);
                 }
@@ -2600,7 +2624,7 @@ public class ItemHandler {
                 } else if (JobConstants.isXenon(chr.getJob())) {
                     item.setiStr((short) (item.getiStr() + 96));
                     item.setiDex((short) (item.getiDex() + 96));
-                    item.setiLuk((short) (item.getiDex() + 96));
+                    item.setiLuk((short) (item.getiLuk() + 96));
                 } else {
                     item.setBaseStat(chr.calculateMainStatForChar(), item.getBaseStat(chr.calculateMainStatForChar()) + 200);
                 }
@@ -2724,7 +2748,7 @@ public class ItemHandler {
         chr.dispose();
     }
 
-    @Handler(op = InHeader.USER_CONSUME_HAIR_ITEM_USE_REQUEST)
+    @Handler(op = InHeader.USER_RETURN_EFFECT_RESPONSE)
     public static void handleUserReturnEffectResponse(Char chr, InPacket inPacket) {
         inPacket.decodeInt(); // tick
         boolean isReturn = inPacket.decodeByte() != 0;
@@ -2739,15 +2763,17 @@ public class ItemHandler {
                         int cur = (int) returnEquip.getBaseStat(ebs);
                         equip.setBaseStat(ebs, cur);
                     }
-                    equip.addStat(EquipBaseStat.tuc, -1);
-                    equip.addStat(EquipBaseStat.cuc, 1);
-                    equip.updateToChar(chr);
+                    equip.setTuc(returnEquip.getTuc());
+                    equip.setCuc(returnEquip.getCuc());
+                    equip.recalcEnchantmentStats();
                 }
                 equip.removeAttribute(EquipAttribute.ReturnScroll);
+                equip.saveToSQL();
                 equip.updateToChar(chr);
             }
         }
         chr.returnEffectInfo.equip = null;
-        chr.chatMessage("The Return Scroll protection effect has expired.");
+        chr.chatMessage("The Return Scroll protection effect has been resolved.");
+        chr.dispose();
     }
 }

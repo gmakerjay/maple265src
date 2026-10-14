@@ -102,7 +102,7 @@ public class CubeHandler {
                     //Before
                     dialog.append(String.format("#eBefore Bonus Potential: #n %s\r\n", CubeHandler.getIconPotential(bonusGrade)));
                     dialog.append("#L0#");
-                    for (int option = 3; option < 5; option++) {
+                    for (int option = 3; option < 6; option++) {
                         int potentialID = memorialCubeInfo.getOldPotentials().get(option);
                         ItemOption itemOption = ItemData.getItemOptionById(memorialCubeInfo.getOldPotentials().get(option));
                         if (itemOption != null) {
@@ -119,7 +119,7 @@ public class CubeHandler {
                     //After
                     dialog.append(String.format("#eAfter Bonus Potential: #n %s\r\n", CubeHandler.getIconPotential(bonusGrade)));
                     dialog.append("#L1#");
-                    for (int option = 3; option < 5; option++) {
+                    for (int option = 3; option < 6; option++) {
                         int potentialID = equip.getOptions().get(option);
                         ItemOption itemOption = ItemData.getItemOptionById(potentialID);
                         if (itemOption != null) {
@@ -160,7 +160,7 @@ public class CubeHandler {
         Equip zeroEquip = null;
         //Verify Equip.
         if (equip == null) {
-            chr.chatMessage(SystemNotice, "Đã xảy ra lỗi không xác định.");
+            chr.chatMessage(SystemNotice, "An unknown error has occurred.");
             chr.dispose();
             return;
         }
@@ -247,22 +247,29 @@ public class CubeHandler {
         }
         Equip zeroEquip = null;
         if (JobConstants.isZero(chr.getJob()) && ItemConstants.isLongOrBigSword(equip.getItemId())) {
-            zeroEquip = (Equip) chr.getEquipInventory().getItemBySlot(-11);
+            zeroEquip = (Equip) chr.getEquippedInventory().getItemBySlot(-11);
+            if (zeroEquip == null) {
+                zeroEquip = (Equip) chr.getEquippedInventory().getItemBySlot(11);
+            }
         }
         switch (chooseOption) {
             case 6: // Choose Current / After (New Potential)
                 equip.setOptions(copy.getOptions());
+                equip.saveToSQL();
                 equip.updateToChar(chr);
                 if (zeroEquip != null) {
                     zeroEquip.setOptions(copy.getOptions());
+                    zeroEquip.saveToSQL();
                     zeroEquip.updateToChar(chr);
                 }
                 break;
             case 7: // Choose Before (Old Potential)
                 equip.setOptions(memorialCubeInfo.getOldPotentials());
+                equip.saveToSQL();
                 equip.updateToChar(chr);
                 if (zeroEquip != null) {
                     zeroEquip.setOptions(memorialCubeInfo.getOldPotentials());
+                    zeroEquip.saveToSQL();
                     zeroEquip.updateToChar(chr);
                 }
                 break;
@@ -440,39 +447,61 @@ public class CubeHandler {
             chr.dispose();
             return;
         }
+        short hiddenValue;
         if (bonus) {
-            if (equip.getBonusGrade() > itemGradeMax.getVal()) {
-                String msg = String.format("Character %d tried to use %s cube (id %d) an equip with a bonus potential greater than it is allowed to (id %d)", chr.getId(), StringData.getItemStringById(cubeID), cubeID, equip.getItemId());
-                DataPrinter.send(DataPrinter.AUTOBAN_WARNING, msg);
-                chr.chatMessage(SystemNotice, "This item's bonus potential exceeds the maximum grade allowed by this cube.");
-                chr.dispose();
-                return;
-            } else if (equip.getBonusGrade() < ItemGrade.Rare.getVal()) {
+            ItemGrade currentGrade = ItemGrade.getGradeByVal(equip.getBonusGrade());
+            if (currentGrade == null || currentGrade == ItemGrade.None) {
                 chr.chatMessage(SystemNotice, "This item does not have bonus potential. Please use a Bonus Potential Scroll first.");
                 chr.dispose();
                 return;
             }
-        } else {
-            if (equip.getBaseGrade() > itemGradeMax.getVal()) {
-                String msg = String.format("Character %d tried to use %s cube (id %d) an equip with a potential greater than it is allowed to (id %d)", chr.getId(), StringData.getItemStringById(cubeID), cubeID, equip.getItemId());
-                DataPrinter.send(DataPrinter.AUTOBAN_WARNING, msg);
-                chr.chatMessage(SystemNotice, "This item's potential exceeds the maximum grade allowed by this cube.");
+            if (currentGrade.isHidden()) {
+                hiddenValue = (short) switch (currentGrade) {
+                    case RareBonusHidden -> ItemGrade.Rare.getVal();
+                    case EpicBonusHidden -> ItemGrade.Epic.getVal();
+                    case UniqueBonusHidden -> ItemGrade.Unique.getVal();
+                    case LegendaryBonusHidden -> ItemGrade.Legendary.getVal();
+                    default -> ItemGrade.Rare.getVal();
+                };
+            } else {
+                hiddenValue = (short) currentGrade.getVal();
+            }
+            if (hiddenValue > itemGradeMax.getVal()) {
+                chr.chatMessage(SystemNotice, "This item's bonus potential exceeds the maximum grade allowed by this cube.");
                 chr.dispose();
                 return;
-            } else if (equip.getBaseGrade() < ItemGrade.Rare.getVal()) {
+            }
+        } else {
+            ItemGrade currentGrade = ItemGrade.getGradeByVal(equip.getBaseGrade());
+            if (currentGrade == null || currentGrade == ItemGrade.None) {
                 chr.chatMessage(SystemNotice, "This item does not have potential. Please use a Potential Scroll or Magnifying Glass first.");
                 chr.dispose();
                 return;
             }
+            if (currentGrade.isHidden()) {
+                hiddenValue = (short) switch (currentGrade) {
+                    case HiddenRare -> ItemGrade.Rare.getVal();
+                    case HiddenEpic -> ItemGrade.Epic.getVal();
+                    case HiddenUnique -> ItemGrade.Unique.getVal();
+                    case HiddenLegendary -> ItemGrade.Legendary.getVal();
+                    default -> ItemGrade.Rare.getVal();
+                };
+            } else {
+                hiddenValue = (short) currentGrade.getVal();
+            }
+            if (hiddenValue > itemGradeMax.getVal()) {
+                chr.chatMessage(SystemNotice, "This item's potential exceeds the maximum grade allowed by this cube.");
+                chr.dispose();
+                return;
+            }
         }
-        int tierUpChance = bonus ? ItemConstants.getTierUpChance(cubeID, ItemGrade.getGradeByVal(equip.getBonusGrade())) : ItemConstants.getTierUpChance(cubeID, ItemGrade.getGradeByVal(equip.getBaseGrade()));
-        short hiddenValue = bonus ? ItemGrade.getGradeByVal(equip.getBonusGrade()).getVal() : ItemGrade.getGradeByVal(equip.getBaseGrade()).getVal();
-        boolean tierUp = !(hiddenValue >= ItemGrade.Legendary.getVal()) && Util.succeedProp(tierUpChance, 1000);
+        int tierUpChance = ItemConstants.getTierUpChance(cubeID, ItemGrade.getGradeByVal(hiddenValue));
+        boolean tierUp = !(hiddenValue >= itemGradeMax.getVal()) && Util.succeedProp(tierUpChance, 1000);
         if (tierUp) {
             hiddenValue++;
         }
         if (!ItemConstants.MYSTICAL_CUBES.contains(cubeID) && !ItemConstants.BONUS_MYSTICAL_CUBES.contains(cubeID)) {
-            if (Util.succeedProp(1, 1000) && hiddenValue < ItemGrade.Legendary.getVal()) {
+            if (Util.succeedProp(1, 1000) && hiddenValue < itemGradeMax.getVal()) {
                 hiddenValue++; // Can increase up to 2 ranks
             }
         }
@@ -496,8 +525,28 @@ public class CubeHandler {
             equip.setHiddenOptionBase(hiddenValue, 0);
         }
         equip.releaseOptions(bonus, cubeID);
+        if (JobConstants.isZero(chr.getJob()) && ItemConstants.isLongOrBigSword(equip.getItemId())) {
+            Equip zeroEquip = (Equip) chr.getEquippedInventory().getItemBySlot(-11);
+            if (zeroEquip == null) {
+                zeroEquip = (Equip) chr.getEquippedInventory().getItemBySlot(11);
+            }
+            if (zeroEquip != null) {
+                zeroEquip.setOptions(equip.getOptions());
+                zeroEquip.updateToChar(chr);
+            }
+        }
         chr.write(UserLocal.brightCubeResult(true, cubeID, equip.getItemId()));
+        equip.saveToSQL();
         equip.updateToChar(chr);
+        if (JobConstants.isZero(chr.getJob()) && ItemConstants.isLongOrBigSword(equip.getItemId())) {
+            Equip zeroEquip = (Equip) chr.getEquippedInventory().getItemBySlot(-11);
+            if (zeroEquip == null) {
+                zeroEquip = (Equip) chr.getEquippedInventory().getItemBySlot(11);
+            }
+            if (zeroEquip != null) {
+                zeroEquip.saveToSQL();
+            }
+        }
         chr.write(WvsContext.consumeCubeRelease(cubeIndex, equip.getId(), cubeCount, cubeType));
     }
 
@@ -526,38 +575,60 @@ public class CubeHandler {
                 chr.dispose();
                 return;
             }
+            short hiddenValue;
             if (bonus) {
-                if (equip.getBonusGrade() > itemGradeMax.getVal()) {
-                    String msg = String.format("Character %d tried to use %s cube (id %d) an equip with a bonus potential greater than it is allowed to (id %d)", chr.getId(), StringData.getItemStringById(cubeID), cubeID, equip.getItemId());
-                    DataPrinter.send(DataPrinter.AUTOBAN_WARNING, msg);
-                    chr.chatMessage(SystemNotice, "This item's bonus potential exceeds the maximum grade allowed by this cube.");
-                    chr.dispose();
-                    return;
-                } else if (equip.getBonusGrade() < ItemGrade.Rare.getVal()) {
+                ItemGrade currentGrade = ItemGrade.getGradeByVal(equip.getBonusGrade());
+                if (currentGrade == null || currentGrade == ItemGrade.None) {
                     chr.chatMessage(SystemNotice, "This item does not have bonus potential. Please use a Bonus Potential Scroll first.");
                     chr.dispose();
                     return;
                 }
-            } else {
-                if (equip.getBaseGrade() > itemGradeMax.getVal()) {
-                    String msg = String.format("Character %d tried to use %s cube (id %d) an equip with a potential greater than it is allowed to (id %d)", chr.getId(), StringData.getItemStringById(cubeID), cubeID, equip.getItemId());
-                    DataPrinter.send(DataPrinter.AUTOBAN_WARNING, msg);
-                    chr.chatMessage(SystemNotice, "This item's potential exceeds the maximum grade allowed by this cube.");
+                if (currentGrade.isHidden()) {
+                    hiddenValue = (short) switch (currentGrade) {
+                        case RareBonusHidden -> ItemGrade.Rare.getVal();
+                        case EpicBonusHidden -> ItemGrade.Epic.getVal();
+                        case UniqueBonusHidden -> ItemGrade.Unique.getVal();
+                        case LegendaryBonusHidden -> ItemGrade.Legendary.getVal();
+                        default -> ItemGrade.Rare.getVal();
+                    };
+                } else {
+                    hiddenValue = (short) currentGrade.getVal();
+                }
+                if (hiddenValue > itemGradeMax.getVal()) {
+                    chr.chatMessage(SystemNotice, "This item's bonus potential exceeds the maximum grade allowed by this cube.");
                     chr.dispose();
                     return;
-                } else if (equip.getBaseGrade() < ItemGrade.Rare.getVal()) {
+                }
+            } else {
+                ItemGrade currentGrade = ItemGrade.getGradeByVal(equip.getBaseGrade());
+                if (currentGrade == null || currentGrade == ItemGrade.None) {
                     chr.chatMessage(SystemNotice, "This item does not have potential. Please use a Potential Scroll or Magnifying Glass first.");
                     chr.dispose();
                     return;
                 }
+                if (currentGrade.isHidden()) {
+                    hiddenValue = (short) switch (currentGrade) {
+                        case HiddenRare -> ItemGrade.Rare.getVal();
+                        case HiddenEpic -> ItemGrade.Epic.getVal();
+                        case HiddenUnique -> ItemGrade.Unique.getVal();
+                        case HiddenLegendary -> ItemGrade.Legendary.getVal();
+                        default -> ItemGrade.Rare.getVal();
+                    };
+                } else {
+                    hiddenValue = (short) currentGrade.getVal();
+                }
+                if (hiddenValue > itemGradeMax.getVal()) {
+                    chr.chatMessage(SystemNotice, "This item's potential exceeds the maximum grade allowed by this cube.");
+                    chr.dispose();
+                    return;
+                }
             }
-            int tierUpChance = bonus ? ItemConstants.getTierUpChance(cubeID, ItemGrade.getGradeByVal(equip.getBonusGrade())) : ItemConstants.getTierUpChance(cubeID, ItemGrade.getGradeByVal(equip.getBaseGrade()));
-            short hiddenValue = bonus ? ItemGrade.getGradeByVal(equip.getBonusGrade()).getVal() : ItemGrade.getGradeByVal(equip.getBaseGrade()).getVal();
-            boolean tierUp = !(hiddenValue >= ItemGrade.Legendary.getVal()) && Util.succeedProp(tierUpChance, 1000);
+            int tierUpChance = ItemConstants.getTierUpChance(cubeID, ItemGrade.getGradeByVal(hiddenValue));
+            boolean tierUp = !(hiddenValue >= itemGradeMax.getVal()) && Util.succeedProp(tierUpChance, 1000);
             if (tierUp) {
                 hiddenValue++;
             }
-            if (Util.succeedProp(1, 1000) && hiddenValue < ItemGrade.Legendary.getVal()) {
+            if (Util.succeedProp(1, 1000) && hiddenValue < itemGradeMax.getVal()) {
                 hiddenValue++; // Can increase up to 2 ranks
             }
             long cost = ItemConstants.getMesoCubingCost(equip.getrLevel());
@@ -613,7 +684,19 @@ public class CubeHandler {
                         } else {
                             equip.setOptions(memorialCubeInfo.getOldPotentials());
                         }
+                        equip.saveToSQL();
                         equip.updateToChar(chr);
+                        if (JobConstants.isZero(chr.getJob()) && ItemConstants.isLongOrBigSword(equip.getItemId())) {
+                            Equip zeroEquip = (Equip) chr.getEquippedInventory().getItemBySlot(-11);
+                            if (zeroEquip == null) {
+                                zeroEquip = (Equip) chr.getEquippedInventory().getItemBySlot(11);
+                            }
+                            if (zeroEquip != null) {
+                                zeroEquip.setOptions(equip.getOptions());
+                                zeroEquip.saveToSQL();
+                                zeroEquip.updateToChar(chr);
+                            }
+                        }
                     }
                 }
             }
@@ -668,7 +751,7 @@ public class CubeHandler {
             if (chr.getVioletZeroEquip() != null) {
                 Equip zeroWeapon = chr.getVioletZeroEquip();
                 for (int i = 0; i < size; i++) {
-                    equip.setOption(i, potentials.get(i), false);
+                    zeroWeapon.setOption(i, potentials.get(i), false);
                 }
                 zeroWeapon.updateToChar(chr);
                 chr.setVioletZeroEquip(null);

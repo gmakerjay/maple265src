@@ -2736,7 +2736,7 @@ public class ScriptManagerImpl implements ScriptManager {
                     if (other.getRewardSystem() == null) {
                         other.initRewardSystem();
                     }
-                    other.sendRewardToChar(itemId, quantity, 0,"Nhân vật " + chr.getName() + " đã hoàn thành nhiệm vụ " + getQuestNameByQuestId(questId) + ".", 30);
+                    other.sendRewardToChar(itemId, quantity, 0, "Character " + chr.getName() + " completed quest " + getQuestNameByQuestId(questId) + ".", 30);
                 }
             }
         }
@@ -2769,7 +2769,7 @@ public class ScriptManagerImpl implements ScriptManager {
                 }
             } else {
                 chr.consumeItem(oldEquip);
-                chr.chatMessage("Trang bị " + StringData.getItemStringById(id) + " đã bị xoá do bạn không đủ ô chứa ở túi EQUIP.");
+                chr.chatMessage("Equip " + StringData.getItemStringById(id) + " was removed because your EQUIP inventory was full.");
             }
         }
         equip.setInventoryID(chr.getEquippedInventory().getId());
@@ -2934,6 +2934,23 @@ public class ScriptManagerImpl implements ScriptManager {
 
     public boolean hasHadQuest(int questId) {
         return hasQuest(questId) || hasQuestCompleted(questId);
+    }
+
+    public boolean isQuestComplete(int questID) {
+        if (chr == null) {
+            return false;
+        }
+        if (QuestConstants.isAccountQuest(questID)) {
+            AccountQuest aq = chr.getAccount().getQuestById(questID);
+            return aq != null && aq.isComplete(chr);
+        } else {
+            Quest q = chr.getQuestById(questID);
+            return q != null && q.isComplete(chr);
+        }
+    }
+
+    public Quest getQuestById(int questID) {
+        return chr != null ? chr.getQuestById(questID) : null;
     }
 
     public void createQuestWithQRValue(int questId, String qrValue, boolean ex) {

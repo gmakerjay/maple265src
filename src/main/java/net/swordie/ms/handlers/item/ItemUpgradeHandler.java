@@ -23,6 +23,7 @@ import net.swordie.ms.scripts.ScriptType;
 import net.swordie.ms.util.DataPrinter;
 import net.swordie.ms.util.Util;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -83,7 +84,13 @@ public class ItemUpgradeHandler {
             String itemName = StringData.getItemStringById(flameID).toLowerCase();
             FlameType flameType = null;
             if (ii.isExNew()) {
-                if (itemName.contains("powerful")) {
+                if (ItemConstants.isBlackRebirthFlame(flameID)) {
+                    flameType = FlameType.Black;
+                } else if (ItemConstants.isAbyssalRebirthFlame(flameID)) {
+                    flameType = FlameType.Abyssal;
+                } else if (ItemConstants.isEternalRebirthFlame(flameID)) {
+                    flameType = FlameType.Eternal;
+                } else if (itemName.contains("powerful")) {
                     flameType = FlameType.Powerful;
                 } else if (itemName.contains("eternal")) {
                     flameType = FlameType.Eternal;
@@ -150,6 +157,17 @@ public class ItemUpgradeHandler {
         }
         equip.saveToSQL();
         equip.updateToChar(chr);
+        if (JobConstants.isZero(chr.getJob()) && ItemConstants.isLongOrBigSword(equip.getItemId())) {
+            Equip zeroEquip = (Equip) chr.getEquippedInventory().getItemBySlot(-11);
+            if (zeroEquip == null) {
+                zeroEquip = (Equip) chr.getEquippedInventory().getItemBySlot(11);
+            }
+            if (zeroEquip != null) {
+                zeroEquip.flame(selectAfter ? newEx : oldEx);
+                zeroEquip.saveToSQL();
+                zeroEquip.updateToChar(chr);
+            }
+        }
         chr.write(WvsContext.blackFlameOfResurrectionModifed());
         chr.dispose();
     }
@@ -191,12 +209,14 @@ public class ItemUpgradeHandler {
                 return;
             }
             boolean success = Util.succeedProp(vals.getOrDefault(ScrollStat.success, 100));
+            equip.addStat(iuc, 1); // +1 hammer used regardless of outcome
+            if (zeroEquip != null) {
+                zeroEquip.addStat(iuc, 1);
+            }
             if (success || hammerID == 2470000) {
-                equip.addStat(iuc, 1); // +1 hammer used
                 equip.addStat(tuc, 1); // +1 upgrades available
                 equip.updateToChar(chr);
                 if (zeroEquip != null) {
-                    zeroEquip.addStat(iuc, 1); // +1 hammer used
                     zeroEquip.addStat(tuc, 1); // +1 upgrades available
                     zeroEquip.updateToChar(chr);
                 }
@@ -205,12 +225,18 @@ public class ItemUpgradeHandler {
                     chr.chatPopup("Successfully expanded upgrade slots.");
                 }, 2700);
             } else {
-                //Wrong Header
+                equip.updateToChar(chr);
+                if (zeroEquip != null) {
+                    zeroEquip.updateToChar(chr);
+                }
                 chr.getTimer().addEvent(() -> {
                     chr.write(FieldPacket.closeUI(UIType.UI_ITEMREPLACE));
                     chr.chatPopup("Failed to expand upgrade slots.");
                 }, 2700);
-                //chr.write(WvsContext.goldHammerItemUpgradeResult(GoldHammerResult.Fail, 1, equip.getIuc()));
+            }
+            equip.saveToSQL();
+            if (zeroEquip != null) {
+                zeroEquip.saveToSQL();
             }
             if (zeroEquip != null) {
                 chr.write(WvsContext.goldHammerItemUpgradeResult(success ? GoldHammerResult.Success : GoldHammerResult.Fail,success ? 0 : 1, zeroEquip.getIuc()));
@@ -589,10 +615,15 @@ public class ItemUpgradeHandler {
         } else if (JobConstants.isZero(chr.getJob()) && ItemConstants.isLongOrBigSword(equip.getItemId())) {
             zeroEquip = (Equip) chr.getInventoryByType(invType).getItemBySlot(-11);
             if (zeroEquip == null) {
-                chr.chatPopup("Đã xảy ra lỗi không xác định.");
+                chr.chatPopup("Đã xảy ra lỗiไม่ xác định.");
                 chr.dispose();
                 return;
             }
+        }
+        if (equip.getOptionBase(2) != 0) {
+            chr.chatMessage("You can only use this stamp on equipment with less than 3 potential lines.");
+            chr.dispose();
+            return;
         }
         int stampID = stamp.getItemId();
         ItemInfo itemInfo = ItemData.getItemInfoByID(stampID);
@@ -633,9 +664,11 @@ public class ItemUpgradeHandler {
             }
             if (zeroEquip != null) {
                 zeroEquip.setOptions(equip.getOptions());
+                zeroEquip.saveToSQL();
                 zeroEquip.updateToChar(chr);
                 chr.write(UserLocal.hyperEnchantScrollRegister(true, stampID, equip.getItemId()));
             }
+            equip.saveToSQL();
             equip.updateToChar(chr);
         }
         chr.consumeItem(stampID, 1);
@@ -888,36 +921,75 @@ public class ItemUpgradeHandler {
                 fromItem = chr.getEquippedInventory().getItemBySlot(fromPos);
             }
             if (toItem == null) {
-                toItem = chr.getEquippedInventory().getItemBySlot(fromPos);
+                toItem = chr.getEquippedInventory().getItemBySlot(toPos);
             }
             if (fromItem == null || toItem == null) {
-                chr.chatPopup("Không tìm thấy trang bị");
+                chr.chatPopup("Equipment not found.");
                 return;
             }
             if (!(fromItem instanceof Equip fromEquip) || !(toItem instanceof Equip toEquip)) {
-                chr.chatPopup("Không tìm thấy trang bị");
+                chr.chatPopup("Equipment not found.");
                 return;
             }
             int prefixFrom = ItemConstants.getItemPrefix(fromEquip.getItemId());
             int prefixTo = ItemConstants.getItemPrefix(toItem.getItemId());
             if (prefixFrom != prefixTo) {
-                chr.chatPopup("Trang bị phải cùng loại.");
+                chr.chatPopup("Equipment must be of the same type.");
+                return;
+            }
+            int fromReqLevel = fromEquip.getrLevel() + fromEquip.getiIncReq();
+            int toReqLevel = toEquip.getrLevel() + toEquip.getiIncReq();
+            int maxLevelDiff = fromReqLevel < 100 ? 20 : 10;
+            if (toReqLevel <= fromReqLevel || toReqLevel - fromReqLevel > maxLevelDiff) {
+                chr.chatPopup("The receiving item must be 1 to " + maxLevelDiff + " levels higher.");
                 return;
             }
             if (fromEquip.getChuc() < 1) {
-                chr.chatPopup("Trang bị phải có ít nhất 1 lần nâng cấp Star Force để có thể sử dụng được các khả năng của nó.");
+                chr.chatPopup("Equipment must have at least 1 Star Force enhancement.");
                 return;
             }
             short oldChuc = toEquip.getChuc();
             short newChuc = (short) (fromEquip.getChuc() - 1);
             toEquip.setChuc(newChuc, true);
-            toEquip.setOptions(fromEquip.getOptions());
+            List<Integer> transferredOptions = new ArrayList<>();
+            for (int optId : fromEquip.getOptions()) {
+                if (optId > 30000 && optId < 50000) {
+                    int epicEquivalent = 20000 + (optId % 10000);
+                    if (ItemData.getItemOptionById(epicEquivalent) != null) {
+                        transferredOptions.add(epicEquivalent);
+                    } else {
+                        transferredOptions.add(toEquip.getRandomOption(false, 0, ItemConstants.SYSTEM_DEFAULT_CUBE_INDICATOR, 0));
+                    }
+                } else {
+                    transferredOptions.add(optId);
+                }
+            }
+            toEquip.setOptions(transferredOptions);
             toEquip.setSoulItemId(fromEquip.getSoulItemId());
             toEquip.setSoulOptionId(fromEquip.getSoulOptionId());
             toEquip.setSoulSocketId(fromEquip.getSoulSocketId());
             toEquip.setSoulOption(fromEquip.getSoulOption());
+            toEquip.recalcEnchantmentStats();
+            toEquip.saveToSQL();
             Equip.notifyUnionChuc(chr, toEquip, oldChuc, newChuc);
             toEquip.updateToChar(chr);
+            if (JobConstants.isZero(chr.getJob()) && ItemConstants.isLongOrBigSword(toEquip.getItemId())) {
+                Equip zeroEquip = (Equip) chr.getEquippedInventory().getItemBySlot(-11);
+                if (zeroEquip == null) {
+                    zeroEquip = (Equip) chr.getEquippedInventory().getItemBySlot(11);
+                }
+                if (zeroEquip != null) {
+                    zeroEquip.setChuc(newChuc, true);
+                    zeroEquip.setOptions(transferredOptions);
+                    zeroEquip.setSoulItemId(fromEquip.getSoulItemId());
+                    zeroEquip.setSoulOptionId(fromEquip.getSoulOptionId());
+                    zeroEquip.setSoulSocketId(fromEquip.getSoulSocketId());
+                    zeroEquip.setSoulOption(fromEquip.getSoulOption());
+                    zeroEquip.recalcEnchantmentStats();
+                    zeroEquip.saveToSQL();
+                    zeroEquip.updateToChar(chr);
+                }
+            }
             chr.consumeItem(fromItem);
             if (EventConstants.HYPER_BURNING_MAX && toItem.getItemId() == 1122445 && chr.hasQuest(102443)) {
                 chr.createQuestWithQRValue(102443, "star=7;step=2;toad=1");

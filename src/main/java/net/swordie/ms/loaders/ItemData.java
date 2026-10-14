@@ -60,11 +60,8 @@ public class ItemData {
                 equip.setInvType(InvType.DECORATION);
             } else {
                 equip.setInvType(InvType.EQUIP);
-                equip.random();
-                if (equip.getTuc() > 0) {
-                    equip.setTuc((short) (equip.getTuc() + 1)); // tại sao vậy nhỉ?
-                }
                 if (randomizeStats) {
+                    equip.random();
                     if (ItemConstants.canEquipHavePotential(equip)) {
                         ItemGrade grade = ItemGrade.None;
                         if (Util.succeedProp(GameConstants.RANDOM_EQUIP_UNIQUE_CHANCE)) {

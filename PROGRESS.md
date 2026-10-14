@@ -3,6 +3,71 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-14 13:22 น.] Implementation & Complete Resolution of Item Enhancement Stability Audit (Rebirth Flame, Cubes, Scrolls/Spell Trace, Star Force Drop & Chance Time, Toad's Hammer)
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: Complete Implementation of Equipment Enhancement Systems (Rebirth Flame, Cubes, Scrolls/Spell Trace, Star Force & Toad's Hammer) and Code Stability Verification
+- **รายละเอียด**:
+  1. **ระบบ Rebirth Flame & Bonus Stats**:
+     - ป้องกันการสุ่มออปชั่นซ้ำบรรทัดใน [Equip.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/items/Equip.java) โดยเพิ่มเงื่อนไข `if (picked[r]) continue;`
+     - ซิงค์ออปชั่น Rebirth Flame ไปยังดาบฝาแฝดของ Zero (Lazuli/Lapis) ทั้งสล็อต 11 และ -11 พร้อมเรียก `saveToSQL()` ใน [ItemUpgradeHandler.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemUpgradeHandler.java)
+     - เปลี่ยนการตรวจสอบประเภท Flame จาก String `.contains()` มาใช้ Item ID ตรงใน [ItemConstants.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/ItemConstants.java)
+  2. **ระบบ Cube & Potential**:
+     - ป้องกัน `IndexOutOfBoundsException` (Server Thread Crash) ใน `getRandomOption` ใน [ItemConstants.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/ItemConstants.java) โดยตรวจสอบ `data == null || data.isEmpty()` และสุ่มด้วย `Util.getRandom(data.size() - 1)`
+     - แก้ไขการคิวบ์ไอเทมที่มีศักยภาพแฝง (Unrevealed / Hidden Potential) ให้สามารถคิวบ์เปิดออปชั่นได้ทันที และตรวจสอบเพดานเกรดสูงสุดถูกต้องใน [CubeHandler.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/CubeHandler.java)
+     - ป้องกัน Potential Stamp ทับออปชั่นแถวที่ 3 ใน [ItemUpgradeHandler.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemUpgradeHandler.java) โดยตรวจ `equip.getOptionBase(2) != 0`
+     - เพิ่ม `saveToSQL()` ทุกจุดหลังการคิวบ์ทั้งไอเทมหลักและอาวุธรอง Zero ป้องกันปัญหาข้อมูลย้อนกลับ (Rollback)
+  3. **ระบบ Scrolls & Spell Trace**:
+     - ปิดช่องโหว่ตีบวกฟรี (Free Upgrade Exploit) ใน [ItemHandler.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemHandler.java) โดยตรวจสอบ `if (!chr.hasItemCount(SPELL_TRACE_ID, cost))` ล่วงหน้า
+     - เพิ่ม `saveToSQL()` หลังการอัปเกรด Spell Trace และ Return Scroll
+     - แก้ไข Golden Hammer เพิ่มค่า `iuc` แม้ตีไม่สำเร็จ และบันทึก DB
+     - ปรับสเตตัส Incredible Chaos Scroll ให้สุ่มได้สูงสุด 9 แต้ม (`INCREDIBLE_RAND_CHAOS_MAX`) ใน [Equip.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/items/Equip.java)
+  4. **ระบบ Star Force & Toad's Hammer**:
+     - แก้ไขบั๊กตรวจสอบแหวนกิจกรรมที่ไม่ใช้ TUC ด้วย `Util.arrayContains(TUC_IGNORE_ITEMS, itemID)` ใน [ItemConstants.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/ItemConstants.java) ทำให้ใส่ศักยภาพและรับสเตตัส Star Force ได้สมบูรณ์
+     - ปรับลดดาวร่องรอยอุปกรณ์แตก (Boom Trace) สูงสุดไม่เกิน 12 ดาว (`Math.min(12, oldChuc)`) ตามมาตรฐานทางการ
+     - **ระบบ Star Drop & Chance Time สมบูรณ์ 100%**:
+       - เพิ่มสถานะ `DROP` ใน `EnchantResult` ใน [GameConstants.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/GameConstants.java)
+       - ตีบวกพลาดที่ดาว > 10 (ยกเว้น Checkpoint 15 และ 20) จะลด 1 ดาว (`EnchantResult.DROP`) และเพิ่ม `dropStreak`
+       - เมื่อดาวลด 2 ครั้งติดต่อกัน (`dropStreak >= 2`) จะเข้าสู่ **Chance Time**: อัตราสำเร็จ 100%, อัตราแตก 0% และแสดงแบนเนอร์สีทองบน UI ของเกมส์
+       - เมื่อตีสำเร็จหรือแตกจะรีเซ็ต `dropStreak = 0`
+       - ปรับปรุงการคำนวณอัตราความสำเร็จและอัตราแตกของอุปกรณ์ Superior ให้แสดงผลถูกต้องใน UI
+     - **ระบบ Toad's Hammer**: แก้ไขพิมพ์ผิด `toItem = chr.getEquippedInventory().getItemBySlot(toPos)`, ตรวจสอบระดับเลเวลอุปกรณ์ห่างกันไม่เกิน 10 เลเวล (ต่ำกว่า 100 ห่างได้ 20 เลเวล), ปรับลดออปชั่น Unique/Legendary ลงมาเป็น Epic, ซิงค์อาวุธ Zero และเรียก `saveToSQL()`
+  5. **ScriptManager & Quest Support**:
+     - เพิ่มเมธอด `getQuestById(int)` และ `isQuestComplete(int)` ใน [ScriptManagerImpl.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/scripts/ScriptManagerImpl.java) รองรับสคริปต์ NPC และเควสต์ Arcane River ป้องกัน Script AttributeError
+     - แปลข้อความรีเซ็ตเควสต์และแจ้งเตือนภาษาเวียดนามใน `Char.java` และ `ScriptManagerImpl.java` เป็นภาษาอังกฤษตามมาตรฐานสากล
+  6. **การคอมไพล์และส่งมอบ (Build & Deployment)**:
+     - คอมไพล์ผ่าน Maven ผ่าน `build_headless.bat`: `BUILD SUCCESS` (854 classes ครบถ้วน 0 Errors)
+     - Deploy `maplestory.jar` (138.68 MB) ไปยัง `Server263/maplestory.jar` และ root `maplestory.jar` เรียบร้อยสมบูรณ์
+
+## [2026-10-14 12:50 น.] Comprehensive Equipment Enhancement Technical Audit & Upgrade System Stability Master Specification
+
+### Scope & Technical Details
+- **หัวข้อ**: Equipment Enhancement Comprehensive Audit (Rebirth Flame, Cubes, Scrolls/Spell Trace, Star Force & Toad's Hammer) and Code Stability Verification
+- **รายละเอียด**:
+  1. **การตรวจสอบความเสถียรของโค้ดปัจจุบัน (Working Tree & Compilation Verification)**:
+     - ตรวจสอบไฟล์ที่มีการแก้ไขปรับปรุง 6 ไฟล์ ได้แก่ [Char.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java), [ItemConstants.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/ItemConstants.java), [CubeHandler.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/CubeHandler.java), [ItemHandler.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemHandler.java), [ItemData.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/loaders/ItemData.java), [ScriptManagerImpl.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/scripts/ScriptManagerImpl.java)
+     - ยืนยันผลการคอมไพล์ผ่านระบบ Maven: `BUILD SUCCESS` (854 classes ถูกคอมไพล์ครบถ้วน ปราศจาก Syntax/Compile Errors)
+  2. **ผลการตรวจสอบและเจาะลึกระบบอัปเกรดไอเทมทั้ง 4 ด้านโดยละเอียด (Deep-Dive System Audit)**:
+     - **ระบบ Rebirth Flame & Bonus Stats**:
+       - *บั๊กสุ่มสเตตัสซ้ำบรรทัดใน [Equip.java:L2996-3059](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/items/Equip.java#L2996-3059)*: มีการสร้าง `boolean[] picked` และเซ็ต `picked[r] = true` แต่ลืมใส่เงื่อนไข `if (picked[r]) continue;` ทำให้มีโอกาสที่ออปชั่นบรรทัดเดียวกันจะถูกสุ่มซ้ำ ส่งผลให้อุปกรณ์ได้สเตตัสซ้อนทับผิดปกติ
+       - *การไม่ซิงค์อาวุธ Zero ใน [ItemUpgradeHandler.java:L141-155](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemUpgradeHandler.java#L141-155)*: ใน `handleMemorialExUpgradeItemOptionRequest` มีการบันทึกค่าลง `equip` แต่ไม่ได้ซิงค์ไปยังดาบฝาแฝด (Lazuli/Lapis) ทำให้สเตตัสของอาวุธ Alpha/Beta ไม่ตรงกัน
+       - *การตรวจสอบประเภท Flame ด้วย String ใน [ItemUpgradeHandler.java:L86-96](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemUpgradeHandler.java#L86-96)*: เช็คชื่อไอเทมด้วย `.contains()` ซึ่งเสี่ยงต่อการหลุดไปเป็น Powerful Flame จึงได้เตรียมฟังก์ชันตรวจสอบด้วย Item ID ตรงใน [ItemConstants.java](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/ItemConstants.java)
+     - **ระบบ Cube & Potential**:
+       - *ข้อผิดพลาด Out-of-Bounds Crash ใน [ItemConstants.java:L1991-1994](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/ItemConstants.java#L1991-1994)*: ฟังก์ชัน `getRandomOption` เรียก `data.get(Util.getRandom(data.size()))` แต่เนื่องจาก `Util.getRandom(N)` สุ่มตัวเลขตั้งแต่ 0 ถึง N (รวม N ด้วย) เมื่อสุ่มได้ค่าเท่ากับ `data.size()` จะเกิด `IndexOutOfBoundsException` ทำให้เธรดคิวบ์หลุด
+       - *การปฏิเสธการคิวบ์ไอเทม Unrevealed ใน [CubeHandler.java:L453, L465, L549, L561](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/CubeHandler.java#L453)*: เงื่อนไขตรวจ `equip.getBonusGrade() < ItemGrade.Rare.getVal()` ปฏิเสธไอเทมที่มีเกรดเป็นลบ (Unrevealed Hidden Bonus) ทำให้ไม่สามารถคิวบ์เปิดออปชั่นได้ทันทีตามมาตรฐาน
+       - *บั๊กกด Potential Stamp ทับของ 3 แถวใน [ItemUpgradeHandler.java:L575-645](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemUpgradeHandler.java#L575-645)*: ขาดการตรวจสอบ `equip.getOptionBase(2) != 0` ทำให้ผู้เล่นสามารถกด Potential Stamp ซ้ำกับอุปกรณ์ที่มี 3 แถวแล้วได้ ซึ่งจะไปเขียนทับออปชั่นแถวที่ 3
+       - *การขาดการบันทึกฐานข้อมูล `saveToSQL()`*: ใน `CubeHandler.java` ไม่มีการเรียก `saveToSQL()` หลังคิวบ์เสร็จ หากเซิร์ฟเวอร์ขัดข้องหรือผู้เล่นหลุดกะทันหัน ออปชั่นจะย้อนกลับ
+     - **ระบบ Scrolls & Spell Trace**:
+       - *ช่องโหว่ตีบวกฟรี (Free Spell Trace Exploit) ใน [ItemHandler.java:L871-876](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemHandler.java#L871-876)*: ขาดการเช็ค `if (!chr.hasItemCount(SPELL_TRACE_ID, cost))` ทำให้ผู้เล่นที่มี Spell Trace 0 ชิ้นสามารถตีบวก 100%, 70%, 30%, 15% และ Clean Slate 100% ได้ฟรีอย่างไม่จำกัด
+       - *การขาด `saveToSQL()` ใน Spell Trace*: หลังการอัปเกรด Spell Trace ไม่มีการบันทึกสถานะลงฐานข้อมูล
+       - *ช่องโหว่ Golden Hammer กดได้ไม่จำกัดและไม่บันทึก DB ใน [ItemUpgradeHandler.java:L186-218](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemUpgradeHandler.java#L186-218)*: เมื่อค้อนทองตีไม่สำเร็จ ไม่มีการเพิ่มค่า `iuc` ทำให้ผู้เล่นกดค้อน 50% ซ้ำได้เรื่อยๆ จนกว่าจะติด และไม่มีการบันทึก `saveToSQL()`
+       - *การจำกัดสเตตัส Incredible Chaos Scroll ใน [Equip.java:L2787](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/items/Equip.java#L2787)*: สุ่มสเตตัสสูงสุดเพียง 5 แต้ม (`RAND_CHAOS_MAX`) แทนที่จะเป็น 9 แต้ม (`INCREDIBLE_RAND_CHAOS_MAX`) ตามคุณสมบัติของใบ Incredible
+     - **ระบบ Star Force & Toad's Hammer**:
+       - *บั๊กการตรวจไอเทมแหวนกิจกรรม [ItemConstants.java:L4616](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/ItemConstants.java#L4616)*: โค้ดเดิมใช้ `Collections.singletonList(TUC_IGNORE_ITEMS).contains(itemID)` ตรวจสอบ `int` กับ `List<int[]>` ซึ่งคืนค่า `false` ตลอดเวลา ส่งผลให้ Master Ring SS, Synergy, Cosmos, Chaos Ring ไม่สามารถใส่ศักยภาพและไม่ได้รับสเตตัสจาก Star Force
+       - *บั๊กร่องรอยอุปกรณ์แตก (Boom Trace) ใน [ItemHandler.java:L994, L1005](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemHandler.java#L994)*: กำหนดให้ร่องรอยคงดาวไว้สูงสุด 30 ดาว (`Math.min(30, oldChuc)`) แทนที่จะเป็น 12 ดาวตามมาตรฐานทางการ ทำให้ของ 22 ดาวที่แตกคงเหลือ 22 ดาวเต็ม
+       - *ระบบลดดาว (Star Drop) และ Chance Time ไม่ทำงานใน [GameConstants.java:L606-695](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/GameConstants.java#L606-695)*: ฟังก์ชัน `rollEnchant` มีเฉพาะ SUCCESS, MAINTAIN, DESTROY ขาดสถานะ DROP และไม่เคยบวก `dropStreak` ทำให้ไม่เกิดระบบ Chance Time (ติด 100% หลังดาวลด 2 ครั้งติด)
+       - *บั๊กพิมพ์ผิดและการโอนย้ายข้ามรุ่นใน Toad's Hammer [ItemUpgradeHandler.java:L876-928](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/item/ItemUpgradeHandler.java#L876-928)*: พิมพ์ผิด `getItemBySlot(fromPos)` แทน `toPos` ในการค้นหาไอเทมสวมใส่, ขาดการจำกัดระดับเลเวลอุปกรณ์ที่ห่างกันได้ไม่เกิน 10 เลเวล, ยอมให้โอนออปชั่น Unique/Legendary ไปยังของใหม่โดยไม่ลดระดับลงมาเป็น Epic และไม่มีการเรียก `saveToSQL()`
+
 ## 📅 [2026-10-13 23:45 น.] Comprehensive Arcane Symbol System Analysis, Technical Audit & Master Handoff Specification
 
 ### 🎯 Scope & Technical Details

@@ -606,6 +606,7 @@ public class GameConstants {
     public enum EnchantResult {
         SUCCESS,
         MAINTAIN,
+        DROP,
         DESTROY
     }
 
@@ -658,13 +659,35 @@ public class GameConstants {
     }
 
     public static EnchantResult rollEnchant(int star,
+                                            boolean isSuperior,
+                                            int dropStreak,
                                             int vipGrade,
                                             boolean extraChanceFromMiniGame,
                                             boolean safeGuard,
                                             boolean safeGuardFromUI,
                                             boolean canSafeguard) {
-        int successProp = enchantRates[star][0];
-        int destroyProp = enchantRates[star][1];
+        if (dropStreak >= 2) {
+            return EnchantResult.SUCCESS;
+        }
+
+        int successProp;
+        int destroyProp;
+
+        if (isSuperior) {
+            if (star >= 0 && star < enchantSuccessRatesSuperior.length) {
+                successProp = enchantSuccessRatesSuperior[star][0] * 10;
+                destroyProp = enchantSuccessRatesSuperior[star][1] * 10;
+            } else {
+                return EnchantResult.MAINTAIN;
+            }
+        } else {
+            if (star >= 0 && star < enchantRates.length) {
+                successProp = enchantRates[star][0];
+                destroyProp = enchantRates[star][1];
+            } else {
+                return EnchantResult.MAINTAIN;
+            }
+        }
 
         // VIP / minigame -> success
         if (vipGrade > 0) {
@@ -679,7 +702,7 @@ public class GameConstants {
             destroyProp = 0;
         }
 
-        // clamp để tổng <= 100%
+        // clamp to total <= 100%
         if (successProp > RATE_SCALE - destroyProp) {
             successProp = RATE_SCALE - destroyProp;
         }
@@ -691,7 +714,29 @@ public class GameConstants {
         if (r < successProp + destroyProp) {
             return EnchantResult.DESTROY;
         }
-        return EnchantResult.MAINTAIN;
+
+        // Failed without destroy: Drop or Maintain
+        if (isSuperior) {
+            return star > 0 ? EnchantResult.DROP : EnchantResult.MAINTAIN;
+        } else {
+            // Checkpoints in standard MapleStory:
+            // 0-10: Cannot drop (0 to 10 are safe)
+            // 15: Checkpoint! Cannot drop below 15
+            // 20: Checkpoint! Cannot drop below 20
+            if (star <= 10 || star == 15 || star == 20) {
+                return EnchantResult.MAINTAIN;
+            }
+            return EnchantResult.DROP;
+        }
+    }
+
+    public static EnchantResult rollEnchant(int star,
+                                            int vipGrade,
+                                            boolean extraChanceFromMiniGame,
+                                            boolean safeGuard,
+                                            boolean safeGuardFromUI,
+                                            boolean canSafeguard) {
+        return rollEnchant(star, false, 0, vipGrade, extraChanceFromMiniGame, safeGuard, safeGuardFromUI, canSafeguard);
     }
 
     private static void initEnchantRatesSuperior() {
@@ -789,15 +834,15 @@ public class GameConstants {
 
     public static int getEnchantmentSuccessRate(Equip equip) {
         if (equip.getDropStreak() >= 2) {
-            return 1000;
+            return RATE_SCALE;
         }
         int chuc = equip.getChuc();
         if (chuc < 0 || chuc > 24) {
             return 0;
         } else if (equip.isSuperiorEqp()) {
-            return enchantSuccessRatesSuperior[chuc][0];
+            return chuc < enchantSuccessRatesSuperior.length ? enchantSuccessRatesSuperior[chuc][0] * 10 : 0;
         } else {
-            return enchantRates[chuc][0];
+            return chuc < enchantRates.length ? enchantRates[chuc][0] : 0;
         }
     }
 
@@ -809,9 +854,9 @@ public class GameConstants {
         if (chuc < 0 || chuc > 30) {
             return 0;
         } else if (equip.isSuperiorEqp()) {
-            return enchantSuccessRatesSuperior[chuc][1];
+            return chuc < enchantSuccessRatesSuperior.length ? enchantSuccessRatesSuperior[chuc][1] * 10 : 0;
         } else {
-            return enchantRates[chuc][1];
+            return chuc < enchantRates.length ? enchantRates[chuc][1] : 0;
         }
     }
 

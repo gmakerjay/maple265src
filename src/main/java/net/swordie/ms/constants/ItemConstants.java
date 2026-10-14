@@ -1694,6 +1694,24 @@ public class ItemConstants {
         return itemId >= 2048700 && itemId < 2048800;
     }
 
+    public static boolean isBlackRebirthFlame(int itemId) {
+        return switch (itemId) {
+            case 2048753, 2048755, 2048766, 2048767, 2048768, 2048786, 2048799 -> true;
+            default -> false;
+        };
+    }
+
+    public static boolean isAbyssalRebirthFlame(int itemId) {
+        return itemId == 2048794 || itemId == 2048796;
+    }
+
+    public static boolean isEternalRebirthFlame(int itemId) {
+        return switch (itemId) {
+            case 2048717, 2048721, 2048723, 2048746, 2048747, 2048752, 2048757, 2048758, 2048762, 2048764, 2048765, 2048785, 2048798 -> true;
+            default -> false;
+        };
+    }
+
     public static boolean isNebulite(int itemId) {
         return getItemPrefix(itemId) == 306;
     }
@@ -1739,7 +1757,7 @@ public class ItemConstants {
                 isBottom(equip.getItemId()) ||
                 isShoe(equip.getItemId()) ||
                 isEarrings(equip.getItemId()) ||
-                Collections.singletonList(EXCEPTIONAL_EX_ALLOWED).contains(equip.getItemId()) ||
+                Util.arrayContains(EXCEPTIONAL_EX_ALLOWED, equip.getItemId()) ||
                 isGlove(equip.getItemId()) ||
                 isCape(equip.getItemId()) ||
                 isPocketItem(equip.getItemId()));
@@ -1747,7 +1765,7 @@ public class ItemConstants {
 
     public static boolean canEquipGoldHammer(Equip equip) {
         Equip defaultEquip = ItemData.getEquipById(equip.getItemId());
-        return defaultEquip != null && !(Collections.singletonList(HORNTAIL_NECKLACE).contains(equip.getItemId()) || equip.getIuc() >= defaultEquip.getIUCMax() || defaultEquip.getTuc() <= 0); // No upgrade slots by default
+        return defaultEquip != null && !(Util.arrayContains(HORNTAIL_NECKLACE, equip.getItemId()) || equip.getIuc() >= defaultEquip.getIUCMax() || defaultEquip.getTuc() <= 0); // No upgrade slots by default
     }
 
     public static boolean isGoldHammer(Item item) {
@@ -1785,6 +1803,8 @@ public class ItemConstants {
             case VIOLET_CUBE: //Max of 5 additional since default has 1 prime
                 addedPrimeCount = 2;
                 break;
+            case BLACK_CUBE:
+            case BRIGHT_CUBE:
             case BONUS_BRIGHT_CUBE_1:
             case BONUS_BRIGHT_CUBE_2:
                 if (Util.succeedProp(BOOSTED_PRIME_LINE_2_CHANCE, 1000)) { //Dependent Probability for 2 additional primes
@@ -1795,6 +1815,15 @@ public class ItemConstants {
                 }
                 break;
             default:
+                if (BRIGHT_CUBES.contains(cubeId) || BONUS_BRIGHT_CUBES.contains(cubeId)) {
+                    if (Util.succeedProp(BOOSTED_PRIME_LINE_2_CHANCE, 1000)) {
+                        addedPrimeCount++;
+                        if (Util.succeedProp(BOOSTED_PRIME_LINE_3_CHANCE, 1000)) {
+                            addedPrimeCount++;
+                        }
+                    }
+                    break;
+                }
                 if (Util.succeedProp(DEFAULT_PRIME_LINE_2_CHANCE, 1000)) {
                     addedPrimeCount++;
                     if (Util.succeedProp(DEFAULT_PRIME_LINE_3_CHANCE, 1000)) {
@@ -1961,7 +1990,10 @@ public class ItemConstants {
 
     public static int getRandomOption(Equip equip, boolean bonus, int line, int cubeId, int additionalPrimes) {
         List<Integer> data = getWeightedOptionsByEquip(equip, bonus, line, cubeId, additionalPrimes);
-        return data.get(Util.getRandom(data.size()));
+        if (data == null || data.isEmpty()) {
+            return 0;
+        }
+        return data.get(Util.getRandom(data.size() - 1));
     }
 
     public static int getTierUpChance(int id, ItemGrade grade) {
@@ -4584,7 +4616,7 @@ public class ItemConstants {
 
     // is_tuc_ignore_item(int itemID)
     public static boolean isTucIgnoreItem(int itemID) {
-        return (isSecondary(itemID) || isEmblem(itemID) || isDragonEssence(itemID) || isDemonShield(itemID) || isSoulShield(itemID) || Collections.singletonList(TUC_IGNORE_ITEMS).contains(itemID));
+        return (isSecondary(itemID) || isEmblem(itemID) || isDragonEssence(itemID) || isDemonShield(itemID) || isSoulShield(itemID) || Util.arrayContains(TUC_IGNORE_ITEMS, itemID));
     }
 
     public static boolean isDemonShield(int itemID) {

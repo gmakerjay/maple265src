@@ -2766,16 +2766,17 @@ public class Equip extends Item {
                         return;
                     }
                     boolean incredibleChaos = vals.containsKey(ScrollStat.noNegative);
+                    int maxRand = vals.containsKey(ScrollStat.incRandVol) ? ItemConstants.INCREDIBLE_RAND_CHAOS_MAX : ItemConstants.RAND_CHAOS_MAX;
                     for (EquipBaseStat ebs : ScrollStat.equipBaseStat) {
                         int cur = (int) getBaseStat(ebs);
                         if (cur == 0) {
                             continue;
                         }
-                        int randStat = Util.getRandom(ItemConstants.RAND_CHAOS_MAX);
-                        if (ebs.getVal() == EquipBaseStat.iMaxHP.getVal() || ebs.getVal() == EquipBaseStat.iMaxMP.getVal()) {
-                            randStat *= 10;
-                        }
                         if (!incredibleChaos) {
+                            int randStat = Util.getRandom(ItemConstants.RAND_CHAOS_MAX);
+                            if (ebs.getVal() == EquipBaseStat.iMaxHP.getVal() || ebs.getVal() == EquipBaseStat.iMaxMP.getVal()) {
+                                randStat *= 10;
+                            }
                             if (Util.succeedProp(65)) {
                                 addStat(ebs, -randStat);
                                 chaos.put(EnchantStat.getByEquipBaseStat(ebs), -randStat);
@@ -2784,7 +2785,10 @@ public class Equip extends Item {
                                 chaos.put(EnchantStat.getByEquipBaseStat(ebs), randStat);
                             }
                         } else {
-                            randStat = Util.getRandom(ItemConstants.RAND_CHAOS_MAX);
+                            int randStat = Util.getRandom(maxRand);
+                            if (ebs.getVal() == EquipBaseStat.iMaxHP.getVal() || ebs.getVal() == EquipBaseStat.iMaxMP.getVal()) {
+                                randStat *= 10;
+                            }
                             addStat(ebs, randStat);
                             chaos.put(EnchantStat.getByEquipBaseStat(ebs), randStat);
                         }
@@ -3000,6 +3004,7 @@ public class Equip extends Item {
             int r = Util.getRandom(FlameStat.values().length - 1);
             FlameStat fs = FlameStat.getByVal(r);
             if (fs == null) continue;
+            if (picked[r]) continue;
             if (fs == FlameStat.LevelReduction && (getrLevel() + getiIncReq() < 5)) continue;
             if ((fs == FlameStat.BossDamage || fs == FlameStat.Damage) && !ItemConstants.isWeapon(getItemId())) continue;
 

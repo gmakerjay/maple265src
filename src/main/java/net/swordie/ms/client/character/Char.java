@@ -10853,55 +10853,55 @@ public class Char {
         handleSymbolQuest(new int[]{QuestConstants.VANISHING_JOURNEY_DAILY_QUEST_PREQUEST_NEW},
                 QuestConstants.VANISHING_JOURNEY_DAILY_QUEST_NEW,
                 QuestConstants.VANISHING_JOURNEY_DAILY_QUEST_NEW_END,
-                "[Thông báo] Vanishing Journey Research đã được làm mới!");
+                "[Notice] Vanishing Journey Research has been reset!");
 
         // [Daily Quest] Chu Chu's Finest Cuisine
         handleSymbolQuest(new int[]{QuestConstants.CHU_CHU_DAILY_QUEST_PREQUEST_NEW},
                 QuestConstants.CHU_CHU_DAILY_QUEST_NEW,
                 QuestConstants.CHU_CHU_DAILY_QUEST_NEW_END,
-                "[Thông báo] Chu Chu's Finest Cuisine đã được làm mới!");
+                "[Notice] Chu Chu's Finest Cuisine has been reset!");
 
         // [Daily Quest] A Night's Peace in Lachelein
         handleSymbolQuest(new int[]{QuestConstants.LACHELEIN_DAILY_QUEST_PREQUEST_NEW},
                 QuestConstants.LACHELEIN_DAILY_QUEST_NEW,
                 QuestConstants.LACHELEIN_DAILY_QUEST_NEW_END,
-                "[Thông báo] A Night's Peace in Lachelein đã được làm mới!");
+                "[Notice] A Night's Peace in Lachelein has been reset!");
 
         // [Daily Quest] Peace in Arcana
         handleSymbolQuest(new int[]{QuestConstants.ARCANA_DAILY_QUEST_PREQUEST_NEW},
                 QuestConstants.ARCANA_DAILY_QUEST_NEW,
                 QuestConstants.ARCANA_DAILY_QUEST_NEW_END,
-                "[Thông báo] Peace in Arcana đã được làm mới!");
+                "[Notice] Peace in Arcana has been reset!");
 
         // [Daily Quest] Save the Morass
         handleSymbolQuest(new int[]{QuestConstants.MORASS_DAILY_QUEST_PREQUEST_NEW},
                 QuestConstants.MORASS_DAILY_QUEST_NEW,
                 QuestConstants.MORASS_DAILY_QUEST_NEW_END,
-                "[Thông báo] Save the Morass đã được làm mới!");
+                "[Notice] Save the Morass has been reset!");
 
         // [Daily Quest] Esfera Research Orders
         handleSymbolQuest(new int[]{QuestConstants.ESFERA_DAILY_QUEST_PREQUEST_NEW},
                 QuestConstants.ESFERA_DAILY_QUEST_NEW,
                 QuestConstants.ESFERA_DAILY_QUEST_NEW_END,
-                "[Thông báo] Esfera Research Orders đã được làm mới!");
+                "[Notice] Esfera Research Orders has been reset!");
 
         // [Daily Quest] Moonbridge Research
         handleSymbolQuest(new int[]{QuestConstants.MOONBRIDGE_DAILY_QUEST_PREQUEST},
                 QuestConstants.MOONBRIDGE_DAILY_QUEST,
                 QuestConstants.MOONBRIDGE_DAILY_QUEST,
-                "[Thông báo] Moonbridge Research đã được làm mới!");
+                "[Notice] Moonbridge Research has been reset!");
 
         // [Daily Quest] Labyrinth of Suffering Research
         handleSymbolQuest(new int[]{QuestConstants.LADYRINTH_DAILY_QUEST_PREQUEST},
                 QuestConstants.LADYRINTH_DAILY_QUEST,
                 QuestConstants.LADYRINTH_DAILY_QUEST,
-                "[Thông báo] Labyrinth of Suffering Research đã được làm mới!");
+                "[Notice] Labyrinth of Suffering Research has been reset!");
 
         // [Daily Quest] Limina Research
         handleSymbolQuest(new int[]{QuestConstants.LIMINA_DAILY_QUEST_PREQUEST},
                 QuestConstants.LIMINA_DAILY_QUEST,
                 QuestConstants.LIMINA_DAILY_QUEST,
-                "[Thông báo] Limina Research đã được làm mới!");
+                "[Notice] Limina Research has been reset!");
     }
 
     private void handleSymbolQuest(int[] preQuestIds, int checkQuestID, int endQuestID, String renewMessage) {
