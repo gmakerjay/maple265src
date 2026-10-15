@@ -1976,7 +1976,7 @@ public abstract class Job {
                         if (((double) curHP / chr.getMaxHP() * 100) <= skillInfo.getValue(x, SLV)) {
                             int finalSLV = SLV;
                             this.invincibleBeliefTimer = chr.getTimer().addFixedRateEvent(() -> chr.heal(skillInfo.getValue(y, finalSLV) * chr.getMaxHP() / 100), 0L, 1000L, skillInfo.getValue(time, SLV));
-                            chr.addSkillCooldown(invincibleBeliefID, skillInfo.getValue(cooltime, SLV));
+                            chr.addSkillCooldown(invincibleBeliefID, skillInfo.getValue(cooltime, SLV) * 1000);
                         }
                     }
                 }
@@ -3068,7 +3068,7 @@ public abstract class Job {
         } else if (JobConstants.isRen(job)) {
             secondaryId = 1354043; // Radiant Spirit Heart
         } else if (JobConstants.isPathFinder(job)) {
-            secondaryId = 1352014; // Relic
+            secondaryId = 1353707; // Princess No's Immortal Relic
         } else if (JobConstants.isAdele(job)) {
             secondaryId = 1354003; // Noble Bladebinder
         } else if (JobConstants.isKhali(job)) {

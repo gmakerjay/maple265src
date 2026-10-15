@@ -86,6 +86,10 @@ public class Archer extends Beginner {
             if (!JobConstants.canJobAdvance(jobID)) {
                 return;
             }
+            if ((level == 60 && jobID != 310 && jobID != 320)
+                    || (level == 100 && jobID != 311 && jobID != 321)) {
+                return;
+            }
             final short next = JobConstants.nextJob(jobID);
             sm.setJob(next);
             sm.completeQuestNoRewards(level == 60 ? 1438 : 1454);

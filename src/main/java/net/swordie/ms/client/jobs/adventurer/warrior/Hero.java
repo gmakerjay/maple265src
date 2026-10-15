@@ -83,7 +83,7 @@ public class Hero extends Warrior {
     // HEXA Skills
     public static final int SPIRIT_CALIBUR = 1141500;
     public static final int SPIRIT_CALIBUR_ATTACK = 1141501;
-    public static final int SPIRIT_CALIBUR_SLASH = 1141502;
+    public static final int ULTRASONIC_SLASH = 1141502;
     public static final int HEXA_RAGING_BLOW = 1141000;
     public static final int HEXA_RAGING_BLOW_ENRAGED = 1141001;
     public static final int HEXA_RISING_RAGE = 1141002;
@@ -281,9 +281,9 @@ public class Hero extends Warrior {
         MobTemporaryStat mts = mob.getTemporaryStat();
         EnumMap<MobStat, Option> map = new EnumMap<>(MobStat.class);
         if (tsm.hasStat(CrusaderPanic)) {
-            if (!mts.hasCurrentMobStatBySkillId(SCARRING_SWORD)) {
-                int slvv = chr.getSkillLevel(SCARRING_SWORD);
-                SkillInfo ssi = SkillData.getSkillInfoById(SCARRING_SWORD);
+            int slvv = chr.getSkillLevel(SCARRING_SWORD);
+            SkillInfo ssi = SkillData.getSkillInfoById(SCARRING_SWORD);
+            if (slvv > 0 && ssi != null && !mts.hasCurrentMobStatBySkillId(SCARRING_SWORD)) {
                 o1.nOption = -ssi.getValue(w, slvv);
                 o1.rOption = SCARRING_SWORD;
                 o1.tOption = 20;
@@ -403,10 +403,14 @@ public class Hero extends Warrior {
                 }
                 removeCombo(6);
                 if (!tsm.hasStatBySkillId(skillID)) {
-                    o1.nValue = 6 * 10; // 6 combo orbs * 10% FD
+                    int fdPerOrb = si != null ? si.getValue(y, slv) : 10;
+                    o1.nValue = 6 * (fdPerOrb > 0 ? fdPerOrb : 10);
                     o1.nReason = skillID;
                     o1.tTerm = 5;
                     tsm.sendStat(IndieDamR, o1);
+                    o2.nOption = 1;
+                    o2.rOption = skillID;
+                    o2.tOption = 5;
                     o2.nValue = 1;
                     o2.nReason = skillID;
                     o2.tTerm = 5;
@@ -522,7 +526,7 @@ public class Hero extends Warrior {
                 || skillID == PUNCTURE
                 || skillID == HEXA_PUNCTURE
                 || skillID == SPIRIT_CALIBUR_ATTACK
-                || skillID == SPIRIT_CALIBUR_SLASH
+                || skillID == ULTRASONIC_SLASH
                 || skillID == COMBO_INSTINCT_SLASH_DOWN
                 || skillID == COMBO_INSTINCT_SLASH_UP
                 || skillID == COMBO_INSTINCT_SLASH_STRAIGHT;
@@ -547,6 +551,7 @@ public class Hero extends Warrior {
         Field field = chr.getField();
         switch (skillID) {
             case SPIRIT_CALIBUR:
+            case ULTRASONIC_SLASH:
                 addCombo(getMaxCombo());
                 break;
             case SPIRIT_BLADE:
@@ -562,15 +567,22 @@ public class Hero extends Warrior {
                 tsm.sendStat(newStats);
                 break;
             case COMBO_ATTACK:
-                o1.nOption = 1;
-                o1.rOption = skillID;
-                tsm.sendStat(ComboCounter, o1);
+                if (tsm.hasStat(ComboCounter)) {
+                    tsm.removeStatsBySkill(skillID);
+                } else {
+                    o1.nOption = 1;
+                    o1.rOption = skillID;
+                    tsm.sendStat(ComboCounter, o1);
+                }
                 break;
             case SCARRING_SWORD:
-                o1.nOption = 1;
-                o1.rOption = skillID;
-                o1.tOption = si.getValue(time, slv);
-                tsm.sendStat(CrusaderPanic, o1);
+                if (tsm.hasStat(CrusaderPanic)) {
+                    tsm.removeStatsBySkill(skillID);
+                } else {
+                    o1.nOption = 1;
+                    o1.rOption = skillID;
+                    tsm.sendStat(CrusaderPanic, o1);
+                }
                 break;
             case EPIC_ADVENTURE:
                 o1.nReason = skillID;
@@ -708,7 +720,7 @@ public class Hero extends Warrior {
     public void handleRemoveCTS(CharacterTemporaryStat cts,  List<Option> options) {
         if (chr.hasSkill(COMBO_SYNERGY)) {
             SkillInfo csi = SkillData.getSkillInfoById(COMBO_SYNERGY);
-            int slv = csi.getCurrentLevel();
+            int slv = chr.getSkillLevel(COMBO_SYNERGY);
             int comboprop = csi.getValue(subProp, slv);
             if (Util.succeedProp(comboprop)) {
                 addCombo(1);

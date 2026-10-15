@@ -120,7 +120,8 @@ public class Corsair extends Pirate {
         boolean hasHitMobs = !attackInfo.mobAttackInfo.isEmpty();
         int slv = attackInfo.slv;
         if (hasHitMobs) {
-            if (skillID == BATTLESHIP_DREADNOUGHT || skillID == BATTLESHIP_DREADNOUGHT_ATTACK_1 || skillID == BATTLESHIP_DREADNOUGHT_ATTACK_2) {
+            if ((skillID >= BATTLESHIP_DREADNOUGHT && skillID <= BATTLESHIP_DREADNOUGHT_ATTACK_2)
+                    || skillID == QUICKDRAW_DREADNOUGHT || skillID == QUICKDRAW_DREADNOUGHT_ATTACK) {
                 Option oOrigin1 = new Option();
                 Option oOrigin2 = new Option();
                 oOrigin1.nOption = 1;
@@ -141,6 +142,18 @@ public class Corsair extends Pirate {
                 }
             }
             activateQuickdraw(attackInfo);
+            if (chr.hasSkill(PIRATE_REVENGE) && !chr.hasSkillOnCooldown(PIRATE_REVENGE)) {
+                SkillInfo siPR = SkillData.getSkillInfoById(PIRATE_REVENGE);
+                int slvPR = chr.getSkillLevel(PIRATE_REVENGE);
+                if (siPR != null) {
+                    Option oPR = new Option();
+                    oPR.nValue = siPR.getValue(indieDamR, slvPR);
+                    oPR.nReason = PIRATE_REVENGE;
+                    oPR.tTerm = siPR.getValue(time, slvPR);
+                    tsm.sendStat(IndieDamR, oPR);
+                    chr.addSkillCooldown(PIRATE_REVENGE, 500);
+                }
+            }
         }
         Option o1 = new Option();
         switch (skillID) {
@@ -182,7 +195,14 @@ public class Corsair extends Pirate {
                 break;
             case HEXA_BRAIN_SCRAMBLER:
                 o1 = tsm.getOption(EnhanceHeadShot);
-                o1.nOption = Math.max(o1.nOption + 1, si.getValue(w, slv));
+                o1.nOption = Math.min(o1.nOption + 1, Math.max(1, si.getValue(w, slv)));
+                o1.rOption = skillID;
+                tsm.sendStat(EnhanceHeadShot, o1);
+                break;
+            case CONDEMNATION:
+                o1 = tsm.getOption(EnhanceHeadShot);
+                o1.nOption = 0;
+                o1.rOption = HEXA_BRAIN_SCRAMBLER;
                 tsm.sendStat(EnhanceHeadShot, o1);
                 break;
         }
@@ -315,6 +335,7 @@ public class Corsair extends Pirate {
 
                 tsm.sendStat(Dice, o1);
                 chr.reduceSkillCoolTime(NAUTILUS_STRIKE, (long) (chr.getRemainingCoolTime(NAUTILUS_STRIKE) * 0.5F));
+                chr.reduceSkillCoolTime(HEXA_NAUTILUS_STRIKE, (long) (chr.getRemainingCoolTime(HEXA_NAUTILUS_STRIKE) * 0.5F));
                 break;
             }
             case JOLLY_ROGER:
@@ -395,6 +416,7 @@ public class Corsair extends Pirate {
                 field.spawnSummon(summon);
                 break;
             case SCURVY_SUMMONS: //Moves, Attacks
+            case ALL_ABOARD:
             case HEXA_SCURVY_SUMMONS: //Moves, Attacks
                 handleScurvySummons(si, slv);
                 break;
@@ -410,23 +432,50 @@ public class Corsair extends Pirate {
             case CONDEMNATION:
                 o1 = tsm.getOption(EnhanceHeadShot);
                 o1.nOption = 0;
+                o1.rOption = HEXA_BRAIN_SCRAMBLER;
                 tsm.sendStat(EnhanceHeadShot, o1);
                 break;
             case BATTLESHIP_DREADNOUGHT:
                 o1.nOption = 1;
+                o1.nValue = 1;
                 o1.rOption = skillID;
+                o1.nReason = skillID;
                 o1.tOption = 7;
+                o1.tTerm = 7;
                 tsm.sendStat(IndieNotDamaged, o1);
+                summon = Summon.getSummonByAndSetStat(chr, BATTLESHIP_DREADNOUGHT_ATTACK_2, slv);
+                if (summon != null) {
+                    summon.setFlyMob(false);
+                    summon.setMoveAction((byte) 4);
+                    summon.setMoveAbility(MoveAbility.Stop);
+                    summon.setAttackActive(true);
+                    chr.getField().spawnSummon(summon);
+                }
                 chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
                 break;
             case QUICKDRAW_DREADNOUGHT:
+                o1.nOption = 1;
+                o1.nValue = 1;
+                o1.rOption = skillID;
+                o1.nReason = skillID;
+                o1.tOption = 7;
+                o1.tTerm = 7;
+                tsm.sendStat(IndieNotDamaged, o1);
+                chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
                 break;
         }
     }
 
     private void handleScurvySummons(SkillInfo si, int slv) {
         final long now = System.currentTimeMillis();
-        int[] summons = si.getSkillId() ==  HEXA_SCURVY_SUMMONS ? new int[]{5241012, si.getSkillId()} : new int[]{5211019, ALL_ABOARD};
+        int[] summons;
+        if (si.getSkillId() == HEXA_SCURVY_SUMMONS) {
+            summons = new int[]{5241012, si.getSkillId()};
+        } else if (chr.hasSkill(ALL_ABOARD)) {
+            summons = new int[]{5211019, ALL_ABOARD};
+        } else {
+            summons = new int[]{SCURVY_SUMMONS};
+        }
         for (int i : summons) {
             Option o = new Option();
             o.nOption = i;
@@ -437,7 +486,7 @@ public class Corsair extends Pirate {
             summon.setFlyMob(false);
             summon.setMoveAction((byte) 4);
             summon.setMoveAbility(MoveAbility.WalkSmart);
-            summon.setAssistType(i == HEXA_SCURVY_SUMMONS || i == ALL_ABOARD ? AssistType.SequenceAttack : AssistType.CreateB2BodyRequests);
+            summon.setAssistType(i == HEXA_SCURVY_SUMMONS || i == ALL_ABOARD || i == SCURVY_SUMMONS ? AssistType.SequenceAttack : AssistType.CreateB2BodyRequests);
             summon.setAttackActive(true);
             chr.getField().spawnSummon(summon);
         }
@@ -450,7 +499,17 @@ public class Corsair extends Pirate {
         int skillID = chr.hasSkill(HEXA_SCURVY_SUMMONS) ? HEXA_SCURVY_SUMMONS : SCURVY_SUMMONS;
         int atomSkillID = skillID == HEXA_SCURVY_SUMMONS ? HEXA_SCURVY_SUMMONS_ATOM : SCURVY_SUMMONS_ATOM;
         int summonID = skillID == HEXA_SCURVY_SUMMONS ? HEXA_SCURVY_SUMMONS : ALL_ABOARD;
+        Summon activeSummon = chr.getField().getSummonBySkillId(chr, summonID);
+        if (activeSummon == null) {
+            activeSummon = chr.getField().getSummonBySkillId(chr, SCURVY_SUMMONS);
+        }
+        if (activeSummon == null) {
+            return;
+        }
         SkillInfo si = SkillData.getSkillInfoById(atomSkillID);
+        if (si == null) {
+            return;
+        }
         int slv = chr.getSkillLevel(skillID);
         Rect rect = chr.getRectAround(si.getFirstRect());
         if (!chr.isLeft()) {
@@ -460,9 +519,9 @@ public class Corsair extends Pirate {
         final var mob = Util.getRandomFromCollection(chr.getField().getMobsInRect(rect));
         List<SecondAtom> secondAtoms = new LinkedList<>();
         final long start = System.currentTimeMillis();
-        for (int key = 0; key < bulletCount; key++) {
+        for (int key = 0; key < bulletCount && key < si.getSecondAtomInfos().size(); key++) {
             var sai = si.getSecondAtomInfos().get(key);
-            var pos = chr.getField().getSummonBySkillId(chr, summonID).getPosition().add(sai.getPos());
+            var pos = activeSummon.getPosition().add(sai.getPos());
             SecondAtom fa = new SecondAtom(sai, chr.getNewSecondAtomKey(), chr.getId(),
                     mob != null ? mob.getObjectId() : 0, key, si.getSkillId(), pos, start);
             secondAtoms.add(fa);
@@ -499,22 +558,32 @@ public class Corsair extends Pirate {
             case CONDEMNATION -> {
                 return 1;
             }
+            case HEXA_BRAIN_SCRAMBLER -> {
+                int skillID = BRAIN_SCRAMBLER;
+                int slv = chr.getSkillLevel(skillID);
+                chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
+                return 1;
+            }
             case HEXA_BROADSIDE -> {
                 int skillID = BROADSIDE;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
                 return 1;
             }
             case HEXA_NAUTILUS_STRIKE -> {
                 int skillID = NAUTILUS_STRIKE;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
                 return 1;
             }
             case 5241017 -> {
                 int skillID = 5221052;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
                 return 1;
             }
             case NAUTILUS_ASSAULT_3 -> {
@@ -527,6 +596,7 @@ public class Corsair extends Pirate {
                 int skillID = SCURVY_SUMMONS;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
                 return 1;
             }
         }

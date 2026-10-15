@@ -259,7 +259,7 @@ public class FirePoison extends Magician {
                 chr.getField().spawnAffectedArea(aa);
                 break;
             case HEXA_FLAME_SWEEP:
-                o1 = tsm.getOption(FlameSweep);
+                o1 = tsm.hasStat(FlameSweep) ? tsm.getOption(FlameSweep) : new Option();
                 var val = o1.nOption + 1;
                 if (val > 2) {
                     val = 0;
@@ -307,6 +307,22 @@ public class FirePoison extends Magician {
     public int handleSetCoolDownSkill(int skillId) {
         switch (skillId) {
             case HEXA_MEGIDDO_FLAME_MANUAL -> {
+                return 1;
+            }
+            case HEXA_FLAME_HAZE -> {
+                chr.setSkillCooldown(FLAME_HAZE, chr.getSkillLevel(FLAME_HAZE));
+                return 1;
+            }
+            case HEXA_MIST_ERUPTION -> {
+                chr.setSkillCooldown(MIST_ERUPTION, chr.getSkillLevel(MIST_ERUPTION));
+                return 1;
+            }
+            case HEXA_METEOR_SHOWER -> {
+                chr.setSkillCooldown(METEOR_SHOWER, chr.getSkillLevel(METEOR_SHOWER));
+                return 1;
+            }
+            case HEXA_CREEPING_TOXIN -> {
+                chr.setSkillCooldown(CREEPING_TOXIN, chr.getSkillLevel(CREEPING_TOXIN));
                 return 1;
             }
         }
@@ -458,7 +474,8 @@ public class FirePoison extends Magician {
             return;
         }
         Option o1 = new Option();
-        o1.nOption = (Math.min(stack, tsm.hasStat(SixthDotBasedBuff) ? 10 : 5));
+        int maxStacks = tsm.hasStat(SixthDotBasedBuff) ? 10 : (chr.hasSkill(FERVENT_DRAIN) ? 5 : 3);
+        o1.nOption = Math.min(stack, maxStacks);
         o1.rOption = ELEMENTAL_DRAIN;
         tsm.sendStat(DotBasedBuff, o1);
         chr.addSkillCooldown(ELEMENTAL_DRAIN, 500);
@@ -594,9 +611,13 @@ public class FirePoison extends Magician {
                 break;
             case INFERNO_AURA:
             case HEXA_INFERNO_AURA:
-                o1.nOption = 1;
-                o1.rOption = skillID;
-                tsm.sendStat(FireAura, o1);
+                if (tsm.hasStat(FireAura)) {
+                    tsm.removeStat(FireAura);
+                } else {
+                    o1.nOption = 1;
+                    o1.rOption = skillID;
+                    tsm.sendStat(FireAura, o1);
+                }
                 break;
             case DOT_PUNISHER:
                 createDoTPunisherForceAtom();
@@ -726,7 +747,10 @@ public class FirePoison extends Magician {
         SkillInfo si = SkillData.getSkillInfoById(skillId);
         switch (skillId) {
             case POISON_NOVA:
-                chr.addSkillCooldown(skillId, (int) (si.getValue(cooltime, slv) * 1000L));
+            case POISON_CHAIN_1:
+                if (si != null) {
+                    chr.addSkillCooldown(skillId, (int) (si.getValue(cooltime, slv) * 1000L));
+                }
                 break;
         }
         super.handleShootObject(chr, sosi);

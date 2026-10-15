@@ -563,7 +563,7 @@ public class AffectedArea extends Life {
                 break;
             case Bishop.BENEDICTION:
             case Bishop.HEXA_BENEDICTION:
-                if (tsm.getOptByCTSAndSkill(IndiePMdR, skillID) == null) {
+                if (tsm.getOptByCTSAndSkill(IndiePMdR, skillID) != null) {
                     tsm.removeIndieStat(IndiePMdR, tsm.getOptByCTSAndSkill(IndiePMdR, skillID));
                     tsm.removeIndieStat(IndieDamR, tsm.getOptByCTSAndSkill(IndieDamR, skillID));
                     tsm.removeIndieStat(IndieBooster, tsm.getOptByCTSAndSkill(IndieBooster, skillID));

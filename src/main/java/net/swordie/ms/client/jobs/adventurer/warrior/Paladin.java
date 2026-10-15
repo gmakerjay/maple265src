@@ -190,6 +190,7 @@ public class Paladin extends Warrior {
                 }
                 break;
             case DIVINE_CHARGE:
+            case HEXA_DIVINE_CHARGE:
                 if (!mts.hasCurrentMobStatBySkillId(skillID)) {
                     if (Util.succeedProp(si.getValue(prop, slv))) {
                         o1.nOption = 1;
@@ -600,7 +601,7 @@ public class Paladin extends Warrior {
                     o1.xOption = chr.getId(); // from ChrId
                     tsm.sendStat(PairingUser, o1);
                     var interval = 500; // ms
-                    var executes = o1.tOption / interval;
+                    var executes = (o1.tOption * 1000) / interval;
                     if (divineEchoTimer != null) {
                         divineEchoTimer.cancel(false);
                     }
@@ -614,10 +615,10 @@ public class Paladin extends Warrior {
                 if (tsm.hasStat(BlessedHammerActive)) {
                     tsm.removeStatsBySkill(skillID);
                 } else {
-                    int charges = tsm.getOption(ElementalCharge).mOption;
+                    int charges = tsm.hasStat(ElementalCharge) ? tsm.getOption(ElementalCharge).xOption : 5;
                     si = SkillData.getSkillInfoById(HAMMERS_OF_THE_RIGHTEOUS);
                     slv = chr.getSkillLevel(HAMMERS_OF_THE_RIGHTEOUS);
-                    o1.nOption = charges;
+                    o1.nOption = Math.max(1, charges);
                     o1.rOption = skillID;
                     o1.tOption = si.getValue(v, slv);
                     tsm.sendStat(BlessedHammerActive, o1);
@@ -680,7 +681,9 @@ public class Paladin extends Warrior {
             faiList.add(fai);
         }
         ForceAtom fa = new ForceAtom(chr.getId(), fae, targetList, MIGHTY_MJOLNIR, faiList);
-        fa.setForcedTargetPosition(mob.getPosition());
+        if (mob != null) {
+            fa.setForcedTargetPosition(mob.getPosition());
+        }
         chr.createForceAtom(fa);
     }
 
@@ -689,7 +692,11 @@ public class Paladin extends Warrior {
         if (!chr.hasSkill(MIGHTY_MJOLNIR) || !tsm.hasStat(CannonShooter_BFCannonBall)) {
             return;
         }
-        var count = tsm.getOptByCTSAndSkill(CannonShooter_BFCannonBall, MIGHTY_MJOLNIR).nOption;
+        var opt = tsm.getOptByCTSAndSkill(CannonShooter_BFCannonBall, MIGHTY_MJOLNIR);
+        if (opt == null) {
+            return;
+        }
+        var count = opt.nOption;
         if (count > 0) {
             count--;
         }
@@ -698,8 +705,7 @@ public class Paladin extends Warrior {
 
     public void increaseMightyMjolnir() {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
-        int count = 1;
-        count = tsm.getOption(CannonShooter_BFCannonBall).nOption;
+        int count = tsm.hasStat(CannonShooter_BFCannonBall) ? tsm.getOption(CannonShooter_BFCannonBall).nOption : 0;
         if (count < 2) {
             count++;
         }
@@ -841,21 +847,25 @@ public class Paladin extends Warrior {
             int slv = skill.getCurrentLevel();
             SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
             int recovery = si.getValue(x, slv);
-            int amount = 10;
+            int amount = 0;
 
             if (tsm.hasStat(Restoration)) {
                 amount = tsm.getOption(Restoration).nOption;
                 if (amount < 300) {
                     amount = amount + 10;
                 }
+            } else {
+                amount = 10;
             }
 
             o.nOption = amount;
             o.rOption = skill.getSkillId();
             o.tOption = si.getValue(time, slv);
-            int heal = Math.max((recovery + 10) - amount, 10);
+            int minHeal = Math.max(10, si.getValue(y, slv));
+            int heal = Math.max((recovery + 10) - amount, minHeal);
             chr.heal((int) (chr.getMaxHP() / ((double) 100 / heal)));
             tsm.sendStat(Restoration, o);
+            chr.addSkillCooldown(HP_RECOVERY, 5000);
         }
     }
 
@@ -879,12 +889,13 @@ public class Paladin extends Warrior {
             Skill skill = chr.getSkill(skillID);
             SkillInfo si = SkillData.getSkillInfoById(skillID);
             int slv = skill.getCurrentLevel();
-            int shieldprop = 50;//      si.getValue(SkillStat.prop, slv);       //TODO should be prop in WzFiles, but it's actually 0
+            int shieldprop = si.getValue(prop, slv) > 0 ? si.getValue(prop, slv) : 100;
+            int maxBlocks = si.getValue(x, slv) > 0 ? si.getValue(x, slv) : 10;
             Option o1 = new Option();
             Option o2 = new Option();
             int divShieldCoolDown = si.getValue(cooltime, slv);
             if (tsm.hasStat(BlessingArmor)) {
-                if (divShieldAmount < 10) {
+                if (divShieldAmount < maxBlocks) {
                     divShieldAmount++;
                 } else {
                     resetDivineShield();
@@ -896,14 +907,14 @@ public class Paladin extends Warrior {
                     if (Util.succeedProp(shieldprop)) {
                         EnumMap<CharacterTemporaryStat, Option> newStats = new EnumMap<>(CharacterTemporaryStat.class);
                         lastDivineShieldHit = now;
-                        o1.nOption = 1;
+                        o1.nOption = maxBlocks;
                         o1.rOption = skillID;
                         o1.tOption = si.getValue(time, slv);
                         newStats.put(BlessingArmor, o1);
                         o2.nOption = si.getValue(epad, slv);
                         o2.rOption = skillID;
                         o2.tOption = si.getValue(time, slv);
-                        newStats.put(PAD, o2);
+                        newStats.put(BlessingArmorIncPAD, o2);
                         tsm.sendStat(newStats);
                         divShieldAmount = 0;
                     }
@@ -941,7 +952,7 @@ public class Paladin extends Warrior {
     private void resetDivineShield() {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         tsm.removeStat(BlessingArmor);
-        tsm.removeStat(PAD);
+        tsm.removeStat(BlessingArmorIncPAD);
     }
 
     @Override

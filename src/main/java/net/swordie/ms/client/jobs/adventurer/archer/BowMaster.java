@@ -156,18 +156,19 @@ public class BowMaster extends Archer {
         if (skill == null) {
             return;
         }
+        int qSlv = skill.getCurrentLevel();
         SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
         if (tsm.hasStat(QuiverFullBurst)) {
-            bloodArrowEffect(si, slv);
-            magicArrowEffect(mob, si, slv);
+            bloodArrowEffect(si, qSlv);
+            magicArrowEffect(mob, si, qSlv);
         } else {
             if (tsm.hasStat(QuiverCatridge)) {
                 switch (tsm.getOption(QuiverCatridge).nOption) {
                     case 1: // Magic
-                        magicArrowEffect(mob, si, slv);
+                        magicArrowEffect(mob, si, qSlv);
                         break;
                     case 2: // Blood
-                        bloodArrowEffect(si, slv);
+                        bloodArrowEffect(si, qSlv);
                         break;
                 }
             }

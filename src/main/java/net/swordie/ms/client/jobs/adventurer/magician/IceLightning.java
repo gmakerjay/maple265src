@@ -39,7 +39,7 @@ public class IceLightning extends Magician {
     public static final int MP_EATER = 2200000;
     public static final int CHILLING_STEP = 2201009;
     public static final int COLD_BEAM = 2201008;
-    public static final int FREEZING_CRUSH = 2200011;
+    public static final int FREEZING_CRUSH = 2200012;
     public static final int FROST_CLUTCH = 2220015;
 
     public static final int MAGIC_BOOSTER = 2201010;
@@ -302,10 +302,13 @@ public class IceLightning extends Magician {
         }
         int counter = 1;
         SkillInfo si = SkillData.getSkillInfoById(skillID);
+        if (si == null) {
+            return;
+        }
         MobTemporaryStat mts = mob.getTemporaryStat();
         Option o1 = new Option();
         Option o2 = new Option();
-        if (si != null && (si.getElemAttr().contains("i"))) { // Ice Skills
+        if (si.getElemAttr().contains("i")) { // Ice Skills
             if (mts.hasCurrentMobStat(MobStat.ArcMage2Stack)) {
                 counter = mts.getCurrentOptionsByMobStat(MobStat.ArcMage2Stack).nOption;
                 if (counter < 5) {
@@ -313,10 +316,8 @@ public class IceLightning extends Magician {
                     counter = Math.min(counter, 5);
                 }
             }
-        } else {
-            if (mts.hasCurrentMobStat(MobStat.ArcMage2Stack)) {
-                counter = mts.getCurrentOptionsByMobStat(MobStat.ArcMage2Stack).nOption;
-            }
+        } else if (si.getElemAttr().contains("l") && mts.hasCurrentMobStat(MobStat.ArcMage2Stack)) { // Lightning Skills
+            counter = mts.getCurrentOptionsByMobStat(MobStat.ArcMage2Stack).nOption;
             if (counter >= 5 && chr.hasSkill(CRYO_SHOCK)) {
                 mts.removeMobStat(mob, MobStat.Speed);
                 mts.removeMobStat(mob, MobStat.ArcMage2Stack);
@@ -332,6 +333,8 @@ public class IceLightning extends Magician {
                 mob.getField().broadcast(MobPool.specialEffectBySkill(mob, skillID, chr.getId(), 0));
                 return;
             }
+        } else {
+            return;
         }
         EnumMap<MobStat, Option> map = new EnumMap<>(MobStat.class);
         o1.nOption = counter;
@@ -547,13 +550,19 @@ public class IceLightning extends Magician {
                 break;
             case PARABOLIC_BOLT_SA: {
                 slv = chr.getSkillLevel(PARABOLIC_BOLT);
+                if (si == null || si.getSecondAtomInfos().isEmpty()) {
+                    break;
+                }
+                final var mobs = chr.getField().getMobsFiltered();
+                if (mobs.isEmpty()) {
+                    break;
+                }
                 int bulletCount = si.getValue(SkillStat.bulletCount, slv);
                 List<SecondAtom> secondAtoms = new LinkedList<>();
                 final var sai = si.getSecondAtomInfos().get(0);
                 final var pos = chr.getPosition();
                 int key = 0;
                 final long start = System.currentTimeMillis();
-                final var mobs = chr.getField().getMobsFiltered();
                 for (int i = 0; i < bulletCount; i++) {
                     var mob = Util.getRandomFromCollection(mobs);
                     SecondAtom fa = new SecondAtom(sai, chr.getNewSecondAtomKey(), chr.getId(), mob != null ? mob.getObjectId() : 0, key,

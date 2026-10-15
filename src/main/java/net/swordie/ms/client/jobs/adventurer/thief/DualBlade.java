@@ -87,7 +87,8 @@ public class DualBlade extends Job {
     public static final int FURY_JET = 4361004;
     public static final int HEXA_SUDDEN_RAID = 4361005;
     public static final int MORTALITY = 4360006;
-    public static final int YAMAS_DECREE = 4361505;
+    public static final int YAMAS_DECREE = 4361504;
+    public static final int YAMAS_DECREE_2 = 4361505;
     public static final int YAMAS_DECREE_ATTACK = 4361506;
 
     private long lastShadowMeld = Long.MIN_VALUE;
@@ -103,19 +104,19 @@ public class DualBlade extends Job {
                  4321004, // Upper Stab
                  4321006, // Flying Assaulter
                  4331000, // Bloody Storm
-                 4331006, // Chains of Hell
+                 4331006, 4331012, // Chains of Hell
                  FINAL_CUT,
                  BLADE_FURY,
                  PHANTOM_BLOW,
                  SUDDEN_RAID,
                  ASURAS_ANGER,
                  BLADE_CLONE,
-                 BLADE_TEMPEST, 400041017, 400041018, // Blade Tempest / Blade Storm
+                 BLADE_TEMPEST, 400040006, 400041017, 400041018, // Blade Tempest / Blade Storm
                  BLADES_OF_DESTINY,
                  BLADE_TORNADO, BLADE_TORNADO_SHOOT_OBJECT,
                  HAUNTED_EDGE, HAUNTED_EDGE_ASURA, HAUNTED_EDGE_ASURA_WIND, HAUNTED_EDGE_YAKSA,
-                 KARMA_BLADE, KARMA_BLADE_BUFF, KARMA_BLADE_EXTRA, KARMA_BLADE_AFTER_ATTACK, 4361504,
-                 YAMAS_DECREE, YAMAS_DECREE_ATTACK,
+                 KARMA_BLADE, KARMA_BLADE_BUFF, KARMA_BLADE_EXTRA, KARMA_BLADE_AFTER_ATTACK,
+                 YAMAS_DECREE, YAMAS_DECREE_2, YAMAS_DECREE_ATTACK,
                  HEXA_PHANTOM_BLOW,
                  HEXA_ASURAS_ANGER,
                  HEXA_BLADE_CLONE,
@@ -233,7 +234,8 @@ public class DualBlade extends Job {
         }
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         if (hasHitMobs) {
-            if (skillID == KARMA_BLADE || skillID == KARMA_BLADE_BUFF || skillID == KARMA_BLADE_EXTRA || skillID == KARMA_BLADE_AFTER_ATTACK || skillID == 4361504) {
+            if (skillID == KARMA_BLADE || skillID == KARMA_BLADE_EXTRA || skillID == KARMA_BLADE_AFTER_ATTACK
+                    || skillID == YAMAS_DECREE || skillID == YAMAS_DECREE_2 || skillID == YAMAS_DECREE_ATTACK) {
                 Option oOrigin1 = new Option();
                 Option oOrigin2 = new Option();
                 oOrigin1.nOption = 1;
@@ -480,13 +482,16 @@ public class DualBlade extends Job {
                 tsm.removeAllDebuffs();
                 break;
             case KARMA_BLADE:
+            case YAMAS_DECREE:
+            case YAMAS_DECREE_2:
                 o1.nOption = 1;
                 o1.rOption = skillID;
                 o1.tOption = 7;
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 7;
                 tsm.sendStat(IndieNotDamaged, o1);
                 chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
-                break;
-            case YAMAS_DECREE:
                 break;
         }
     }
@@ -687,6 +692,21 @@ public class DualBlade extends Job {
             }
             case HEXA_ASURAS_ANGER -> {
                 int skillID = ASURAS_ANGER;
+                int slv = chr.getSkillLevel(skillID);
+                chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
+                return 1;
+            }
+            case BLADE_CLONE -> {
+                int slv = chr.getSkillLevel(skillId);
+                chr.setSkillCooldown(skillId, slv);
+                if (chr.hasSkill(HEXA_BLADE_CLONE)) {
+                    chr.setSkillCooldown(HEXA_BLADE_CLONE, slv);
+                }
+                return 1;
+            }
+            case HEXA_BLADE_CLONE -> {
+                int skillID = BLADE_CLONE;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
                 chr.setSkillCooldown(skillId, slv);

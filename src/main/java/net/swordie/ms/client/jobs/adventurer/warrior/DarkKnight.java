@@ -277,17 +277,19 @@ public class DarkKnight extends Warrior {
                 }
                 break;
             case EVIL_EYE:
-                if (tsm.getOption(Beholder).ssOption > 0) {
-                    Skill skill = chr.getSkill(EVIL_EYE_SHOCK);
-                    si = SkillData.getSkillInfoById(skill.getSkillId());
-                    slv = skill.getCurrentLevel();
-
-                    if (!mts.hasCurrentMobStatBySkillId(skillID)) {
-                        if (Util.succeedProp(si.getValue(prop, slv)) && !mob.isBoss()) {
-                            o1.nOption = 1;
-                            o1.rOption = skill.getSkillId();
-                            o1.tOption = si.getValue(time, slv);
-                            mts.addStatOptions(mob, MobStat.Stun, o1);
+                if (tsm.hasStat(Beholder) && tsm.getOption(Beholder).ssOption > 0) {
+                    int shockSkillId = chr.hasSkill(HEXA_EVIL_EYE_SHOCK) ? HEXA_EVIL_EYE_SHOCK : EVIL_EYE_SHOCK;
+                    Skill skill = chr.getSkill(shockSkillId);
+                    if (skill != null) {
+                        si = SkillData.getSkillInfoById(skill.getSkillId());
+                        slv = skill.getCurrentLevel();
+                        if (si != null && !mts.hasCurrentMobStatBySkillId(skillID)) {
+                            if (Util.succeedProp(si.getValue(prop, slv)) && !mob.isBoss()) {
+                                o1.nOption = 1;
+                                o1.rOption = skill.getSkillId();
+                                o1.tOption = si.getValue(time, slv);
+                                mts.addStatOptions(mob, MobStat.Stun, o1);
+                            }
                         }
                     }
                 }
@@ -509,7 +511,7 @@ public class DarkKnight extends Warrior {
                 o1.rOption = skillID;
                 o1.tOption = si.getValue(time, slv);
                 newStats.put(DamR, o1);
-                o2.nOption = (int) Math.min((0.08 * totalHP - currentHP), si.getValue(z, slv));
+                o2.nOption = (int) Math.min((0.08 * (totalHP - currentHP)), si.getValue(z, slv));
                 o2.rOption = skillID;
                 o2.tOption = si.getValue(time, slv);
                 newStats.put(DamageReduce, o2);
@@ -527,17 +529,18 @@ public class DarkKnight extends Warrior {
             case DARK_RESONANCE:
                 chr.heal((chr.getMaxHP() * si.getValue(y, slv)) / 100);
                 o1.nReason = skillID;
-                o1.nValue = si.getValue(v, slv);
+                o1.nValue = si.getValue(indiePMdR, slv);
                 o1.tTerm = si.getValue(time, slv);
-                newStats.put(IndieDamR, o2);
+                newStats.put(IndiePMdR, o1);
                 o2.nReason = skillID;
-                o2.nValue = si.getValue(x, slv);
+                o2.nValue = si.getValue(indieIgnoreMobpdpR, slv);
                 o2.tTerm = si.getValue(time, slv);
                 newStats.put(IndieIgnoreMobpdpR, o2);
                 o3.nReason = skillID;
                 o3.nValue = si.getValue(indieBDR, slv);
                 o3.tTerm = si.getValue(time, slv);
                 newStats.put(IndieBDR, o3);
+                tsm.sendStat(newStats);
                 break;
             case EPIC_ADVENTURE:
                 o1.nReason = skillID;
@@ -594,6 +597,7 @@ public class DarkKnight extends Warrior {
                 }
                 break;
             case DEAD_SPACE:
+            case DARK_HALIDOM:
                 chr.heal(chr.getMaxHP());
                 if (chr.hasSkill(DARK_RESONANCE)) {
                     Skill drSkill = chr.getSkill(DARK_RESONANCE);
@@ -603,11 +607,11 @@ public class DarkKnight extends Warrior {
                     Option drO2 = new Option();
                     Option drO3 = new Option();
                     drO1.nReason = drSkill.getSkillId();
-                    drO1.nValue = drSi.getValue(v, drSlv);
+                    drO1.nValue = drSi.getValue(indiePMdR, drSlv);
                     drO1.tTerm = drSi.getValue(time, drSlv);
-                    newStats.put(IndieDamR, drO1);
+                    newStats.put(IndiePMdR, drO1);
                     drO2.nReason = drSkill.getSkillId();
-                    drO2.nValue = drSi.getValue(x, drSlv);
+                    drO2.nValue = drSi.getValue(indieIgnoreMobpdpR, drSlv);
                     drO2.tTerm = drSi.getValue(time, drSlv);
                     newStats.put(IndieIgnoreMobpdpR, drO2);
                     drO3.nReason = drSkill.getSkillId();
@@ -636,18 +640,23 @@ public class DarkKnight extends Warrior {
     public void handleHit(Client c, InPacket inPacket, HitInfo hitInfo) {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         if (chr.hasSkill(REVENGE_OF_THE_EVIL_EYE) || chr.hasSkill(HEXA_REVENGE_OF_THE_EVIL_EYE)) {
-            Skill skill = chr.getSkill(REVENGE_OF_THE_EVIL_EYE);
-            int slv = skill.getCurrentLevel();
-            SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
-            int proc = si.getValue(prop, slv);
-            int cd = 1000 * si.getValue(cooltime, slv);
-            int heal = si.getValue(x, slv);
-            if (tsm.getOptByCTSAndSkill(PDD, EVIL_EYE) != null) {
-                if (cd + revengeEvilEye < System.currentTimeMillis()) {
-                    if (Util.succeedProp(proc)) {
-                        c.write(Summoned.beholderRevengeAttack(evilEye, hitInfo.mobID));
-                        chr.heal((int) (chr.getMaxHP() / ((double) 100 / heal)));
-                        revengeEvilEye = System.currentTimeMillis();
+            int revSkillId = chr.hasSkill(HEXA_REVENGE_OF_THE_EVIL_EYE) ? HEXA_REVENGE_OF_THE_EVIL_EYE : REVENGE_OF_THE_EVIL_EYE;
+            Skill skill = chr.getSkill(revSkillId);
+            if (skill != null) {
+                int slv = skill.getCurrentLevel();
+                SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
+                int proc = si.getValue(prop, slv);
+                int cd = 1000 * si.getValue(cooltime, slv);
+                int heal = si.getValue(x, slv);
+                if (evilEye != null && (tsm.hasStat(Beholder) || tsm.hasStatBySkillId(EVIL_EYE))) {
+                    if (cd + revengeEvilEye < System.currentTimeMillis()) {
+                        if (Util.succeedProp(proc)) {
+                            c.write(Summoned.beholderRevengeAttack(evilEye, hitInfo.mobID));
+                            if (heal > 0) {
+                                chr.heal((int) (chr.getMaxHP() / ((double) 100 / heal)));
+                            }
+                            revengeEvilEye = System.currentTimeMillis();
+                        }
                     }
                 }
             }

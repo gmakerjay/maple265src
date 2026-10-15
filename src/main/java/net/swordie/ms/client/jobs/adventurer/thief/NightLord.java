@@ -93,6 +93,7 @@ public class NightLord extends Thief {
     public static final int HEXA_SUDDEN_RAID = 4141008;
     public static final int HEXA_DEATH_STAR = 4141009;
     public static final int HEXA_DEATH_STAR_RAMPANT = 4141010;
+    public static final int HEXA_DEATH_STAR_ANNIHILATE = 4141013;
 
     // Origin & Ascent (6th Job)
     public static final int LIFE_AND_DEATH = 4141500;
@@ -192,7 +193,8 @@ public class NightLord extends Thief {
         EnumMap<CharacterTemporaryStat, Option> newStats = new EnumMap<>(CharacterTemporaryStat.class);
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         if (hasHitMobs) {
-            if (skillID == LIFE_AND_DEATH || skillID == LIFE_AND_DEATH_ATTACK_1 || skillID == LIFE_AND_DEATH_ATTACK_2) {
+            if (skillID == LIFE_AND_DEATH || skillID == LIFE_AND_DEATH_ATTACK_1 || skillID == LIFE_AND_DEATH_ATTACK_2
+                    || skillID == DEEP_STRIKE || skillID == DEEP_STRIKE_ATTACK) {
                 Option oOrigin1 = new Option();
                 Option oOrigin2 = new Option();
                 oOrigin1.nOption = 1;
@@ -251,6 +253,12 @@ public class NightLord extends Thief {
             }
         }
         switch (skillID) {
+            case SHOWDOWN:
+            case HEXA_SHOWDOWN:
+                if (hasHitMobs) {
+                    createShowdownSecondAtoms(attackInfo, now);
+                }
+                break;
             case THROWING_STAR_BARRAGE_DOUBLE:
             case THROWING_STAR_BARRAGE_TRIPLE:
             case THROWING_STAR_BARRAGE_QUAD:
@@ -312,6 +320,7 @@ public class NightLord extends Thief {
                 break;
             case HEXA_DEATH_STAR:
             case HEXA_DEATH_STAR_RAMPANT:
+            case HEXA_DEATH_STAR_ANNIHILATE:
                 o1 = tsm.getOption(EnhanceNightLordFourSeasons);
                 val = o1.nOption + 1;
                 if (val > 1) {
@@ -321,6 +330,37 @@ public class NightLord extends Thief {
                 o1.rOption = skillID;
                 tsm.sendStat(EnhanceNightLordFourSeasons, o1);
                 break;
+        }
+    }
+
+    private void createShowdownSecondAtoms(AttackInfo attackInfo, long now) {
+        if (attackInfo.mobAttackInfo.isEmpty()) {
+            return;
+        }
+        int atomSkillId = chr.hasSkill(HEXA_SHOWDOWN) ? HEXA_SHOWDOWN_ATOM : SHOWDOWN_ATOM;
+        if (chr.hasSkillOnCooldown(atomSkillId)) {
+            return;
+        }
+        SkillInfo atomSi = SkillData.getSkillInfoById(atomSkillId);
+        if (atomSi == null || atomSi.getSecondAtomInfos().isEmpty()) {
+            return;
+        }
+        List<SecondAtom> atoms = new ArrayList<>();
+        Mob firstMob = (Mob) chr.getField().getLifeByObjectID(attackInfo.mobAttackInfo.getFirst().mobId);
+        Position pos = firstMob != null ? firstMob.getPosition() : chr.getPosition();
+        for (var entry : atomSi.getSecondAtomInfos().entrySet()) {
+            int key = entry.getKey();
+            var sai = entry.getValue();
+            if (sai == null) {
+                continue;
+            }
+            Mob target = (Mob) chr.getField().getLifeByObjectID(Util.getRandomFromCollection(attackInfo.mobAttackInfo).mobId);
+            atoms.add(new SecondAtom(sai, chr.getNewSecondAtomKey(), chr.getId(),
+                    target != null ? target.getObjectId() : 0, key, atomSkillId, pos, now));
+        }
+        if (!atoms.isEmpty()) {
+            chr.createSecondAtom(atoms);
+            chr.addSkillCooldown(atomSkillId, 5000);
         }
     }
 
@@ -378,13 +418,14 @@ public class NightLord extends Thief {
 
     private boolean isShurikenAttack(int skillId) {
         return skillId == LUCKY_SEVEN
-                || skillId == SHURIKEN_BURST
+                || skillId == SHURIKEN_BURST || skillId == 4101013 || skillId == 4101014
                 || skillId == GUST_CHARM
                 || skillId == TRIPLE_THROW
                 || skillId == SHADE_SPLITTER
                 || skillId == QUAD_STAR || skillId == HEXA_QUAD_STAR || skillId == HEXA_ENHANCED_QUAD_STAR
-                || skillId == SHOWDOWN || skillId == HEXA_SHOWDOWN
-                || skillId == DEATH_STAR || skillId == HEXA_DEATH_STAR || skillId == HEXA_DEATH_STAR_RAMPANT
+                || skillId == SHOWDOWN || skillId == 4121021 || skillId == HEXA_SHOWDOWN
+                || skillId == SUDDEN_RAID || skillId == HEXA_SUDDEN_RAID
+                || skillId == DEATH_STAR || skillId == HEXA_DEATH_STAR || skillId == HEXA_DEATH_STAR_RAMPANT || skillId == HEXA_DEATH_STAR_ANNIHILATE
                 || skillId == LIFE_AND_DEATH || skillId == LIFE_AND_DEATH_ATTACK_1 || skillId == LIFE_AND_DEATH_ATTACK_2
                 || skillId == DEEP_STRIKE || skillId == DEEP_STRIKE_ATTACK;
     }
@@ -754,6 +795,12 @@ public class NightLord extends Thief {
             case HEROS_WILL:
                 tsm.removeAllDebuffs();
                 break;
+            case NIGHTFALL_SIGNET:
+                o1.nOption = 1;
+                o1.rOption = DARK_SIGHT;
+                o1.tOption = si.getValue(time, slv);
+                tsm.sendStat(DarkSight, o1);
+                break;
             case THROW_BLASTING_BUFF:
                 o1.nOption = si.getValue(x, slv); // count
                 o1.rOption = skillID;
@@ -766,10 +813,26 @@ public class NightLord extends Thief {
                 o1.nOption = 1;
                 o1.rOption = skillID;
                 o1.tOption = 7;
-                tsm.sendStat(IndieNotDamaged, o1);
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 7;
+                newStats.put(IndieNotDamaged, o1);
+                o2.nOption = 1;
+                o2.rOption = skillID;
+                o2.tOption = si.getValue(time, slv) > 0 ? si.getValue(time, slv) : 60;
+                newStats.put(LifeDeathControl, o2);
+                tsm.sendStat(newStats);
                 chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
                 break;
             case DEEP_STRIKE:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 7;
+                tsm.sendStat(IndieNotDamaged, o1);
+                chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
                 break;
         }
     }
@@ -786,6 +849,13 @@ public class NightLord extends Thief {
     @Override
     public int handleSetCoolDownSkill(int skillId) {
         switch (skillId) {
+            case HEXA_SHOWDOWN -> {
+                int skillID = SHOWDOWN;
+                int slv = chr.getSkillLevel(skillID);
+                chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
+                return 1;
+            }
             case HEXA_DARK_FLARE -> {
                 int skillID = DARK_FLARE;
                 int slv = chr.getSkillLevel(skillID);

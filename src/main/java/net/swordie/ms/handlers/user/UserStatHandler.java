@@ -588,6 +588,74 @@ public class UserStatHandler {
             case 154120003 -> new int[]{154120004};
             // Luminous
             case 27121113 -> new int[]{27121114, 27121115};
+            // Explorer Warriors (Hero, Paladin, Dark Knight)
+            case 1121008 -> new int[]{1120017};
+            case 1220022 -> new int[]{1221023};
+            case 1320011 -> new int[]{1321024, 1321025, 1321026};
+            // Explorer Magicians (Fire/Poison, Ice/Lightning, Bishop)
+            case 2101010 -> new int[]{2100010};
+            case 2111013 -> new int[]{2111014};
+            case 2121007 -> new int[]{2120013};
+            case 2121052 -> new int[]{2121055, 2121056};
+            case 2211011 -> new int[]{2211015};
+            case 2221007 -> new int[]{2220014};
+            case 2301002 -> new int[]{2301010};
+            case 2311001 -> new int[]{2311015, 2311017};
+            case 2311003 -> new int[]{2311016};
+            case 2311004 -> new int[]{2311018};
+            case 2311009 -> new int[]{2311019};
+            case 2311011 -> new int[]{2311014};
+            case 2321007 -> new int[]{2321008, 2321017};
+            case 2321015 -> new int[]{2321016};
+            case 2321052 -> new int[]{2321055};
+            // Explorer Archers (BowMaster, Marksman, Pathfinder)
+            case 3101009 -> new int[]{3100010};
+            case 3111005 -> new int[]{3111017};
+            case 3111013 -> new int[]{3110012};
+            case 3110015 -> new int[]{3110016};
+            case 3120017 -> new int[]{3120018};
+            case 3120022 -> new int[]{3121023};
+            case 3211005 -> new int[]{3211019};
+            case 3300000 -> new int[]{3301003, 3301004};
+            case 3301008 -> new int[]{3301009};
+            case 3311002 -> new int[]{3311003, 3311004, 3311006, 3311007, 3311008};
+            case 3320000 -> new int[]{3321003, 3321004};
+            case 3321014 -> new int[]{3321015, 3321016, 3321017, 3321018, 3321019, 3321020, 3321021};
+            case 3321035 -> new int[]{3321036, 3321037, 3321038, 3321039, 3321040};
+            // Explorer Thieves (Night Lord, Shadower, Dual Blade)
+            case 4100011 -> new int[]{4100012};
+            case 4111003 -> new int[]{4111015};
+            case 4120018 -> new int[]{4120019};
+            case 4121017 -> new int[]{4121020};
+            case 4201012 -> new int[]{4201013};
+            case 4201014 -> new int[]{4200015};
+            case 4210014 -> new int[]{4211017};
+            case 4211002 -> new int[]{4211016};
+            case 4221014 -> new int[]{4221016};
+            case 4221018 -> new int[]{4221019, 4221020};
+            case 4321006 -> new int[]{4321007};
+            case 4341011 -> new int[]{4341012};
+            // Explorer Pirates (Buccaneer, Corsair, Cannoneer)
+            case 5100018 -> new int[]{5101019};
+            case 5100016 -> new int[]{5101021};
+            case 5110016 -> new int[]{5111017, 5111019};
+            case 5110018 -> new int[]{5110020};
+            case 5121013 -> new int[]{5120021};
+            case 5120029 -> new int[]{5121025};
+            case 5120024 -> new int[]{5121023};
+            case 5120026 -> new int[]{5121027, 5120028};
+            case 5201012 -> new int[]{5201013, 5201017};
+            case 5210015 -> new int[]{5211019, 5211020, 5211021};
+            case 5211007 -> new int[]{5210017, 5210018};
+            case 5221004 -> new int[]{5220055};
+            case 5221015 -> new int[]{5221021};
+            case 5220019 -> new int[]{5220054};
+            case 5220020 -> new int[]{5220023, 5220024, 5220025};
+            case 5221022 -> new int[]{5221027, 5221028, 5221029};
+            case 5311004 -> new int[]{5310008};
+            case 5311010 -> new int[]{5310011};
+            case 5320011 -> new int[]{5321004};
+            case 5321052 -> new int[]{5320055};
             default -> null;
         };
         if (subIds != null) {

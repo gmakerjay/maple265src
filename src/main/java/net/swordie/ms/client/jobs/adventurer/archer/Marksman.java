@@ -441,6 +441,7 @@ public class Marksman extends Archer {
                 break;
             case REPEATING_CROSSBOW_CARTRIDGE:
                 o1.nOption = si.getValue(x, slv);
+                o1.xOption = si.getValue(y, slv);
                 o1.rOption = skillID;
                 o1.tOption = si.getValue(time, slv);
                 tsm.sendStat(RepeatinCartrige, o1);

@@ -143,6 +143,10 @@ public class Pathfinder extends Job {
             SWARM_SHOT,
             TRIPLE_IMPACT,
             GLYPH_OF_IMPALEMENT,
+            HEXA_GLYPH_OF_IMPALEMENT,
+            COMBO_ASSAULT_NONE,
+            ANCIENT_ASTRA_NONE,
+            OBSIDIAN_BARRIER_NONE,
     };
 
     private int lastSkillID = 0;
@@ -218,12 +222,15 @@ public class Pathfinder extends Job {
         switch (skillID) {
             case ANCIENT_ASTRA_DELUGE:
             case ANCIENT_ASTRA_BURST_HOLD:
+            case 3341011:
+            case 3341013:
                 o.nValue = si.getValue(indieDamReduceR, slv);
                 o.nReason = skillID;
                 tsm.sendStat(IndieDamReduceR, o);
                 setEmblem(EmblemType.None);
                 break;
             case ANCIENT_ASTRA_TORRENT:
+            case 3341015:
                 o.nOption = 100;
                 o.rOption = skillID;
                 o.tOption = si.getValue(u, slv);
@@ -237,7 +244,8 @@ public class Pathfinder extends Job {
     }
 
     public void handleAncientAstraRelicCost(int skillID) {
-        int relicCost = chr.getSkillStatValue(forceCon, ANCIENT_ASTRA_NONE);
+        int astraRoot = chr.hasSkill(HEXA_ANCIENT_ASTRA) ? HEXA_ANCIENT_ASTRA : ANCIENT_ASTRA_NONE;
+        int relicCost = chr.getSkillStatValue(forceCon, astraRoot);
         reduceRelicGauge(relicCost);
         if (getRelicGauge() <= 0) {
             chr.write(UserLocal.stopNoMovementKeyDownSkillRequest(skillID));
@@ -355,7 +363,8 @@ public class Pathfinder extends Job {
     @Override
     public void handleDebuffOnMob(Client c, Mob mob, SkillInfo si, int skillID, int slv, long damage) {
         Char chr = c.getChr();
-        if (getBountifulTorrentStack() > 0 || skillID == CARDINAL_TORRENT_ADVANCED || skillID == CARDINAL_TORRENT_SWEEP_ADVANCED) {
+        if (getBountifulTorrentStack() > 0 || skillID == CARDINAL_TORRENT_ADVANCED || skillID == CARDINAL_TORRENT_SWEEP_ADVANCED
+                || skillID == HEXA_CARDINAL_TORRENT || skillID == 3341009) {
             applyCurseweaver(mob, skillID);
         }
         if (!JobConstants.isPhantom(chr.getJob())) {
@@ -377,7 +386,8 @@ public class Pathfinder extends Job {
         if (hasHitMobs) {
             if (skillID != CARDINAL_DELUGE
                     && skillID != CARDINAL_DELUGE_AMPLIFICATION
-                    && skillID != CARDINAL_DELUGE_ADVANCED) {
+                    && skillID != CARDINAL_DELUGE_ADVANCED
+                    && skillID != HEXA_CARDINAL_DELUGE) {
                 relicChargeLogic(skillID);
             }
             if (SkillConstants.isCardinalForceSkill(skillID)) {
@@ -419,6 +429,7 @@ public class Pathfinder extends Job {
                 createSplitMistelForceAtom(attackInfo);
                 break;
             case BOUNTIFUL_DELUGE:
+            case HEXA_BOUNTIFUL_DELUGE:
                 if (getRelicChargeSkill() != null) {
                     addRelicGauge(5);
                 }
@@ -434,8 +445,9 @@ public class Pathfinder extends Job {
             case CARDINAL_BURST_AMPLIFICATION:
             case CARDINAL_BURST_ADVANCED:
             case HEXA_CARDINAL_BURST:
+            case 3341001:
                 if (inDeluge()) {
-                    createBountifulForceAtoms(BOUNTIFUL_DELUGE);
+                    createBountifulForceAtoms(chr.hasSkill(HEXA_BOUNTIFUL_DELUGE) ? HEXA_BOUNTIFUL_DELUGE : BOUNTIFUL_DELUGE);
                 }
                 if (inTorrent()) {
                     o1.nOption = chr.getSkillStatValue(y, BOUNTIFUL_TORRENT);
@@ -450,6 +462,9 @@ public class Pathfinder extends Job {
             case COMBO_ASSAULT_DELUGE:
             case COMBO_ASSAULT_TORRENT:
             case HEXA_COMBO_ASSAULT:
+            case 3341018:
+            case 3341020:
+            case 3341022:
                 setEmblem(EmblemType.None);
                 chr.write(UserLocal.bonusAttackDelayRequest(new HashMap<>() {{
                     put(skillID + 1, 650);
@@ -461,6 +476,7 @@ public class Pathfinder extends Job {
                 addRelicGauge(si.getValue(v, slv));
                 break;
             case ANCIENT_ASTRA_DELUGE:
+            case 3341011:
                 createAncientAstraForceAtom(attackInfo);
                 break;
         }
@@ -471,7 +487,11 @@ public class Pathfinder extends Job {
                 skillID != COMBO_ASSAULT_NONE
                         && skillID != COMBO_ASSAULT_BURST
                         && skillID != COMBO_ASSAULT_DELUGE
-                        && skillID != COMBO_ASSAULT_TORRENT);
+                        && skillID != COMBO_ASSAULT_TORRENT
+                        && skillID != HEXA_COMBO_ASSAULT
+                        && skillID != 3341018
+                        && skillID != 3341020
+                        && skillID != 3341022);
     }
 
     private void decrementBountifulTorrent() {
@@ -490,11 +510,13 @@ public class Pathfinder extends Job {
 
     private int getBountifulTorrentStack() {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
-        return tsm.hasStat(TempSecondaryStat) ? tsm.getOptByCTSAndSkill(TempSecondaryStat, BOUNTIFUL_TORRENT).nOption : 0;
+        Option opt = tsm.getOptByCTSAndSkill(TempSecondaryStat, BOUNTIFUL_TORRENT);
+        return opt != null ? opt.nOption : 0;
     }
 
     private void applyCurseweaver(Mob mob, int skillID) {
-        boolean byCardinalTorrent = skillID == CARDINAL_TORRENT_ADVANCED || skillID == CARDINAL_TORRENT_SWEEP_ADVANCED;
+        boolean byCardinalTorrent = skillID == CARDINAL_TORRENT_ADVANCED || skillID == CARDINAL_TORRENT_SWEEP_ADVANCED
+                || skillID == HEXA_CARDINAL_TORRENT || skillID == 3341009;
         Skill skill = chr.getSkill(CURSEWEAVER);
         if (skill != null && (chr.hasSkill(BOUNTIFUL_TORRENT) || byCardinalTorrent)) {
             SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
@@ -688,7 +710,7 @@ public class Pathfinder extends Job {
                 byte mobSize = inPacket.decodeByte();
                 if (mobSize > 0) {
                     if (inBurst()) {
-                        createBountifulForceAtoms(BOUNTIFUL_BURST);
+                        createBountifulForceAtoms(chr.hasSkill(HEXA_BOUNTIFUL_BURST) ? HEXA_BOUNTIFUL_BURST : BOUNTIFUL_BURST);
                     }
                     if (inTorrent()) {
                         o1.nOption = chr.getSkillStatValue(y, BOUNTIFUL_TORRENT);
@@ -904,7 +926,7 @@ public class Pathfinder extends Job {
         int xOffset = -50;
         int yOffset = -15;
         int yRand = 30;
-        if (skillID == CARDINAL_DELUGE_ADVANCED) {
+        if (skillID == CARDINAL_DELUGE_ADVANCED || skillID == HEXA_CARDINAL_DELUGE) {
             fae = ForceAtomEnum.CARDINAL_DISCHARGE_2;
             xOffset = -90;
             yOffset = -35;
@@ -948,7 +970,7 @@ public class Pathfinder extends Job {
         if (mobList.size() <= 0 || !Util.succeedProp(proc)) {
             return;
         }
-        ForceAtomEnum fae = skillID == BOUNTIFUL_DELUGE ? ForceAtomEnum.BOUNTIFUL_DELUGE : ForceAtomEnum.BOUNTIFUL_BURST;
+        ForceAtomEnum fae = (skillID == BOUNTIFUL_DELUGE || skillID == HEXA_BOUNTIFUL_DELUGE) ? ForceAtomEnum.BOUNTIFUL_DELUGE : ForceAtomEnum.BOUNTIFUL_BURST;
         List<Integer> targetList = new ArrayList<>();
         List<ForceAtomInfo> faiList = new ArrayList<>();
         int faCount = si.getValue(bulletCount, slv);
@@ -1033,8 +1055,9 @@ public class Pathfinder extends Job {
             targetList.add(Util.getRandomFromCollection(chr.getField().getMobsInRect(mob.getRectAround(rect))).getObjectId());
             targetList.add(Util.getRandomFromCollection(chr.getField().getMobsInRect(mob.getRectAround(rect))).getObjectId());
         }
+        int atomSkillId = chr.hasSkill(HEXA_ANCIENT_ASTRA) ? 3341012 : ANCIENT_ASTRA_DELUGE_ATOM;
         ForceAtom fa = new ForceAtom(false, chr.getId(), chr.getId(), fae,
-                true, targetList, ANCIENT_ASTRA_DELUGE_ATOM, faiList, rect, 0, 0,
+                true, targetList, atomSkillId, faiList, rect, 0, 0,
                 new Position(), 0, new Position(), 0);
         chr.createForceAtom(fa);
     }
@@ -1059,6 +1082,24 @@ public class Pathfinder extends Job {
         return super.alterCooldownSkill(skillId);
     }
 
+    @Override
+    public int handleSetCoolDownSkill(int skillId) {
+        switch (skillId) {
+            case HEXA_GLYPH_OF_IMPALEMENT -> {
+                chr.setSkillCooldown(GLYPH_OF_IMPALEMENT, chr.getSkillLevel(GLYPH_OF_IMPALEMENT));
+                return 1;
+            }
+            case HEXA_ANCIENT_ASTRA, 3341011, 3341012, 3341013, 3341014, 3341015 -> {
+                chr.setSkillCooldown(ANCIENT_ASTRA_NONE, chr.getSkillLevel(ANCIENT_ASTRA_NONE));
+                return 1;
+            }
+            case HEXA_COMBO_ASSAULT, 3341017, 3341018, 3341019, 3341020, 3341021, 3341022, 3341023 -> {
+                chr.setSkillCooldown(COMBO_ASSAULT_NONE, chr.getSkillLevel(COMBO_ASSAULT_NONE));
+                return 1;
+            }
+        }
+        return super.handleSetCoolDownSkill(skillId);
+    }
 
     // Hit related methods ---------------------------------------------------------------------------------------------
     @Override
@@ -1086,6 +1127,9 @@ public class Pathfinder extends Job {
         if (level == 60 || level == 100) {
             final short jobID = chr.getJob();
             if (!JobConstants.canJobAdvance(jobID)) {
+                return;
+            }
+            if ((level == 60 && jobID != 330) || (level == 100 && jobID != 331)) {
                 return;
             }
             final short next = JobConstants.nextJob(jobID);

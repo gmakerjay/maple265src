@@ -276,7 +276,9 @@ public class SkillData {
                     case 4200002:
                     case 4300006:
                     case 5100006:
+                    case 5100020:
                     case 5200014:
+                    case 5200015:
                     case 5300009:
                     case 21000011: // Aran Agile Polearms
                     case 22110026: // Evan Agile Magic

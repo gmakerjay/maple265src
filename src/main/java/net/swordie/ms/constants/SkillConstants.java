@@ -2331,7 +2331,6 @@ public class SkillConstants {
             case 4361501:   // Karma Blade Buff Attack
             case 4361502:   // Karma Blade Extra
             case 4361503:   // Karma Blade After Attack
-            case 4361504:   // Karma Blade Slash
                 return 4361500;   // Karma Blade
 
             case Mercedes.STAGGERING_STRIKES:
@@ -2528,7 +2527,7 @@ public class SkillConstants {
             case Blaster.REVOLVING_CANNON_3:
                 return Blaster.REVOLVING_CANNON;
 
-
+            // Buccaneer 1st-4th & 6th Job Sub-Skills
             case Buccaneer.SEA_SERPENT_BURST:
                 return 5100018;
             case Buccaneer.GREATER_SEA_SERPENT_I_BURST:
@@ -2539,6 +2538,8 @@ public class SkillConstants {
                 return 5120024;
             case 5121027:
                 return 5120026;
+            case 5120021:
+                return 5121013; // Nautilus Strike FA
             case Buccaneer.HEXA_SEA_SERPENT_RAGE:
             case Buccaneer.HEXA_SEA_SERPENT_BURST:
                 return Buccaneer.HEXA_SEA_SERPENT;
@@ -2580,18 +2581,59 @@ public class SkillConstants {
             case 175141501:
             case 175141502:
                 return 175141500;
-            // Paladin 6th Job Origin Finisher
+            // Hero Sub-Skills & 2nd 6th Job Ascent
+            case 1120017:
+                return 1121008; // Raging Blow Enrage
+            case 1141502:
+                return 1141502; // Ultrasonic Slash (Ascent Root)
+            // Paladin Sub-Skills & 2nd 6th Job Ascent
+            case 1221023:
+                return 1220022; // Divine Judgment Attack
+            case 1241504:
             case 1241505:
-                return 1241504; // Dominus Oblivion
-            // Dark Knight 6th Job Origin Finisher
+                return 1241504; // Dominus Oblivion (Ascent Root)
+            // Dark Knight Sub-Skills & 2nd 6th Job Ascent
+            case 1321024:
+            case 1321025:
+            case 1321026:
+                return 1320011; // Revenge of the Evil Eye
+            case 1341002:
+                return 1341001; // HEXA Dark Impale Sub
+            case 1341005:
+            case 1341006:
+                return 1340004; // HEXA Revenge of the Evil Eye
+            case 1341009:
+                return 1341008; // HEXA Nightshade Explosion Sub
+            case 1341502:
             case 1341503:
-                return 1341502; // Dark Halidom
-            // Fire/Poison 6th Job Sub-Skills
+                return 1341502; // Dark Halidom (Ascent Root)
+            // Fire/Poison Sub-Skills & 2nd 6th Job Ascent
+            case 2100010:
+                return 2101010; // Ignite Tile
+            case 2120013:
+                return 2121007; // Meteor Shower FA
+            case 2141001:
             case 2141002:
                 return 2141000; // HEXA Flame Sweep Extra
+            case 2141004:
+                return 2141003; // HEXA Flame Haze Mist
+            case 2140008:
+                return 2141007; // HEXA Meteor Shower FA
+            case 2141011:
+            case 2141016:
+                return 2141010; // HEXA Mist Eruption Subs
+            case 2140013:
+                return 2141012; // HEXA Ignite Tile
+            case 2141015:
+                return 2141014; // HEXA Ifrit Aura
+            case 2141504:
             case 2141505:
-                return 2141504; // Immortal Flame Sub
-            // Ice/Lightning 6th Job Sub-Skills
+                return 2141504; // Immortal Flame (Ascent Root)
+            // Ice/Lightning Sub-Skills & 2nd 6th Job Ascent
+            case 2211015:
+                return 2211011; // Glacial Wall Tile
+            case 2220014:
+                return 2221007; // Blizzard FA
             case 2241001:
                 return 2241000; // HEXA Chain Lightning Tile
             case 2241004:
@@ -2600,9 +2642,19 @@ public class SkillConstants {
                 return 2241007; // HEXA Thunder Sphere Stay
             case 2241010:
                 return 2241005; // HEXA Lightning Orb 2
+            case 2241505:
             case 2241506:
-                return 2241505; // Parabolic Bolt SA
-            // Bishop 6th Job Sub-Skills
+                return 2241505; // Parabolic Bolt (Ascent Root)
+            // Bishop Sub-Skills & 2nd 6th Job Ascent
+            case 2301010:
+                return 2301002; // Heal Debuff
+            case 2311014:
+                return 2311011; // Fountain of Vengeance
+            case 2311015:
+            case 2311017:
+                return 2311001; // Dispel
+            case 2321016:
+                return 2321015; // Divine Protection
             case 2341001:
                 return 2341000; // HEXA Angel Ray Bonus
             case 2341003:
@@ -2615,18 +2667,20 @@ public class SkillConstants {
                 return 2341009; // HEXA Genesis FA
             case 2341012:
                 return 2341011; // HEXA Heaven's Door Sub
+            case 2341507:
             case 2341508:
-                return 2341507; // Commandment of Heaven Sub
-            // Bowmaster 6th Job Sub-Skills
+                return 2341507; // Commandment of Heaven (Ascent Root)
+            // Bowmaster 6th Job Sub-Skills & 2nd 6th Job Ascent
             case 3141001:
                 return 3141000; // HEXA Hurricane Sub
             case 3141003:
                 return 3141002; // HEXA Arrow Stream Sub
             case 3141014:
                 return 3141013; // HEXA Speed Mirage Sub
+            case 3141503:
             case 3141504:
-                return 3141503; // Flashpoint Sub
-            // Marksman 6th Job Sub-Skills
+                return 3141503; // Flashpoint (Ascent Root)
+            // Marksman 6th Job Sub-Skills & 2nd 6th Job Ascent
             case 3241001:
             case 3241002:
             case 3241003:
@@ -2639,9 +2693,10 @@ public class SkillConstants {
             case 3241010:
             case 3241011:
                 return 3241005; // HEXA Piercing Arrow Sub
+            case 3241502:
             case 3241503:
-                return 3241502; // Fatal Trigger Sub
-            // Pathfinder 6th Job Sub-Skills
+                return 3241502; // Fatal Trigger (Ascent Root)
+            // Pathfinder 6th Job Sub-Skills & 2nd 6th Job Ascent
             case 3341001:
                 return 3341000; // HEXA Cardinal Burst Attack
             case 3341003:
@@ -2666,7 +2721,10 @@ public class SkillConstants {
             case 3341022:
             case 3341023:
                 return 3341016; // HEXA Combo Assault Subs
-            // Night Lord 6th Job Sub-Skills
+            case 3341505:
+            case 3341506:
+                return 3341505; // Relic Materialize (Ascent Root)
+            // Night Lord 6th Job Sub-Skills & 2nd 6th Job Ascent
             case 4141001:
                 return 4141000; // HEXA Enhanced Quad Star
             case 4141003:
@@ -2675,16 +2733,20 @@ public class SkillConstants {
             case 4141006:
                 return 4141005; // HEXA Showdown Atom
             case 4141010:
-                return 4141009; // HEXA Death Star Rampant
+            case 4141013:
+                return 4141009; // HEXA Death Star Rampant / Annihilate
+            case 4140012:
+                return 4140011; // Darkness Shuriken Sub
+            case 4141503:
             case 4141504:
-                return 4141503; // Deep Strike Sub
-            // Shadower 6th Job Sub-Skills
+                return 4141503; // Deep Strike (Ascent Root)
+            // Shadower 5th & 6th Job Sub-Skills & 2nd 6th Job Ascent
             case 4241001:
-                return 4241000; // HEXA Cruel Stab Extra
+            case 4241002:
             case 4241003:
-                return 4241002; // HEXA Assassinate 2
+            case 4241004:
             case 4241005:
-                return 4241004; // HEXA Pulverize Finisher
+                return 4241000; // HEXA Cruel Stab / Assassinate / Pulverize (Core 20000010)
             case 4241007:
             case 4241008:
             case 4241009:
@@ -2692,53 +2754,101 @@ public class SkillConstants {
                 return 4241006; // HEXA Meso Explosion Subs
             case 4240014:
                 return 4241013; // HEXA Shadow Veil Attack
+            case 4240017:
             case 4241018:
             case 4241019:
                 return 4240016; // Covert Edge Subs
+            case 4241503:
             case 4241504:
+            case 4241505:
             case 4241506:
-                return 4241503; // Covetous Darkness Subs
-            // Dual Blade 6th Job Sub-Skills
+                return 4241503; // Covetous Darkness (Ascent Root)
+            case 500061025:
+            case 500061026:
+            case 500061027:
+            case 500061028:
+                return 400041002; // HEXA Shadow Assault -> Shadow Assault
+            // Dual Blade 6th Job Sub-Skills & 2nd 6th Job Ascent
+            case 400040006:
+                return 400041006; // Blade Storm Keydown Loop -> Blade Storm
             case 4361004:
                 return 4361003; // Fury Jet -> HEXA Blade Fury
+            case 4361504:
+            case 4361505:
             case 4361506:
-                return 4361505; // Yama's Decree Attack -> Yama's Decree
-            // Buccaneer 6th Job Sub-Skills
+                return 4361504; // Yama's Decree (Ascent Root)
+            // Buccaneer 6th Job Sub-Skills & 2nd 6th Job Ascent
             case 5141001:
-                return 5141000; // HEXA Octopunch FA
+            case 5141002:
             case 5141003:
-                return 5141002; // Super Octopunch FA
+                return 5141000; // HEXA Octopunch & Super Octopunch
+            case 5140010:
+                return 5141009; // HEXA Nautilus Strike Final Attack -> HEXA Nautilus Strike
+            case 5141012:
             case 5141013:
             case 5141014:
                 return 5141011; // HEXA Serpent Scale Subs
+            case 5141501:
+            case 5141502:
+            case 5141503:
+            case 5141504:
+            case 5141505:
             case 5141506:
+                return 5141500; // Unleash Neptunus Origin & Neptunus Enrage Waves
             case 5141507:
             case 5141508:
-                return 5141505; // Unleashed Dragon Attacks
-            // Corsair 6th Job Sub-Skills
+                return 5141507; // Haymaker (Ascent Root)
+            // Corsair 6th Job Sub-Skills & 2nd 6th Job Ascent
+            case 5201017:
+                return 5201012; // Scurvy Summons Atom -> Scurvy Summons
+            case 5211019:
+            case 5211020:
+            case 5211021:
+                return 5210015; // All Aboard Subs -> All Aboard
             case 5241001:
                 return 5241000; // HEXA Rapid Fire Shootout Mode
             case 5241003:
-                return 5241002; // HEXA Broadside Summon
+            case 5241004:
+                return 5241002; // HEXA Broadside Summon & Bomb
             case 5241006:
                 return 5241005; // Condemnation -> HEXA Brain Scrambler
             case 5241011:
+            case 5241012:
             case 5241013:
+            case 5241014:
                 return 5241010; // HEXA Scurvy Summons Subs
+            case 5241016:
+                return 5241015; // HEXA Siege Bomber Sub -> HEXA Siege Bomber
+            case 5241501:
+            case 5241502:
+                return 5241500; // The Dreadnought Origin Subs
+            case 5241503:
             case 5241504:
-                return 5241503; // Quickdraw Dreadnought Attack
-            // Cannoneer 6th Job Sub-Skills
+                return 5241503; // Quickdraw Dreadnought (Ascent Root)
+            // Cannoneer 6th Job Sub-Skills & 2nd 6th Job Ascent
+            case 5320011:
+                return 5321004; // Monkey Militia Twin -> Monkey Militia
             case 5341003:
             case 5341004:
                 return 5341002; // HEXA Monkey Mortar Attacks -> HEXA Monkey Mortar
+            case 5341007:
             case 5341008:
-                return 5341014; // Max Cannon Rainbow -> HEXA Rolling Rainbow
+                return 5341014; // HEXA Rolling Rainbow Summons -> HEXA Rolling Rainbow
             case 5340010:
-                return 5341009; // HEXA Monkey Militia Twin -> HEXA Monkey Militia
+            case 5340011:
+                return 5341009; // HEXA Monkey Militia Twin & Splitter -> HEXA Monkey Militia
             case 5341013:
                 return 5341012; // HEXA Monkey Fury Attack -> HEXA Monkey Fury
+            case 5341501:
+                return 5341500; // Super Cannon Explosion Sub -> Super Cannon Explosion Origin
+            case 5341502:
             case 5341503:
-                return 5341500; // Barrel of Monkeys -> Super Cannon Explosion Origin
+                return 5341502; // Barrel of Monkeys (Ascent Root)
+            case 500061029:
+            case 500061030:
+            case 500061031:
+            case 500061032:
+                return 400051074; // HEXA Poolmaker -> Poolmaker
             // Evan Dragon sub-skills to root skills
             case 22110022: // Dragon Flash (Mir Action)
             case 22110023: // Dragon Flash (Mir Action)
@@ -3614,7 +3724,18 @@ public class SkillConstants {
 
     public static List<Integer> getHyperSkill(int jobId) {
         List<Integer> skillsID = new ArrayList<>();
-        if (jobId == 2112) {
+        if (jobId == 122) {
+            for (int skillId = 1220043; skillId <= 1220051; skillId++) {
+                skillsID.add(skillId);
+            }
+            skillsID.add(1220056);
+            skillsID.add(1220057);
+            skillsID.add(1220058);
+            skillsID.add(1221052);
+            skillsID.add(1221053);
+            skillsID.add(1221054);
+            skillsID.add(1221055);
+        } else if (jobId == 2112) {
             skillsID.add(21121053);
             skillsID.add(21121057);
             skillsID.add(21121058);
@@ -4269,6 +4390,8 @@ public class SkillConstants {
             case Pathfinder.SWARM_SHOT:
             case Pathfinder.TRIPLE_IMPACT:
             case Pathfinder.GLYPH_OF_IMPALEMENT:
+            case Pathfinder.HEXA_GLYPH_OF_IMPALEMENT:
+            case 3341007:
             case Pathfinder.NOVA_BLAST:
             case Pathfinder.RAVEN_TEMPEST:
                 return true;
@@ -4283,12 +4406,21 @@ public class SkillConstants {
             case Pathfinder.COMBO_ASSAULT_DELUGE:
             case Pathfinder.COMBO_ASSAULT_BURST:
             case Pathfinder.COMBO_ASSAULT_TORRENT:
+            case Pathfinder.HEXA_COMBO_ASSAULT:
+            case 3341018:
+            case 3341020:
+            case 3341022:
 
             case Pathfinder.ANCIENT_ASTRA_NONE:
             case Pathfinder.ANCIENT_ASTRA_DELUGE:
             case Pathfinder.ANCIENT_ASTRA_BURST_HOLD:
             case Pathfinder.ANCIENT_ASTRA_BURST:
             case Pathfinder.ANCIENT_ASTRA_TORRENT:
+            case Pathfinder.HEXA_ANCIENT_ASTRA:
+            case 3341011:
+            case 3341013:
+            case 3341014:
+            case 3341015:
 
             case Pathfinder.OBSIDIAN_BARRIER_NONE:
             case Pathfinder.OBSIDIAN_BARRIER_TORRENT:
@@ -4333,7 +4465,7 @@ public class SkillConstants {
     }
 
     public static boolean isTorrentSkill(int skillID) {
-        return skillID == 3311002 || skillID == 3321006 || skillID == 3341008;
+        return skillID == 3311002 || skillID == 3311003 || skillID == 3321006 || skillID == 3321007 || skillID == 3341008 || skillID == 3341009;
     }
 
     public static boolean isBurstSkill(int skillID) {
@@ -4399,6 +4531,11 @@ public class SkillConstants {
             case Pathfinder.ANCIENT_ASTRA_BURST_HOLD:
             case Pathfinder.ANCIENT_ASTRA_BURST:
             case Pathfinder.ANCIENT_ASTRA_TORRENT:
+            case Pathfinder.HEXA_ANCIENT_ASTRA:
+            case 3341011:
+            case 3341013:
+            case 3341014:
+            case 3341015:
                 return Pathfinder.ANCIENT_ASTRA_NONE;
             case Luminous.AETHER_CONDUIT_EQ:
             case Luminous.AETHER_CONDUIT_D:

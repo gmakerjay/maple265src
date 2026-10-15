@@ -183,7 +183,7 @@ public class Buccaneer extends Pirate {
         int skillID = attackInfo.skillId;
         boolean hasHitMobs = !attackInfo.mobAttackInfo.isEmpty();
         if (hasHitMobs) {
-            if (skillID == LIBERATOR || (skillID >= 5141501 && skillID <= 5141504)) {
+            if (skillID >= LIBERATOR && skillID <= UNLEASHED_DRAGON_ATTACK_3) {
                 Option oOrigin1 = new Option();
                 Option oOrigin2 = new Option();
                 oOrigin1.nOption = 1;
@@ -222,12 +222,13 @@ public class Buccaneer extends Pirate {
         if (chr.hasSkill(PERSEVERANCE)) {
             SkillInfo siP = SkillData.getSkillInfoById(PERSEVERANCE);
             int slvP = chr.getSkillLevel(PERSEVERANCE);
-            if (lastPerseverance <= System.currentTimeMillis() - siP.getValue(w, slvP)) {
+            if (siP != null && lastPerseverance <= now - siP.getValue(y, slvP)) {
+                int healRate = siP.getValue(x, slvP);
                 if (chr.getHP() < chr.getMaxHP()) {
-                    chr.heal(siP.getValue(x, slvP));
+                    chr.heal((int) ((long) chr.getMaxHP() * healRate / 100L));
                 }
                 if (chr.getMP() < chr.getMaxMP()) {
-                    chr.healMP(siP.getValue(x, slvP));
+                    chr.healMP((int) ((long) chr.getMaxMP() * healRate / 100L));
                 }
                 lastPerseverance = now;
             }
@@ -277,11 +278,13 @@ public class Buccaneer extends Pirate {
         secondAtoms.add(fa);
         chr.createSecondAtom(secondAtoms);
 
-        Option o = new Option();
-        o.nOption = 1;
-        o.rOption = SUPER_OCTOPUNCH;
-        o.tOption = 10;
-        chr.getTemporaryStatManager().sendStat(SuperFistEnrageStack, o);
+        if (chr.hasSkill(HEXA_OCTOPUNCH)) {
+            Option o = new Option();
+            o.nOption = 1;
+            o.rOption = SUPER_OCTOPUNCH;
+            o.tOption = 10;
+            chr.getTemporaryStatManager().sendStat(SuperFistEnrageStack, o);
+        }
     }
 
     private int getSerpentStoneBurst() {
@@ -413,7 +416,7 @@ public class Buccaneer extends Pirate {
         }
         int bestSkillId = 0;
         ExtraSkillInfo best = null;
-        for (int k = 0; k <= 4; k++) {
+        for (int k = 0; k <= 5; k++) {
             ExtraSkillInfo t = m.get(k);
             if (t == null) continue;
             int skillId = t.getSkillId();
@@ -462,7 +465,7 @@ public class Buccaneer extends Pirate {
             case SEA_SERPENT_BURST: // Sea Serpent Burst
             {
                 int ct = 11; // 5100018
-                next += (long) ct / (halfCdBuff ? 2 : 1);
+                next += (long) ct * 500L * (halfCdBuff ? 1 : 2);
                 break;
             }
             case GREATER_SEA_SERPENT_I_BURST: // Sea Serpent Burst II
@@ -471,16 +474,16 @@ public class Buccaneer extends Pirate {
                 next += (long) z * 500L * (halfCdBuff ? 1 : 2);
                 break;
             }
-            case GREATER_SEA_SERPENT_II_BURST: // Sea Serpent Burst II
+            case GREATER_SEA_SERPENT_II_BURST: // Sea Serpent Burst III
             {
-                int v = 4; // 5120024
-                next += (long) v * 500L * (halfCdBuff ? 1 : 2);
+                int z = 7; // 5120024
+                next += (long) z * 500L * (halfCdBuff ? 1 : 2);
                 break;
             }
             case SEA_SERPENT_RAGE: // Sea Serpent's Rage
             {
-                int z = 7; // 5120029
-                next += (long) z * 500L * (halfCdBuff ? 1 : 2);
+                int v = 4; // 5120029
+                next += (long) v * 500L * (halfCdBuff ? 1 : 2);
                 break;
             }
             case HEXA_SEA_SERPENT_RAGE: // HEXA Sea Serpent's Rage
@@ -771,12 +774,29 @@ public class Buccaneer extends Pirate {
                 break;
             case LIBERATOR:
                 o1.nOption = 1;
+                o1.nValue = 1;
                 o1.rOption = skillID;
+                o1.nReason = skillID;
                 o1.tOption = 7;
-                tsm.sendStat(IndieNotDamaged, o1);
+                o1.tTerm = 7;
+                newStats.put(IndieNotDamaged, o1);
+                o2.nValue = 1;
+                o2.nReason = LIBERATOR_ATTACK_1;
+                o2.tTerm = 30;
+                newStats.put(IndieBuffIcon, o2);
+                tsm.sendStat(newStats);
                 chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
                 break;
             case UNLEASHED_DRAGON:
+            case UNLEASHED_DRAGON_ATTACK_2:
+                o1.nOption = 1;
+                o1.nValue = 1;
+                o1.rOption = skillID;
+                o1.nReason = skillID;
+                o1.tOption = 7;
+                o1.tTerm = 7;
+                tsm.sendStat(IndieNotDamaged, o1);
+                chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
                 break;
         }
     }
@@ -869,12 +889,18 @@ public class Buccaneer extends Pirate {
                 int skillID = SEA_SERPENT;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
                 return 1;
             }
             case HEXA_NAUTILUS_STRIKE -> {
                 int skillID = NAUTILUS_STRIKE;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
+                return 1;
+            }
+            case LIBERATOR_ATTACK_3 -> {
+                chr.addSkillCooldown(skillId, 2000);
                 return 1;
             }
         }

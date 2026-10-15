@@ -2951,11 +2951,17 @@ public class AdminCommands {
             secondaryId = 1352276; // Princess No's Iron Arrow
             emblemId = 1190556; // Mitra Bowman Emblem
             armors = archerArmors;
+        } else if (JobConstants.isPathFinder(job)) {
+            weaponId = 1592022; // Arcane Umbra Ancient Bow
+            secondaryId = 1353707; // Princess No's Immortal Relic
+            emblemId = 1190556; // Mitra Bowman Emblem
+            armors = archerArmors;
         } else if (JobConstants.isNightLord(job)) {
             weaponId = 1472265; // Arcane Umbra Guards
             secondaryId = 1352296; // Princess No's Charm
             emblemId = 1190558; // Mitra Thief Emblem
             armors = thiefArmors;
+            giveTestItem(chr, 2070018, 5000); // Balanced Fury
         } else if (JobConstants.isShadower(job)) {
             weaponId = 1332279; // Arcane Umbra Dagger
             secondaryId = 1352286; // Princess No's Purple Shadow

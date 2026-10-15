@@ -98,8 +98,8 @@ public class Cannoneer extends Job {
     // 6th Job Origin & Ascent Skills
     public static final int SUPER_CANNON_EXPLOSION = 5341500;
     public static final int SUPER_CANNON_EXPLOSION_ATTACK = 5341501;
-    public static final int BARREL_OF_MONKEYS_ATTACK = 5341502;
-    public static final int BARREL_OF_MONKEYS = 5341503;
+    public static final int BARREL_OF_MONKEYS = 5341502;
+    public static final int BARREL_OF_MONKEYS_ATTACK = 5341503;
 
     // HEXA Boosts
     public static final int HEXA_POOLMAKER = 500061029;
@@ -174,6 +174,7 @@ public class Cannoneer extends Job {
         Char chr = c.getChr();
         Option o1 = new Option();
         MobTemporaryStat mts = mob.getTemporaryStat();
+        applyBarrelRouletteDebuffOnMob(mob, damage);
         switch (skillID) {
             case BLAST_BACK:
                 if (!mts.hasCurrentMobStatBySkillId(skillID)) {
@@ -195,6 +196,7 @@ public class Cannoneer extends Job {
                 break;
             case MONKEY_FURY:
             case HEXA_MONKEY_FURY:
+            case HEXA_MONKEY_FURY_ATTACK:
                 if (!mts.hasCurrentMobStatBySkillId(skillID)) {
                     o1.nValue = 1;
                     o1.nReason = skillID;
@@ -221,7 +223,8 @@ public class Cannoneer extends Job {
         boolean hasHitMobs = !attackInfo.mobAttackInfo.isEmpty();
         int slv = attackInfo.slv;
         if (hasHitMobs) {
-            if (skillID == SUPER_CANNON_EXPLOSION || skillID == SUPER_CANNON_EXPLOSION_ATTACK || skillID == BARREL_OF_MONKEYS_ATTACK) {
+            if (skillID == SUPER_CANNON_EXPLOSION || skillID == SUPER_CANNON_EXPLOSION_ATTACK
+                    || skillID == BARREL_OF_MONKEYS || skillID == BARREL_OF_MONKEYS_ATTACK) {
                 Option oOrigin1 = new Option();
                 Option oOrigin2 = new Option();
                 oOrigin1.nOption = 1;
@@ -324,24 +327,35 @@ public class Cannoneer extends Job {
             Skill skill = chr.getSkill(BARREL_ROULETTE);
             int slv = skill.getCurrentLevel();
             SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
-            if (tsm.hasStat(Roulette)) {
-                if (Util.succeedProp(si.getValue(w, slv))) {
-                    BurnedInfo bi = BurnedInfo.createBurnInfo(chr, BARREL_ROULETTE, slv, damage);
+            if (si != null && tsm.hasStat(Roulette)) {
+                int rouletteOpt = tsm.getOption(Roulette).nOption;
+                if ((rouletteOpt == 3 || rouletteOpt == 4) && Util.succeedProp(si.getValue(w, slv))) {
                     MobTemporaryStat mts = mob.getTemporaryStat();
-                    if (tsm.hasStat(Roulette) && tsm.getOption(Roulette).nOption == 4) {  //DoT Debuff
+                    if (rouletteOpt == 4) {  //DoT Debuff
+                        BurnedInfo bi = BurnedInfo.createBurnInfo(chr, BARREL_ROULETTE, slv, damage);
                         mts.createAndAddBurnedInfo(mob, bi, BARREL_ROULETTE);
-                    } else if (tsm.hasStat(Roulette) && tsm.getOption(Roulette).nOption == 3) {  //Slow Debuff
-                        int slowProc = si.getValue(w, slv);
-                        if (Util.succeedProp(slowProc)) {
-                            o.nOption = -20;
-                            o.rOption = skill.getSkillId();
-                            o.tOption = si.getValue(v, slv);
-                            mts.addStatOptions(mob, MobStat.Speed, o);
-                        }
+                    } else {  //Slow Debuff
+                        o.nOption = -20;
+                        o.rOption = skill.getSkillId();
+                        o.tOption = si.getValue(v, slv);
+                        mts.addStatOptions(mob, MobStat.Speed, o);
                     }
                 }
             }
         }
+    }
+
+    @Override
+    public int getFinalAttackProc(int faSkill) {
+        if (faSkill == 5310004) {
+            TemporaryStatManager tsm = chr.getTemporaryStatManager();
+            if (!tsm.hasStat(Roulette) || tsm.getOption(Roulette).nOption != 1) {
+                return -1;
+            }
+            SkillInfo brSi = SkillData.getSkillInfoById(BARREL_ROULETTE);
+            return brSi != null ? brSi.getValue(z, chr.getSkillLevel(BARREL_ROULETTE)) : 100;
+        }
+        return super.getFinalAttackProc(faSkill);
     }
 
     public void incVSkillStackBuff() {
@@ -530,11 +544,12 @@ public class Cannoneer extends Job {
                 field.spawnSummon(summon);
                 break;
             case HEXA_ROLLING_RAINBOW_SUMMON: //Stationary, Attacks
+            case HEXA_ROLLING_RAINBOW_ATTACK:
                 o1 = tsm.getOption(CannonShooter_RollingCannon);
                 o1.nOption = Math.max(0, o1.nOption - 1);
                 o1.rOption = HEXA_ROLLING_RAINBOW;
                 tsm.sendStat(CannonShooter_RollingCannon, o1);
-                summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
+                summon = Summon.getSummonByAndSetStat(chr, HEXA_ROLLING_RAINBOW_SUMMON, slv);
                 field = chr.getField();
                 summon.setFlyMob(false);
                 summon.setMoveAction((byte) 0);
@@ -556,6 +571,20 @@ public class Cannoneer extends Job {
                 }
                 break;
             case HEXA_MONKEY_MALITIA: //Stationary, Attacks
+                int[] hexaSummons = new int[]{
+                        5340011,
+                        5341009
+                };
+                for (int summonZ : hexaSummons) {
+                    summon = Summon.getSummonByAndSetStat(chr, summonZ, slv);
+                    field = chr.getField();
+                    summon.setFlyMob(false);
+                    summon.setMoveAction((byte) 0);
+                    summon.setMoveAbility(MoveAbility.Stop);
+                    field.spawnSummon(summon);
+                }
+                break;
+            case HEXA_MONKEY_MALITIA_TWIN:
                 summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
                 field = chr.getField();
                 summon.setFlyMob(false);
@@ -620,13 +649,15 @@ public class Cannoneer extends Job {
                 chr.write(UserLocal.poolMakerRequest(skillID, si.getValue(w, slv), poolMakerCoolTime));
                 break;
             case SUPER_CANNON_EXPLOSION:
+            case BARREL_OF_MONKEYS:
                 o1.nOption = 1;
+                o1.nValue = 1;
                 o1.rOption = skillID;
+                o1.nReason = skillID;
                 o1.tOption = 7;
+                o1.tTerm = 7;
                 tsm.sendStat(IndieNotDamaged, o1);
                 chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
-                break;
-            case BARREL_OF_MONKEYS:
                 break;
         }
     }
@@ -732,12 +763,28 @@ public class Cannoneer extends Job {
                 int skillID = NAUTILUS_STRIKE;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
+                return 1;
+            }
+            case HEXA_MONKEY_MALITIA -> {
+                int skillID = MONKEY_MALITIA;
+                int slv = chr.getSkillLevel(skillID);
+                chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
+                return 1;
+            }
+            case HEXA_MONKEY_FURY -> {
+                int skillID = MONKEY_FURY;
+                int slv = chr.getSkillLevel(skillID);
+                chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
                 return 1;
             }
             case HEXA_POOLMAKER -> {
                 int skillID = POOLMAKER;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
                 return 1;
             }
         }

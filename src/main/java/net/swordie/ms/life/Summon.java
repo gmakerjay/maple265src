@@ -610,7 +610,7 @@ public class Summon extends Life {
                     ((Bishop) job).giveAngelOfBalanceSummonBuff();
             case Illium.RESONANCE -> ((Illium) job).doResonanceSkill();
             case Shade.SPIRITGATE_SUMMONER -> ((Shade) job).summonSpiritgateSummons(getPosition());
-            case Corsair.ALL_ABOARD, Corsair.HEXA_SCURVY_SUMMONS -> ((Corsair) job).handleScurvySecondAtoms();
+            case Corsair.SCURVY_SUMMONS, Corsair.ALL_ABOARD, 5211019, Corsair.HEXA_SCURVY_SUMMONS, 5241012 -> ((Corsair) job).handleScurvySecondAtoms();
             default -> {
                 int buffItem = SkillConstants.getBuffSkillItem(skillId);
                 if (buffItem != 0) {

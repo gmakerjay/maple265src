@@ -282,9 +282,9 @@ public class Bishop extends Magician {
                         si = SkillData.getSkillInfoById(ANGEL_OF_BALANCE_BENEVOLENCE);
                         slv = chr.getSkillLevel(ANGEL_OF_BALANCE_BENEVOLENCE);
                     }
-                    o1.nOption = 25;
+                    o1.nOption = si != null && si.getValue(x, slv) > 0 ? si.getValue(x, slv) : 25;
                     o1.rOption = skillID;
-                    o1.tOption = 10;
+                    o1.tOption = si != null && si.getValue(subTime, slv) > 0 ? si.getValue(subTime, slv) : 10;
                     mts.addStatOptions(mob, MobStat.BahamutLightElemAddDam, o1);
                 }
                 break;
@@ -384,23 +384,26 @@ public class Bishop extends Magician {
                     tsm.sendStat(HolyWater, o);
                     angelRayHits = 0;
                 }
-                int value = tsm.hasStat(SixthAngelsRay) ? (int) (tsm.getTotalNOptionOfStat(SixthAngelsRay) + 1) : 1;
-                if (value >= 12 && skillID == HEXA_ANGEL_RAY) {
-                    List<Integer> mobList = new ArrayList<>();
-                    for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
-                        Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
-                        if (mob == null || mob.getHp() <= 0) {
-                            continue;
+                if (chr.hasSkill(HEXA_ANGEL_RAY)) {
+                    int value = tsm.hasStat(SixthAngelsRay) ? (int) (tsm.getTotalNOptionOfStat(SixthAngelsRay) + 1) : 1;
+                    if (value >= 12 && skillID == HEXA_ANGEL_RAY) {
+                        List<Integer> mobList = new ArrayList<>();
+                        for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                            Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                            if (mob == null || mob.getHp() <= 0) {
+                                continue;
+                            }
+                            mobList.add(mob.getObjectId());
+                            mob.getField().broadcast(MobPool.specialEffectBySkill(mob, HEXA_ANGEL_RAY_BONUS, chr.getId(), 0));
                         }
-                        mobList.add(mob.getObjectId());
-                        mob.getField().broadcast(MobPool.specialEffectBySkill(mob, HEXA_ANGEL_RAY_BONUS, chr.getId(), 0));
+                        chr.write(UserLocal.userBonusAttackRequest(HEXA_ANGEL_RAY_BONUS, mobList));
+                        value = 0;
                     }
-                    chr.write(UserLocal.userBonusAttackRequest(HEXA_ANGEL_RAY_BONUS, mobList));
-                    value = 0;
+                    Option oHexa = new Option();
+                    oHexa.nOption = Math.min(value, 12);
+                    oHexa.rOption = HEXA_ANGEL_RAY;
+                    tsm.sendStat(SixthAngelsRay, oHexa);
                 }
-                o.nOption = Math.min(value, 12);
-                o.rOption = HEXA_ANGEL_RAY;
-                tsm.sendStat(SixthAngelsRay, o);
                 break;
             case GENESIS:
             case HEXA_GENESIS:
@@ -790,9 +793,9 @@ public class Bishop extends Magician {
                 break;
             case MYSTIC_DOOR:
                 Field townField = FieldData.getFieldById(chr.getField().getReturnMap());
-                int x = townField.getPortalByName("tp").getX();
-                int y = townField.getPortalByName("tp").getY();
-                Position townPosition = new Position(x, y); // Grabs the Portal Co-ordinates for the TownPortalPoint
+                Position townPosition = (townField != null && townField.getPortalByName("tp") != null)
+                        ? new Position(townField.getPortalByName("tp").getX(), townField.getPortalByName("tp").getY())
+                        : chr.getPosition();
                 duration = si.getValue(time, slv);
                 if (chr.getTownPortal() != null) {
                     TownPortal townPortal = chr.getTownPortal();
@@ -990,8 +993,20 @@ public class Bishop extends Magician {
                 chr.addSkillCooldown(skillId, 6000);
                 return 1;
             }
+            case HEXA_FOUNTAIN_OF_VENGEANCE -> {
+                int skillID = FOUNTAIN_OF_VENGEANCE;
+                int slv = chr.getSkillLevel(skillID);
+                chr.setSkillCooldown(skillID, slv);
+                return 1;
+            }
             case HEXA_GENESIS -> {
                 int skillID = GENESIS;
+                int slv = chr.getSkillLevel(skillID);
+                chr.setSkillCooldown(skillID, slv);
+                return 1;
+            }
+            case HEXA_HEAVENS_DOOR -> {
+                int skillID = HEAVENS_DOOR;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
                 return 1;
@@ -1044,7 +1059,7 @@ public class Bishop extends Magician {
             pNewStats.put(IndiePMdR, o1);
             pNewStats.put(IndieBooster, o2);
 
-            tsm.sendStat(pNewStats);
+            pTSM.sendStat(pNewStats);
 
             int HPRecovery = (int) (((si.getValue(x, slv) + (Math.min(bonusRecovery, bonusRecoveryCap))) * pChr.getMaxHP()) / 100D);
             int MPRecovery = (int) (((si.getValue(x, slv) + (Math.min(bonusRecovery, bonusRecoveryCap))) * pChr.getMaxMP()) / 100D);

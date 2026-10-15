@@ -149,12 +149,14 @@ public class Magician extends Beginner {
         if (tsm.hasStat(MagicGuard)) {
             Skill skill = chr.getSkill(MAGIC_GUARD);
             SkillInfo si = SkillData.getSkillInfoById(MAGIC_GUARD);
-            int dmgPerc = si.getValue(x, skill.getCurrentLevel());
-            int dmg = hitInfo.hpDamage;
-            int mpDmg = (int) (dmg * (dmgPerc / 100D));
-            mpDmg = chr.getStat(Stat.mp) - mpDmg < 0 ? chr.getStat(Stat.mp) : mpDmg;
-            hitInfo.hpDamage = dmg - mpDmg;
-            hitInfo.mpDamage = mpDmg;
+            if (skill != null && si != null) {
+                int dmgPerc = si.getValue(x, skill.getCurrentLevel());
+                int dmg = hitInfo.hpDamage;
+                int mpDmg = (int) (dmg * (dmgPerc / 100D));
+                mpDmg = chr.getStat(Stat.mp) - mpDmg < 0 ? chr.getStat(Stat.mp) : mpDmg;
+                hitInfo.hpDamage = dmg - mpDmg;
+                hitInfo.mpDamage = mpDmg;
+            }
         }
         super.handleHit(c, inPacket, hitInfo);
     }
@@ -167,6 +169,10 @@ public class Magician extends Beginner {
         if (level == 60 || level == 100) {
             final short jobID = chr.getJob();
             if (!JobConstants.canJobAdvance(jobID)) {
+                return;
+            }
+            if ((level == 60 && jobID != 210 && jobID != 220 && jobID != 230)
+                    || (level == 100 && jobID != 211 && jobID != 221 && jobID != 231)) {
                 return;
             }
             final short next = JobConstants.nextJob(jobID);

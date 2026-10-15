@@ -105,8 +105,10 @@ public class Shadower extends Thief {
 
     // HEXA Boosts
     public static final int HEXA_SHADOW_ASSAULT_BOOST = 500004040;
-    public static final int HEXA_SHADOW_ASSAULT_6 = 500061026;
     public static final int HEXA_SHADOW_ASSAULT_5 = 500061025;
+    public static final int HEXA_SHADOW_ASSAULT_6 = 500061026;
+    public static final int HEXA_SHADOW_ASSAULT_7 = 500061027;
+    public static final int HEXA_SHADOW_ASSAULT_8 = 500061028;
 
     public List<Integer> drops = new ArrayList<>();
 
@@ -242,7 +244,7 @@ public class Shadower extends Thief {
         int slv = attackInfo.slv;
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         if (hasHitMobs) {
-            if (skillID == HALVE_CUT || skillID == 4241501 || skillID == 4241502) {
+            if (skillID == HALVE_CUT || (skillID >= 4241501 && skillID <= 4241506)) {
                 Option oOrigin1 = new Option();
                 Option oOrigin2 = new Option();
                 oOrigin1.nOption = 1;
@@ -271,6 +273,7 @@ public class Shadower extends Thief {
             if (chr.hasSkill(SONIC_BLOW) && chr.hasSkillOnCooldown(SONIC_BLOW)) {
                 if (skillID == ASSASSINATE || skillID == ASSASSINATE_FINISHER
                         || skillID == HEXA_ASSASSINATE || skillID == HEXA_ASSASSINATE_FINISHER
+                        || skillID == HEXA_PULVERIZE || skillID == HEXA_PULVERIZ_FINISHER
                         || skillID == CRUEL_STAB || skillID == HEXA_CRUEL_STAB
                         || skillID == MESO_EXPLOSION || skillID == ENHANCED_MESO_EXPLOSION
                         || skillID == HEXA_MESO_EXPLOSION || skillID == HEXA_ENHANCED_MESO_EXPLOSION) {
@@ -321,7 +324,14 @@ public class Shadower extends Thief {
                 o1.tOption = 10;
                 tsm.sendStat(Shadower_Assassination, o1);
                 break;
+            case HEXA_PULVERIZE:
+                o1.nOption = 1;
+                o1.rOption = DARK_SIGHT;
+                o1.tOption = 6;
+                tsm.sendStat(DarkSight, o1);
+                break;
             case HEXA_ASSASSINATE_FINISHER:
+            case HEXA_PULVERIZ_FINISHER:
                 if (!hasHitMobs) {
                     return;
                 }
@@ -357,7 +367,7 @@ public class Shadower extends Thief {
                         }
                     }
                 }
-                o1.rOption = skillID;
+                o1.rOption = HEXA_ASSASSINATE_FINISHER;
                 o1.tOption = 10;
                 tsm.sendStat(SixthAssassination, o1);
                 break;
@@ -614,6 +624,15 @@ public class Shadower extends Thief {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         Option o1 = new Option();
         switch (skillID) {
+            case INTO_DARKNESS: {
+                SkillInfo dsSi = SkillData.getSkillInfoById(DARK_SIGHT);
+                int dsSlv = Math.max(1, chr.getSkillLevel(DARK_SIGHT));
+                o1.nOption = dsSi != null ? dsSi.getValue(x, dsSlv) : 1;
+                o1.rOption = DARK_SIGHT;
+                o1.tOption = dsSi != null ? dsSi.getValue(time, dsSlv) : 200;
+                tsm.sendStat(DarkSight, o1);
+                break;
+            }
             case STEAL:
                 if (tsm.hasStat(ThiefSteal)) {
                     tsm.removeStatsBySkill(skillID);
@@ -681,6 +700,8 @@ public class Shadower extends Thief {
             case SHADOW_ASSAULT_4:
             case HEXA_SHADOW_ASSAULT_5:
             case HEXA_SHADOW_ASSAULT_6:
+            case HEXA_SHADOW_ASSAULT_7:
+            case HEXA_SHADOW_ASSAULT_8:
                 o1 = tsm.getOption(Shadower_ShadowAssault);
                 o1.nOption = Math.max(o1.nOption - 1, 0);
                 o1.rOption = skillID;
@@ -708,9 +729,13 @@ public class Shadower extends Thief {
                 tsm.removeStat(AuthenticDarkness);
                 break;
             case HALVE_CUT:
+            case COVETOUS_DARKNESS:
                 o1.nOption = 1;
                 o1.rOption = skillID;
                 o1.tOption = 7;
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 7;
                 tsm.sendStat(IndieNotDamaged, o1);
                 chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
                 break;
