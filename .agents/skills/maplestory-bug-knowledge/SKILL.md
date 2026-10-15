@@ -26,31 +26,57 @@ description: >-
    - ลบไฟล์ `mariadb\data\my.ini` เก่าทิ้งอัตโนมัติก่อนรัน เพื่อป้องกันการจดจำ Path ของเครื่องเดิม
    - สคริปต์จะทำการ Generate `mariadb\my.ini` แบบไดนามิกตาม Directory ปัจจุบัน พร้อมครอบเครื่องหมายคำพูด `""` ป้องกันปัญหาโฟลเดอร์ที่มีช่องว่าง (Spaces in path)
 
-### 1.3 นโยบายการแจกจ่ายแบบ Patch (Incremental Patch Policy)
-- **ห้ามบีบอัดไฟล์ WZ ใหม่อีกเด็ดขาด**: ไฟล์ WZ Data (`data/wz265/`) มีขนาดใหญ่มาก (~5 GB, ~400,000 ไฟล์) ผู้ใช้จะทำการบีบอัดไฟล์ตัวเต็ม (Base Package) เพียงครั้งเดียวเท่านั้น
-- **เมื่อมีการแก้ไขโค้ดหรืออัปเดตระบบ**: จัดเตรียมเฉพาะ **"ไฟล์แพตช์ (Incremental Patch)"** ผ่าน [`Create_Update_Patch.bat`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Create_Update_Patch.bat) ซึ่งจะรวมเฉพาะ:
-  - `maplestory.jar` (~138.64 MB)
-  - สคริปต์ใน `data/scripts/` (NPC, บอส, เควสต์, พอร์ทัล)
-  - `Client_Patch_Files/` (Launcher, Localhost.dll, config)
-  - `server.properties` และ Batch scripts
-- ผู้เล่นนำไปลงทับด้วย `Apply_Patch.bat` ได้ใน 2 วินาที โดยไม่แตะต้องไฟล์ WZ และรักษาฐานข้อมูลตัวละคร 100%
+### 1.3 นโยบายการทดสอบและการจัดทำไฟล์แพตช์ (Testing-First & Incremental Patch Policy)
+1. **กฎเหล็กการทดสอบก่อนทำแพตช์ (Strict Test-First Policy)**:
+   - **ต้องทดสอบให้เรียบร้อยก่อนเสมอแล้วจึงค่อยทำไฟล์แพตช์**: เมื่อมีการแก้ไขโค้ด Java หรือสคริปต์ ให้ทำการคอมไพล์ รันเซิร์ฟเวอร์ และ**ทดสอบการทำงานจริงในเกม (In-Game Testing) ให้ผ่าน 100% ก่อนเสมอ** เพื่อให้มั่นใจว่าฟีเจอร์ทำงานถูกต้อง ไม่มี Error และไม่เกิด Client/Server Crash แล้วจึงค่อยรันสคริปต์สร้างไฟล์แพตช์ (`Create_Update_Patch.bat` / `tools/create_patch.py`) เพื่อไม่ให้เสียเวลาสร้างไฟล์แพตช์ซ้ำซ้อนไปมาหากพบจุดบกพร่องภายหลัง
+2. **รวมไฟล์แพตช์เป็นไฟล์เดียวเบ็ดเสร็จ (Single All-in-One Patch Archive)**:
+   - ในโฟลเดอร์ **`Patches/`** จะต้องมี **เพียงไฟล์เดียวเท่านั้น (Strictly Single File 100%)** คือ:
+     - **`Patches/Server263_Patch_Latest.zip`**
+   - **ห้ามสร้างไฟล์แตกย่อยซ้ำซ้อน**: ห้ามแยก Client Patch ออกมาเป็น zip ต่างหาก และห้ามเก็บไฟล์ zip ที่มี Timestamp ซ้ำซ้อน เพื่อไม่ให้กินพื้นที่และไม่ทำให้ผู้ใช้สับสน
+   - ภายในแพ็กเกจเดี่ยวนี้จะรวมครบทุกอย่าง: Server Core (`maplestory.jar`, properties, batch scripts, `backup.sql`), Scripts ล่าสุด (`data/scripts/`), Drop Tables (`data/resources/`), โฟลเดอร์ `Client_Patch_Files/` (Launcher, Localhost.dll, config) และสคริปต์ `Apply_Patch.bat` ที่อัปเดตเซิร์ฟเวอร์พร้อมถามผู้ใช้เพื่อติดตั้งแพตช์เข้าโฟลเดอร์ตัวเกม MapleStory ได้ในคลิกเดียว
+3. **นโยบายไม่บีบอัดไฟล์ WZ ซ้ำ**:
+   - **ห้ามให้ผู้ใช้บีบอัดไฟล์ WZ ใหม่อีกเด็ดขาด**: ไฟล์ WZ Data (`data/wz265/`) มีขนาดใหญ่มาก (~5 GB, ~400,000 ไฟล์) ผู้ใช้จะทำการบีบอัดไฟล์ตัวเต็ม (Base Package) เพียงครั้งเดียวเท่านั้น
+   - ผู้ใช้นำไฟล์แพตช์ไปก๊อปปี้วางทับใน `Server263/` ด้วย `Apply_Patch.bat` ได้ทันทีใน 2 วินาที โดยรักษาฐานข้อมูลตัวละครและไฟล์ WZ เดิมไว้ 100%
 
-### 1.4 การทดสอบผ่านคำสั่งลับระดับ Admin เท่านั้น (Private Admin Testing Commands)
-- **ห้ามใส่ปุ่มโกงหรือเมนูทดสอบลงในสคริปต์สาธารณะเด็ดขาด**: ไฟล์สำหรับแจกจ่ายผู้เล่นทั่วไป (`quick_adminNPC.py`, `PlayerCommands.java` ฯลฯ) ต้องสะอาด 100%
+### 1.4 คำสั่งลับสำหรับทดสอบระบบเฉพาะผู้พัฒนา (Private Admin Testing Commands: `!endgame`)
+- **ห้ามใส่ปุ่มโกงหรือเมนูทดสอบลงในสคริปต์สาธารณะเด็ดขาด**: ไฟล์สำหรับแจกจ่ายผู้เล่นทั่วไป (`quick_adminNPC.py`, `PlayerCommands.java` ฯลฯ) ต้องสะอาด 100% ปราศจากปุ่มโกง
 - **การทดสอบทำผ่านคำสั่งลับระดับ Admin เท่านั้น** (`requiredType = Admin` ใน `AdminCommands.java` บัญชี `admin`/`admin`):
-  - `!endgame` หรือ `!test6` หรือ `!boost` (ปรับเลเวล 260, มอบแต้ม SP เต็มพิกัดให้อัปสกิลคลาส 1-4 เองโดยห้ามใส่ chr.addSkill หรือ maxSkills, สกิล V-Matrix และ HEXA คลาส 6 Lv.30 เต็ม, อาวุธ Arcane Umbra, เงิน 2B Mesos, Sol Erda Energy x20, Sol Erda Fragment x1,000)
-  - `!endgame <class_name>` สำหรับเปลี่ยนอาชีพและรับของฟูลเซ็ตทันที เช่น `!endgame hayato`, `!endgame kanna`, `!endgame khali`, `!endgame lara`, `!endgame kain`, `!endgame illium`, `!endgame ark`, `!endgame hoyoung`
-- เมื่อเพิ่มหรือปรับแก้คลาสใหม่ ให้ลงทะเบียนไอเทมประจำอาชีพและสกิล V-Matrix/HEXA ใน `AdminCommands.setupEndgame` เสมอ
+  - `!endgame` หรือ `!test6` หรือ `!boost` หรือ `!endgame <class_name>` เช่น `!endgame khali`, `!endgame lara`, `!endgame illium`, `!endgame ark`, `!endgame hoyoung`, `!endgame kain`, `!endgame hayato`, `!endgame kanna`, `!endgame adele` ฯลฯ
+- **มาตรฐานผลลัพธ์ของคำสั่ง `!endgame` (Strict Zero-Skill-Injection Standard)**:
+  1. **เลเวลและสเตตัส**: ปรับเลเวลตัวละครเป็น 260, ฟื้นฟู HP/MP เต็ม 100%, และมอบค่า AP (1,250 แต้ม)
+  2. **ปลดล็อกระบบ Matrix เควสต์**: สำเร็จเควสต์คลาส 5 (1460-1466) และเควสต์คลาส 6 (1488) เพื่อเปิดใช้งาน Matrix UI
+  3. **แต้ม SP ตามธรรมชาติ**: มอบแต้ม SP เต็มพิกัดผ่าน ExtendSP และ Stat.sp เพื่อให้ผู้เล่นนำไปอัปสกิลคลาส 1 - 4 ด้วยตนเอง
+  4. **ของใช้และวัตถุดิบสำหรับ V Matrix และ HEXA Matrix**:
+     - Nodestones x3,000 (`2435719`)
+     - Experience Nodestones x20 (`2437760`)
+     - Sol Erda Energy x1,000 (`2636421`)
+     - Sol Erda Fragments x30,000 (`4009548`)
+     - Power Elixirs x3,000 (`2000005`)
+  5. **อุปกรณ์สวมใส่ BiS ตรงสายอาชีพ 100%**:
+     - อาวุธ Arcane Umbra ประจำอาชีพ
+     - อาวุธรอง Princess No / BiS Secondary ประจำอาชีพ
+     - Emblem (Mitra Emblem / Gold Emblem) ประจำอาชีพ
+     - เซ็ตชุดเกราะ Arcane Umbra 6 ชิ้น (หมวก, เสื้อ, กางเกง, รองเท้า, ถุงมือ, ผ้าคลุม)
+  6. **เงินทุน**: มอบเงิน 10,000,000,000 Mesos (10B)
+- **กฎเหล็กเด็ดขาด (Strict Zero Skill Injection Policy)**:
+  - ⚠️ **ห้ามยัดสกิล (Skill IDs) หรือเซ็ตเลเวลสกิลลงในตัวละครโดยเด็ดขาด**:
+    - **ห้ามเรียก `chr.addSkill`, `chr.setHexaSkill`, หรือ `mc.setSkillLevel` ใน `!endgame`**
+    - **เหตุผล**: การยัดสกิลลัดขั้นตอนจะทำให้ Skill Book เสียหาย มีไอคอนบัคที่กดไม่ได้ สกิลซ้อนทับกัน คูลดาวน์ชนกัน หรือตัวเกม Crash จากการ Desync ของ Data
+    - **ผู้เล่นจะเป็นผู้กดเปิดหิน Nodestones, ปลดล็อกแกน HEXA Matrix, และจัดสรรแต้ม SP ด้วยตนเองตามกลไกธรรมชาติของระบบเกม**
 
-### 1.5 มาตรฐานการบันทึก Progress (Progress Logging Standard)
-- **ต้องระบุเวลาที่แก้ไขเสมอ**: บันทึกทั้งวันที่และเวลาจริง เช่น `[2026-10-12 11:00 น.]` หรือ `34c9857 (22:51 น.)`
-- **โครงสร้าง 2 บล็อกหลัก**:
-  - `Hash (เวลา น.) — หัวข้อภาษาไทยที่กระชับได้ใจความ (หัวข้ออังกฤษ)`
-  - `- **หัวข้อ**: <Commit Subject / Feature Scope>`
-  - `- **รายละเอียด**:`
-    - แจกแจงแยกหมวดย่อย ปัญหาที่พบ (Problem) -> สาเหตุเชิงเทคนิค -> วิธีแก้ (Fix/Implementation) -> ผลลัพธ์ (Outcome)
-    - ทำ clickable link ไฟล์ที่แก้ไขเสมอ เช่น [`SkillConstants.java`](file:///...)
-- **การจัดเก็บเอกสาร**: บันทึกลงใน [`v214 src/PROGRESS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/PROGRESS.md) และคัดลอกซิงค์มาที่ [`PROGRESS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS.md) ที่รูทเสมอ
+### 1.5 มาตรฐานการ Push Git และบันทึก Progress (Git Sync & Progress Logging Standard)
+1. **กฎเหล็กการ Push Git ทุกอย่าง (Push Everything Policy)**:
+   - **ต้อง Push ทุกอย่าง รวมถึงไฟล์เอกสารทั้งหมดเสมอ**: เมื่อทำการ Git Commit & Push จะต้องทำ `git add .` หรือระบุทุกไฟล์ที่มีการเปลี่ยนแปลง รวมถึงไฟล์เอกสาร (`PROGRESS.md`, `AGENTS.md`, `README.md`, Markdown guides, scripts, configs, tools)
+   - **ห้ามเว้นไฟล์เอกสารหรือปล่อยค้างไว้ที่ Local เด็ดขาด**: เพื่อให้ทุกเครื่องที่ทำการ `git pull` ได้รับข้อมูลอัปเดตตรงกัน 100% และดำเนินงานไปในทิศทางเดียวกันเสมอ ปราศจากความขัดแย้งของโค้ดและเอกสาร
+2. **มาตรฐานการบันทึกและแจกแจง Progress (`PROGRESS.md`)**:
+   - **ต้องระบุเวลาที่แก้ไขเสมอ**: บันทึกทั้งวันที่และเวลาจริง (เช่น `[2026-10-13 14:45 น.]` หรือ `10fc703f (14:03 น.)`)
+   - **โครงสร้าง 2 บล็อกหลัก**:
+     - `Hash (เวลา น.) — หัวข้อภาษาไทยที่กระชับได้ใจความ (หัวข้ออังกฤษ)`
+     - `- **หัวข้อ**: <Commit Subject / Feature Scope>`
+     - `- **รายละเอียด**:`
+       - แจกแจงแยกหมวดย่อย ปัญหาที่พบ (Problem) -> สาเหตุเชิงเทคนิค -> วิธีแก้ (Fix/Implementation) -> ผลลัพธ์ (Outcome)
+       - ทำ clickable link ไฟล์ที่แก้ไขเสมอ เช่น [`Job.java`](file:///...)
+   - **การจัดเก็บเอกสาร**: บันทึกลงใน [`v214 src/PROGRESS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/PROGRESS.md) และคัดลอกซิงค์มาที่ [`PROGRESS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS.md) ที่รูทเสมอ
 
 ---
 
@@ -239,14 +265,13 @@ description: >-
 
 ---
 
-## 5. กระบวนการทำงาน (Workflow: Development, Build & Patch)
+## 5. กระบวนการทำงานที่เป็นมาตรฐาน (Standardized Workflow: Development, Build, Test & Patch)
 
 ```text
 [แก้ไขโค้ด Java หรือ Python Script]
             │
             ▼
-[รัน Maven Package ใน v214 src]
-(mvn clean package -DskipTests หรือ 2_Build_Server.bat)
+[รัน Maven Package ใน v214 src (2_Build_Server.bat)]
             │
             ▼
 [ตรวจสอบ BUILD SUCCESS]
@@ -255,38 +280,41 @@ description: >-
 [Deploy maplestory.jar ไปยัง Server263/ และ Root]
             │
             ▼
-[ซิงค์ data/scripts/ ไปยัง Server263/data/scripts/]
+[รันเซิร์ฟเวอร์และทดสอบจริงในเกม (In-Game Testing) ให้ผ่าน 100%]
             │
             ▼
-[สร้าง Incremental Patch ผ่าน tools/create_patch.py]
+[สร้างไฟล์แพตช์เดี่ยวผ่าน tools/create_patch.py -> Patches/Server263_Patch_Latest.zip]
             │
             ▼
-[บันทึก PROGRESS.md พร้อมระบุเวลาจริง (HH:mm น.)]
+[บันทึก PROGRESS.md ทั้ง root และ v214 src/ พร้อมระบุเวลาจริง]
             │
             ▼
-[Git Add, Commit, Push]
+[Git Add & Git Commit & Git Push ทุกอย่างรวมถึงเอกสารทั้งหมด]
 ```
 
 ---
 
-## 6. มาตรฐานการพอร์ตและตรวจสอบข้อมูลอ้างอิงข้ามเวอร์ชัน (Cross-Version Porting & Strict ID Audit)
+## 6. มาตรฐานการพอร์ตและตรวจสอบข้อมูลอ้างอิงข้ามเวอร์ชัน (TMS Reference & Strict ID Audit)
 
-1. **คลังข้อมูลอ้างอิงหลัก**:
-   - `TMS277_REF_NomainSource/tms273/`:
+1. **บทบาทของคลังข้อมูลอ้างอิงหลัก (Reference Repository)**:
+   - โฟลเดอร์ `TMS277_REF_NomainSource/tms273/`:
      - `script/event/`: แมคคานิคบอส 81 ตัว (Kalos, Kaling, Seren, Limbo, Extreme Lotus, Black Mage ฯลฯ)
      - `script/boss/`: ตารางดรอปและคำนวณของรางวัลบอส (`BOSS_REWARD_APPLY.js`, `boss_crystallize.js`)
      - `script/ScriptAPI.d.ts`: นิยามเมธอดของระบบ Script Engine (2,067 บรรทัด)
      - `data/MobReward/`: ข้อมูลอัตราการดรอปของมอนสเตอร์ 1,987 ตัว
      - `data/Shop/`: สินค้าร้านค้า NPC 169 ร้าน
-2. **กฎเหล็กการตรวจสอบ ID ป้องกันความคลาดเคลื่อน**:
-   - ⚠️ ห้ามคัดลอก ID จาก TMS มาใส่ใน v265 โดยไม่ผ่านการตรวจสอบ 100%
-   - **Mob IDs**: ตรวจสอบกับ `Server263/data/wz265/Mob.wz/<MobID>.img.xml` และ `String.wz/Mob.img.xml`
-   - **Item IDs**: ตรวจสอบกับ `Server263/data/wz265/Item.wz/` และ `Character.wz/` กรองไอเทม TMS Exclusive ทิ้ง
-   - **Map IDs**: ตรวจสอบกับ `Server263/data/wz265/Map.wz/Map/Map<X>/<MapID>.img.xml` ป้องกันจอดำ
-   - **Reactor IDs & Portals**: ตรวจสอบกับ `Server263/data/wz265/Reactor.wz/`
+   - **จุดประสงค์หลักในการใช้งาน TMS REF**:
+     - **ใช้เป็น Reference สูตรการคำนวณ**: ใช้สำหรับอ้างอิงสูตรคำนวณตัวเลข (Formulas), Logic การคิดความเสียหาย/อัตราการดรอป, และระบบ Event Mechanics
+     - **ส่วนไหนใน TMS ที่ทำไว้สมบูรณ์และเป็นมาตรฐาน**: สามารถดึงมาเป็น Reference และพอร์ตมาปรับใช้เข้ากับเซิร์ฟเวอร์ v265 ของเราได้ทันที
+2. **กฎเหล็กการตรวจสอบ ID ป้องกันความคลาดเคลื่อน (Strict ID & Asset Audit Policy)**:
+   - ⚠️ **ต้องเช็คทุกครั้งว่า ID ตรงกับ v265 หรือไม่ ห้ามคัดลอก ID จาก TMS มาใส่ในโค้ดหรือฐานข้อมูล v265 ตรงๆ โดยเด็ดขาด**:
+     - **Mob IDs**: ตรวจสอบกับ `Server263/data/wz265/Mob.wz/<MobID>.img.xml` และ `String.wz/Mob.img.xml`
+     - **Item IDs**: ตรวจสอบกับ `Server263/data/wz265/Item.wz/` และ `Character.wz/` กรองไอเทม TMS Exclusive ทิ้ง
+     - **Map IDs**: ตรวจสอบกับ `Server263/data/wz265/Map.wz/Map/Map<X>/<MapID>.img.xml` ป้องกันจอดำ
+     - **Reactor IDs & Portals**: ตรวจสอบกับ `Server263/data/wz265/Reactor.wz/`
 3. **ขั้นตอนการพอร์ตที่เป็นมาตรฐาน**:
    - **Step 1: Automated Asset Audit**: สแกน IDs ทั้งหมดในสคริปต์ต้นทางเทียบ WZ v265 ผ่าน Python Checker
    - **Step 2: Script Logic Translation**: แมปคำสั่ง ScriptAPI (JavaScript) ➔ SwordieMS (Python/Java)
-   - **Step 3: Verification & In-Game Testing**: ทดสอบในเกมผ่านตัวละคร Admin
-   - **Step 4: Update Documentation**: บันทึกใน `PROGRESS.md` ตามมาตรฐาน
+   - **Step 3: Verification & In-Game Testing**: ทดสอบในเกมผ่านตัวละคร Admin ให้ผ่านสมบูรณ์ 100%
+   - **Step 4: Update Documentation & Git Push**: บันทึกใน `PROGRESS.md` ตามมาตรฐาน และ Git Push ทุกไฟล์รวมทั้งเอกสาร
 

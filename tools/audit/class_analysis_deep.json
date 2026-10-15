@@ -1,0 +1,2153 @@
+{
+  "JobManager": {
+    "v_count": 0,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 0,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "Zero": {
+    "v_count": 11,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 11,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 2,
+    "origin_names": [
+      "END_TIME",
+      "BITEMPORIS"
+    ],
+    "origin_in_handleSkill": [
+      "END_TIME",
+      "BITEMPORIS"
+    ],
+    "origin_in_handleAttack": [
+      "END_TIME",
+      "BITEMPORIS"
+    ],
+    "hexa_in_handleSkill": [
+      "END_TIME",
+      "BITEMPORIS"
+    ],
+    "hexa_in_handleAttack": [
+      "END_TIME",
+      "BITEMPORIS"
+    ],
+    "hexa_summons": [
+      "END_TIME",
+      "BITEMPORIS"
+    ],
+    "hexa_aas": [
+      "END_TIME",
+      "BITEMPORIS"
+    ],
+    "has_showHexaSkillEff": true
+  },
+  "BeastTamer": {
+    "v_count": 5,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 0,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "Beginner": {
+    "v_count": 0,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 0,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "Kinesis": {
+    "v_count": 13,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 8,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 2,
+    "origin_names": [
+      "FROM_ANOTHER_REALM",
+      "FRACTAL_HORIZON"
+    ],
+    "origin_in_handleSkill": [
+      "FROM_ANOTHER_REALM",
+      "FRACTAL_HORIZON"
+    ],
+    "origin_in_handleAttack": [
+      "FROM_ANOTHER_REALM",
+      "FRACTAL_HORIZON"
+    ],
+    "hexa_in_handleSkill": [
+      "FROM_ANOTHER_REALM",
+      "FRACTAL_HORIZON"
+    ],
+    "hexa_in_handleAttack": [
+      "FROM_ANOTHER_REALM",
+      "FRACTAL_HORIZON"
+    ],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": true
+  },
+  "PinkBean": {
+    "v_count": 0,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 0,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "Archer": {
+    "v_count": 1,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 0,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "BowMaster": {
+    "v_count": 8,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 15,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [
+      "HEXA_PHOENIX",
+      "HEXA_SPEED_MIRAGE",
+      "HEXA_SILHOUETTE_MIRAGE"
+    ],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [
+      "HEXA_PHOENIX",
+      "HEXA_GRITTY_GUST"
+    ],
+    "hexa_aas": [
+      "HEXA_PHOENIX",
+      "HEXA_GRITTY_GUST"
+    ],
+    "has_showHexaSkillEff": false
+  },
+  "Marksman": {
+    "v_count": 7,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 10,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [
+      "HEXA_FROSTPREY"
+    ],
+    "hexa_in_handleAttack": [
+      "HEXA_PIECING_ARROW",
+      "HEXA_EMPOWERED_PIECING_ARROW",
+      "HEXA_ULTIMATE_PIECING_ARROW",
+      "HEXA_SNIPE",
+      "HEXA_EMPOWERED_SNIPE",
+      "ULTIMATE_SNIPE"
+    ],
+    "hexa_summons": [
+      "HEXA_FROSTPREY",
+      "HEXA_PIECING_ARROW",
+      "HEXA_EMPOWERED_PIECING_ARROW",
+      "HEXA_ULTIMATE_PIECING_ARROW",
+      "HEXA_SNIPE",
+      "HEXA_EMPOWERED_SNIPE",
+      "ULTIMATE_SNIPE"
+    ],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "Pathfinder": {
+    "v_count": 12,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 11,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 2,
+    "origin_names": [
+      "FORSAKEN_RELIC",
+      "PIERCING_RELIC"
+    ],
+    "origin_in_handleSkill": [
+      "FORSAKEN_RELIC",
+      "PIERCING_RELIC"
+    ],
+    "origin_in_handleAttack": [
+      "FORSAKEN_RELIC",
+      "PIERCING_RELIC"
+    ],
+    "hexa_in_handleSkill": [
+      "FORSAKEN_RELIC",
+      "PIERCING_RELIC"
+    ],
+    "hexa_in_handleAttack": [
+      "FORSAKEN_RELIC",
+      "PIERCING_RELIC"
+    ],
+    "hexa_summons": [
+      "FORSAKEN_RELIC",
+      "PIERCING_RELIC"
+    ],
+    "hexa_aas": [
+      "FORSAKEN_RELIC",
+      "PIERCING_RELIC"
+    ],
+    "has_showHexaSkillEff": true
+  },
+  "Bishop": {
+    "v_count": 6,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 20,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 6,
+    "origin_names": [
+      "HOLY_ADVENT",
+      "HOLY_ADVENT_M",
+      "HOLY_ADVENT_L",
+      "HOLY_ADVENT_R",
+      "HOLY_ADVENT_AFTER",
+      "COMMANDMENT_OF_HEAVEN"
+    ],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [
+      "HOLY_ADVENT_AFTER"
+    ],
+    "hexa_in_handleSkill": [
+      "HEXA_TRIUMPH_FEATHER",
+      "HEXA_FOUNTAIN_OF_VENGEANCE",
+      "HEXA_BAHAMUT",
+      "HEXA_BENEDICTION"
+    ],
+    "hexa_in_handleAttack": [
+      "HOLY_ADVENT_AFTER",
+      "HEXA_ANGEL_RAY",
+      "HEXA_GENESIS",
+      "HEXA_HEAVENS_DOOR"
+    ],
+    "hexa_summons": [
+      "HOLY_ADVENT",
+      "HOLY_ADVENT_AFTER",
+      "HEXA_ANGEL_RAY",
+      "HEXA_TRIUMPH_FEATHER",
+      "HEXA_FOUNTAIN_OF_VENGEANCE",
+      "HEXA_ANGELIC_WRATH",
+      "HEXA_ANGELIC_WRATH_SUMMON",
+      "HEXA_GENESIS",
+      "HEXA_HEAVENS_DOOR",
+      "HEXA_BAHAMUT",
+      "HEXA_BENEDICTION"
+    ],
+    "hexa_aas": [
+      "HOLY_ADVENT",
+      "HOLY_ADVENT_AFTER",
+      "HEXA_ANGEL_RAY",
+      "HEXA_TRIUMPH_FEATHER",
+      "HEXA_FOUNTAIN_OF_VENGEANCE",
+      "HEXA_ANGELIC_WRATH",
+      "HEXA_ANGELIC_WRATH_SUMMON",
+      "HEXA_GENESIS",
+      "HEXA_HEAVENS_DOOR",
+      "HEXA_BAHAMUT",
+      "HEXA_BENEDICTION"
+    ],
+    "has_showHexaSkillEff": false
+  },
+  "FirePoison": {
+    "v_count": 6,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 17,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 1,
+    "origin_names": [
+      "INFERNAL_VENOM_ICON"
+    ],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [
+      "INFERNAL_VENOM_ICON"
+    ],
+    "hexa_in_handleSkill": [
+      "HEXA_MIST_ERUPTION",
+      "HEXA_INFERNO_AURA",
+      "HEXA_IGNITE",
+      "HEXA_IFRIT",
+      "HEXA_CREEPING_TOXIN",
+      "HEXA_MEGIDDO_FLAME_MANUAL",
+      "HEXA_MEGIDDO_FLAME_AUTO"
+    ],
+    "hexa_in_handleAttack": [
+      "HEXA_FLAME_SWEEP",
+      "HEXA_POISON_MIST",
+      "INFERNAL_VENOM_ICON"
+    ],
+    "hexa_summons": [
+      "HEXA_INFERNO_AURA",
+      "HEXA_FLAME_SWEEP",
+      "HEXA_FLAME_HAZE",
+      "HEXA_POISON_MIST",
+      "HEXA_IGNITE",
+      "HEXA_IFRIT",
+      "HEXA_CREEPING_TOXIN",
+      "HEXA_MEGIDDO_FLAME_MANUAL",
+      "HEXA_MEGIDDO_FLAME_AUTO",
+      "INFERNAL_VENOM_ICON"
+    ],
+    "hexa_aas": [
+      "HEXA_INFERNO_AURA",
+      "HEXA_FLAME_SWEEP",
+      "HEXA_FLAME_HAZE",
+      "HEXA_POISON_MIST",
+      "HEXA_IFRIT",
+      "HEXA_MEGIDDO_FLAME_MANUAL",
+      "HEXA_MEGIDDO_FLAME_AUTO",
+      "INFERNAL_VENOM_ICON"
+    ],
+    "has_showHexaSkillEff": false
+  },
+  "IceLightning": {
+    "v_count": 8,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 14,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 4,
+    "origin_names": [
+      "FROZEN_LIGHTING",
+      "FROZEN_LIGHTING_BUFF",
+      "PARABOLIC_BOLT",
+      "PARABOLIC_BOLT_SA"
+    ],
+    "origin_in_handleSkill": [
+      "PARABOLIC_BOLT_SA"
+    ],
+    "origin_in_handleAttack": [
+      "FROZEN_LIGHTING"
+    ],
+    "hexa_in_handleSkill": [
+      "HEXA_THUNDER_SPHERE",
+      "HEXA_THUNDER_SPHERE_STAY",
+      "HEXA_ELQUINES",
+      "PARABOLIC_BOLT_SA"
+    ],
+    "hexa_in_handleAttack": [
+      "HEXA_CHAIN_LIGHTNING",
+      "HEXA_FROZEN_ORB",
+      "FROZEN_LIGHTING"
+    ],
+    "hexa_summons": [
+      "HEXA_CHAIN_LIGHTNING",
+      "HEXA_FROZEN_ORB",
+      "HEXA_THUNDER_SPHERE",
+      "HEXA_THUNDER_SPHERE_STAY",
+      "HEXA_ELQUINES",
+      "FROZEN_LIGHTING"
+    ],
+    "hexa_aas": [
+      "HEXA_CHAIN_LIGHTNING",
+      "HEXA_FROZEN_ORB",
+      "HEXA_THUNDER_SPHERE",
+      "HEXA_THUNDER_SPHERE_STAY",
+      "HEXA_ELQUINES",
+      "FROZEN_LIGHTING",
+      "PARABOLIC_BOLT",
+      "PARABOLIC_BOLT_SA"
+    ],
+    "has_showHexaSkillEff": false
+  },
+  "Magician": {
+    "v_count": 1,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 0,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "Buccaneer": {
+    "v_count": 6,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 11,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [
+      "HEXA_SERPENT_SCALE"
+    ],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "Cannoneer": {
+    "v_count": 12,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 11,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [
+      "HEXA_MONKEY_MORTAR",
+      "HEXA_ANCHOR_AWEIGH",
+      "HEXA_MONKEY_MALITIA",
+      "HEXA_ROLLING_RAINBOW_SUMMON",
+      "HEXA_POOLMAKER"
+    ],
+    "hexa_in_handleAttack": [
+      "HEXA_POOLMAKER",
+      "HEXA_POOLMAKER_ATTACK"
+    ],
+    "hexa_summons": [
+      "HEXA_MONKEY_MORTAR",
+      "HEXA_ANCHOR_AWEIGH",
+      "HEXA_MONKEY_MALITIA",
+      "HEXA_MONKEY_FURY",
+      "HEXA_ROLLING_RAINBOW",
+      "HEXA_ROLLING_RAINBOW_SUMMON"
+    ],
+    "hexa_aas": [
+      "HEXA_MONKEY_MORTAR",
+      "HEXA_ANCHOR_AWEIGH",
+      "HEXA_MONKEY_MALITIA",
+      "HEXA_MONKEY_FURY",
+      "HEXA_ROLLING_RAINBOW",
+      "HEXA_ROLLING_RAINBOW_SUMMON"
+    ],
+    "has_showHexaSkillEff": false
+  },
+  "Corsair": {
+    "v_count": 7,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 12,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [
+      "HEXA_BROADSIDE",
+      "CONDEMNATION",
+      "HEXA_FIRING_ORDERS",
+      "HEXA_SCURVY_SUMMONS",
+      "HEXA_SIEGE_BOMBER"
+    ],
+    "hexa_in_handleAttack": [
+      "HEXA_RAPID_FIRE",
+      "HEXA_RAPID_FIRE_SHOOTOUT_MODE",
+      "HEXA_BRAIN_SCRAMBLER"
+    ],
+    "hexa_summons": [
+      "HEXA_RAPID_FIRE",
+      "HEXA_RAPID_FIRE_SHOOTOUT_MODE",
+      "HEXA_BROADSIDE",
+      "HEXA_BRAIN_SCRAMBLER",
+      "CONDEMNATION",
+      "HEXA_FIRING_ORDERS",
+      "HEXA_SCURVY_SUMMONS",
+      "HEXA_SIEGE_BOMBER"
+    ],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "Pirate": {
+    "v_count": 1,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 0,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "DualBlade": {
+    "v_count": 9,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 20,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [
+      "MIRRORED_TARGET",
+      "HEROS_WILL",
+      "EPIC_ADVENTURE",
+      "BLADE_CLONE",
+      "ASURAS_ANGER",
+      "HEXA_ASURAS_ANGER",
+      "HEXA_BLADE_CLONE"
+    ],
+    "hexa_in_handleAttack": [
+      "BLADES_OF_DESTINY"
+    ],
+    "hexa_summons": [
+      "SUDDEN_RAID",
+      "MIRRORED_TARGET",
+      "BLADES_OF_DESTINY",
+      "HEXA_SUDDEN_RAID"
+    ],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "NightLord": {
+    "v_count": 9,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 20,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [
+      "DARK_LORDS_OMEN",
+      "THROWING_STAR_BARRAGE",
+      "THROW_BLASTING_BUFF",
+      "HEXA_ASSASSINS_MARK",
+      "HEXA_DARK_FLARE"
+    ],
+    "hexa_in_handleAttack": [
+      "DARK_LORDS_OMEN",
+      "THROWING_STAR_BARRAGE_DOUBLE",
+      "THROWING_STAR_BARRAGE_TRIPLE",
+      "THROWING_STAR_BARRAGE_QUAD",
+      "SHURRIKANE",
+      "HEXA_QUAD_STAR",
+      "HEXA_ENHANCED_QUAD_STAR",
+      "HEXA_DEATH_STAR",
+      "HEXA_DEATH_STAR_RAMPANT"
+    ],
+    "hexa_summons": [
+      "DARK_LORDS_OMEN",
+      "THROWING_STAR_BARRAGE",
+      "THROWING_STAR_BARRAGE_DOUBLE",
+      "THROWING_STAR_BARRAGE_TRIPLE",
+      "THROWING_STAR_BARRAGE_QUAD",
+      "SHURRIKANE",
+      "HEXA_QUAD_STAR",
+      "HEXA_ENHANCED_QUAD_STAR",
+      "HEXA_ASSASSINS_MARK",
+      "HEXA_DARK_FLARE",
+      "HEXA_SHOWDOWN",
+      "HEXA_SUDDEN_RAID",
+      "HEXA_DEATH_STAR",
+      "HEXA_DEATH_STAR_RAMPANT"
+    ],
+    "hexa_aas": [
+      "DARK_LORDS_OMEN",
+      "THROWING_STAR_BARRAGE",
+      "THROWING_STAR_BARRAGE_DOUBLE",
+      "THROWING_STAR_BARRAGE_TRIPLE",
+      "THROWING_STAR_BARRAGE_QUAD",
+      "SHURRIKANE",
+      "HEXA_QUAD_STAR",
+      "HEXA_ENHANCED_QUAD_STAR",
+      "HEXA_ASSASSINS_MARK",
+      "HEXA_DARK_FLARE",
+      "HEXA_SHOWDOWN",
+      "HEXA_SUDDEN_RAID",
+      "HEXA_DEATH_STAR",
+      "HEXA_DEATH_STAR_RAMPANT"
+    ],
+    "has_showHexaSkillEff": false
+  },
+  "Shadower": {
+    "v_count": 13,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 34,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 4,
+    "origin_names": [
+      "HALVE_CUT",
+      "COVETOUS_DARKNESS",
+      "COVETOUS_DARKNESS_FA",
+      "COVETOUS_DARKNESS_AA"
+    ],
+    "origin_in_handleSkill": [
+      "COVETOUS_DARKNESS_AA"
+    ],
+    "origin_in_handleAttack": [
+      "COVETOUS_DARKNESS"
+    ],
+    "hexa_in_handleSkill": [
+      "SHADOW_ASSAULT_4",
+      "SHADOW_ASSAULT_3",
+      "SHADOW_ASSAULT_2",
+      "SHADOW_ASSAULT",
+      "COVETOUS_DARKNESS_AA",
+      "HEXA_MESO_EXPLOSION",
+      "HEXA_ENHANCED_MESO_EXPLOSION",
+      "HEXA_DARK_FLARE",
+      "HEXA_SHADOW_ASSAULT_6",
+      "HEXA_SHADOW_ASSAULT_5"
+    ],
+    "hexa_in_handleAttack": [
+      "TRICKBLADE_FINISHER",
+      "TRICKBLADE_MOB_ATTACK",
+      "SONIC_BLOW",
+      "COVETOUS_DARKNESS",
+      "HEXA_ASSASSINATE_FINISHER"
+    ],
+    "hexa_summons": [
+      "TRICKBLADE",
+      "TRICKBLADE_FINISHER",
+      "TRICKBLADE_MOB_ATTACK",
+      "SONIC_BLOW",
+      "COVETOUS_DARKNESS",
+      "HEXA_ASSASSINATE",
+      "HEXA_ASSASSINATE_FINISHER",
+      "HEXA_MESO_EXPLOSION",
+      "HEXA_ENHANCED_MESO_EXPLOSION",
+      "HEXA_DARK_FLARE",
+      "HEXA_SUDDEN_RAID"
+    ],
+    "hexa_aas": [
+      "SHADOW_ASSAULT_4",
+      "SHADOW_ASSAULT_3",
+      "SHADOW_ASSAULT_2",
+      "SHADOW_ASSAULT",
+      "TRICKBLADE",
+      "TRICKBLADE_FINISHER",
+      "TRICKBLADE_MOB_ATTACK",
+      "SONIC_BLOW",
+      "COVETOUS_DARKNESS",
+      "HEXA_ASSASSINATE",
+      "HEXA_ASSASSINATE_FINISHER",
+      "HEXA_MESO_EXPLOSION",
+      "HEXA_ENHANCED_MESO_EXPLOSION",
+      "HEXA_DARK_FLARE",
+      "HEXA_SUDDEN_RAID",
+      "HEXA_SHADOW_ASSAULT_6",
+      "HEXA_SHADOW_ASSAULT_5"
+    ],
+    "has_showHexaSkillEff": false
+  },
+  "Thief": {
+    "v_count": 1,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 0,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "DarkKnight": {
+    "v_count": 6,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 9,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "Hero": {
+    "v_count": 10,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 6,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [
+      "HEXA_CRY_VALHALLA"
+    ],
+    "hexa_in_handleAttack": [
+      "HEXA_BEAM_BLADE",
+      "HEXA_PUNCTURE"
+    ],
+    "hexa_summons": [
+      "HEXA_BEAM_BLADE",
+      "HEXA_CRY_VALHALLA",
+      "HEXA_PUNCTURE"
+    ],
+    "hexa_aas": [
+      "HEXA_BEAM_BLADE",
+      "HEXA_PUNCTURE"
+    ],
+    "has_showHexaSkillEff": false
+  },
+  "Paladin": {
+    "v_count": 7,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 16,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 4,
+    "origin_names": [
+      "SACRED_BASTION",
+      "SACRED_BASTION_TILE",
+      "SACRED_BASTION_EXTRA",
+      "SACRED_BASTION_AFTER_ATTACK"
+    ],
+    "origin_in_handleSkill": [
+      "SACRED_BASTION_TILE"
+    ],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [
+      "SACRED_BASTION_TILE",
+      "HEXA_DIVINE_ECHO"
+    ],
+    "hexa_in_handleAttack": [
+      "HEXA_BLAST"
+    ],
+    "hexa_summons": [],
+    "hexa_aas": [
+      "SACRED_BASTION",
+      "SACRED_BASTION_TILE",
+      "HEXA_BLAST",
+      "HEXA_DIVINE_ECHO"
+    ],
+    "has_showHexaSkillEff": false
+  },
+  "Warrior": {
+    "v_count": 2,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 0,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "HoYoung": {
+    "v_count": 12,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 42,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 5,
+    "origin_names": [
+      "MILLENNIUM_SPIRIT",
+      "MILLENNIUM_SPIRIT_ATTACK",
+      "SAGE_APOTHEOSIS",
+      "SAGE_APOTHEOSIS_ATTACK_1",
+      "SAGE_APOTHEOSIS_ATTACK_2"
+    ],
+    "origin_in_handleSkill": [
+      "MILLENNIUM_SPIRIT",
+      "SAGE_APOTHEOSIS"
+    ],
+    "origin_in_handleAttack": [
+      "MILLENNIUM_SPIRIT",
+      "MILLENNIUM_SPIRIT_ATTACK",
+      "SAGE_APOTHEOSIS",
+      "SAGE_APOTHEOSIS_ATTACK_1",
+      "SAGE_APOTHEOSIS_ATTACK_2"
+    ],
+    "hexa_in_handleSkill": [
+      "CLONE_RAMPAGE",
+      "SAGE_TIGER_OF_SONGYU",
+      "SAGE_WRATH_OF_GODS",
+      "HEXA_CLONE_RAMPAGE",
+      "MILLENNIUM_SPIRIT",
+      "SAGE_APOTHEOSIS"
+    ],
+    "hexa_in_handleAttack": [
+      "MILLENNIUM_SPIRIT",
+      "MILLENNIUM_SPIRIT_ATTACK",
+      "SAGE_APOTHEOSIS",
+      "SAGE_APOTHEOSIS_ATTACK_1",
+      "SAGE_APOTHEOSIS_ATTACK_2",
+      "HEXA_GROUND_SHATTERING_WAVE"
+    ],
+    "hexa_summons": [
+      "CLONE_RAMPAGE",
+      "SAGE_TIGER_OF_SONGYU",
+      "SAGE_WRATH_OF_GODS",
+      "HEXA_CLONE_RAMPAGE",
+      "MILLENNIUM_SPIRIT",
+      "MILLENNIUM_SPIRIT_ATTACK",
+      "SAGE_APOTHEOSIS",
+      "SAGE_APOTHEOSIS_ATTACK_1",
+      "SAGE_APOTHEOSIS_ATTACK_2",
+      "HEXA_GROUND_SHATTERING_WAVE"
+    ],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": true
+  },
+  "Lara": {
+    "v_count": 10,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 18,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 4,
+    "origin_names": [
+      "NATURE_FRIEND_ORIGIN",
+      "UNIVERSE_IN_BLOOM",
+      "UNIVERSE_IN_BLOOM_ATTACK",
+      "CORNUCOPIA"
+    ],
+    "origin_in_handleSkill": [
+      "UNIVERSE_IN_BLOOM",
+      "UNIVERSE_IN_BLOOM_ATTACK",
+      "CORNUCOPIA"
+    ],
+    "origin_in_handleAttack": [
+      "UNIVERSE_IN_BLOOM",
+      "UNIVERSE_IN_BLOOM_ATTACK",
+      "CORNUCOPIA"
+    ],
+    "hexa_in_handleSkill": [
+      "UNIVERSE_IN_BLOOM",
+      "UNIVERSE_IN_BLOOM_ATTACK",
+      "CORNUCOPIA"
+    ],
+    "hexa_in_handleAttack": [
+      "UNIVERSE_IN_BLOOM",
+      "UNIVERSE_IN_BLOOM_ATTACK",
+      "CORNUCOPIA"
+    ],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": true
+  },
+  "Ren": {
+    "v_count": 9,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 10,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 3,
+    "origin_names": [
+      "HEARTBOUND_VERSE",
+      "HEARTBOUND_VERSE_FALLING_FLOWER",
+      "HEARTBOUND_VERSE_CLIMBING_SERPENT"
+    ],
+    "origin_in_handleSkill": [
+      "HEARTBOUND_VERSE_FALLING_FLOWER",
+      "HEARTBOUND_VERSE_CLIMBING_SERPENT"
+    ],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [
+      "HEXA_RIOTOUS_HEART",
+      "HEARTBOUND_VERSE_FALLING_FLOWER",
+      "HEARTBOUND_VERSE_CLIMBING_SERPENT"
+    ],
+    "hexa_in_handleAttack": [
+      "HEXA_RIOTOUS_HEART",
+      "HEXA_HEARTS_UNITED"
+    ],
+    "hexa_summons": [
+      "HEXA_FINAL_IMUGI_SPIRIT_SWORD_YEARS_UNCOUNTED",
+      "HEXA_RIOTOUS_HEART",
+      "HEXA_HEARTS_UNITED",
+      "HEARTBOUND_VERSE",
+      "HEARTBOUND_VERSE_FALLING_FLOWER"
+    ],
+    "hexa_aas": [
+      "HEXA_FINAL_IMUGI_SPIRIT_SWORD_YEARS_UNCOUNTED",
+      "HEXA_RIOTOUS_HEART",
+      "HEXA_HEARTS_UNITED"
+    ],
+    "has_showHexaSkillEff": false
+  },
+  "BlazeWizard": {
+    "v_count": 8,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 11,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 2,
+    "origin_names": [
+      "ETERNITY",
+      "ETERNITY_ATTACK"
+    ],
+    "origin_in_handleSkill": [
+      "ETERNITY"
+    ],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [
+      "HEXA_BLAZING_EXTINCTION",
+      "HEXA_BLAZING_EXTINCTION_SUMMON",
+      "HEXA_PHOENIX_DRIVE",
+      "HEXA_ORBITAL_EXPLOSION",
+      "ETERNITY"
+    ],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [
+      "HEXA_BLAZING_EXTINCTION",
+      "HEXA_BLAZING_EXTINCTION_SUMMON",
+      "HEXA_PHOENIX_DRIVE",
+      "HEXA_ORBITAL_EXPLOSION",
+      "ETERNITY"
+    ],
+    "hexa_aas": [
+      "HEXA_PHOENIX_DRIVE",
+      "HEXA_ORBITAL_EXPLOSION"
+    ],
+    "has_showHexaSkillEff": false
+  },
+  "DawnWarrior": {
+    "v_count": 8,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 11,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 2,
+    "origin_names": [
+      "ASTRAL_BLITZ",
+      "ASTRAL_BLITZ_BUFF"
+    ],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [
+      "ASTRAL_BLITZ"
+    ],
+    "hexa_in_handleSkill": [
+      "HEXA_COSMIC_SHOWER",
+      "HEXA_COSMIC_BURST"
+    ],
+    "hexa_in_handleAttack": [
+      "ASTRAL_BLITZ"
+    ],
+    "hexa_summons": [
+      "ASTRAL_BLITZ",
+      "HEXA_COSMIC_SHOWER",
+      "HEXA_COSMIC_BURST"
+    ],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "Mihile": {
+    "v_count": 11,
+    "v_missing_dat_count": 2,
+    "v_missing_dat": [
+      "SWORD_OF_LIGHT_1",
+      "SWORD_OF_LIGHT_2"
+    ],
+    "hexa_count": 6,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 2,
+    "origin_names": [
+      "KNIGHTS_IMMORTAL",
+      "KNIGHTS_IMMORTAL_EXTRA"
+    ],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [
+      "HEXA_SHIELD_OF_LIGHT"
+    ],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "NightWalker": {
+    "v_count": 6,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 15,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [
+      "SHADOW_SPEAR",
+      "GREATER_DARK_SERVANT",
+      "HEXA_SHADOW_BAT",
+      "HEXA_RAVENOUS_BAT",
+      "HEXA_GREATER_DARK_SERVANT"
+    ],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [
+      "SHADOW_SPEAR",
+      "GREATER_DARK_SERVANT",
+      "HEXA_SHADOW_BAT",
+      "HEXA_RAVENOUS_BAT",
+      "HEXA_GREATER_DARK_SERVANT"
+    ],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "Noblesse": {
+    "v_count": 1,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 0,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "ThunderBreaker": {
+    "v_count": 15,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 2,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "WindArcher": {
+    "v_count": 7,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 15,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 6,
+    "origin_names": [
+      "MISTRAL_SPRING",
+      "MISTRAL_SPRING_SUMMON",
+      "MISTRAL_SPRING_SA_1",
+      "MISTRAL_SPRING_SA_2",
+      "MISTRAL_SPRING_SA_3",
+      "MISTRAL_SPRING_SUMMON_MOVE"
+    ],
+    "origin_in_handleSkill": [
+      "MISTRAL_SPRING_SUMMON",
+      "MISTRAL_SPRING_SUMMON_MOVE"
+    ],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [
+      "MISTRAL_SPRING_SUMMON",
+      "MISTRAL_SPRING_SUMMON_MOVE",
+      "HEXA_STORM_BRINGER",
+      "HEXA_STORM_WHIM",
+      "ANEMOI_SUMMON",
+      "HEXA_GALE_BARRIER"
+    ],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [
+      "MISTRAL_SPRING",
+      "MISTRAL_SPRING_SUMMON",
+      "MISTRAL_SPRING_SUMMON_MOVE",
+      "HEXA_TRIFLING_WIND",
+      "HEXA_STORM_BRINGER",
+      "HEXA_MONSOON",
+      "HEXA_STORM_WHIM",
+      "ANEMOI",
+      "ANEMOI_SUMMON"
+    ],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "Adele": {
+    "v_count": 4,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 21,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 2,
+    "origin_names": [
+      "MAESTRO",
+      "MAESTRO_ATTACK"
+    ],
+    "origin_in_handleSkill": [
+      "MAESTRO"
+    ],
+    "origin_in_handleAttack": [
+      "MAESTRO",
+      "MAESTRO_ATTACK"
+    ],
+    "hexa_in_handleSkill": [
+      "HEXA_MAGIC_DISPATCH",
+      "HEXA_AETHERIAL_ARMS",
+      "HEXA_HUNTING_DECREE",
+      "HEXA_IMPALE",
+      "HEXA_NOBLE_SUMMONS",
+      "HEXA_AETHER_FORGE",
+      "HEXA_REIGN_OF_DESTRUCTION",
+      "HEXA_SHARDBREAKER",
+      "HEXA_LEGACY_RESTORATION",
+      "MAESTRO"
+    ],
+    "hexa_in_handleAttack": [
+      "HEXA_HUNTING_DECREE",
+      "HEXA_PLUMMET",
+      "HEXA_IMPALE",
+      "HEXA_RESONANCE_RUSH",
+      "HEXA_RESONANCE_RUSH_1",
+      "HEXA_AETHER_FORGE_1",
+      "HEXA_AETHER_FORGE_2",
+      "HEXA_AETHER_FORGE_3",
+      "HEXA_LEGACY_RESTORATION",
+      "MAESTRO",
+      "MAESTRO_ATTACK"
+    ],
+    "hexa_summons": [
+      "HEXA_AETHERIAL_ARMS",
+      "HEXA_HUNTING_DECREE",
+      "HEXA_PLUMMET",
+      "HEXA_IMPALE",
+      "HEXA_RESONANCE_RUSH",
+      "HEXA_RESONANCE_RUSH_1",
+      "HEXA_NOBLE_SUMMONS",
+      "HEXA_AETHER_FORGE",
+      "HEXA_AETHER_FORGE_1",
+      "HEXA_AETHER_FORGE_2",
+      "HEXA_AETHER_FORGE_3",
+      "HEXA_REIGN_OF_DESTRUCTION",
+      "HEXA_LEGACY_RESTORATION",
+      "MAESTRO",
+      "MAESTRO_ATTACK"
+    ],
+    "hexa_aas": [
+      "HEXA_MAGIC_DISPATCH",
+      "HEXA_AETHERIAL_ARMS",
+      "HEXA_HUNTING_DECREE",
+      "HEXA_PLUMMET",
+      "HEXA_IMPALE",
+      "HEXA_RESONANCE_RUSH",
+      "HEXA_RESONANCE_RUSH_1",
+      "HEXA_NOBLE_SUMMONS",
+      "HEXA_AETHER_FORGE",
+      "HEXA_AETHER_FORGE_1",
+      "HEXA_AETHER_FORGE_2",
+      "HEXA_AETHER_FORGE_3",
+      "HEXA_REIGN_OF_DESTRUCTION",
+      "HEXA_SHARDBREAKER",
+      "HEXA_LEGACY_RESTORATION",
+      "MAESTRO",
+      "MAESTRO_ATTACK"
+    ],
+    "has_showHexaSkillEff": true
+  },
+  "Ark": {
+    "v_count": 5,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 27,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 4,
+    "origin_names": [
+      "WHISPER_OF_DEEPEST_ABYSS",
+      "WHISPER_OF_DEEPEST_ABYSS_ATTACK",
+      "PRIMORDIAL_ABYSS",
+      "PRIMORDIAL_ABYSS_ATTACK"
+    ],
+    "origin_in_handleSkill": [
+      "WHISPER_OF_DEEPEST_ABYSS",
+      "PRIMORDIAL_ABYSS"
+    ],
+    "origin_in_handleAttack": [
+      "WHISPER_OF_DEEPEST_ABYSS",
+      "WHISPER_OF_DEEPEST_ABYSS_ATTACK",
+      "PRIMORDIAL_ABYSS",
+      "PRIMORDIAL_ABYSS_ATTACK"
+    ],
+    "hexa_in_handleSkill": [
+      "HEXA_INFINITY_SPELL",
+      "WHISPER_OF_DEEPEST_ABYSS",
+      "PRIMORDIAL_ABYSS",
+      "HEXA_VENGEFUL_HATE"
+    ],
+    "hexa_in_handleAttack": [
+      "WHISPER_OF_DEEPEST_ABYSS",
+      "WHISPER_OF_DEEPEST_ABYSS_ATTACK",
+      "PRIMORDIAL_ABYSS",
+      "PRIMORDIAL_ABYSS_ATTACK",
+      "HEXA_BASIC_CHARGE_DRIVE",
+      "HEXA_SCARLET_CHARGE_DRIVE_ATTACK_1",
+      "HEXA_SCARLET_CHARGE_DRIVE_ATTACK_2",
+      "HEXA_GUST_CHARGE_DRIVE_ATTACK",
+      "HEXA_ABYSSAL_CHARGE_DRIVE_ATTACK",
+      "HEXA_GRIEVOUS_WOUND",
+      "HEXA_INSATIABLE_HUNGER",
+      "HEXA_UNBRIDLED_CHAOS",
+      "HEXA_ENDLESS_AGONY",
+      "HEXA_BLISSFUL_RESTRAINT",
+      "HEXA_OMINOUS_NIGHTMARE",
+      "HEXA_OMINOUS_DREAM"
+    ],
+    "hexa_summons": [],
+    "hexa_aas": [
+      "HEXA_BASIC_CHARGE_DRIVE",
+      "HEXA_SCARLET_CHARGE_DRIVE_ATTACK_1",
+      "HEXA_SCARLET_CHARGE_DRIVE_ATTACK_2",
+      "HEXA_GUST_CHARGE_DRIVE_ATTACK",
+      "HEXA_ABYSSAL_CHARGE_DRIVE_ATTACK",
+      "HEXA_GRIEVOUS_WOUND",
+      "HEXA_INSATIABLE_HUNGER",
+      "HEXA_UNBRIDLED_CHAOS",
+      "HEXA_ENDLESS_AGONY",
+      "HEXA_BLISSFUL_RESTRAINT",
+      "HEXA_OMINOUS_NIGHTMARE",
+      "HEXA_OMINOUS_DREAM"
+    ],
+    "has_showHexaSkillEff": true
+  },
+  "Illium": {
+    "v_count": 7,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 25,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 9,
+    "origin_names": [
+      "EXCIDIUM",
+      "EXCIDIUM_ATTACK",
+      "MYTOCRYSTAL_EXPANSE",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_1",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_2",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_3",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_4",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_5",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_6"
+    ],
+    "origin_in_handleSkill": [
+      "EXCIDIUM",
+      "MYTOCRYSTAL_EXPANSE"
+    ],
+    "origin_in_handleAttack": [
+      "EXCIDIUM",
+      "EXCIDIUM_ATTACK",
+      "MYTOCRYSTAL_EXPANSE",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_1",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_2",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_3",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_4",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_5",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_6"
+    ],
+    "hexa_in_handleSkill": [
+      "EXCIDIUM",
+      "MYTOCRYSTAL_EXPANSE",
+      "HEXA_RADIANT_JAVELIN",
+      "HEXA_RADIANT_JAVELIN_2",
+      "HEXA_RADIANT_ENCHANTED_JAVELIN",
+      "HEXA_WINGED_JAVELIN",
+      "HEXA_WINGED_ENCHANTED_JAVELIN",
+      "HEXA_WINGED_JAVELIN_2",
+      "HEXA_EX",
+      "HEXA_MACHINA",
+      "HEXA_CRYSTAL_SKILL_DEUS",
+      "HEXA_LONGINUS_ZONE"
+    ],
+    "hexa_in_handleAttack": [
+      "EXCIDIUM",
+      "EXCIDIUM_ATTACK",
+      "MYTOCRYSTAL_EXPANSE",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_1",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_2",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_3",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_4",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_5",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_6",
+      "HEXA_RADIANT_JAVELIN",
+      "HEXA_RADIANT_JAVELIN_2",
+      "HEXA_RADIANT_ENCHANTED_JAVELIN",
+      "HEXA_WINGED_JAVELIN",
+      "HEXA_WINGED_ENCHANTED_JAVELIN",
+      "HEXA_WINGED_JAVELIN_2",
+      "HEXA_REACTION_DOMINATION",
+      "HEXA_VORTEX_WINGS",
+      "HEXA_LONGINUS_SPEAR"
+    ],
+    "hexa_summons": [
+      "EXCIDIUM",
+      "EXCIDIUM_ATTACK",
+      "MYTOCRYSTAL_EXPANSE",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_1",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_2",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_3",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_4",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_5",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_6",
+      "HEXA_RADIANT_JAVELIN",
+      "HEXA_RADIANT_JAVELIN_2",
+      "HEXA_RADIANT_ENCHANTED_JAVELIN",
+      "HEXA_WINGED_JAVELIN",
+      "HEXA_WINGED_ENCHANTED_JAVELIN",
+      "HEXA_WINGED_JAVELIN_2",
+      "HEXA_REACTION_DOMINATION",
+      "HEXA_VORTEX_WINGS",
+      "HEXA_EX",
+      "HEXA_MACHINA",
+      "HEXA_CRYSTAL_SKILL_DEUS",
+      "HEXA_LONGINUS_SPEAR",
+      "HEXA_LONGINUS_ZONE"
+    ],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": true
+  },
+  "Khali": {
+    "v_count": 4,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 17,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 3,
+    "origin_names": [
+      "HEX_SANDSTORM",
+      "WAKE_THE_VOID",
+      "WAKE_THE_VOID_EXPLOSION"
+    ],
+    "origin_in_handleSkill": [
+      "WAKE_THE_VOID",
+      "WAKE_THE_VOID_EXPLOSION"
+    ],
+    "origin_in_handleAttack": [
+      "WAKE_THE_VOID",
+      "WAKE_THE_VOID_EXPLOSION"
+    ],
+    "hexa_in_handleSkill": [
+      "WAKE_THE_VOID",
+      "WAKE_THE_VOID_EXPLOSION",
+      "HEXA_DECEIVING_BLADE",
+      "VOID_BURST",
+      "ARTS_ASTRA",
+      "RESONATE_ULTIMATUM"
+    ],
+    "hexa_in_handleAttack": [
+      "WAKE_THE_VOID",
+      "WAKE_THE_VOID_EXPLOSION"
+    ],
+    "hexa_summons": [],
+    "hexa_aas": [
+      "WAKE_THE_VOID",
+      "WAKE_THE_VOID_EXPLOSION",
+      "HEXA_DECEIVING_BLADE",
+      "VOID_BURST",
+      "ARTS_ASTRA",
+      "RESONATE_ULTIMATUM"
+    ],
+    "has_showHexaSkillEff": true
+  },
+  "Lynn": {
+    "v_count": 4,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 0,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "MoXuan": {
+    "v_count": 5,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 1,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "Aran": {
+    "v_count": 9,
+    "v_missing_dat_count": 4,
+    "v_missing_dat": [
+      "MAHAS_FURY_BUFF",
+      "MAHAS_FURY_ATTACK",
+      "MAHAS_CARNAGE_COMBO",
+      "FENRIR_CRASH_ADRENALINE"
+    ],
+    "hexa_count": 1,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "Evan": {
+    "v_count": 6,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 4,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [
+      "ELEMENTAL_DECREASE",
+      "MAGIC_DEBRIS"
+    ],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [
+      "ELEMENTAL_DECREASE",
+      "THUNDER_CIRCLE"
+    ],
+    "hexa_aas": [
+      "ELEMENTAL_DECREASE",
+      "THUNDER_CIRCLE"
+    ],
+    "has_showHexaSkillEff": false
+  },
+  "Legend": {
+    "v_count": 0,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 0,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "Luminous": {
+    "v_count": 11,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 10,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 2,
+    "origin_names": [
+      "HARMONIC_PARADOX",
+      "LUSTROUS_ORB"
+    ],
+    "origin_in_handleSkill": [
+      "HARMONIC_PARADOX",
+      "LUSTROUS_ORB"
+    ],
+    "origin_in_handleAttack": [
+      "HARMONIC_PARADOX",
+      "LUSTROUS_ORB"
+    ],
+    "hexa_in_handleSkill": [
+      "HARMONIC_PARADOX",
+      "LUSTROUS_ORB"
+    ],
+    "hexa_in_handleAttack": [
+      "HARMONIC_PARADOX",
+      "LUSTROUS_ORB",
+      "HEXA_ENDER"
+    ],
+    "hexa_summons": [
+      "HARMONIC_PARADOX",
+      "LUSTROUS_ORB",
+      "HEXA_ENDER"
+    ],
+    "hexa_aas": [
+      "HARMONIC_PARADOX",
+      "LUSTROUS_ORB",
+      "HEXA_ENDER"
+    ],
+    "has_showHexaSkillEff": true
+  },
+  "Mercedes": {
+    "v_count": 8,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 4,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [
+      "HEXA_SPIRIT_OF_ELLUEL"
+    ],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [
+      "HEXA_SPIRIT_OF_ELLUEL"
+    ],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "Phantom": {
+    "v_count": 15,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 22,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [
+      "LUCK_OF_THE_DRAW_RED",
+      "LUCK_OF_THE_DRAW_TREE",
+      "LUCK_OF_THE_DRAW_HOUR",
+      "LUCK_OF_THE_DRAW_SHARP",
+      "LUCK_OF_THE_DRAW_FLURRY",
+      "ACE_IN_THE_HOLE"
+    ],
+    "hexa_in_handleAttack": [
+      "PHANTOMS_MARK",
+      "PHANTOMS_MARK_2",
+      "PHANTOMS_MARK_3",
+      "HEXA_ROSE_CARTE_FINALE"
+    ],
+    "hexa_summons": [],
+    "hexa_aas": [
+      "HEXA_ROSE_CARTE_FINALE"
+    ],
+    "has_showHexaSkillEff": false
+  },
+  "Shade": {
+    "v_count": 8,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 0,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "AngelicBuster": {
+    "v_count": 5,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 0,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "Cadena": {
+    "v_count": 6,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 6,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [
+      "APOCALYPSE_CANNON_SUMMON",
+      "CHAIN_ARTS_VOID_STRIKE_BUFF",
+      "CHAIN_ARTS_MAELSTROM"
+    ],
+    "hexa_in_handleAttack": [
+      "CHAIN_ARTS_VOID_STRIKE_ATTACK"
+    ],
+    "hexa_summons": [
+      "APOCALYPSE_CANNON_SUMMON",
+      "CHAIN_ARTS_VOID_STRIKE_BUFF",
+      "CHAIN_ARTS_VOID_STRIKE_ATTACK"
+    ],
+    "hexa_aas": [
+      "APOCALYPSE_CANNON_SUMMON",
+      "CHAIN_ARTS_VOID_STRIKE_BUFF",
+      "CHAIN_ARTS_VOID_STRIKE_ATTACK",
+      "CHAIN_ARTS_MAELSTROM"
+    ],
+    "has_showHexaSkillEff": false
+  },
+  "Kain": {
+    "v_count": 6,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 43,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 9,
+    "origin_names": [
+      "CHURNING_MALICE",
+      "CHURNING_MALICE_ATTACK_1",
+      "CHURNING_MALICE_ATTACK_2",
+      "TOTAL_ANNIHILATION",
+      "TOTAL_ANNIHILATION_ATTACK_1",
+      "TOTAL_ANNIHILATION_ATTACK_2",
+      "TOTAL_ANNIHILATION_ATTACK_3",
+      "TOTAL_ANNIHILATION_ATTACK_4",
+      "TOTAL_ANNIHILATION_ATTACK_5"
+    ],
+    "origin_in_handleSkill": [
+      "CHURNING_MALICE",
+      "TOTAL_ANNIHILATION"
+    ],
+    "origin_in_handleAttack": [
+      "CHURNING_MALICE",
+      "CHURNING_MALICE_ATTACK_1",
+      "CHURNING_MALICE_ATTACK_2",
+      "TOTAL_ANNIHILATION",
+      "TOTAL_ANNIHILATION_ATTACK_1",
+      "TOTAL_ANNIHILATION_ATTACK_2",
+      "TOTAL_ANNIHILATION_ATTACK_3",
+      "TOTAL_ANNIHILATION_ATTACK_4",
+      "TOTAL_ANNIHILATION_ATTACK_5"
+    ],
+    "hexa_in_handleSkill": [
+      "CHURNING_MALICE",
+      "TOTAL_ANNIHILATION"
+    ],
+    "hexa_in_handleAttack": [
+      "CHURNING_MALICE",
+      "CHURNING_MALICE_ATTACK_1",
+      "CHURNING_MALICE_ATTACK_2",
+      "TOTAL_ANNIHILATION",
+      "TOTAL_ANNIHILATION_ATTACK_1",
+      "TOTAL_ANNIHILATION_ATTACK_2",
+      "TOTAL_ANNIHILATION_ATTACK_3",
+      "TOTAL_ANNIHILATION_ATTACK_4",
+      "TOTAL_ANNIHILATION_ATTACK_5"
+    ],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": true
+  },
+  "Kaiser": {
+    "v_count": 15,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 10,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [
+      "HEXA_STONE_DRAGON",
+      "HEXA_STONE_DRAGON_FINAL_FORM"
+    ],
+    "hexa_in_handleAttack": [
+      "HEXA_INFERNO_BREATH",
+      "HEXA_INFERNO_BREATH_FINAL_FORM"
+    ],
+    "hexa_summons": [
+      "HEXA_GIGA_WAVE",
+      "HEXA_GIGA_WAVE_FINAL_FORM",
+      "HEXA_INFERNO_BREATH",
+      "HEXA_INFERNO_BREATH_FINAL_FORM",
+      "HEXA_STONE_DRAGON",
+      "HEXA_STONE_DRAGON_FINAL_FORM"
+    ],
+    "hexa_aas": [
+      "HEXA_GIGA_WAVE",
+      "HEXA_GIGA_WAVE_FINAL_FORM",
+      "HEXA_INFERNO_BREATH",
+      "HEXA_INFERNO_BREATH_FINAL_FORM",
+      "HEXA_STONE_DRAGON",
+      "HEXA_STONE_DRAGON_FINAL_FORM"
+    ],
+    "has_showHexaSkillEff": false
+  },
+  "BattleMage": {
+    "v_count": 6,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 2,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "Blaster": {
+    "v_count": 7,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 1,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "Citizen": {
+    "v_count": 0,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 0,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "Mechanic": {
+    "v_count": 5,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 0,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "OpenGate": {
+    "v_count": 0,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 0,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "WildHunter": {
+    "v_count": 6,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 1,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "WildHunterInfo": {
+    "v_count": 0,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 0,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "Xenon": {
+    "v_count": 6,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 21,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 3,
+    "origin_names": [
+      "ARTIFICIAL_EVOLUTION",
+      "ENHANCED_LIBERTY_BOOSTERS",
+      "ARTIFICIAL_EVOLUTION_BUFF"
+    ],
+    "origin_in_handleSkill": [
+      "ENHANCED_LIBERTY_BOOSTERS",
+      "ARTIFICIAL_EVOLUTION_BUFF"
+    ],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [
+      "OMEGA_BLASTER",
+      "CORE_OVERLOAD_BUFF",
+      "HYPOGRAM_FIELD_FUSION",
+      "PHOTON_RAY",
+      "PHOTON_RAY_ATTACK",
+      "ENHANCED_LIBERTY_BOOSTERS",
+      "ARTIFICIAL_EVOLUTION_BUFF",
+      "HEXA_HYPOGRAM_FIELD_PENETRATE",
+      "HEXA_HYPOGRAM_FIELD_FORCE_FIELD",
+      "HEXA_HYPOGRAM_FIELD_SUPPORT"
+    ],
+    "hexa_in_handleAttack": [
+      "HEXA_ORBITAL_CATACLYSM",
+      "HEXA_BEAM_DANCE"
+    ],
+    "hexa_summons": [
+      "HYPOGRAM_FIELD_FUSION",
+      "ENHANCED_LIBERTY_BOOSTERS",
+      "HEXA_ORBITAL_CATACLYSM",
+      "HEXA_BEAM_DANCE",
+      "HEXA_HYPOGRAM_FIELD_PENETRATE",
+      "HEXA_HYPOGRAM_FIELD_FORCE_FIELD",
+      "HEXA_HYPOGRAM_FIELD_SUPPORT"
+    ],
+    "hexa_aas": [
+      "HYPOGRAM_FIELD_FUSION",
+      "ENHANCED_LIBERTY_BOOSTERS",
+      "HEXA_ORBITAL_CATACLYSM",
+      "HEXA_BEAM_DANCE",
+      "HEXA_HYPOGRAM_FIELD_PENETRATE",
+      "HEXA_HYPOGRAM_FIELD_FORCE_FIELD",
+      "HEXA_HYPOGRAM_FIELD_SUPPORT"
+    ],
+    "has_showHexaSkillEff": false
+  },
+  "Demon": {
+    "v_count": 2,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 0,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "DemonAvenger": {
+    "v_count": 13,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 6,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [
+      "HEXA_REVENANT"
+    ],
+    "hexa_in_handleAttack": [],
+    "hexa_summons": [],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "DemonSlayer": {
+    "v_count": 10,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 9,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 2,
+    "origin_names": [
+      "NIGHTMARE",
+      "AMETHYSTINE_INCURSION"
+    ],
+    "origin_in_handleSkill": [
+      "NIGHTMARE",
+      "AMETHYSTINE_INCURSION"
+    ],
+    "origin_in_handleAttack": [
+      "NIGHTMARE",
+      "AMETHYSTINE_INCURSION"
+    ],
+    "hexa_in_handleSkill": [
+      "NIGHTMARE",
+      "AMETHYSTINE_INCURSION"
+    ],
+    "hexa_in_handleAttack": [
+      "NIGHTMARE",
+      "AMETHYSTINE_INCURSION",
+      "HEXA_DEMON_CRY",
+      "HEXA_CERBERUS_CHOMP"
+    ],
+    "hexa_summons": [
+      "NIGHTMARE",
+      "AMETHYSTINE_INCURSION",
+      "HEXA_DEMON_CRY",
+      "HEXA_CERBERUS_CHOMP"
+    ],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": true
+  },
+  "Hayato": {
+    "v_count": 4,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 3,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [],
+    "hexa_in_handleAttack": [
+      "HEXA_HITOKIRI_STRIKE"
+    ],
+    "hexa_summons": [
+      "HEXA_HITOKIRI_STRIKE"
+    ],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  },
+  "Kanna": {
+    "v_count": 9,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 11,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 0,
+    "origin_names": [],
+    "origin_in_handleSkill": [],
+    "origin_in_handleAttack": [],
+    "hexa_in_handleSkill": [
+      "HEXA_KISHIN_SHOUKAN",
+      "HEXA_TENGU_STRIKE_SUMMON_L",
+      "HEXA_TENGU_STRIKE",
+      "HEXA_SHIKIGAMI_DOPPLEGANGER",
+      "HEXA_GHOST_YAKSHA_BOSS",
+      "HEXA_SPIRITS_DOMAIN"
+    ],
+    "hexa_in_handleAttack": [
+      "HEXA_NINE_TAILED_FURY",
+      "HEXA_GHOST_YAKSHA_BOSS"
+    ],
+    "hexa_summons": [
+      "HEXA_KISHIN_SHOUKAN",
+      "HEXA_YOSUZUME",
+      "HEXA_TENGU_STRIKE",
+      "HEXA_SHIKIGAMI_DOPPLEGANGER",
+      "HEXA_NINE_TAILED_FURY",
+      "HEXA_GHOST_YAKSHA_BOSS",
+      "HEXA_SPIRITS_DOMAIN"
+    ],
+    "hexa_aas": [
+      "HEXA_KISHIN_SHOUKAN",
+      "HEXA_YOSUZUME",
+      "HEXA_TENGU_STRIKE",
+      "HEXA_SHIKIGAMI_DOPPLEGANGER",
+      "HEXA_NINE_TAILED_FURY",
+      "HEXA_GHOST_YAKSHA_BOSS",
+      "HEXA_SPIRITS_DOMAIN"
+    ],
+    "has_showHexaSkillEff": false
+  },
+  "SiaAstelle": {
+    "v_count": 5,
+    "v_missing_dat_count": 0,
+    "v_missing_dat": [],
+    "hexa_count": 5,
+    "hexa_missing_dat_count": 0,
+    "hexa_missing_dat": [],
+    "origin_count": 2,
+    "origin_names": [
+      "CELESTIAL_DESIGN",
+      "CELESTIAL_DESIGN_SUB"
+    ],
+    "origin_in_handleSkill": [
+      "CELESTIAL_DESIGN",
+      "CELESTIAL_DESIGN_SUB"
+    ],
+    "origin_in_handleAttack": [
+      "CELESTIAL_DESIGN",
+      "CELESTIAL_DESIGN_SUB"
+    ],
+    "hexa_in_handleSkill": [
+      "SHINE_RAY",
+      "SHINE_STELLAR_I_ANTARES",
+      "SHINE_STELLAR_I_ANTARES_SUB",
+      "CELESTIAL_DESIGN",
+      "CELESTIAL_DESIGN_SUB"
+    ],
+    "hexa_in_handleAttack": [
+      "SHINE_RAY",
+      "CELESTIAL_DESIGN",
+      "CELESTIAL_DESIGN_SUB"
+    ],
+    "hexa_summons": [
+      "SHINE_RAY",
+      "SHINE_STELLAR_I_ANTARES",
+      "SHINE_STELLAR_I_ANTARES_SUB"
+    ],
+    "hexa_aas": [],
+    "has_showHexaSkillEff": false
+  }
+}

@@ -56,6 +56,7 @@ files_to_copy = [
     "Create_Account.bat",
     "Create_Update_Patch.bat",
     "HOW_TO_USE.txt",
+    "HOW_TO_PLAY_LAN.txt",
     "backup.sql"
 ]
 
@@ -83,6 +84,13 @@ res_dst = os.path.join(patch_folder, "data", "resources")
 if os.path.exists(res_src):
     shutil.copytree(res_src, res_dst, dirs_exist_ok=True)
     print(f" [v] Added folder: data/resources/ (mob_drops.json, events)")
+
+# 2.2 Copy sql folder
+sql_src = os.path.join(SERVER263_DIR, "sql")
+sql_dst = os.path.join(patch_folder, "sql")
+if os.path.exists(sql_src):
+    shutil.copytree(sql_src, sql_dst, dirs_exist_ok=True)
+    print(f" [v] Added folder: sql/ (SQL schemas and definitions)")
 
 # 3. Copy Client_Patch_Files (Launcher, Localhost.dll, launcher.ini, etc.)
 client_src = os.path.join(SERVER263_DIR, "Client_Patch_Files")
@@ -133,7 +141,16 @@ if exist "Import_Database.bat" copy /y "Import_Database.bat" "!TARGET_DIR!\Impor
 if exist "Create_Account.bat" copy /y "Create_Account.bat" "!TARGET_DIR!\Create_Account.bat" >nul
 if exist "Create_Update_Patch.bat" copy /y "Create_Update_Patch.bat" "!TARGET_DIR!\Create_Update_Patch.bat" >nul
 if exist "HOW_TO_USE.txt" copy /y "HOW_TO_USE.txt" "!TARGET_DIR!\HOW_TO_USE.txt" >nul
+if exist "HOW_TO_PLAY_LAN.txt" copy /y "HOW_TO_PLAY_LAN.txt" "!TARGET_DIR!\HOW_TO_PLAY_LAN.txt" >nul
 if exist "backup.sql" copy /y "backup.sql" "!TARGET_DIR!\backup.sql" >nul
+if not exist "!TARGET_DIR!\server.properties" (
+    if exist "server.properties" copy /y "server.properties" "!TARGET_DIR!\server.properties" >nul
+)
+
+if exist "sql" (
+    echo [*] Updating SQL schema files...
+    xcopy "sql" "!TARGET_DIR!\sql\" /E /Y /I /Q >nul
+)
 
 if exist "data\scripts" (
     echo [*] Updating NPC & Quest scripts...

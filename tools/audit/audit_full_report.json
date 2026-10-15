@@ -1,0 +1,2341 @@
+{
+  "JobManager": {
+    "total_constants": 0,
+    "v_skills_count": 0,
+    "hexa_skills_count": 0,
+    "v_skills": {},
+    "hexa_skills": {},
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [],
+    "lines": 206
+  },
+  "Zero": {
+    "total_constants": 51,
+    "v_skills_count": 11,
+    "hexa_skills_count": 0,
+    "v_skills": {
+      "CHRONO_BREAK": "400011015",
+      "CHRONO_BREAK_DEBUFF": "400011024",
+      "TWIN_BLADES_OF_TIME_START": "400011039",
+      "SHADOW_FLASH_ALPHA_TILE": "400011098",
+      "SHADOW_FLASH_ALPHA_ATTACK": "400011099",
+      "SHADOW_FLASH_BETA_TILE": "400011100",
+      "SHADOW_FLASH_BETA_ATTACK": "400011101",
+      "EGO_WEAPON_ALPHA": "400011134",
+      "EGO_WEAPON_BETA": "400011135",
+      "TRANSCENDENT_RHINNE_PRAYER": "400001045",
+      "TRANSCENDENT_RHINNE_PRAYER_ATTACK": "400001056"
+    },
+    "hexa_skills": {},
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "slv"
+    ],
+    "aa_calls": [
+      "ADV_EARTH_BREAK",
+      "Option",
+      "skillID",
+      "skillID",
+      "sid"
+    ],
+    "lines": 779
+  },
+  "BeastTamer": {
+    "total_constants": 54,
+    "v_skills_count": 5,
+    "hexa_skills_count": 0,
+    "v_skills": {
+      "CHAMP_CHARGE": "400021019",
+      "CHAMP_CHARGE_LEOPARD": "400021024",
+      "CHAMP_CHARGE_BEAR": "400021035",
+      "CHAMP_CHARGE_BIRD": "400021037",
+      "CHAMP_CHARGE_MEOW": "400021039"
+    },
+    "hexa_skills": {},
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "DEFENSIVE_FORMATION",
+      "BRO_ATTACK",
+      "skillID",
+      "slv"
+    ],
+    "aa_calls": [
+      "slv",
+      "but",
+      "slv",
+      "skillID",
+      "60"
+    ],
+    "lines": 883
+  },
+  "Beginner": {
+    "total_constants": 3,
+    "v_skills_count": 0,
+    "hexa_skills_count": 0,
+    "v_skills": {},
+    "hexa_skills": {},
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [],
+    "lines": 94
+  },
+  "Kinesis": {
+    "total_constants": 46,
+    "v_skills_count": 15,
+    "hexa_skills_count": 0,
+    "v_skills": {
+      "RETURN_KINESIS": "140001290",
+      "PSYCHIC_ATTACK": "140001289",
+      "PSYCHIC_TORNADO": "400021008",
+      "PSYCHIC_TORNADO_1": "400021009",
+      "PSYCHIC_TORNADO_2": "400021010",
+      "PSYCHIC_TORNADO_3": "400021011",
+      "MIND_OVER_MATTER": "400021048",
+      "ULTIMATE_MIND_OVER_MATTER_EXPLODE": "400021053",
+      "ULTIMATE_PSYCHIC_SHOCKWAVE": "400021074",
+      "ULTIMATE_PSYCHIC_SHOCKWAVE_BLACKHOLE": "400021075",
+      "ULTIMATE_PSYCHIC_SHOCKWAVE_SHOOT": "400021076",
+      "LAW_OF_GRAVITY": "400021096",
+      "LAW_OF_GRAVITY_2": "400021097",
+      "LAW_OF_GRAVITY_3": "400021098",
+      "LAW_OF_GRAVITY_4": "400021104"
+    },
+    "hexa_skills": {},
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [],
+    "lines": 492
+  },
+  "PinkBean": {
+    "total_constants": 19,
+    "v_skills_count": 0,
+    "hexa_skills_count": 0,
+    "v_skills": {},
+    "hexa_skills": {},
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "o1",
+      "PINK_SHADOW",
+      "PINK_SHADOW_1",
+      "PINK_SHADOW_2",
+      "slv"
+    ],
+    "aa_calls": [
+      "INSTANT_GARDEN_BREEZY",
+      "INSTANT_GARDEN_POSIE",
+      "slv"
+    ],
+    "lines": 341
+  },
+  "Archer": {
+    "total_constants": 1,
+    "v_skills_count": 1,
+    "hexa_skills_count": 0,
+    "v_skills": {
+      "FURY_OF_THE_WILD": "400001012"
+    },
+    "hexa_skills": {},
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [],
+    "lines": 96
+  },
+  "BowMaster": {
+    "total_constants": 57,
+    "v_skills_count": 8,
+    "hexa_skills_count": 14,
+    "v_skills": {
+      "STORM_OF_ARROWS": "400031002",
+      "STORM_OF_ARROWS_AA": "400030002",
+      "INHUMAN_SPEED": "400031020",
+      "INHUMAN_SPEED_BUFF": "400031021",
+      "QUIVER_BARRAGE": "400031028",
+      "QUIVER_BARRAGE_ATOM": "400031029",
+      "SILHOUETTE_MIRAGE": "400031053",
+      "SILHOUETTE_MIRAGE_ATTACK": "400031054"
+    },
+    "hexa_skills": {
+      "HEXA_HURRICANE": "3141000",
+      "HEXA_ARROW_STREAM": "3141002",
+      "HEXA_ENCHANCED_ARROW_STREAM": "3141003",
+      "HEXA_ARROW_BLASTER": "3141004",
+      "HEXA_QUIVER_CARTRIDGE": "3141005",
+      "HEXA_QUIVER_CARTRIDGE_ATOM": "3140006",
+      "HEXA_QUIVER_CARTRIDGE_MAGIC": "3140007",
+      "HEXA_QUIVER_CARTRIDGE_BLOOD": "3140008",
+      "HEXA_PHOENIX": "3141012",
+      "HEXA_SPEED_MIRAGE": "3141013",
+      "HEXA_SPEED_MIRAGE_ATOM": "3141014",
+      "HEXA_GRITTY_GUST": "3141015",
+      "HEXA_SILHOUETTE_MIRAGE": "500061016",
+      "HEXA_SILHOUETTE_MIRAGE_ATTACK": "500061017"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "skillID",
+      "0"
+    ],
+    "aa_calls": [
+      "STORM_OF_ARROWS_AA",
+      "5"
+    ],
+    "lines": 941
+  },
+  "Marksman": {
+    "total_constants": 46,
+    "v_skills_count": 7,
+    "hexa_skills_count": 9,
+    "v_skills": {
+      "PERFECT_SHOT": "400031006",
+      "PERFECT_SHOT_HIT": "400031010",
+      "SPLIT_SHOT": "400031015",
+      "SPLIT_SHOT_FINAL_ATTACK": "400031016",
+      "REPEATING_CROSSBOW_CARTRIDGE": "400031055",
+      "FULL_BURST_SHOT": "400031056",
+      "SURGE_BOLT": "400031025"
+    },
+    "hexa_skills": {
+      "HEXA_FINAL_ATTACK": "3240014",
+      "HEXA_FROSTPREY": "3241012",
+      "HEXA_PIECING_ARROW": "3241005",
+      "HEXA_EMPOWERED_PIECING_ARROW": "3241006",
+      "HEXA_ULTIMATE_PIECING_ARROW": "3241007",
+      "HEXA_SNIPE": "3241000",
+      "HEXA_EMPOWERED_SNIPE": "3241001",
+      "HEXA_BOLT_BURST": "3241013",
+      "HEXA_HIGH_SPEED_SHOT": "3241015"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "skillID",
+      "0",
+      "skillID",
+      "slv"
+    ],
+    "aa_calls": [],
+    "lines": 472
+  },
+  "Pathfinder": {
+    "total_constants": 65,
+    "v_skills_count": 12,
+    "hexa_skills_count": 0,
+    "v_skills": {
+      "NOVA_BLAST": "400031034",
+      "RAVEN_TEMPEST": "400031036",
+      "OBSIDIAN_BARRIER_NONE": "400031037",
+      "OBSIDIAN_BARRIER_TORRENT": "400031040",
+      "OBSIDIAN_BARRIER_BURST": "400031039",
+      "OBSIDIAN_BARRIER_DELUGE": "400031038",
+      "RELIC_UNBOUND": "400031057",
+      "RELIC_UNBOUND_DELUGE_1": "400031047",
+      "RELIC_UNBOUND_DELUGE_2": "400031048",
+      "RELIC_UNBOUND_BURST_1": "400031049",
+      "RELIC_UNBOUND_BURST_2": "400031050",
+      "RELIC_UNBOUND_TORRENT": "400031051"
+    },
+    "hexa_skills": {},
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "slv",
+      "skillID",
+      "slv",
+      "false",
+      "skillID",
+      "5"
+    ],
+    "aa_calls": [
+      "skillID"
+    ],
+    "lines": 1068
+  },
+  "Bishop": {
+    "total_constants": 60,
+    "v_skills_count": 6,
+    "hexa_skills_count": 14,
+    "v_skills": {
+      "BENEDICTION": "400021003",
+      "ANGEL_OF_BALANCE_AVENGE": "400021033",
+      "ANGEL_OF_BALANCE_BENEVOLENCE": "400021032",
+      "PEACEMAKER_TRAVEL": "400021070",
+      "PEACEMAKER_EXPLOSION": "400021077",
+      "DIVINE_PUNIHSMENT": "400021086"
+    },
+    "hexa_skills": {
+      "HEXA_ANGEL_RAY": "2341000",
+      "HEXA_ANGEL_RAY_BONUS": "2341001",
+      "HEXA_BIG_BANG": "2341002",
+      "HEXA_BIG_BANG_EX": "2341003",
+      "HEXA_TRIUMPH_FEATHER": "2341004",
+      "HEXA_TRIUMPH_FEATHER_ATOM": "2341005",
+      "HEXA_FOUNTAIN_OF_VENGEANCE": "2341006",
+      "HEXA_ANGELIC_WRATH": "2341007",
+      "HEXA_ANGELIC_WRATH_SUMMON": "2341008",
+      "HEXA_GENESIS": "2341009",
+      "HEXA_GENESIS_FA": "2341010",
+      "HEXA_HEAVENS_DOOR": "2341011",
+      "HEXA_BAHAMUT": "2341013",
+      "HEXA_BENEDICTION": "500061002"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "HEXA_ANGELIC_WRATH_SUMMON",
+      "HOLY_ADVENT_M",
+      "HOLY_ADVENT_L",
+      "HOLY_ADVENT_R",
+      "long",
+      "skillID",
+      "slv",
+      "skillID",
+      "slv",
+      "count"
+    ],
+    "aa_calls": [
+      "skillID",
+      "skillID",
+      "y"
+    ],
+    "lines": 1043
+  },
+  "FirePoison": {
+    "total_constants": 54,
+    "v_skills_count": 6,
+    "hexa_skills_count": 16,
+    "v_skills": {
+      "DOT_PUNISHER": "400021001",
+      "POISON_NOVA": "400021028",
+      "ELEMENTAL_FURY": "400021066",
+      "POISON_CHAIN_1": "400021101",
+      "POISON_CHAIN_2": "400021102",
+      "POISON_CHAIN_3": "400021103"
+    },
+    "hexa_skills": {
+      "HEXA_MIST_ERUPTION": "2141005",
+      "HEXA_INFERNO_AURA": "2141006",
+      "HEXA_METEOR_SHOWER": "2141012",
+      "HEXA_METEOR_SHOWER_FA": "2140013",
+      "HEXA_FLAME_SWEEP": "2141000",
+      "HEXA_FLAME_SWEEP_GIANT": "2141001",
+      "HEXA_FLAME_HAZE": "2141003",
+      "HEXA_POISON_MIST": "2141004",
+      "HEXA_IGNITE": "2141007",
+      "HEXA_IGNITE_AA": "2140008",
+      "HEXA_IFRIT": "2141009",
+      "HEXA_CREEPING_TOXIN": "2141014",
+      "HEXA_CREEPING_TOXIN_EXTRA": "2141015",
+      "HEXA_MEGIDDO_FLAME_MANUAL": "2141010",
+      "HEXA_MEGIDDO_FLAME_AUTO": "2141011",
+      "HEXA_MEGIDDO_FLAME_EXPLOSION": "2141016"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "slv",
+      "skillID",
+      "getExplodeShootObjList"
+    ],
+    "aa_calls": [
+      "poisonSkillID",
+      "slv",
+      "o1",
+      "skillID",
+      "chr.getNewSecondAtomKey",
+      "igniteAASkillID",
+      "tsm.hasStat"
+    ],
+    "lines": 712
+  },
+  "IceLightning": {
+    "total_constants": 50,
+    "v_skills_count": 8,
+    "hexa_skills_count": 10,
+    "v_skills": {
+      "ICE_AGE": "400021002",
+      "ICE_AGE_TILE": "400020002",
+      "BOLT_BARRAGE": "400021030",
+      "BOLT_BARRAGE_TILE": "400021040",
+      "BOLT_BARRAGE_TILE_2": "400021031",
+      "SPIRIT_OF_SNOW": "400021067",
+      "JUPITER_THUNDER": "400021094",
+      "JUPITER_THUNDER_2": "400021112"
+    },
+    "hexa_skills": {
+      "HEXA_BLIZZARD": "2241003",
+      "HEXA_BLIZZARD_FA": "2241004",
+      "HEXA_CHAIN_LIGHTNING": "2241000",
+      "HEXA_CHAIN_LIGHTNING_TILE": "2241001",
+      "HEXA_FROZEN_ORB": "2241002",
+      "HEXA_LIGHTNING_ORB": "2241005",
+      "HEXA_LIGHTNING_ORB_2": "2241010",
+      "HEXA_THUNDER_SPHERE": "2241007",
+      "HEXA_THUNDER_SPHERE_STAY": "2241008",
+      "HEXA_ELQUINES": "2241009"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "skillID",
+      "skillID",
+      "o1",
+      "skillID",
+      "skillID"
+    ],
+    "aa_calls": [
+      "HEXA_CHAIN_LIGHTNING_TILE",
+      "7000",
+      "InPacket",
+      "BOLT_BARRAGE_TILE_2",
+      "CHILLING_STEP",
+      "ELEMENTAL_ADAPTATION"
+    ],
+    "lines": 715
+  },
+  "Magician": {
+    "total_constants": 4,
+    "v_skills_count": 1,
+    "hexa_skills_count": 0,
+    "v_skills": {
+      "UNRELIABLE_MEMORY": "400001021"
+    },
+    "hexa_skills": {},
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [],
+    "lines": 190
+  },
+  "Buccaneer": {
+    "total_constants": 55,
+    "v_skills_count": 6,
+    "hexa_skills_count": 16,
+    "v_skills": {
+      "LIGHTING_FORM": "400051002",
+      "LIGHTING_FORM_ORB": "400051003",
+      "LORD_OF_THE_DEEP": "400051015",
+      "SERPENT_VORTEX": "400051042",
+      "HOWLING_FIST": "400051070",
+      "HOWLING_FIST_LEVIATHAN_ATTACK": "400051071"
+    },
+    "hexa_skills": {
+      "LIGHTING_FORM": "400051002",
+      "LIGHTING_FORM_ORB": "400051003",
+      "LORD_OF_THE_DEEP": "400051015",
+      "SERPENT_VORTEX": "400051042",
+      "HOWLING_FIST": "400051070",
+      "HOWLING_FIST_LEVIATHAN_ATTACK": "400051071",
+      "HEXA_SEA_SERPENT": "5140004",
+      "HEXA_SEA_SERPENT_RAGE": "5141006",
+      "HEXA_SEA_SERPENT_BURST": "5141008",
+      "HEXA_OCTOPUNCH": "5141000",
+      "HEXA_NAUTILUS_STRIKE": "5141009",
+      "HEXA_NAUTILUS_STRIKE_FA": "5140010",
+      "HEXA_SERPENT_SCALE": "5141011",
+      "HEXA_SERPENT_SCALE_BURST": "5141013",
+      "HEXA_SERPENT_SCALE_RAGE": "5141014",
+      "HEXA_HOOK_BOMBER": "5141015"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [],
+    "lines": 851
+  },
+  "Cannoneer": {
+    "total_constants": 44,
+    "v_skills_count": 12,
+    "hexa_skills_count": 22,
+    "v_skills": {
+      "PIRATES_BANNER": "400001017",
+      "SPECIAL_MONKEY_SIDEKICK_3": "400051053",
+      "SPECIAL_MONKEY_SIDEKICK_2": "400051052",
+      "SPECIAL_MONKEY_SIDEKICK": "400051038",
+      "BIG_HUGE_GIGANTIC_ROCKET": "400051008",
+      "NUCLEAR_OPTION_TILE": "400051026",
+      "NUCLEAR_OPTION_EXPLOSION": "400051025",
+      "NUCLEAR_OPTION": "400051024",
+      "POOLMAKER": "400051074",
+      "POOLMAKER_ATTACK": "400051075",
+      "POOLMAKER_AA": "400051076",
+      "POOLMAKER_CHEST_BUFF": "400051077"
+    },
+    "hexa_skills": {
+      "SPECIAL_MONKEY_SIDEKICK_3": "400051053",
+      "SPECIAL_MONKEY_SIDEKICK_2": "400051052",
+      "SPECIAL_MONKEY_SIDEKICK": "400051038",
+      "BIG_HUGE_GIGANTIC_ROCKET": "400051008",
+      "NUCLEAR_OPTION_TILE": "400051026",
+      "NUCLEAR_OPTION_EXPLOSION": "400051025",
+      "NUCLEAR_OPTION": "400051024",
+      "POOLMAKER": "400051074",
+      "POOLMAKER_ATTACK": "400051075",
+      "POOLMAKER_AA": "400051076",
+      "POOLMAKER_CHEST_BUFF": "400051077",
+      "HEXA_MONKEY_MORTAR": "5341002",
+      "HEXA_ANCHOR_AWEIGH": "5341005",
+      "HEXA_NAUTILUS_STRIKE": "5341006",
+      "HEXA_MONKEY_MALITIA": "5341009",
+      "HEXA_MONKEY_FURY": "5341012",
+      "HEXA_ROLLING_RAINBOW": "5341014",
+      "HEXA_ROLLING_RAINBOW_SUMMON": "5341007",
+      "HEXA_POOLMAKER": "500061029",
+      "HEXA_POOLMAKER_ATTACK": "500061030",
+      "HEXA_POOLMAKER_AA": "500061031",
+      "HEXA_POOLMAKER_CHEST_BUFF": "500061032"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "Attacks",
+      "skillID",
+      "Attacks",
+      "summonZ",
+      "Attacks",
+      "skillID",
+      "Pulls",
+      "skillID",
+      "slv",
+      "summonSkillId",
+      "skillID"
+    ],
+    "aa_calls": [
+      "0",
+      "slv",
+      "skillID",
+      "NUCLEAR_OPTION_TILE",
+      "slv"
+    ],
+    "lines": 702
+  },
+  "Corsair": {
+    "total_constants": 45,
+    "v_skills_count": 7,
+    "hexa_skills_count": 18,
+    "v_skills": {
+      "BULLET_BARRAGE": "400051006",
+      "TARGET_LOCK": "400051021",
+      "NAUTILUS_ASSAULT": "400051040",
+      "NAUTILUS_ASSAULT_2": "400051049",
+      "NAUTILUS_ASSAULT_3": "400051050",
+      "DEATH_TRIGGER": "400051073",
+      "DEATH_TRIGGER_2": "400051081"
+    },
+    "hexa_skills": {
+      "BULLET_BARRAGE": "400051006",
+      "TARGET_LOCK": "400051021",
+      "NAUTILUS_ASSAULT": "400051040",
+      "NAUTILUS_ASSAULT_2": "400051049",
+      "NAUTILUS_ASSAULT_3": "400051050",
+      "DEATH_TRIGGER": "400051073",
+      "DEATH_TRIGGER_2": "400051081",
+      "HEXA_RAPID_FIRE": "5241000",
+      "HEXA_RAPID_FIRE_SHOOTOUT_MODE": "5241001",
+      "HEXA_BROADSIDE": "5241002",
+      "HEXA_BROADSIDE_SUMMON": "5241003",
+      "HEXA_BRAIN_SCRAMBLER": "5241005",
+      "HEXA_FIRING_ORDERS": "5241009",
+      "HEXA_SCURVY_SUMMONS": "5241010",
+      "HEXA_SCURVY_SUMMONS_ATOM": "5241011",
+      "HEXA_ALL_ABOARD_SHOOT": "5241013",
+      "HEXA_SIEGE_BOMBER": "5241015",
+      "HEXA_NAUTILUS_STRIKE": "5241018"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "slv",
+      "BROADSIDE_SUMMON",
+      "HEXA_BROADSIDE_SUMMON",
+      "skillID",
+      "Attacks",
+      "slv"
+    ],
+    "aa_calls": [],
+    "lines": 510
+  },
+  "Pirate": {
+    "total_constants": 3,
+    "v_skills_count": 1,
+    "hexa_skills_count": 0,
+    "v_skills": {
+      "PIRATES_BANNER": "400001017"
+    },
+    "hexa_skills": {},
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [
+      "5"
+    ],
+    "lines": 118
+  },
+  "DualBlade": {
+    "total_constants": 38,
+    "v_skills_count": 9,
+    "hexa_skills_count": 12,
+    "v_skills": {
+      "SHADOW_WALKER": "400001023",
+      "BLADE_TEMPEST": "400041006",
+      "BLADES_OF_DESTINY": "400041021",
+      "BLADE_TORNADO": "400041042",
+      "BLADE_TORNADO_SHOOT_OBJECT": "400041043",
+      "HAUNTED_EDGE": "400041075",
+      "HAUNTED_EDGE_ASURA": "400041076",
+      "HAUNTED_EDGE_ASURA_WIND": "400041077",
+      "HAUNTED_EDGE_YAKSA": "400041078"
+    },
+    "hexa_skills": {
+      "BLADE_TEMPEST": "400041006",
+      "BLADES_OF_DESTINY": "400041021",
+      "BLADE_TORNADO": "400041042",
+      "BLADE_TORNADO_SHOOT_OBJECT": "400041043",
+      "HAUNTED_EDGE": "400041075",
+      "HAUNTED_EDGE_ASURA": "400041076",
+      "HAUNTED_EDGE_ASURA_WIND": "400041077",
+      "HAUNTED_EDGE_YAKSA": "400041078",
+      "HEXA_ASURAS_ANGER": "4361001",
+      "HEXA_BLADE_CLONE": "4361002",
+      "HEXA_BLADE_FURY": "4361003",
+      "HEXA_SUDDEN_RAID": "4361005"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "slv"
+    ],
+    "aa_calls": [],
+    "lines": 592
+  },
+  "NightLord": {
+    "total_constants": 50,
+    "v_skills_count": 9,
+    "hexa_skills_count": 20,
+    "v_skills": {
+      "DARK_LORDS_OMEN": "400041038",
+      "THROWING_STAR_BARRAGE": "400041001",
+      "THROWING_STAR_BARRAGE_DOUBLE": "400041016",
+      "THROWING_STAR_BARRAGE_TRIPLE": "400041017",
+      "THROWING_STAR_BARRAGE_QUAD": "400041018",
+      "SHURRIKANE": "400041020",
+      "THROW_BLASTING_BUFF": "400041061",
+      "THROW_BLASTING_ATTACK": "400041062",
+      "THROW_BLASTING_CD": "400041079"
+    },
+    "hexa_skills": {
+      "DARK_LORDS_OMEN": "400041038",
+      "THROWING_STAR_BARRAGE": "400041001",
+      "THROWING_STAR_BARRAGE_DOUBLE": "400041016",
+      "THROWING_STAR_BARRAGE_TRIPLE": "400041017",
+      "THROWING_STAR_BARRAGE_QUAD": "400041018",
+      "SHURRIKANE": "400041020",
+      "THROW_BLASTING_BUFF": "400041061",
+      "THROW_BLASTING_ATTACK": "400041062",
+      "THROW_BLASTING_CD": "400041079",
+      "HEXA_QUAD_STAR": "4141000",
+      "HEXA_ENHANCED_QUAD_STAR": "4141001",
+      "HEXA_ASSASSINS_MARK": "4141002",
+      "HEXA_ASSASSINS_MARK_DOT": "4141003",
+      "HEXA_ASSASSINS_MARK_ATOM": "4141004",
+      "HEXA_DARK_FLARE": "4141007",
+      "HEXA_SHOWDOWN": "4141005",
+      "HEXA_SHOWDOWN_ATOM": "4141006",
+      "HEXA_SUDDEN_RAID": "4141008",
+      "HEXA_DEATH_STAR": "4141009",
+      "HEXA_DEATH_STAR_RAMPANT": "4141010"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "slv",
+      "skillID",
+      "slv"
+    ],
+    "aa_calls": [
+      "skillID",
+      "slv"
+    ],
+    "lines": 750
+  },
+  "Shadower": {
+    "total_constants": 60,
+    "v_skills_count": 13,
+    "hexa_skills_count": 29,
+    "v_skills": {
+      "SHADOW_ASSAULT_4": "400041005",
+      "SHADOW_ASSAULT_3": "400041004",
+      "SHADOW_ASSAULT_2": "400041003",
+      "SHADOW_ASSAULT": "400041002",
+      "TRICKBLADE": "400041025",
+      "TRICKBLADE_FINISHER": "400041026",
+      "TRICKBLADE_MOB_ATTACK": "400041027",
+      "SONIC_BLOW": "400041039",
+      "SLASH_SHADOW_FORMATION": "400041069",
+      "SLASH_SHADOW_FORMATION_1": "400041070",
+      "SLASH_SHADOW_FORMATION_2": "400041071",
+      "SLASH_SHADOW_FORMATION_3": "400041072",
+      "SLASH_SHADOW_FORMATION_4": "400041073"
+    },
+    "hexa_skills": {
+      "SHADOW_ASSAULT_4": "400041005",
+      "SHADOW_ASSAULT_3": "400041004",
+      "SHADOW_ASSAULT_2": "400041003",
+      "SHADOW_ASSAULT": "400041002",
+      "TRICKBLADE": "400041025",
+      "TRICKBLADE_FINISHER": "400041026",
+      "TRICKBLADE_MOB_ATTACK": "400041027",
+      "SONIC_BLOW": "400041039",
+      "SLASH_SHADOW_FORMATION": "400041069",
+      "SLASH_SHADOW_FORMATION_1": "400041070",
+      "SLASH_SHADOW_FORMATION_2": "400041071",
+      "SLASH_SHADOW_FORMATION_3": "400041072",
+      "SLASH_SHADOW_FORMATION_4": "400041073",
+      "HEXA_ASSASSINATE": "4241000",
+      "HEXA_ASSASSINATE_FINISHER": "4241001",
+      "HEXA_PULVERIZE": "4241002",
+      "HEXA_PULVERIZ_FINISHER": "4241003",
+      "HEXA_MESO_EXPLOSION": "4241006",
+      "HEXA_ENHANCED_MESO_EXPLOSION": "4241007",
+      "HEXA_MESO_EXPLOSION_ATOM": "4241008",
+      "HEXA_ENHANCED_MESO_EXPLOSION_ATOM": "4241009",
+      "HEXA_DARK_FLARE": "4241012",
+      "HEXA_CRUEL_STAB": "4241011",
+      "HEXA_SHADOW_VEIL": "4241013",
+      "HEXA_SHADOW_VEIL_ATT": "4240014",
+      "HEXA_SUDDEN_RAID": "4241015",
+      "HEXA_SHADOW_ASSAULT_BOOST": "500004040",
+      "HEXA_SHADOW_ASSAULT_6": "500061026",
+      "HEXA_SHADOW_ASSAULT_5": "500061025"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "slv"
+    ],
+    "aa_calls": [
+      "skillID",
+      "slv"
+    ],
+    "lines": 707
+  },
+  "Thief": {
+    "total_constants": 4,
+    "v_skills_count": 1,
+    "hexa_skills_count": 0,
+    "v_skills": {
+      "SHADOW_WALKER": "400001023"
+    },
+    "hexa_skills": {},
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [],
+    "lines": 156
+  },
+  "DarkKnight": {
+    "total_constants": 41,
+    "v_skills_count": 6,
+    "hexa_skills_count": 8,
+    "v_skills": {
+      "RADIANT_EVIL": "400011054",
+      "CALAMITOUS_CYCLONE": "400011068",
+      "CALAMITOUS_CYCLONE_FINAL_ATTACK": "400011069",
+      "DARKNESS_AURA": "400011047",
+      "DARKNESS_AURA_2": "400011085",
+      "SPEAR_OF_DARKNESS": "400011004"
+    },
+    "hexa_skills": {
+      "HEXA_GUNGNIR_DESCENT": "1341000",
+      "HEXA_DARK_IMPALE": "1341001",
+      "HEXA_NIGHTSHADE_EXPLOSION": "1341003",
+      "HEXA_REVENGE_OF_THE_EVIL_EYE": "1340004",
+      "HEXA_ENHANCED_REVENGE_OF_THE_EVIL_EYE": "1341005",
+      "HEXA_EVIL_EYE_SHOCK": "1341008",
+      "HEXA_EVIL_EYE_SHOCK_SHOOT": "1341009",
+      "HEXA_FINAL_ATTACK": "1340007"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "LeaveType.ANIMATION"
+    ],
+    "aa_calls": [],
+    "lines": 801
+  },
+  "Hero": {
+    "total_constants": 40,
+    "v_skills_count": 10,
+    "hexa_skills_count": 6,
+    "v_skills": {
+      "BURNING_SOUL_BLADE": "400011001",
+      "BURNING_SOUL_BLADE_STATIONARY": "400011002",
+      "WORLDREAVER": "400011027",
+      "COMBO_INSTINCT": "400011073",
+      "COMBO_INSTINCT_SLASH_STRAIGHT": "400011076",
+      "COMBO_INSTINCT_SLASH_DOWN": "400011075",
+      "COMBO_INSTINCT_SLASH_UP": "400011074",
+      "SWORD_ILLUSION": "400011124",
+      "SWORD_ILLUSION_2": "400011125",
+      "SWORD_ILLUSION_3": "400011126"
+    },
+    "hexa_skills": {
+      "HEXA_RISING_RAGE": "1141002",
+      "HEXA_BEAM_BLADE": "1141003",
+      "HEXA_CRY_VALHALLA": "1141006",
+      "HEXA_CRY_VALHALLA_S": "1141007",
+      "HEXA_PUNCTURE": "1141008",
+      "HEXA_FINAL_ATTACK": "1140009"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "newSkillId",
+      "slv"
+    ],
+    "aa_calls": [
+      "InPacket"
+    ],
+    "lines": 726
+  },
+  "Paladin": {
+    "total_constants": 48,
+    "v_skills_count": 7,
+    "hexa_skills_count": 9,
+    "v_skills": {
+      "HAMMERS_OF_THE_RIGHTEOUS": "400011052",
+      "GRAND_GUARDIAN": "400011072",
+      "HAMMERS_OF_THE_RIGHTEOUS_2": "400011053",
+      "DIVINE_ECHO": "400011003",
+      "DIVINE_ECHO_MIMIC": "400011021",
+      "MIGHTY_MJOLNIR": "400011131",
+      "MIGHTY_MJOLNIR_EXPLOSION": "400011132"
+    },
+    "hexa_skills": {
+      "HEXA_FINAL_ATTACK": "1240008",
+      "HEXA_BLAST": "1241000",
+      "HEXA_DIVINE_JUDGEMENT": "1240001",
+      "HEXA_DIVINE_JUDGEMENT_DEBUFF": "1241002",
+      "HEXA_DIVINE_CHARGE": "1241003",
+      "HEXA_DIVINE_MARK": "1241004",
+      "HEXA_HEAVENS_HAMMER": "1241007",
+      "HEXA_DIVINE_ECHO": "500061000",
+      "HEXA_DIVINE_ECHO_MIMIC": "500061001"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [
+      "SACRED_BASTION_TILE",
+      "slv"
+    ],
+    "lines": 1032
+  },
+  "Warrior": {
+    "total_constants": 3,
+    "v_skills_count": 2,
+    "hexa_skills_count": 0,
+    "v_skills": {
+      "BLITZ_SHIELD_BUFF": "400001010",
+      "BLITZ_SHIELD_ATTACK": "400001011"
+    },
+    "hexa_skills": {},
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [],
+    "lines": 147
+  },
+  "HoYoung": {
+    "total_constants": 110,
+    "v_skills_count": 15,
+    "hexa_skills_count": 42,
+    "v_skills": {
+      "TALISMAN_ENERGY": "164000010",
+      "LIGHT_STEPS": "164000011",
+      "SHROUDING_MIST": "164000012",
+      "CLONE_RAMPAGE": "400041048",
+      "CLONE_RAMPAGE_ATOM": "400041049",
+      "SAGE_TIGER_OF_SONGYU": "400041050",
+      "SAGE_TIGER_OF_SONGYU_ATTACK": "400041051",
+      "SAGE_WRATH_OF_GODS": "400041052",
+      "SAGE_WRATH_OF_GODS_ATTACK": "400041053",
+      "THREE_PATHS_APPARITION_BUFF": "400041063",
+      "THREE_PATHS_APPARITION_ATTACK_1": "400041064",
+      "THREE_PATHS_APPARITION_ATTACK_2": "400041065",
+      "THREE_PATHS_APPARITION_ATTACK_3": "400041066",
+      "THREE_PATHS_APPARITION_COOLTIMES": "400041067",
+      "THREE_PATHS_APPARITION_PROC": "400041068"
+    },
+    "hexa_skills": {
+      "CLONE_RAMPAGE": "400041048",
+      "CLONE_RAMPAGE_ATOM": "400041049",
+      "SAGE_TIGER_OF_SONGYU": "400041050",
+      "SAGE_TIGER_OF_SONGYU_ATTACK": "400041051",
+      "SAGE_WRATH_OF_GODS": "400041052",
+      "SAGE_WRATH_OF_GODS_ATTACK": "400041053",
+      "THREE_PATHS_APPARITION_BUFF": "400041063",
+      "THREE_PATHS_APPARITION_ATTACK_1": "400041064",
+      "THREE_PATHS_APPARITION_ATTACK_2": "400041065",
+      "THREE_PATHS_APPARITION_ATTACK_3": "400041066",
+      "THREE_PATHS_APPARITION_COOLTIMES": "400041067",
+      "THREE_PATHS_APPARITION_PROC": "400041068",
+      "HEXA_CLONE_RAMPAGE": "500061014",
+      "HEXA_CLONE_RAMPAGE_ATOM": "500061015",
+      "MILLENNIUM_SPIRIT": "164141503",
+      "MILLENNIUM_SPIRIT_ATTACK": "164141504",
+      "SAGE_APOTHEOSIS": "164141500",
+      "SAGE_APOTHEOSIS_ATTACK_1": "164141501",
+      "SAGE_APOTHEOSIS_ATTACK_2": "164141502",
+      "UNIVERSAL_HARMONY": "164141029",
+      "HEXA_CONSUMING_FLAMES": "164141000",
+      "HEXA_CONSUMING_FLAMES_1": "164141013",
+      "HEXA_CONSUMING_FLAMES_2": "164141018",
+      "HEXA_STONE_TREMOR": "164141005",
+      "HEXA_STONE_TREMOR_1": "164141019",
+      "HEXA_STONE_TREMOR_2": "164141025",
+      "HEXA_GOLD_BANDED_CUDGEL": "164141011",
+      "HEXA_GOLD_BANDED_CUDGEL_1": "164141026",
+      "HEXA_GOLD_BANDED_CUDGEL_2": "164141027",
+      "HEXA_GOLD_BANDED_CUDGEL_3": "164141028",
+      "HEXA_HUMANITY_AS_YOU_WILL_FAN": "164141030",
+      "HEXA_HUMANITY_AS_YOU_WILL_FAN_1": "164141042",
+      "HEXA_GROUND_SHATTERING_WAVE": "164141031",
+      "HEXA_GROUND_SHATTERING_WAVE_1": "164141043",
+      "HEXA_IRON_FAN_GALE": "164141035",
+      "HEXA_IRON_FAN_GALE_1": "164141041",
+      "HEXA_IRON_FAN_GALE_2": "164141047",
+      "HEXA_IRON_FAN_GALE_3": "164141053",
+      "HEXA_TALISMAN_CLONE": "164141054",
+      "HEXA_SEEKING_GHOST_FLAME": "164141056",
+      "HEXA_SCROLL_BUTTERFLY_DREAM": "164141057",
+      "HEXA_SCROLL_STAR_VORTEX": "164141059"
+    },
+    "origin_names": [
+      "MILLENNIUM_SPIRIT",
+      "MILLENNIUM_SPIRIT_ATTACK",
+      "SAGE_APOTHEOSIS",
+      "SAGE_APOTHEOSIS_ATTACK_1",
+      "SAGE_APOTHEOSIS_ATTACK_2"
+    ],
+    "has_cutscene": true,
+    "summon_calls": [
+      "skillID",
+      "skillID",
+      "skillID",
+      "skillID",
+      "slv",
+      "skillID",
+      "slv",
+      "o1"
+    ],
+    "aa_calls": [],
+    "lines": 949
+  },
+  "Lara": {
+    "total_constants": 107,
+    "v_skills_count": 10,
+    "hexa_skills_count": 17,
+    "v_skills": {
+      "BIG_STRETCH": "400021122",
+      "LANDS_CONNECTION": "400021123",
+      "LANDS_CONNECTION_PASSIVE_1": "400021124",
+      "LANDS_CONNECTION_PASSIVE_2": "400021125",
+      "LANDS_CONNECTION_PASSIVE_3": "400021126",
+      "LANDS_CONNECTION_PASSIVE_4": "400021127",
+      "LANDS_CONNECTION_PASSIVE_5": "400021128",
+      "SURGING_ESSENCE": "400021129",
+      "WINDING_MOUNTAIN_RIDGE_1": "400021130",
+      "WINDING_MOUNTAIN_RIDGE_2": "400021131"
+    },
+    "hexa_skills": {
+      "NATURE_FRIEND_ORIGIN": "160010001",
+      "CORNUCOPIA": "162141502",
+      "CORNUCOPIA_SUB": "162141503",
+      "HEXA_ERUPTION_HEAVING_RIVER": "162141001",
+      "HEXA_ERUPTION_HEAVING_RIVER_2": "162141002",
+      "HEXA_ERUPTION_WHIRLWIND": "162141005",
+      "HEXA_ERUPTION_WHIRLWIND_2": "162141006",
+      "HEXA_ERUPTION_SUNRISE_WELL": "162141008",
+      "HEXA_ERUPTION_SUNRISE_WELL_2": "162141009",
+      "HEXA_DRAGON_VEIN_ABSORPTION": "162141010",
+      "HEXA_ABSORPTION_RIVER_PUDDLE_DOUSE": "162141012",
+      "HEXA_ABSORPTION_RIVER_PUDDLE_DOUSE_2": "162141013",
+      "HEXA_ABSORPTION_FIERCE_WIND": "162141015",
+      "HEXA_ABSORPTION_FIERCE_WIND_2": "162141016",
+      "HEXA_ABSORPTION_SUNLIT_GRAIN": "162141018",
+      "HEXA_ABSORPTION_SUNLIT_GRAIN_2": "162141019",
+      "HEXA_WAKEUP_CALL": "162141020"
+    },
+    "origin_names": [
+      "NATURE_FRIEND_ORIGIN",
+      "CORNUCOPIA",
+      "CORNUCOPIA_SUB"
+    ],
+    "has_cutscene": true,
+    "summon_calls": [
+      "skillID",
+      "slv"
+    ],
+    "aa_calls": [],
+    "lines": 489
+  },
+  "Ren": {
+    "total_constants": 45,
+    "v_skills_count": 10,
+    "hexa_skills_count": 10,
+    "v_skills": {
+      "THOUSAND_BLOSSOM_FLURRY": "400011147",
+      "THOUSAND_BLOSSOM_FLURRY_EX": "400011148",
+      "THOUSAND_BLOSSOM_FLURRY_ATOM": "400011149",
+      "SOUL_IMMEASURABLE": "400011150",
+      "SOUL_IMMEASURABLE_ATT": "400011151",
+      "SOUL_IMMEASURABLE_SPE": "400011152",
+      "DANCING_ANNIHILATION": "400011153",
+      "FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART": "400011154",
+      "FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART_ATT": "400011157",
+      "HEXA_SECOND_PLUM_BLOSSOM_SWORD_RAINING_BLOSSOMS": "161140007"
+    },
+    "hexa_skills": {
+      "HEXA_SECOND_IMUGI_SPIRIT_SWORD_SERPENT_FANG": "161140010",
+      "HEXA_FINAL_IMUGI_SPIRIT_SWORD_YEARS_UNCOUNTED": "161141004",
+      "HEXA_FINAL_IMUGI_SPIRIT_SWORD_YEARS_UNCOUNTED_DEBUFF": "161141012",
+      "HEXA_SECOND_PLUM_BLOSSOM_SWORD_RAINING_BLOSSOMS": "161140007",
+      "HEXA_SECOND_PLUM_BLOSSOM_SWORD_RAINING_BLOSSOMS_ATOM": "161141008",
+      "HEXA_RIOTOUS_HEART": "161141009",
+      "HEXA_HEARTS_UNITED": "161141013",
+      "HEARTBOUND_VERSE": "161141506",
+      "HEARTBOUND_VERSE_FALLING_FLOWER": "161141502",
+      "HEARTBOUND_VERSE_CLIMBING_SERPENT": "161141503"
+    },
+    "origin_names": [
+      "HEARTBOUND_VERSE",
+      "HEARTBOUND_VERSE_FALLING_FLOWER",
+      "HEARTBOUND_VERSE_CLIMBING_SERPENT"
+    ],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "skillID",
+      "skillID",
+      "slv"
+    ],
+    "aa_calls": [
+      "skillID",
+      "slv"
+    ],
+    "lines": 783
+  },
+  "BlazeWizard": {
+    "total_constants": 58,
+    "v_skills_count": 8,
+    "hexa_skills_count": 9,
+    "v_skills": {
+      "SAVAGE_FLAME": "400021042",
+      "SAVAGE_FLAME_LION": "400021043",
+      "SAVAGE_FLAME_FOX": "400021044",
+      "SAVAGE_FLAME_FOX_ATOM": "400021045",
+      "INFERNO_SPHERE": "400021072",
+      "SALAMANDER_MISCHIEF": "400021092",
+      "SALAMANDER_MISCHIEF_END_BUFF": "400021093",
+      "ORBITAL_INFERNO": "400021004"
+    },
+    "hexa_skills": {
+      "HEXA_ORBITAL_FLAME": "12141000",
+      "HEXA_ORBITAL_FLAME_EXTRA": "12141006",
+      "HEXA_BLAZING_EXTINCTION": "12141007",
+      "HEXA_BLAZING_EXTINCTION_SUMMON": "12141009",
+      "HEXA_PHOENIX_DRIVE": "12141010",
+      "HEXA_ORBITAL_EXPLOSION": "12141015",
+      "HEXA_ORBITAL_EXPLOSION_BONUS": "12141016",
+      "HEXA_TOWERING_INFERNO_": "12141017",
+      "HEXA_TOWERING_INFERNO": "12141018"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "Mob",
+      "skillID",
+      "slv",
+      "skillID",
+      "slv",
+      "skillId"
+    ],
+    "aa_calls": [
+      "skillID",
+      "slv"
+    ],
+    "lines": 712
+  },
+  "DawnWarrior": {
+    "total_constants": 50,
+    "v_skills_count": 8,
+    "hexa_skills_count": 5,
+    "v_skills": {
+      "RIFT_OF_DAMNATION": "400011055",
+      "RIFT_OF_DAMNATION_ATTACK": "400011056",
+      "RIFT_OF_DAMNATION_SUMMON": "400011065",
+      "SOUL_ECLIPSE": "400011088",
+      "SOUL_ECLIPSE_BREAK": "400011089",
+      "FLARE_SLASH_SUN": "400011048",
+      "FLARE_SLASH_MOON": "400011049",
+      "COSMOS": "400011142"
+    },
+    "hexa_skills": {
+      "HEXA_LUNA_DIVIDE": "11141100",
+      "HEXA_SOLAR_SLASH": "11141200",
+      "HEXA_COSMIC_SHOWER": "11141002",
+      "HEXA_COSMIC_BURST": "11141004",
+      "HEXA_EQUINOX_SLASH": "11141005"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "RIFT_OF_DAMNATION_SUMMON",
+      "slv",
+      "skillID",
+      "o1"
+    ],
+    "aa_calls": [],
+    "lines": 723
+  },
+  "Mihile": {
+    "total_constants": 45,
+    "v_skills_count": 11,
+    "hexa_skills_count": 4,
+    "v_skills": {
+      "SHIELD_OF_LIGHT": "400011011",
+      "SWORD_OF_LIGHT": "400011032",
+      "SWORD_OF_LIGHT_1": "400011033",
+      "SWORD_OF_LIGHT_2": "400011034",
+      "SWORD_OF_LIGHT_3": "400011035",
+      "SWORD_OF_LIGHT_4": "400011036",
+      "SWORD_OF_LIGHT_5": "400011037",
+      "SWORD_OF_LIGHT_PASSIVE": "400011067",
+      "RADIANT_SOUL": "400011083",
+      "LIGHT_OF_COURAGE_BUFF": "400011127",
+      "LIGHT_OF_COURAGE_SI": "400011128"
+    },
+    "hexa_skills": {
+      "HEXA_FINAL_ATTACK_MIHILE": "51140018",
+      "HEXA_SHIELD_OF_LIGHT": "500061008",
+      "HEXA_LIGHT_OF_COURAGE_BUFF": "500061010",
+      "HEXA_LIGHT_OF_COURAGE_SI": "500061011"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [],
+    "lines": 902
+  },
+  "NightWalker": {
+    "total_constants": 62,
+    "v_skills_count": 6,
+    "hexa_skills_count": 15,
+    "v_skills": {
+      "SHADOW_SPEAR": "400041008",
+      "SHADOW_SPEAR_AA_SMALL": "400040008",
+      "SHADOW_SPEAR_AA_LARGE": "400041019",
+      "GREATER_DARK_SERVANT": "400041028",
+      "SHADOW_BITE": "400041037",
+      "RAPID_THROW": "400041059"
+    },
+    "hexa_skills": {
+      "SHADOW_SPEAR": "400041008",
+      "SHADOW_SPEAR_AA_LARGE": "400041019",
+      "GREATER_DARK_SERVANT": "400041028",
+      "SHADOW_BITE": "400041037",
+      "RAPID_THROW": "400041059",
+      "HEXA_SHADOW_BAT": "14141004",
+      "HEXA_SHADOW_BAT_SUMMON": "14141005",
+      "HEXA_SHADOW_BAT_ATOM": "14141006",
+      "HEXA_SHADOW_BAT_FROM_MOB_ATOM": "14141007",
+      "HEXA_SHADOW_BAT_SUMMON_II": "14141008",
+      "HEXA_RAVENOUS_BAT": "14141012",
+      "HEXA_RAVENOUS_BAT_SUMMON": "14141013",
+      "HEXA_RAVENOUS_BAT_SUMMON2": "14141015",
+      "HEXA_GREATER_DARK_SERVANT": "500061004",
+      "HEXA_SHADOW_BITE": "500061035"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skill.getSkillId",
+      "SHADOW_ILLUSION",
+      "getGreaterDarkServantID",
+      "si.getValue",
+      "skillID",
+      "slv",
+      "skillID",
+      "InPacket"
+    ],
+    "aa_calls": [
+      "SHADOW_SPEAR_AA_SMALL",
+      "SHADOW_SPEAR_AA_LARGE"
+    ],
+    "lines": 868
+  },
+  "Noblesse": {
+    "total_constants": 8,
+    "v_skills_count": 1,
+    "hexa_skills_count": 0,
+    "v_skills": {
+      "PHALANX_CHARGE": "400001018"
+    },
+    "hexa_skills": {},
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [],
+    "lines": 141
+  },
+  "ThunderBreaker": {
+    "total_constants": 35,
+    "v_skills_count": 15,
+    "hexa_skills_count": 17,
+    "v_skills": {
+      "LIGHTNING_CASCADE": "400051007",
+      "LIGHTNING_CASCADE_ATTACK": "400051013",
+      "SHARK_TORPEDO": "400051016",
+      "TRIDENT_STRIKE": "400051044",
+      "TRIDENT_STRIKE_AFTER_HITS": "400051045",
+      "LIGHTNING_SPEAR_MULTISTRIKE_SKILL": "400051058",
+      "LIGHTNING_SPEAR_MULTISTRIKE_THUNDERBOLT_1": "400051065",
+      "LIGHTNING_SPEAR_MULTISTRIKE_FINISHER": "400051066",
+      "LIGHTNING_SPEAR_MULTISTRIKE_THUNDERBOLT_2": "400051067",
+      "LIGHTNING_SPEAR_MULTISTRIKE_ATTACK_1": "400051059",
+      "LIGHTNING_SPEAR_MULTISTRIKE_ATTACK_2": "400051060",
+      "LIGHTNING_SPEAR_MULTISTRIKE_ATTACK_3": "400051061",
+      "LIGHTNING_SPEAR_MULTISTRIKE_ATTACK_4": "400051062",
+      "LIGHTNING_SPEAR_MULTISTRIKE_ATTACK_5": "400051063",
+      "LIGHTNING_SPEAR_MULTISTRIKE_ATTACK_6": "400051064"
+    },
+    "hexa_skills": {
+      "LIGHTNING_CASCADE": "400051007",
+      "LIGHTNING_CASCADE_ATTACK": "400051013",
+      "SHARK_TORPEDO": "400051016",
+      "TRIDENT_STRIKE": "400051044",
+      "TRIDENT_STRIKE_AFTER_HITS": "400051045",
+      "LIGHTNING_SPEAR_MULTISTRIKE_SKILL": "400051058",
+      "LIGHTNING_SPEAR_MULTISTRIKE_THUNDERBOLT_1": "400051065",
+      "LIGHTNING_SPEAR_MULTISTRIKE_FINISHER": "400051066",
+      "LIGHTNING_SPEAR_MULTISTRIKE_THUNDERBOLT_2": "400051067",
+      "LIGHTNING_SPEAR_MULTISTRIKE_ATTACK_1": "400051059",
+      "LIGHTNING_SPEAR_MULTISTRIKE_ATTACK_2": "400051060",
+      "LIGHTNING_SPEAR_MULTISTRIKE_ATTACK_3": "400051061",
+      "LIGHTNING_SPEAR_MULTISTRIKE_ATTACK_4": "400051062",
+      "LIGHTNING_SPEAR_MULTISTRIKE_ATTACK_5": "400051063",
+      "LIGHTNING_SPEAR_MULTISTRIKE_ATTACK_6": "400051064",
+      "HEXA_LIGHTNING_CASCADE": "500061036",
+      "HEXA_LIGHTNING_CASCADE_ATTACK": "500061037"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [],
+    "lines": 501
+  },
+  "WindArcher": {
+    "total_constants": 49,
+    "v_skills_count": 7,
+    "hexa_skills_count": 7,
+    "v_skills": {
+      "HOWLING_GALE": "400031003",
+      "HOWLING_GALE_BIG": "400031004",
+      "MERCILESS_WINDS": "400031022",
+      "GALE_BARRIER": "400031030",
+      "GALE_BARRIER_ATOM": "400031031",
+      "VORTEX_SPHERE": "400031058",
+      "VORTEX_SPHERE_2": "400031059"
+    },
+    "hexa_skills": {
+      "HEXA_TRIFLING_WIND": "13141001",
+      "HEXA_TRIFLING_WIND_ENHANCED": "13141002",
+      "HEXA_STORM_BRINGER": "13141003",
+      "HEXA_MONSOON": "13141005",
+      "HEXA_STORM_WHIM": "13141006",
+      "HEXA_GALE_BARRIER": "500061033",
+      "HEXA_GALE_BARRIER_ATOM": "500061034"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "slv",
+      "chr.getSkillLevel",
+      "skillID",
+      "slv"
+    ],
+    "aa_calls": [],
+    "lines": 767
+  },
+  "Adele": {
+    "total_constants": 64,
+    "v_skills_count": 4,
+    "hexa_skills_count": 21,
+    "v_skills": {
+      "RUIN": "400011105",
+      "INFINITY_BLADE": "400011108",
+      "LEGACY_RESTORATION": "400011109",
+      "STORM": "400011136"
+    },
+    "hexa_skills": {
+      "HEXA_CLEAVE": "151141000",
+      "HEXA_ENHANCED_CLEAVE": "151141001",
+      "HEXA_MAGIC_DISPATCH": "151141002",
+      "HEXA_AETHERIAL_ARMS": "151141003",
+      "HEXA_HUNTING_DECREE": "151141004",
+      "HEXA_PLUMMET": "151141005",
+      "HEXA_IMPALE": "151141010",
+      "HEXA_RESONANCE_RUSH": "151141011",
+      "HEXA_RESONANCE_RUSH_1": "151141012",
+      "HEXA_RESONANCE_RUSH_2": "151141013",
+      "HEXA_NOBLE_SUMMONS": "151141014",
+      "HEXA_AETHER_BLOOM": "151141016",
+      "HEXA_AETHER_FORGE": "151141006",
+      "HEXA_AETHER_FORGE_1": "151141007",
+      "HEXA_AETHER_FORGE_2": "151141008",
+      "HEXA_AETHER_FORGE_3": "151141009",
+      "HEXA_REIGN_OF_DESTRUCTION": "151141015",
+      "HEXA_SHARDBREAKER": "151141017",
+      "HEXA_LEGACY_RESTORATION": "500061065",
+      "MAESTRO": "151141500",
+      "MAESTRO_ATTACK": "151141501"
+    },
+    "origin_names": [
+      "MAESTRO",
+      "MAESTRO_ATTACK"
+    ],
+    "has_cutscene": true,
+    "summon_calls": [
+      "AETHER_CRYSTAL",
+      "skillID",
+      "6000"
+    ],
+    "aa_calls": [
+      "shardRects"
+    ],
+    "lines": 905
+  },
+  "Ark": {
+    "total_constants": 71,
+    "v_skills_count": 5,
+    "hexa_skills_count": 32,
+    "v_skills": {
+      "ABYSSAL_RECALL": "400051334",
+      "INFINITY_SPELL": "400051036",
+      "NIGHTMARES_ESCAPE": "400051047",
+      "DREAMS_ESCAPE": "400051048",
+      "ENDLESSLY_STARVING_BEAST": "400051080"
+    },
+    "hexa_skills": {
+      "ABYSSAL_RECALL": "400051334",
+      "INFINITY_SPELL": "400051036",
+      "NIGHTMARES_ESCAPE": "400051047",
+      "DREAMS_ESCAPE": "400051048",
+      "ENDLESSLY_STARVING_BEAST": "400051080",
+      "HEXA_INFINITY_SPELL": "500061013",
+      "WHISPER_OF_DEEPEST_ABYSS": "155141502",
+      "WHISPER_OF_DEEPEST_ABYSS_ATTACK": "155141503",
+      "PRIMORDIAL_ABYSS": "155141500",
+      "PRIMORDIAL_ABYSS_ATTACK": "155141501",
+      "HEXA_BASIC_CHARGE_DRIVE": "155141000",
+      "HEXA_AWAKENED_ABYSS": "155141001",
+      "HEXA_BASIC_CHARGE_DRIVE_ATOM": "155141002",
+      "HEXA_BASIC_CHARGE_DRIVE_BUFF": "155141003",
+      "HEXA_SCARLET_CHARGE_DRIVE_ATTACK_1": "155141004",
+      "HEXA_SCARLET_CHARGE_DRIVE_ATTACK_2": "155141005",
+      "HEXA_SCARLET_CHARGE_DRIVE_ATOM": "155141009",
+      "HEXA_SCARLET_CHARGE_DRIVE_BUFF": "155141010",
+      "HEXA_GUST_CHARGE_DRIVE_ATTACK": "155141011",
+      "HEXA_GUST_CHARGE_DRIVE_ATOM": "155141013",
+      "HEXA_GUST_CHARGE_DRIVE_BUFF": "155141015",
+      "HEXA_ABYSSAL_CHARGE_DRIVE_ATTACK": "155141016",
+      "HEXA_ABYSSAL_CHARGE_DRIVE_ATOM": "155141018",
+      "HEXA_ABYSSAL_CHARGE_DRIVE_BUFF": "155141020",
+      "HEXA_GRIEVOUS_WOUND": "155141021",
+      "HEXA_INSATIABLE_HUNGER": "155141024",
+      "HEXA_UNBRIDLED_CHAOS": "155141027",
+      "HEXA_ENDLESS_AGONY": "155141029",
+      "HEXA_BLISSFUL_RESTRAINT": "155141031",
+      "HEXA_VENGEFUL_HATE": "155141034",
+      "HEXA_OMINOUS_NIGHTMARE": "155141035",
+      "HEXA_OMINOUS_DREAM": "155141036"
+    },
+    "origin_names": [
+      "WHISPER_OF_DEEPEST_ABYSS",
+      "WHISPER_OF_DEEPEST_ABYSS_ATTACK",
+      "PRIMORDIAL_ABYSS",
+      "PRIMORDIAL_ABYSS_ATTACK"
+    ],
+    "has_cutscene": true,
+    "summon_calls": [],
+    "aa_calls": [
+      "slv",
+      "1000"
+    ],
+    "lines": 955
+  },
+  "Illium": {
+    "total_constants": 80,
+    "v_skills_count": 7,
+    "hexa_skills_count": 25,
+    "v_skills": {
+      "CRYSTAL_IGNITION": "400021061",
+      "REFLECTION_SPECTRAL_BLAST": "400021062",
+      "TEMPLAR_KNIGHT": "400021063",
+      "CRYSTALLINE_SPIRIT": "400021068",
+      "CRYSTAL_GATE": "400021099",
+      "CRYSTAL_GATE_PORTAL": "400021100",
+      "CRYSTAL_GATE_PORTAL_ATTACK": "400021111"
+    },
+    "hexa_skills": {
+      "EXCIDIUM": "152141508",
+      "EXCIDIUM_ATTACK": "152141509",
+      "MYTOCRYSTAL_EXPANSE": "152141500",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_1": "152141501",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_2": "152141502",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_3": "152141503",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_4": "152141504",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_5": "152141505",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_6": "152141506",
+      "HEXA_RADIANT_JAVELIN": "152141000",
+      "HEXA_RADIANT_JAVELIN_2": "152141001",
+      "HEXA_RADIANT_ENCHANTED_JAVELIN": "152141002",
+      "HEXA_WINGED_JAVELIN": "152141004",
+      "HEXA_WINGED_ENCHANTED_JAVELIN": "152141005",
+      "HEXA_WINGED_JAVELIN_2": "152141006",
+      "HEXA_REACTION_DESTRUCTION": "152141007",
+      "HEXA_REACTION_DOMINATION": "152141008",
+      "HEXA_VORTEX_WINGS": "152141009",
+      "HEXA_EX": "152141010",
+      "HEXA_MACHINA": "152141011",
+      "HEXA_CRYSTAL_SKILL_DEUS": "152141012",
+      "HEXA_CRYSTAL_SKILL_DEUS_SUB": "152141013",
+      "HEXA_LONGINUS_SPEAR": "152141014",
+      "HEXA_LONGINUS_ZONE": "152141015",
+      "HEXA_UMBRAL_BRAND_III": "152140016"
+    },
+    "origin_names": [
+      "EXCIDIUM",
+      "EXCIDIUM_ATTACK",
+      "MYTOCRYSTAL_EXPANSE",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_1",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_2",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_3",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_4",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_5",
+      "MYTOCRYSTAL_EXPANSE_ATTACK_6"
+    ],
+    "has_cutscene": true,
+    "summon_calls": [
+      "skillID",
+      "skillID",
+      "skillID",
+      "DEUS_SUB",
+      "skillID",
+      "3",
+      "skillID",
+      "o1",
+      "skillID",
+      "skillID",
+      "skillID",
+      "CRYSTAL_SKILL_DEUS",
+      "DEUS_SUB"
+    ],
+    "aa_calls": [],
+    "lines": 1038
+  },
+  "Khali": {
+    "total_constants": 57,
+    "v_skills_count": 6,
+    "hexa_skills_count": 17,
+    "v_skills": {
+      "FLARE": "154000004",
+      "PATIENCE": "154000005",
+      "HEX_PANDEMONIUM": "400041082",
+      "VOID_BURST": "400041084",
+      "ARTS_ASTRA": "400041087",
+      "RESONATE_ULTIMATUM": "400041089"
+    },
+    "hexa_skills": {
+      "HEX_SANDSTORM": "154141500",
+      "WAKE_THE_VOID": "154141504",
+      "WAKE_THE_VOID_EXPLOSION": "154141505",
+      "HEXA_ARTS_FLURRY": "154141000",
+      "HEXA_ARTS_CRESCENTUM": "154141001",
+      "HEXA_ARTS_TRIPLE_BASH": "154141002",
+      "HEXA_VOID_BLITZ": "154141008",
+      "HEXA_CHAKRAM_SPLIT": "154141009",
+      "HEXA_CHAKRAM_FURY": "154141010",
+      "HEXA_CHAKRAM_SWEEP": "154141011",
+      "HEXA_DEATH_BLOSSOM": "154141012",
+      "HEXA_RESONATE": "154141013",
+      "HEXA_DECEIVING_BLADE": "154141014",
+      "HEX_PANDEMONIUM": "400041082",
+      "VOID_BURST": "400041084",
+      "ARTS_ASTRA": "400041087",
+      "RESONATE_ULTIMATUM": "400041089"
+    },
+    "origin_names": [
+      "HEX_SANDSTORM",
+      "WAKE_THE_VOID",
+      "WAKE_THE_VOID_EXPLOSION"
+    ],
+    "has_cutscene": true,
+    "summon_calls": [],
+    "aa_calls": [
+      "chrPos.getY"
+    ],
+    "lines": 594
+  },
+  "Lynn": {
+    "total_constants": 22,
+    "v_skills_count": 4,
+    "hexa_skills_count": 0,
+    "v_skills": {
+      "BEAST_RAGE": "400021134",
+      "BEAK_STRIKE": "400021137",
+      "FOCUS_AWAKEN": "400021138",
+      "NATURE_GRACE": "400021139"
+    },
+    "hexa_skills": {},
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [],
+    "lines": 446
+  },
+  "MoXuan": {
+    "total_constants": 34,
+    "v_skills_count": 5,
+    "hexa_skills_count": 6,
+    "v_skills": {
+      "SOUL_ART_BENEATH_HEAVEN": "400051084",
+      "SOUL_ART_THE_CONQUERED_SELF": "400051086",
+      "SOUL_ART_THE_CONQUERED_SELF_ATOM": "400051087",
+      "SOUL_ART_THE_OPENED_GATE": "400051088",
+      "DIVINE_ART_CRASHING_EARTH": "400051089"
+    },
+    "hexa_skills": {
+      "SOUL_ART_BENEATH_HEAVEN": "400051084",
+      "SOUL_ART_THE_CONQUERED_SELF": "400051086",
+      "SOUL_ART_THE_CONQUERED_SELF_ATOM": "400051087",
+      "SOUL_ART_THE_OPENED_GATE": "400051088",
+      "DIVINE_ART_CRASHING_EARTH": "400051089",
+      "HEXA_SOUL_ART_THE_OPENED_GATE": "500061070"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [],
+    "lines": 551
+  },
+  "Aran": {
+    "total_constants": 56,
+    "v_skills_count": 9,
+    "hexa_skills_count": 1,
+    "v_skills": {
+      "MAHAS_FURY_BUFF": "400011016",
+      "MAHAS_FURY_ATTACK": "400011020",
+      "MAHAS_CARNAGE": "400011031",
+      "MAHAS_CARNAGE_COMBO": "400010030",
+      "FENRIR_CRASH": "400010070",
+      "FENRIR_CRASH_ADRENALINE": "400010071",
+      "BLIZZARD_TEMPEST": "400011121",
+      "BLIZZARD_TEMPEST_DIRE_WOLF_ATTACK": "400011122",
+      "BLIZZARD_TEMPEST_MOB": "400011123"
+    },
+    "hexa_skills": {
+      "HEXA_FINAL_ATTACK": "21140012"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [
+      "MAHAS_DOMAIN",
+      "1000"
+    ],
+    "lines": 667
+  },
+  "Evan": {
+    "total_constants": 41,
+    "v_skills_count": 6,
+    "hexa_skills_count": 1,
+    "v_skills": {
+      "ELEMENTAL_BARRAGE": "400021012",
+      "DRAGON_SLAM": "400021046",
+      "WYRMKINGS_BREATH": "400020046",
+      "LUDICROUS_SPEED": "400020051",
+      "ELEMENTAL_RADIANCE": "400021073",
+      "SPIRAL_OF_MANA": "400021095"
+    },
+    "hexa_skills": {
+      "HEXA_DRAGON_SPARK": "22200016"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "tsb.getOption"
+    ],
+    "aa_calls": [
+      "RETURN_FLAME_TILE",
+      "chr.getPosition"
+    ],
+    "lines": 632
+  },
+  "Legend": {
+    "total_constants": 0,
+    "v_skills_count": 0,
+    "hexa_skills_count": 0,
+    "v_skills": {},
+    "hexa_skills": {},
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [],
+    "lines": 17
+  },
+  "Luminous": {
+    "total_constants": 41,
+    "v_skills_count": 11,
+    "hexa_skills_count": 0,
+    "v_skills": {
+      "GATE_OF_LIGHT": "400021005",
+      "AETHER_CONDUIT_L": "400021041",
+      "AETHER_CONDUIT_D": "400021049",
+      "AETHER_CONDUIT_EQ": "400021050",
+      "BAPTISM_OF_LIGHT_AND_DARKNESS": "400021071",
+      "LIBERATION_ORB": "400021105",
+      "LIBERATION_ORB_IMBALANCE_ATOM": "400021106",
+      "LIBERATION_ORB_LIGHT_ZONE": "400021107",
+      "LIBERATION_ORB_DARK_BULLET": "400021108",
+      "LIBERATION_ORB_IMBALANCE_ATTACK": "400021109",
+      "LIBERATION_ORB_BALANCE_ATTACK": "400021110"
+    },
+    "hexa_skills": {},
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "o1",
+      "skillID",
+      "InPacket"
+    ],
+    "aa_calls": [
+      "skillID"
+    ],
+    "lines": 631
+  },
+  "Mercedes": {
+    "total_constants": 37,
+    "v_skills_count": 8,
+    "hexa_skills_count": 4,
+    "v_skills": {
+      "SPIRIT_OF_ELLUEL": "400031007",
+      "SPIRIT_OF_ELLUEL_1": "400031008",
+      "SPIRIT_OF_ELLUEL_2": "400031009",
+      "SYLVIDIAS_FLIGHT": "400031017",
+      "BREATH_OF_IRKALLA": "400031011",
+      "IRKILLAS_WRATH": "400031024",
+      "ROYAL_KNIGHTS": "400031044",
+      "ROYAL_KNIGHTS_SA": "400031045"
+    },
+    "hexa_skills": {
+      "HEXA_SPIRIT_OF_ELLUEL": "500061046",
+      "HEXA_SPIRIT_OF_ELLUEL_1": "500061047",
+      "HEXA_SPIRIT_OF_ELLUEL_2": "500061048",
+      "HEXA_FINAL_ATTACK_DBG": "23140017"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "random",
+      "Mob",
+      "i",
+      "slv"
+    ],
+    "aa_calls": [],
+    "lines": 536
+  },
+  "Phantom": {
+    "total_constants": 52,
+    "v_skills_count": 15,
+    "hexa_skills_count": 20,
+    "v_skills": {
+      "LUCK_OF_THE_DRAW": "400041009",
+      "LUCK_OF_THE_DRAW_ATOM": "400041010",
+      "LUCK_OF_THE_DRAW_RED": "400041011",
+      "LUCK_OF_THE_DRAW_TREE": "400041012",
+      "LUCK_OF_THE_DRAW_HOUR": "400041013",
+      "LUCK_OF_THE_DRAW_SHARP": "400041014",
+      "LUCK_OF_THE_DRAW_FLURRY": "400041015",
+      "ACE_IN_THE_HOLE": "400041022",
+      "ACE_IN_THE_HOLE_ATOM": "400041023",
+      "ACE_IN_THE_HOLE_FINISHER": "400041024",
+      "PHANTOMS_MARK": "400041040",
+      "PHANTOMS_MARK_2": "400041045",
+      "PHANTOMS_MARK_3": "400041046",
+      "RIFT_BREAK_TELEPORT": "400041055",
+      "RIFT_BREAK_ALL_ATTACKS_IN_ONE": "400041056"
+    },
+    "hexa_skills": {
+      "LUCK_OF_THE_DRAW": "400041009",
+      "LUCK_OF_THE_DRAW_ATOM": "400041010",
+      "LUCK_OF_THE_DRAW_RED": "400041011",
+      "LUCK_OF_THE_DRAW_TREE": "400041012",
+      "LUCK_OF_THE_DRAW_HOUR": "400041013",
+      "LUCK_OF_THE_DRAW_SHARP": "400041014",
+      "LUCK_OF_THE_DRAW_FLURRY": "400041015",
+      "ACE_IN_THE_HOLE": "400041022",
+      "ACE_IN_THE_HOLE_ATOM": "400041023",
+      "ACE_IN_THE_HOLE_FINISHER": "400041024",
+      "PHANTOMS_MARK": "400041040",
+      "PHANTOMS_MARK_2": "400041045",
+      "PHANTOMS_MARK_3": "400041046",
+      "RIFT_BREAK_TELEPORT": "400041055",
+      "RIFT_BREAK_ALL_ATTACKS_IN_ONE": "400041056",
+      "HEXA_TEMPEST": "24141000",
+      "HEXA_MILLE_AIGUILLES": "24141001",
+      "HEXA_MILLE_AIGUILLES_FORTUNE": "24141002",
+      "HEXA_ROSE_CARTE_FINALE": "24141006",
+      "HEXA_ROSE_CARTE_FINALE_TILE": "24141006"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [
+      "Option"
+    ],
+    "lines": 1035
+  },
+  "Shade": {
+    "total_constants": 35,
+    "v_skills_count": 6,
+    "hexa_skills_count": 6,
+    "v_skills": {
+      "SPIRIT_FLOW": "400051010",
+      "SPIRITGATE_SUMMONER": "400051022",
+      "SPIRITGATE_SUMMONS": "400051023",
+      "TRUE_SPIRIT_CLAW": "400051043",
+      "SMASHING_MULTIPUNCH_KEYDOWN": "400051078",
+      "SMASHING_MULTIPUNCH_FINALE": "400051079"
+    },
+    "hexa_skills": {
+      "SPIRIT_FLOW": "400051010",
+      "SPIRITGATE_SUMMONER": "400051022",
+      "SPIRITGATE_SUMMONS": "400051023",
+      "TRUE_SPIRIT_CLAW": "400051043",
+      "SMASHING_MULTIPUNCH_KEYDOWN": "400051078",
+      "SMASHING_MULTIPUNCH_FINALE": "400051079"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "SPIRITGATE_SUMMONS",
+      "System.currentTimeMillis",
+      "skillID",
+      "skillID"
+    ],
+    "aa_calls": [
+      "skillID",
+      "skillID",
+      "skillID",
+      "FOX_SPIRITS_INIT"
+    ],
+    "lines": 632
+  },
+  "AngelicBuster": {
+    "total_constants": 40,
+    "v_skills_count": 5,
+    "hexa_skills_count": 5,
+    "v_skills": {
+      "SPARKLE_BURST": "400051011",
+      "SUPER_STAR_SPOTLIGHT": "400051018",
+      "SUPER_STAR_SPOTLIGHT_2": "400051027",
+      "MIGHTY_MASCOT": "400051046",
+      "TRINITY_FUSION": "400051072"
+    },
+    "hexa_skills": {
+      "SPARKLE_BURST": "400051011",
+      "SUPER_STAR_SPOTLIGHT": "400051018",
+      "SUPER_STAR_SPOTLIGHT_2": "400051027",
+      "MIGHTY_MASCOT": "400051046",
+      "TRINITY_FUSION": "400051072"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "slv"
+    ],
+    "aa_calls": [],
+    "lines": 782
+  },
+  "Cadena": {
+    "total_constants": 50,
+    "v_skills_count": 6,
+    "hexa_skills_count": 6,
+    "v_skills": {
+      "APOCALYPSE_CANNON_SUMMON": "400041033",
+      "APOCALYPSE_CANNON_SHOOTOBJ": "400041034",
+      "CHAIN_ARTS_VOID_STRIKE_BUFF": "400041035",
+      "CHAIN_ARTS_VOID_STRIKE_ATTACK": "400041036",
+      "CHAIN_ARTS_MAELSTROM": "400041041",
+      "MUSCLE_MEMORY_FINALE": "400041074"
+    },
+    "hexa_skills": {
+      "APOCALYPSE_CANNON_SUMMON": "400041033",
+      "APOCALYPSE_CANNON_SHOOTOBJ": "400041034",
+      "CHAIN_ARTS_VOID_STRIKE_BUFF": "400041035",
+      "CHAIN_ARTS_VOID_STRIKE_ATTACK": "400041036",
+      "CHAIN_ARTS_MAELSTROM": "400041041",
+      "MUSCLE_MEMORY_FINALE": "400041074"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "skillID"
+    ],
+    "aa_calls": [
+      "skillID"
+    ],
+    "lines": 611
+  },
+  "Kain": {
+    "total_constants": 117,
+    "v_skills_count": 6,
+    "hexa_skills_count": 34,
+    "v_skills": {
+      "DRAGON_BURST": "400031061",
+      "THANATOS_DESCENT": "400031062",
+      "THANATOS_DESCENT_2": "400031063",
+      "THANATOS_DESCENT_3": "400031064",
+      "FATAL_BLITZ": "400031065",
+      "GRIP_OF_AGONY": "400031066"
+    },
+    "hexa_skills": {
+      "HEXA_FALLING_DUST": "63141000",
+      "HEXA_FALLING_DUST_POSSESS": "63141100",
+      "HEXA_FALLING_DUST_POSSESS_2": "63141101",
+      "HEXA_POISON_NEEDLE": "63141004",
+      "HEXA_POISON_NEEDLE_1": "63141005",
+      "HEXA_POISON_NEEDLE_2": "63141006",
+      "HEXA_STRIKE_ARROW": "63141007",
+      "HEXA_STRIKE_ARROW_1": "63141008",
+      "HEXA_STRIKE_ARROW_POSSESS": "63141107",
+      "HEXA_SCATTERING_SHOT": "63141009",
+      "HEXA_SCATTERING_SHOT_POSSESS": "63141109",
+      "HEXA_TEARING_KNIFE": "63141010",
+      "HEXA_CHAIN_SICKLE": "63141011",
+      "HEXA_CHAIN_SICKLE_1": "63141012",
+      "HEXA_DRAGON_FANG": "63141013",
+      "HEXA_DRAGON_FANG_1": "63141014",
+      "HEXA_DEATH_BLESSING": "63141015",
+      "HEXA_DEATH_BLESSING_1": "63141016",
+      "HEXA_DEATH_BLESSING_2": "63141017",
+      "HEXA_SHAFT_BREAK": "63141018",
+      "HEXA_SHAFT_BREAK_1": "63141019",
+      "HEXA_SHAFT_BREAK_2": "63141020",
+      "HEXA_SHAFT_BREAK_POSSESS": "63141118",
+      "HEXA_SHAFT_BREAK_POSSESS_1": "63141119",
+      "HEXA_SHAFT_BREAK_POSSESS_2": "63141120",
+      "HEXA_SHAFT_BREAK_POSSESS_3": "63141121",
+      "HEXA_LASTING_GRUDGE": "63141022",
+      "HEXA_LASTING_GRUDGE_1": "63141023",
+      "HEXA_PHANTOM_BLADE": "63141024",
+      "HEXA_CHASING_SHOT": "63141025",
+      "HEXA_UNSEEN_SNIPER": "63141026",
+      "HEXA_UNSEEN_SNIPER_1": "63141027",
+      "HEXA_UNSEEN_SNIPER_POSSESS": "63141126",
+      "HEXA_UNSEEN_SNIPER_POSSESS_1": "63141127"
+    },
+    "origin_names": [],
+    "has_cutscene": true,
+    "summon_calls": [],
+    "aa_calls": [],
+    "lines": 465
+  },
+  "Kaiser": {
+    "total_constants": 78,
+    "v_skills_count": 15,
+    "hexa_skills_count": 10,
+    "v_skills": {
+      "NOVA_GUARDIANS": "400011012",
+      "NOVA_GUARDIANS_2": "400011013",
+      "NOVA_GUARDIANS_3": "400011014",
+      "BLADEFALL_ATTACK": "400011058",
+      "BLADEFALL_ATTACK_FF": "400011059",
+      "BLADEFALL_TILE": "400011060",
+      "BLADEFALL_TILE_FF": "400011061",
+      "DRACO_SURGE_ATTACK": "400011079",
+      "DRACO_SURGE_ATTACK_FF": "400011080",
+      "DRACO_SURGE_SHOOTOBJ": "400011081",
+      "DRACO_SURGE_SHOOTOBJ_FF": "400011082",
+      "DRAGON_BLAZE": "400011118",
+      "DRAGON_BLAZE_FIRE_ENERY": "400011119",
+      "DRAGON_BLAZE_FIRE_ORB": "400011120",
+      "DRAGON_BLAZE_FIRE_ENERGY_EXPLOSION": "400011130"
+    },
+    "hexa_skills": {
+      "HEXA_GIGA_WAVE": "61141000",
+      "HEXA_GIGA_WAVE_FINAL_FORM": "61141001",
+      "HEXA_BLADE_BURST": "61141002",
+      "HEXA_BLADE_BURST_FINAL_FORM": "61141004",
+      "HEXA_INFERNO_BREATH": "61141009",
+      "HEXA_INFERNO_BREATH_FINAL_FORM": "61141010",
+      "HEXA_ENHANCED_INFERNO_BREATH": "61141011",
+      "HEXA_ENHANCED_INFERNO_BREATH_FINAL_FORM": "61141012",
+      "HEXA_STONE_DRAGON": "61141013",
+      "HEXA_STONE_DRAGON_FINAL_FORM": "61141014"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "o1",
+      "sid",
+      "slv",
+      "skillId",
+      "InPacket"
+    ],
+    "aa_calls": [
+      "o1",
+      "skillId",
+      "chr.getSkillLevel"
+    ],
+    "lines": 1104
+  },
+  "BattleMage": {
+    "total_constants": 30,
+    "v_skills_count": 6,
+    "hexa_skills_count": 2,
+    "v_skills": {
+      "AURA_SCYTHE": "400021006",
+      "ALTAR_OF_ANNIHILATION": "400021047",
+      "GRIM_HARVEST": "400021069",
+      "ABYSSAL_LIGHTNING": "400021087",
+      "ABYSSAL_LIGHTNING_PORTAL_ATTACK": "400021088",
+      "ABYSSAL_LIGHTNING_PORTAL": "400021089"
+    },
+    "hexa_skills": {
+      "HEXA_DARK_GENESIS": "32141008",
+      "HEXA_DARK_GENESIS_FA": "32141010"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skill.getSkillId",
+      "skillID",
+      "skillID",
+      "GRIM_HARVEST"
+    ],
+    "aa_calls": [
+      "skillID",
+      "slv"
+    ],
+    "lines": 774
+  },
+  "Blaster": {
+    "total_constants": 50,
+    "v_skills_count": 7,
+    "hexa_skills_count": 1,
+    "v_skills": {
+      "ROCKET_PUNCH": "400011017",
+      "ROCKET_PUNCH_EXTRA_SKILL": "400011019",
+      "GATLING_PUNCH": "400011028",
+      "BULLET_BLAST": "400011091",
+      "BULLET_BLAST_2": "400011103",
+      "AFTERIMAGE_SHOCK_1": "400011116",
+      "AFTERIMAGE_SHOCK_2": "400011117"
+    },
+    "hexa_skills": {
+      "HEXA_REVOLVING_CANON_MASTERY": "37141008"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [
+      "HAMMER_SMASH",
+      "1"
+    ],
+    "lines": 658
+  },
+  "Citizen": {
+    "total_constants": 3,
+    "v_skills_count": 0,
+    "hexa_skills_count": 0,
+    "v_skills": {},
+    "hexa_skills": {},
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [],
+    "lines": 111
+  },
+  "Mechanic": {
+    "total_constants": 32,
+    "v_skills_count": 5,
+    "hexa_skills_count": 5,
+    "v_skills": {
+      "MULTIPURPOSE_BOT_MFL": "400051009",
+      "MOBILE_MISSILE_BATTERY": "400051017",
+      "FULL_METAL_BARRAGE": "400051041",
+      "MECHA_CARRIER": "400051068",
+      "MECHA_CARRIER_2": "400051069"
+    },
+    "hexa_skills": {
+      "MULTIPURPOSE_BOT_MFL": "400051009",
+      "MOBILE_MISSILE_BATTERY": "400051017",
+      "FULL_METAL_BARRAGE": "400051041",
+      "MECHA_CARRIER": "400051068",
+      "MECHA_CARRIER_2": "400051069"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "BOTS_N_TOTS_SUB_SUMMON",
+      "skillID",
+      "skillID",
+      "skillID",
+      "skillID",
+      "skillID",
+      "slv",
+      "skillID",
+      "skillID",
+      "slv"
+    ],
+    "aa_calls": [
+      "skillID"
+    ],
+    "lines": 647
+  },
+  "OpenGate": {
+    "total_constants": 0,
+    "v_skills_count": 0,
+    "hexa_skills_count": 0,
+    "v_skills": {},
+    "hexa_skills": {},
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [],
+    "lines": 108
+  },
+  "WildHunter": {
+    "total_constants": 53,
+    "v_skills_count": 6,
+    "hexa_skills_count": 1,
+    "v_skills": {
+      "JAGUAR_STORM": "400031005",
+      "PRIMAL_FURY": "400031012",
+      "PRIMAL_FURY_2": "400031013",
+      "PRIMAL_FURY_MOUNT_REQUEST": "400031014",
+      "PRIMAL_GRENADE": "400031032",
+      "WILD_ARROW_BLAST_TYPE_X": "400031046"
+    },
+    "hexa_skills": {
+      "HEXA_FINAL_ATTACK_WH": "21140012"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [
+      "skillID",
+      "skillID",
+      "skillID"
+    ],
+    "lines": 663
+  },
+  "WildHunterInfo": {
+    "total_constants": 0,
+    "v_skills_count": 0,
+    "hexa_skills_count": 0,
+    "v_skills": {},
+    "hexa_skills": {},
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [],
+    "aa_calls": [],
+    "lines": 56
+  },
+  "Xenon": {
+    "total_constants": 53,
+    "v_skills_count": 6,
+    "hexa_skills_count": 19,
+    "v_skills": {
+      "OMEGA_BLASTER": "400041007",
+      "CORE_OVERLOAD_BUFF": "400041029",
+      "CORE_OVERLOAD_ATTACK": "400041031",
+      "HYPOGRAM_FIELD_FUSION": "400041044",
+      "PHOTON_RAY": "400041057",
+      "PHOTON_RAY_ATTACK": "400041058"
+    },
+    "hexa_skills": {
+      "OMEGA_BLASTER": "400041007",
+      "CORE_OVERLOAD_BUFF": "400041029",
+      "CORE_OVERLOAD_ATTACK": "400041031",
+      "HYPOGRAM_FIELD_FUSION": "400041044",
+      "PHOTON_RAY": "400041057",
+      "PHOTON_RAY_ATTACK": "400041058",
+      "HEXA_ORBITAL_CATACLYSM": "36141012",
+      "HEXA_ORBITAL_CATACLYSM_BUFF": "36141013",
+      "HEXA_TRIANGULATION": "36141007",
+      "HEXA_TRIANGULATION_ATT": "36141008",
+      "HEXA_MECHA_PURGE_EXECUTE": "36141001",
+      "HEXA_MECHA_PURGE_FIRE": "36141003",
+      "HEXA_BEAM_DANCE": "36141014",
+      "HEXA_BEAM_DANCE_EXTRA": "36140015",
+      "HEXA_BEAM_DANCE_SUMMON": "36140016",
+      "HEXA_HYPOGRAM_FIELD_PENETRATE": "36141004",
+      "HEXA_HYPOGRAM_FIELD_FORCE_FIELD": "36141005",
+      "HEXA_HYPOGRAM_FIELD_SUPPORT": "36141006",
+      "CORE_OVERLOAD_BOOST_SKILL": "500061059"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "summonID",
+      "10000",
+      "skillID",
+      "skillID"
+    ],
+    "aa_calls": [
+      "skillID",
+      "skillID",
+      "slv"
+    ],
+    "lines": 927
+  },
+  "Demon": {
+    "total_constants": 5,
+    "v_skills_count": 2,
+    "hexa_skills_count": 0,
+    "v_skills": {
+      "DEFENDER_OF_THE_DEMON": "400001013",
+      "DEFENDER_OF_THE_DEMON_MASTEMA_MARK": "400001016"
+    },
+    "hexa_skills": {},
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "InPacket"
+    ],
+    "aa_calls": [],
+    "lines": 292
+  },
+  "DemonAvenger": {
+    "total_constants": 63,
+    "v_skills_count": 13,
+    "hexa_skills_count": 6,
+    "v_skills": {
+      "DEMONIC_FRENZY": "400011010",
+      "DEMONIC_FRENZY_AA": "400010010",
+      "DEMONIC_BLAST_HOLDDOWN": "400011038",
+      "DEMONIC_BLAST_ATTACK_1": "400011062",
+      "DEMONIC_BLAST_ATTACK_2": "400011063",
+      "DEMONIC_BLAST_ATTACK_3": "400011064",
+      "DIMENSIONAL_SWORD_SUMMON": "400011090",
+      "DIMENSIONAL_SWORD_ATTACK": "400011102",
+      "REVENANT": "400011112",
+      "THORN_OF_FURY_1": "400011113",
+      "THORN_OF_FURY_2": "400011114",
+      "THORN_OF_FURY_3": "400011115",
+      "REVENANT_END": "400011129"
+    },
+    "hexa_skills": {
+      "HEXA_INFERNAL_EXCEED": "31240013",
+      "HEXA_REVENANT": "500061054",
+      "HEXA_THORN_OF_FURY_1": "500061055",
+      "HEXA_THORN_OF_FURY_2": "500061056",
+      "HEXA_THORN_OF_FURY_3": "500061057",
+      "HEXA_REVENANT_END": "500061058"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "slv"
+    ],
+    "aa_calls": [
+      "aaskillID",
+      "Mob"
+    ],
+    "lines": 694
+  },
+  "DemonSlayer": {
+    "total_constants": 38,
+    "v_skills_count": 10,
+    "hexa_skills_count": 0,
+    "v_skills": {
+      "ORTHRUS_2": "400011078",
+      "ORTHRUS": "400011077",
+      "SPIRIT_OF_RAGE": "400011057",
+      "DEMON_AWAKENING": "400011006",
+      "DEMON_AWAKENING_LASH_1": "400011007",
+      "DEMON_AWAKENING_LASH_2": "400011008",
+      "DEMON_AWAKENING_LASH_3": "400011009",
+      "DEMON_AWAKENING_LASH_4": "400011018",
+      "DEMON_BANE": "400011110",
+      "DEMON_BANE_2": "400011111"
+    },
+    "hexa_skills": {},
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "skillID",
+      "ORTHRUS_2",
+      "summonDS",
+      "slv"
+    ],
+    "aa_calls": [],
+    "lines": 611
+  },
+  "Hayato": {
+    "total_constants": 44,
+    "v_skills_count": 4,
+    "hexa_skills_count": 3,
+    "v_skills": {
+      "BATTOUJUTSU_ZANKOU": "400011026",
+      "IAIJUTSU_PHANTOM_BLADE": "400011029",
+      "BATTOUJUTSU_ULTIMATE_WILL": "400011104",
+      "INSTANT_SLICE": "400011138"
+    },
+    "hexa_skills": {
+      "HEXA_AKATSUKI_TRACE": "41140006",
+      "HEXA_HITOKIRI_STRIKE": "41141007",
+      "HEXA_HITOKIRI_STRIKE_ANGLE": "41141008"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "slv",
+      "skillID",
+      "InPacket"
+    ],
+    "aa_calls": [],
+    "lines": 786
+  },
+  "Kanna": {
+    "total_constants": 87,
+    "v_skills_count": 9,
+    "hexa_skills_count": 11,
+    "v_skills": {
+      "YUKI_MUSUME_SHOUKAN": "400021017",
+      "YUKI_MUSUME_SHOUKAN_SUMMON": "400021018",
+      "SPIRITS_DOMAIN": "400021054",
+      "LIBERATED_SPIRIT_CIRCLE_SMALL": "400021078",
+      "LIBERATED_SPIRIT_CIRCLE_BIG": "400021080",
+      "LIBERATED_SPIRIT_CIRCLE_SUMMON": "400021079",
+      "LIBERATED_SPIRIT_CIRCLE_SUMMON_2": "400021081",
+      "PRINCESS_SAKUNO_BLESSING": "400001057",
+      "GHOST_YAKSHA_GREAT_ONI_LORD_LEGION": "400021114"
+    },
+    "hexa_skills": {
+      "HEXA_KISHIN_SHOUKAN": "42141011",
+      "HEXA_YOSUZUME": "42141007",
+      "HEXA_TENGU_STRIKE_SUMMON_R": "42141014",
+      "HEXA_TENGU_STRIKE_SUMMON_L": "42141013",
+      "HEXA_TENGU_STRIKE": "42141012",
+      "HEXA_SHIKIGAMI_DOPPLEGANGER": "42141005",
+      "HEXA_SHIKIGAMI_DOPPLEGANGER_ACTIVATED": "42141006",
+      "HEXA_NINE_TAILED_FURY": "42141009",
+      "HEXA_NINE_TAILED_FURY_PASSIVE": "42141010",
+      "HEXA_GHOST_YAKSHA_BOSS": "42141015",
+      "HEXA_SPIRITS_DOMAIN": "500061069"
+    },
+    "origin_names": [],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "90000",
+      "getGhostSkill",
+      "slv",
+      "i",
+      "i",
+      "skillID",
+      "skillID",
+      "slv",
+      "skillID",
+      "o2",
+      "YUKI_MUSUME_SHOUKAN_SUMMON",
+      "si.getValue",
+      "skillID",
+      "o1"
+    ],
+    "aa_calls": [
+      "skillID",
+      "slv",
+      "skill.getSkillId",
+      "1000",
+      "skill.getSkillId",
+      "MANA_VEIN",
+      "1000",
+      "summon.getSkillID"
+    ],
+    "lines": 1078
+  },
+  "SiaAstelle": {
+    "total_constants": 69,
+    "v_skills_count": 5,
+    "hexa_skills_count": 5,
+    "v_skills": {
+      "SHINE": "400021142",
+      "STELLAR_XI_SIRIUS": "400021143",
+      "STELLAR_XII_SADALSUUD": "400021147",
+      "SAVIOR_CIRCLE": "400021149",
+      "TIME_BLINDER": "400021152"
+    },
+    "hexa_skills": {
+      "SHINE_RAY": "182141000",
+      "SHINE_STELLAR_I_ANTARES": "182141001",
+      "SHINE_STELLAR_I_ANTARES_SUB": "182141002",
+      "CELESTIAL_DESIGN": "182141500",
+      "CELESTIAL_DESIGN_SUB": "182141501"
+    },
+    "origin_names": [
+      "CELESTIAL_DESIGN",
+      "CELESTIAL_DESIGN_SUB"
+    ],
+    "has_cutscene": false,
+    "summon_calls": [
+      "skillID",
+      "o1",
+      "STELLAR_I_ANTARES",
+      "STELLAR_II_ALGOL",
+      "POLE_3",
+      "int",
+      "STELLAR_IX_CANOPUS",
+      "int"
+    ],
+    "aa_calls": [],
+    "lines": 920
+  }
+}

@@ -51,6 +51,9 @@ jdk21/
 apache-maven-*/
 mariadb/
 
+# Tools binaries
+tools/DepotDownloader/
+
 # Temp and OS
 *.tmp
 *.bak
@@ -59,5 +62,6 @@ __pycache__/
 Thumbs.db
 .DS_Store
 *.sql
+!sql/**/*.sql
 !TMS277_REF_NomainSource/**/*.sql
 Patches/

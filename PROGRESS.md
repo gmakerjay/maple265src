@@ -3,6 +3,20 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-15 17:15 น.] Repository Synchronization, Audit Tools Integration & Git Push Everything
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: Full Repository Audit, Git Sync, Integration of Diagnostic/Audit Suites, LAN Guides & Patch Automation ([`tools/create_patch.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/create_patch.py), [`HOW_TO_PLAY_LAN.txt`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/HOW_TO_PLAY_LAN.txt), [`SKILL.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/.agents/skills/maplestory-bug-knowledge/SKILL.md))
+- **รายละเอียด**:
+  1. **การผสานชุดเครื่องมือตรวจสอบระบบ (Audit & Diagnostic Tooling Integration)**:
+     - รวมชุดเครื่องมือตรวจสอบคลาสสกิล HEXA Matrix และ WZ Data เข้าสู่ Git Repository อย่างสมบูรณ์: [`tools/audit/`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/audit/) (`audit_jobs.py`, `check_crash_risks.py`, `deep_audit.py`, `detailed_audit.py`, `parse_hexacore_wz.py`), เครื่องมือสแกนสกิลย่อย ([`tools/inspect_hexacore.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/inspect_hexacore.py), [`tools/inspect_skills.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/inspect_skills.py)), และชุดทดสอบความถูกต้องของสคริปต์ ([`tools/test_script_parity.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/test_script_parity.py), [`tools/test_wz_script_coverage.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/test_wz_script_coverage.py), [`tools/test_jython_bindings.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/test_jython_bindings.py), [`tools/TestMilestone1.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/TestMilestone1.java))
+  2. **การอัปเดตคู่มือเครือข่ายและระบบแพตช์อัตโนมัติ (Network Documentation & Patch Automation)**:
+     - บรรจุคู่มือการตั้งค่าเล่นข้ามวงแลนและ VPN ทางไกล [`HOW_TO_PLAY_LAN.txt`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/HOW_TO_PLAY_LAN.txt) เข้าสู่ Repository
+     - อัปเดตสคริปต์ [`tools/create_patch.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/create_patch.py) ให้รวมโครงสร้างฐานข้อมูล `sql/` และรักษากฎคอนฟิกแบบไดนามิก
+  3. **การซิงค์มาตรฐานระเบียบปฏิบัติและกักกันไฟล์ขนาดใหญ่ (Skill Standards & Gitignore Rule)**:
+     - อัปเดตไฟล์ข้อกำหนดโครงการ [`.agents/skills/maplestory-bug-knowledge/SKILL.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/.agents/skills/maplestory-bug-knowledge/SKILL.md) ให้เป็นฉบับสมบูรณ์ตรงกันทุกไดเรกทอรี
+     - กำหนดค่า [`.gitignore`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/.gitignore) ไม่ให้รวมไบนารี `tools/DepotDownloader/` (78MB) ป้องกันขนาด Git บวมเกินความจำเป็น พร้อมปลดบล็อกให้รองรับสคริปต์โครงสร้างฐานข้อมูล `sql/` ครบถ้วน
+
 ## 📅 [2026-10-15 12:07 น.] Packaging & Creation of All-in-One Server263 Incremental Patch (`Server263_Patch_Latest.zip`)
 
 ### 🎯 Scope & Technical Details

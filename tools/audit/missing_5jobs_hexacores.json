@@ -1,0 +1,457 @@
+{
+  "332_Pathfinder": {
+    "mastery": [
+      {
+        "core_id": "20000008",
+        "name": "HEXA Cardinal Burst/HEXA Bountiful Burst",
+        "connectSkill": [
+          "3341000",
+          "3341002"
+        ]
+      },
+      {
+        "core_id": "20000058",
+        "name": "HEXA Cardinal Deluge/HEXA Bountiful Deluge",
+        "connectSkill": [
+          "3341004",
+          "3341005"
+        ]
+      },
+      {
+        "core_id": "20000108",
+        "name": "HEXA Cardinal Torrent/HEXA Glyph of Impalement/HEXA Ancient Astra",
+        "connectSkill": [
+          "3341008",
+          "3341006",
+          "3341010"
+        ]
+      },
+      {
+        "core_id": "20000154",
+        "name": "HEXA Shadow Raven/HEXA Combo Assault/Manifest Curse",
+        "connectSkill": [
+          "3341024",
+          "3341016",
+          "3340025"
+        ]
+      }
+    ],
+    "enforce": [
+      {
+        "core_id": "30000032",
+        "name": "Nova Blast",
+        "connectSkill": [
+          "500004032"
+        ]
+      },
+      {
+        "core_id": "30000033",
+        "name": "Raven Tempest/Fury of the Wild Tempest",
+        "connectSkill": [
+          "500004033"
+        ]
+      },
+      {
+        "core_id": "30000034",
+        "name": "Obsidian Barrier",
+        "connectSkill": [
+          "500004034"
+        ]
+      },
+      {
+        "core_id": "30000035",
+        "name": "Relic Unbound",
+        "connectSkill": [
+          "500004035"
+        ]
+      }
+    ],
+    "skill": [
+      {
+        "core_id": "10000008",
+        "name": "Forsaken Relic",
+        "connectSkill": [
+          "3341500"
+        ]
+      },
+      {
+        "core_id": "10000060",
+        "name": "Piercing Relic",
+        "connectSkill": [
+          "3341505"
+        ]
+      }
+    ],
+    "common": [
+      {
+        "core_id": "40000000",
+        "name": "Sol Janus",
+        "connectSkill": [
+          "500001000"
+        ]
+      }
+    ]
+  },
+  "2712_Luminous": {
+    "mastery": [
+      {
+        "core_id": "20000023",
+        "name": "HEXA Ender",
+        "connectSkill": [
+          "27141000"
+        ]
+      },
+      {
+        "core_id": "20000073",
+        "name": "HEXA Reflection/Endless Darkness",
+        "connectSkill": [
+          "27141001",
+          "27140002"
+        ]
+      },
+      {
+        "core_id": "20000123",
+        "name": "HEXA Apocalypse/Eternal Light",
+        "connectSkill": [
+          "27141004",
+          "27140005"
+        ]
+      },
+      {
+        "core_id": "20000169",
+        "name": "HEXA Twilight Nova",
+        "connectSkill": [
+          "27141007"
+        ]
+      }
+    ],
+    "enforce": [
+      {
+        "core_id": "30000100",
+        "name": "Gate of Light",
+        "connectSkill": [
+          "500004100"
+        ]
+      },
+      {
+        "core_id": "30000101",
+        "name": "Aether Conduit",
+        "connectSkill": [
+          "500004101"
+        ]
+      },
+      {
+        "core_id": "30000102",
+        "name": "Baptism of Light and Darkness",
+        "connectSkill": [
+          "500004102"
+        ]
+      },
+      {
+        "core_id": "30000103",
+        "name": "Liberation Orb",
+        "connectSkill": [
+          "500004103"
+        ]
+      }
+    ],
+    "skill": [
+      {
+        "core_id": "10000023",
+        "name": "Harmonic Paradox",
+        "connectSkill": [
+          "27141500"
+        ]
+      },
+      {
+        "core_id": "10000075",
+        "name": "Lustrous Orb",
+        "connectSkill": [
+          "27141502"
+        ]
+      }
+    ],
+    "common": [
+      {
+        "core_id": "40000000",
+        "name": "Sol Janus",
+        "connectSkill": [
+          "500001000"
+        ]
+      }
+    ]
+  },
+  "3112_Demon Slayer": {
+    "mastery": [
+      {
+        "core_id": "20000032",
+        "name": "HEXA Demon Impact",
+        "connectSkill": [
+          "31141000"
+        ]
+      },
+      {
+        "core_id": "20000082",
+        "name": "HEXA Demon Lash/HEXA Infernal Concussion",
+        "connectSkill": [
+          "31141002",
+          "31141008"
+        ]
+      },
+      {
+        "core_id": "20000132",
+        "name": "HEXA Demon Cry/HEXA Dark Metamorphosis",
+        "connectSkill": [
+          "31141012",
+          "31141009"
+        ]
+      },
+      {
+        "core_id": "20000178",
+        "name": "HEXA Cerberus Chomp/Demonic Plume",
+        "connectSkill": [
+          "31141013",
+          "31140016"
+        ]
+      }
+    ],
+    "enforce": [
+      {
+        "core_id": "30000104",
+        "name": "Demon Awakening",
+        "connectSkill": [
+          "500004104"
+        ]
+      },
+      {
+        "core_id": "30000105",
+        "name": "Spirit of Rage",
+        "connectSkill": [
+          "500004105"
+        ]
+      },
+      {
+        "core_id": "30000106",
+        "name": "Orthrus",
+        "connectSkill": [
+          "500004106"
+        ]
+      },
+      {
+        "core_id": "30000107",
+        "name": "Demon Bane",
+        "connectSkill": [
+          "500004107"
+        ]
+      }
+    ],
+    "skill": [
+      {
+        "core_id": "10000032",
+        "name": "Nightmare",
+        "connectSkill": [
+          "31141500"
+        ]
+      },
+      {
+        "core_id": "10000084",
+        "name": "Amethystine Incursion",
+        "connectSkill": [
+          "31141504"
+        ]
+      }
+    ],
+    "common": [
+      {
+        "core_id": "40000000",
+        "name": "Sol Janus",
+        "connectSkill": [
+          "500001000"
+        ]
+      }
+    ]
+  },
+  "10112_Zero": {
+    "mastery": [
+      {
+        "core_id": "20000038",
+        "name": "HEXA Wind Cutter/HEXA Giga Crash",
+        "connectSkill": [
+          "101141000",
+          "101141006",
+          "101141012"
+        ]
+      },
+      {
+        "core_id": "20000088",
+        "name": "HEXA Spin Driver/HEXA Rolling Cross",
+        "connectSkill": [
+          "101141017",
+          "101141014"
+        ]
+      },
+      {
+        "core_id": "20000138",
+        "name": "HEXA Flash Assault/HEXA Flash Cut",
+        "connectSkill": [
+          "101141023",
+          "101141021"
+        ]
+      },
+      {
+        "core_id": "20000184",
+        "name": "HEXA Moon Strike/HEXA Rising Slash/HEXA Shadow Rain/Infinite Resonance",
+        "connectSkill": [
+          "101141029",
+          "101141026",
+          "101141033",
+          "101140034"
+        ]
+      }
+    ],
+    "enforce": [
+      {
+        "core_id": "30000152",
+        "name": "Chrono Break",
+        "connectSkill": [
+          "500004152"
+        ]
+      },
+      {
+        "core_id": "30000153",
+        "name": "Twin Blades of Time",
+        "connectSkill": [
+          "500004153"
+        ]
+      },
+      {
+        "core_id": "30000154",
+        "name": "Shadow Flash",
+        "connectSkill": [
+          "500004154"
+        ]
+      },
+      {
+        "core_id": "30000155",
+        "name": "Ego Weapon",
+        "connectSkill": [
+          "500004155"
+        ]
+      }
+    ],
+    "skill": [
+      {
+        "core_id": "10000038",
+        "name": "End Time",
+        "connectSkill": [
+          "101141500"
+        ]
+      },
+      {
+        "core_id": "10000090",
+        "name": "Bitemporis",
+        "connectSkill": [
+          "101141503"
+        ]
+      }
+    ],
+    "common": [
+      {
+        "core_id": "40000000",
+        "name": "Sol Janus",
+        "connectSkill": [
+          "500001000"
+        ]
+      }
+    ]
+  },
+  "14212_Kinesis": {
+    "mastery": [
+      {
+        "core_id": "20000039",
+        "name": "HEXA Ultimate - Metal Press",
+        "connectSkill": [
+          "142141000"
+        ]
+      },
+      {
+        "core_id": "20000089",
+        "name": "HEXA Psychic Grab/HEXA Ultimate - Psychic Shot",
+        "connectSkill": [
+          "142140001",
+          "142140004"
+        ]
+      },
+      {
+        "core_id": "20000139",
+        "name": "HEXA Ultimate - Trainwreck/HEXA Ultimate - B.P.M.",
+        "connectSkill": [
+          "142141005",
+          "142141006"
+        ]
+      },
+      {
+        "core_id": "20000185",
+        "name": "HEXA Kinetic Combo",
+        "connectSkill": [
+          "142140007"
+        ]
+      }
+    ],
+    "enforce": [
+      {
+        "core_id": "30000156",
+        "name": "Psychic Tornado",
+        "connectSkill": [
+          "500004156"
+        ]
+      },
+      {
+        "core_id": "30000157",
+        "name": "Ultimate - Mind Over Matter",
+        "connectSkill": [
+          "500004157"
+        ]
+      },
+      {
+        "core_id": "30000158",
+        "name": "Ultimate - Psychic Shockwave",
+        "connectSkill": [
+          "500004158"
+        ]
+      },
+      {
+        "core_id": "30000159",
+        "name": "Law of Gravity",
+        "connectSkill": [
+          "500004159"
+        ]
+      }
+    ],
+    "skill": [
+      {
+        "core_id": "10000039",
+        "name": "From Another Realm",
+        "connectSkill": [
+          "142141500"
+        ]
+      },
+      {
+        "core_id": "10000091",
+        "name": "Fractal Horizon",
+        "connectSkill": [
+          "142141502"
+        ]
+      }
+    ],
+    "common": [
+      {
+        "core_id": "40000000",
+        "name": "Sol Janus",
+        "connectSkill": [
+          "500001000"
+        ]
+      }
+    ]
+  }
+}

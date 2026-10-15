@@ -1,0 +1,1161 @@
+{
+  "15112": {
+    "mastery": [
+      {
+        "core_id": "20000040",
+        "name": "HEXA Cleave/HEXA Magic Dispatch/HEXA Aetherial Arms",
+        "connectSkill": [
+          "151141000",
+          "151141002",
+          "151141003"
+        ]
+      },
+      {
+        "core_id": "20000090",
+        "name": "HEXA Hunting Decree/HEXA Plummet",
+        "connectSkill": [
+          "151141004",
+          "151141005"
+        ]
+      },
+      {
+        "core_id": "20000140",
+        "name": "HEXA Impale/HEXA Resonance Rush/HEXA Noble Summons/HEXA Aether Bloom",
+        "connectSkill": [
+          "151141010",
+          "151141011",
+          "151141014",
+          "151141016"
+        ]
+      },
+      {
+        "core_id": "20000186",
+        "name": "HEXA Aether Forge/HEXA Reign of Destruction/HEXA Shardbreaker",
+        "connectSkill": [
+          "151141006",
+          "151141015",
+          "151141017"
+        ]
+      }
+    ],
+    "enforce": [
+      {
+        "core_id": "30000160",
+        "name": "Ruin",
+        "connectSkill": [
+          "500004160"
+        ]
+      },
+      {
+        "core_id": "30000161",
+        "name": "Infinity Blade",
+        "connectSkill": [
+          "500004161"
+        ]
+      },
+      {
+        "core_id": "30000162",
+        "name": "Legacy Restoration",
+        "connectSkill": [
+          "500004162"
+        ]
+      },
+      {
+        "core_id": "30000163",
+        "name": "Storm",
+        "connectSkill": [
+          "500004163"
+        ]
+      }
+    ],
+    "skill": [
+      {
+        "core_id": "10000040",
+        "name": "Maestro",
+        "connectSkill": [
+          "151141500"
+        ]
+      },
+      {
+        "core_id": "10000092",
+        "name": "Einheit",
+        "connectSkill": [
+          "151141502"
+        ]
+      }
+    ],
+    "common": [
+      {
+        "core_id": "40000000",
+        "name": "Sol Janus",
+        "connectSkill": [
+          "500001000"
+        ]
+      }
+    ]
+  },
+  "15212": {
+    "mastery": [
+      {
+        "core_id": "20000041",
+        "name": "HEXA Radiant Javelin/HEXA Winged Javelin",
+        "connectSkill": [
+          "152141000"
+        ]
+      },
+      {
+        "core_id": "20000091",
+        "name": "HEXA Reaction - Domination/HEXA Reaction - Destruction/HEXA Vortex Wings",
+        "connectSkill": [
+          "152141007",
+          "152141008",
+          "152141009"
+        ]
+      },
+      {
+        "core_id": "20000141",
+        "name": "HEXA Ex/HEXA Machina/HEXA Crystal Skill - Deus",
+        "connectSkill": [
+          "152141010",
+          "152141011",
+          "152141012"
+        ]
+      },
+      {
+        "core_id": "20000187",
+        "name": "HEXA Longinus/HEXA Umbral Brand III/HEXA Longinus Zone",
+        "connectSkill": [
+          "152141014",
+          "152140016",
+          "152141015"
+        ]
+      }
+    ],
+    "enforce": [
+      {
+        "core_id": "30000164",
+        "name": "Crystal Ignition",
+        "connectSkill": [
+          "500004164"
+        ]
+      },
+      {
+        "core_id": "30000165",
+        "name": "Templar Knight",
+        "connectSkill": [
+          "500004165"
+        ]
+      },
+      {
+        "core_id": "30000166",
+        "name": "Crystalline Spirit",
+        "connectSkill": [
+          "500004166"
+        ]
+      },
+      {
+        "core_id": "30000167",
+        "name": "Crystal Gate",
+        "connectSkill": [
+          "500004167"
+        ]
+      }
+    ],
+    "skill": [
+      {
+        "core_id": "10000041",
+        "name": "Mytocrystal Expanse",
+        "connectSkill": [
+          "152141500"
+        ]
+      },
+      {
+        "core_id": "10000093",
+        "name": "Excidium",
+        "connectSkill": [
+          "152141508"
+        ]
+      }
+    ],
+    "common": [
+      {
+        "core_id": "40000000",
+        "name": "Sol Janus",
+        "connectSkill": [
+          "500001000"
+        ]
+      }
+    ]
+  },
+  "15412": {
+    "mastery": [
+      {
+        "core_id": "20000042",
+        "name": "HEXA Arts: Flurry/HEXA Arts: Crescentum",
+        "connectSkill": [
+          "154141000",
+          "154141001"
+        ]
+      },
+      {
+        "core_id": "20000092",
+        "name": "HEXA Void Rush/HEXA Void Blitz/HEXA Hex: Chakram Split",
+        "connectSkill": [
+          "154141003",
+          "154141007",
+          "154141009"
+        ]
+      },
+      {
+        "core_id": "20000142",
+        "name": "HEXA Hex: Chakram Sweep/HEXA Hex: Chakram Fury/HEXA Death Blossom",
+        "connectSkill": [
+          "154141011",
+          "154141010",
+          "154141012"
+        ]
+      },
+      {
+        "core_id": "20000188",
+        "name": "HEXA Resonate/HEXA Deceiving Blade",
+        "connectSkill": [
+          "154141013",
+          "154141014"
+        ]
+      }
+    ],
+    "enforce": [
+      {
+        "core_id": "30000168",
+        "name": "Hex: Pandemonium",
+        "connectSkill": [
+          "500004168"
+        ]
+      },
+      {
+        "core_id": "30000169",
+        "name": "Void Burst",
+        "connectSkill": [
+          "500004169"
+        ]
+      },
+      {
+        "core_id": "30000170",
+        "name": "Arts: Astra",
+        "connectSkill": [
+          "500004170"
+        ]
+      },
+      {
+        "core_id": "30000171",
+        "name": "Resonate: Ultimatum",
+        "connectSkill": [
+          "500004171"
+        ]
+      }
+    ],
+    "skill": [
+      {
+        "core_id": "10000042",
+        "name": "Hex: Sandstorm",
+        "connectSkill": [
+          "154141500"
+        ]
+      },
+      {
+        "core_id": "10000094",
+        "name": "Wake the Void",
+        "connectSkill": [
+          "154141504"
+        ]
+      }
+    ],
+    "common": [
+      {
+        "core_id": "40000000",
+        "name": "Sol Janus",
+        "connectSkill": [
+          "500001000"
+        ]
+      }
+    ]
+  },
+  "15512": {
+    "mastery": [
+      {
+        "core_id": "20000043",
+        "name": "HEXA Basic Charge Drive/HEXA Scarlet Charge Drive/HEXA Gust Charge Drive/HEXA Abyssal Charge Drive",
+        "connectSkill": [
+          "155141000",
+          "155141004",
+          "155141011",
+          "155141016"
+        ]
+      },
+      {
+        "core_id": "20000093",
+        "name": "HEXA Grievous Wound/HEXA Insatiable Hunger/HEXA Unbridled Chaos",
+        "connectSkill": [
+          "155141021",
+          "155141024",
+          "155141027"
+        ]
+      },
+      {
+        "core_id": "20000143",
+        "name": "HEXA Vengeful Hate/HEXA Blissful Restraint/HEXA Endless Agony",
+        "connectSkill": [
+          "155141034",
+          "155141031",
+          "155141029"
+        ]
+      },
+      {
+        "core_id": "20000189",
+        "name": "HEXA Ominous Nightmare/HEXA Ominous Dream",
+        "connectSkill": [
+          "155141035"
+        ]
+      }
+    ],
+    "enforce": [
+      {
+        "core_id": "30000172",
+        "name": "Abyssal Recall",
+        "connectSkill": [
+          "500004172"
+        ]
+      },
+      {
+        "core_id": "30000173",
+        "name": "Infinity Spell",
+        "connectSkill": [
+          "500004173"
+        ]
+      },
+      {
+        "core_id": "30000174",
+        "name": "Devious Nightmare/Devious Dream",
+        "connectSkill": [
+          "500004174"
+        ]
+      },
+      {
+        "core_id": "30000175",
+        "name": "Endlessly Starving Beast",
+        "connectSkill": [
+          "500004175"
+        ]
+      }
+    ],
+    "skill": [
+      {
+        "core_id": "10000043",
+        "name": "Primordial Abyss",
+        "connectSkill": [
+          "155141500"
+        ]
+      },
+      {
+        "core_id": "10000095",
+        "name": "Whisper of Deepest Abyss",
+        "connectSkill": [
+          "155141502"
+        ]
+      }
+    ],
+    "common": [
+      {
+        "core_id": "40000000",
+        "name": "Sol Janus",
+        "connectSkill": [
+          "500001000"
+        ]
+      }
+    ]
+  },
+  "6312": {
+    "mastery": [
+      {
+        "core_id": "20000035",
+        "name": "HEXA Falling Dust/HEXA Poison Needle",
+        "connectSkill": [
+          "63141000",
+          "63141004"
+        ]
+      },
+      {
+        "core_id": "20000085",
+        "name": "HEXA Strike Arrow/HEXA Scattering Shot/HEXA Tearing Knife/HEXA Chain Sickle",
+        "connectSkill": [
+          "63141007",
+          "63141009",
+          "63141010",
+          "63141011"
+        ]
+      },
+      {
+        "core_id": "20000135",
+        "name": "HEXA Dragon Fang/HEXA Shaft Break/HEXA Phantom Blade/HEXA Lasting Grudge",
+        "connectSkill": [
+          "63141013",
+          "63141018",
+          "63141024",
+          "63141022"
+        ]
+      },
+      {
+        "core_id": "20000181",
+        "name": "HEXA Death's Blessing/HEXA Chasing Shot/HEXA Unseen Sniper",
+        "connectSkill": [
+          "63141015",
+          "63141025",
+          "63141026"
+        ]
+      }
+    ],
+    "enforce": [
+      {
+        "core_id": "30000140",
+        "name": "Dragon Burst",
+        "connectSkill": [
+          "500004140"
+        ]
+      },
+      {
+        "core_id": "30000141",
+        "name": "Fatal Blitz",
+        "connectSkill": [
+          "500004141"
+        ]
+      },
+      {
+        "core_id": "30000142",
+        "name": "Thanatos Descent",
+        "connectSkill": [
+          "500004142"
+        ]
+      },
+      {
+        "core_id": "30000143",
+        "name": "Grip of Agony",
+        "connectSkill": [
+          "500004143"
+        ]
+      }
+    ],
+    "skill": [
+      {
+        "core_id": "10000035",
+        "name": "Total Annihilation",
+        "connectSkill": [
+          "63141500"
+        ]
+      },
+      {
+        "core_id": "10000087",
+        "name": "Churning Malice",
+        "connectSkill": [
+          "63141506"
+        ]
+      }
+    ],
+    "common": [
+      {
+        "core_id": "40000000",
+        "name": "Sol Janus",
+        "connectSkill": [
+          "500001000"
+        ]
+      }
+    ]
+  },
+  "16212": {
+    "mastery": [
+      {
+        "core_id": "20000044",
+        "name": "HEXA Essence Sprinkle",
+        "connectSkill": [
+          "162141000"
+        ]
+      },
+      {
+        "core_id": "20000094",
+        "name": "HEXA Dragon Vein Eruption/HEXA Eruption: Heaving River/HEXA Eruption: Whirlwind/HEXA Eruption: Sunrise Well",
+        "connectSkill": [
+          "162141001",
+          "162141002",
+          "162141005",
+          "162141007"
+        ]
+      },
+      {
+        "core_id": "20000144",
+        "name": "HEXA Dragon Vein Absorption/HEXA Absorption: River Puddle Douse/HEXA Absorption: Fierce Wind/HEXA Absorption: Sunlit Grain",
+        "connectSkill": [
+          "162141010",
+          "162141012",
+          "162141015",
+          "162141018"
+        ]
+      },
+      {
+        "core_id": "20000190",
+        "name": "HEXA Wakeup Call",
+        "connectSkill": [
+          "162141020"
+        ]
+      }
+    ],
+    "enforce": [
+      {
+        "core_id": "30000176",
+        "name": "Big Stretch",
+        "connectSkill": [
+          "500004176"
+        ]
+      },
+      {
+        "core_id": "30000177",
+        "name": "Land's Connection",
+        "connectSkill": [
+          "500004177"
+        ]
+      },
+      {
+        "core_id": "30000178",
+        "name": "Surging Essence",
+        "connectSkill": [
+          "500004178"
+        ]
+      },
+      {
+        "core_id": "30000179",
+        "name": "Winding Mountain Ridge",
+        "connectSkill": [
+          "500004179"
+        ]
+      }
+    ],
+    "skill": [
+      {
+        "core_id": "10000044",
+        "name": "Universe in Bloom",
+        "connectSkill": [
+          "162141500"
+        ]
+      },
+      {
+        "core_id": "10000097",
+        "name": "Cornucopia",
+        "connectSkill": [
+          "162141502"
+        ]
+      }
+    ],
+    "common": [
+      {
+        "core_id": "40000000",
+        "name": "Sol Janus",
+        "connectSkill": [
+          "500001000"
+        ]
+      }
+    ]
+  },
+  "16412": {
+    "mastery": [
+      {
+        "core_id": "20000045",
+        "name": "HEXA Heaven: Consuming Flames/HEXA Earth: Stone Tremor/HEXA Humanity: Gold-Banded Cudgel",
+        "connectSkill": [
+          "164141000",
+          "164141005",
+          "164141011",
+          "164141029"
+        ]
+      },
+      {
+        "core_id": "20000095",
+        "name": "HEXA Heaven: Iron Fan Gale/HEXA Earth: Ground-Shattering Wave/HEXA Humanity: As-You-Will Fan",
+        "connectSkill": [
+          "164141035",
+          "164141031",
+          "164141030"
+        ]
+      },
+      {
+        "core_id": "20000145",
+        "name": "HEXA Talisman: Clone/HEXA Talisman: Seeking Ghost Flame",
+        "connectSkill": [
+          "164141054",
+          "164141056"
+        ]
+      },
+      {
+        "core_id": "20000191",
+        "name": "HEXA Scroll: Star Vortex/HEXA Scroll: Butterfly Dream",
+        "connectSkill": [
+          "164141059",
+          "164141057"
+        ]
+      }
+    ],
+    "enforce": [
+      {
+        "core_id": "30000180",
+        "name": "Sage: Clone Rampage",
+        "connectSkill": [
+          "500004180"
+        ]
+      },
+      {
+        "core_id": "30000181",
+        "name": "Scroll: Tiger of Songyu",
+        "connectSkill": [
+          "500004181"
+        ]
+      },
+      {
+        "core_id": "30000182",
+        "name": "Sage: Wrath of Gods",
+        "connectSkill": [
+          "500004182"
+        ]
+      },
+      {
+        "core_id": "30000183",
+        "name": "Sage: Three Paths Apparition",
+        "connectSkill": [
+          "500004183"
+        ]
+      }
+    ],
+    "skill": [
+      {
+        "core_id": "10000045",
+        "name": "Sage: Apotheosis",
+        "connectSkill": [
+          "164141500"
+        ]
+      },
+      {
+        "core_id": "10000098",
+        "name": "Millennium Spirit",
+        "connectSkill": [
+          "164141503"
+        ]
+      }
+    ],
+    "common": [
+      {
+        "core_id": "40000000",
+        "name": "Sol Janus",
+        "connectSkill": [
+          "500001000"
+        ]
+      }
+    ]
+  },
+  "16112": {
+    "mastery": [
+      {
+        "core_id": "20000200",
+        "name": "HEXA Plum Blossom Sword: Storm",
+        "connectSkill": [
+          "161141000"
+        ]
+      },
+      {
+        "core_id": "20000201",
+        "name": "HEXA Imugi Spirit Sword: Spirit Strike/HEXA Second Imugi Spirit Sword: Serpent's Fang",
+        "connectSkill": [
+          "161141001",
+          "161140010"
+        ]
+      },
+      {
+        "core_id": "20000202",
+        "name": "HEXA Wish Unending/HEXA Final Imugi Spirit Sword: Burrowing Earth/HEXA Final Imugi Spirit Sword: Ravenous Spirit/HEXA Final Imugi Spirit Sword: Years Uncounted",
+        "connectSkill": [
+          "161140005",
+          "161141002",
+          "161141003",
+          "161141004"
+        ]
+      },
+      {
+        "core_id": "20000203",
+        "name": "HEXA Second Plum Blossom Sword: Raining Blossoms/HEXA Third Plum Blossom Sword: Riotous Heart",
+        "connectSkill": [
+          "161140007",
+          "161141009"
+        ]
+      }
+    ],
+    "enforce": [
+      {
+        "core_id": "30000209",
+        "name": "Final Plum Blossom Sword: Thousand Blossom Flurry",
+        "connectSkill": [
+          "500004205"
+        ]
+      },
+      {
+        "core_id": "30000210",
+        "name": "Soul Immeasurable",
+        "connectSkill": [
+          "500004206"
+        ]
+      },
+      {
+        "core_id": "30000211",
+        "name": "Final Plum Blossom Sword: Dancing Annihilation",
+        "connectSkill": [
+          "500004207"
+        ]
+      },
+      {
+        "core_id": "30000212",
+        "name": "Final Imugi Spirit Sword: Blade of the Unbound Heart",
+        "connectSkill": [
+          "500004208"
+        ]
+      }
+    ],
+    "skill": [
+      {
+        "core_id": "10000050",
+        "name": "Rising Azure Dragon: Divided Heavens",
+        "connectSkill": [
+          "161141500"
+        ]
+      },
+      {
+        "core_id": "10000096",
+        "name": "Rising Azure Dragon: Heartbound Verse",
+        "connectSkill": [
+          "161141506"
+        ]
+      }
+    ],
+    "common": [
+      {
+        "core_id": "40000000",
+        "name": "Sol Janus",
+        "connectSkill": [
+          "500001000"
+        ]
+      }
+    ]
+  },
+  "17212": {
+    "mastery": [
+      {
+        "core_id": "20000048",
+        "name": "HEXA Strike",
+        "connectSkill": [
+          "172141000"
+        ]
+      },
+      {
+        "core_id": "20000098",
+        "name": "HEXA Sneak Attack/HEXA Raid",
+        "connectSkill": [
+          "172141001",
+          "172141003"
+        ]
+      },
+      {
+        "core_id": "20000194",
+        "name": "HEXA Peck",
+        "connectSkill": [
+          "172141004"
+        ]
+      },
+      {
+        "core_id": "20000198",
+        "name": "HEXA [Focus] Heal/HEXA [Focus] Forest Protection/HEXA Mother Nature's Touch",
+        "connectSkill": [
+          "172141005",
+          "172141007",
+          "172141010"
+        ]
+      }
+    ],
+    "enforce": [
+      {
+        "core_id": "30000192",
+        "name": "Beast's Rage Boost",
+        "connectSkill": [
+          "500004192"
+        ]
+      },
+      {
+        "core_id": "30000193",
+        "name": "Beak Strike Boost",
+        "connectSkill": [
+          "500004193"
+        ]
+      },
+      {
+        "core_id": "30000194",
+        "name": "[Focus] Awaken Boost",
+        "connectSkill": [
+          "500004194"
+        ]
+      },
+      {
+        "core_id": "30000195",
+        "name": "Nature's Grace Boost",
+        "connectSkill": [
+          "500004195"
+        ]
+      }
+    ],
+    "skill": [
+      {
+        "core_id": "10000048",
+        "name": "Source Flow",
+        "connectSkill": [
+          "172141500"
+        ]
+      }
+    ],
+    "common": [
+      {
+        "core_id": "40000000",
+        "name": "Sol Janus",
+        "connectSkill": [
+          "500001000"
+        ]
+      }
+    ]
+  },
+  "17512": {
+    "mastery": [
+      {
+        "core_id": "20000049",
+        "name": "HEXA Xuanshan Arts [Tian] / [Di]",
+        "connectSkill": [
+          "175141000",
+          "175141003"
+        ]
+      },
+      {
+        "core_id": "20000099",
+        "name": "HEXA Divine Art: Howling Storm/HEXA Divine Art: Erupting Flame/HEXA Divine Art: Righteous Thunder",
+        "connectSkill": [
+          "175141006",
+          "175141010",
+          "175141011"
+        ]
+      },
+      {
+        "core_id": "20000195",
+        "name": "HEXA Divine Art: Swirling Tide/HEXA Divine Art: Tearing Wind/HEXA Soul Art: Black Wind",
+        "connectSkill": [
+          "175141012",
+          "175141015",
+          "175141014"
+        ]
+      },
+      {
+        "core_id": "20000199",
+        "name": "HEXA Secret Art: Qi Projection",
+        "connectSkill": [
+          "175141016"
+        ]
+      }
+    ],
+    "enforce": [
+      {
+        "core_id": "30000196",
+        "name": "Soul Art: Beneath Heaven Boost",
+        "connectSkill": [
+          "500004196"
+        ]
+      },
+      {
+        "core_id": "30000197",
+        "name": "Soul Art: The Conquered Self Boost",
+        "connectSkill": [
+          "500004197"
+        ]
+      },
+      {
+        "core_id": "30000198",
+        "name": "Soul Art: The Opened Gate Boost",
+        "connectSkill": [
+          "500004198"
+        ]
+      },
+      {
+        "core_id": "30000199",
+        "name": "Divine Art: Crashing Earth Boost",
+        "connectSkill": [
+          "500004199"
+        ]
+      }
+    ],
+    "skill": [
+      {
+        "core_id": "10000049",
+        "name": "Soul Art: Jianghu Dragon",
+        "connectSkill": [
+          "175141500"
+        ]
+      }
+    ],
+    "common": [
+      {
+        "core_id": "40000000",
+        "name": "Sol Janus",
+        "connectSkill": [
+          "500001000"
+        ]
+      }
+    ]
+  },
+  "18212": {
+    "mastery": [
+      {
+        "core_id": "20000204",
+        "name": "SHINE Ray/SHINE Stellar I - Antares",
+        "connectSkill": [
+          "182141000",
+          "182141001"
+        ]
+      }
+    ],
+    "enforce": [
+      {
+        "core_id": "30000205",
+        "name": "Shine Boost",
+        "connectSkill": [
+          "500004200"
+        ]
+      },
+      {
+        "core_id": "30000206",
+        "name": "Stellar XI - Sirius Boost",
+        "connectSkill": [
+          "500004201"
+        ]
+      },
+      {
+        "core_id": "30000207",
+        "name": "Stellar XII - Sadalsuud Boost",
+        "connectSkill": [
+          "500004202"
+        ]
+      },
+      {
+        "core_id": "30000208",
+        "name": "Savior's Circle Boost",
+        "connectSkill": [
+          "500004203"
+        ]
+      }
+    ],
+    "skill": [
+      {
+        "core_id": "10000051",
+        "name": "Celestial Design",
+        "connectSkill": [
+          "182141500"
+        ]
+      }
+    ],
+    "common": [
+      {
+        "core_id": "40000000",
+        "name": "Sol Janus",
+        "connectSkill": [
+          "500001000"
+        ]
+      }
+    ]
+  },
+  "112": {
+    "mastery": [
+      {
+        "core_id": "20000000",
+        "name": "HEXA Raging Blow",
+        "connectSkill": [
+          "1141000"
+        ]
+      },
+      {
+        "core_id": "20000050",
+        "name": "HEXA Rising Rage",
+        "connectSkill": [
+          "1141002"
+        ]
+      },
+      {
+        "core_id": "20000100",
+        "name": "HEXA Beam Blade/Rending Edge",
+        "connectSkill": [
+          "1141003",
+          "1140005"
+        ]
+      },
+      {
+        "core_id": "20000146",
+        "name": "HEXA Puncture/HEXA Final Attack/HEXA Cry Valhalla",
+        "connectSkill": [
+          "1141008",
+          "1140009",
+          "1141006"
+        ]
+      }
+    ],
+    "enforce": [
+      {
+        "core_id": "30000000",
+        "name": "Burning Soul Blade",
+        "connectSkill": [
+          "500004000"
+        ]
+      },
+      {
+        "core_id": "30000001",
+        "name": "Instinctual Combo",
+        "connectSkill": [
+          "500004001"
+        ]
+      },
+      {
+        "core_id": "30000002",
+        "name": "Worldreaver",
+        "connectSkill": [
+          "500004002"
+        ]
+      },
+      {
+        "core_id": "30000003",
+        "name": "Sword Illusion",
+        "connectSkill": [
+          "500004003"
+        ]
+      }
+    ],
+    "skill": [
+      {
+        "core_id": "10000000",
+        "name": "Spirit Calibur",
+        "connectSkill": [
+          "1141500"
+        ]
+      },
+      {
+        "core_id": "10000052",
+        "name": "Ultrasonic Slash",
+        "connectSkill": [
+          "1141502"
+        ]
+      }
+    ],
+    "common": [
+      {
+        "core_id": "40000000",
+        "name": "Sol Janus",
+        "connectSkill": [
+          "500001000"
+        ]
+      }
+    ]
+  },
+  "232": {
+    "mastery": [
+      {
+        "core_id": "20000005",
+        "name": "HEXA Angel Ray",
+        "connectSkill": [
+          "2341000"
+        ]
+      },
+      {
+        "core_id": "20000055",
+        "name": "HEXA Big Bang/HEXA Triumph Feather",
+        "connectSkill": [
+          "2341002",
+          "2341004"
+        ]
+      },
+      {
+        "core_id": "20000105",
+        "name": "HEXA Angelic Wrath/HEXA Fountain of Vengeance/HEXA Bahamut",
+        "connectSkill": [
+          "2341007",
+          "2341006",
+          "2341013"
+        ]
+      },
+      {
+        "core_id": "20000151",
+        "name": "HEXA Genesis/HEXA Heaven's Door",
+        "connectSkill": [
+          "2341009",
+          "2341011"
+        ]
+      }
+    ],
+    "enforce": [
+      {
+        "core_id": "30000020",
+        "name": "Benediction",
+        "connectSkill": [
+          "500004020"
+        ]
+      },
+      {
+        "core_id": "30000021",
+        "name": "Angel of Balance",
+        "connectSkill": [
+          "500004021"
+        ]
+      },
+      {
+        "core_id": "30000022",
+        "name": "Peacemaker",
+        "connectSkill": [
+          "500004022"
+        ]
+      },
+      {
+        "core_id": "30000023",
+        "name": "Divine Punishment",
+        "connectSkill": [
+          "500004023"
+        ]
+      }
+    ],
+    "skill": [
+      {
+        "core_id": "10000005",
+        "name": "Holy Advent",
+        "connectSkill": [
+          "2341500"
+        ]
+      },
+      {
+        "core_id": "10000057",
+        "name": "Commandment of Heaven",
+        "connectSkill": [
+          "2341507"
+        ]
+      }
+    ],
+    "common": [
+      {
+        "core_id": "40000000",
+        "name": "Sol Janus",
+        "connectSkill": [
+          "500001000"
+        ]
+      }
+    ]
+  }
+}
