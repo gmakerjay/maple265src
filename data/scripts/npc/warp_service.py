@@ -40,7 +40,8 @@ WARP_CATEGORIES = [
         ("Karote (Karote Summit)", 410006000, "Lv. 265+ | Tower of the Gods & Kalos the Guardian"),
         ("Odium (Residential District)", 410007000, "Lv. 270+ | Laboratory of the Predecessors & Kaling Gate"),
         ("Shangri-La (Invasion Front)", 410008000, "Lv. 275+ | Four seasons immortal paradise & Tai Chi palace"),
-        ("Carcion (Replicated Truth)", 410009000, "Lv. 280+ | Ancient giant tree & coral realm of Limbo"),
+        ("Arteria (Battleship Hangar)", 410007526, "Lv. 280+ | High Flora airship dreadnought"),
+        ("Carcion (Replicated Truth)", 410009000, "Lv. 285+ | Ancient giant tree & coral realm of Limbo"),
         ("Tallahart (Grave of the Gods)", 410013600, "Lv. 290+ | Ancient domain of forgotten deities"),
     ]),
     ("Arcane River Towns (Lv. 200 - 255)", [

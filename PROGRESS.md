@@ -3,6 +3,17 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-15 12:07 น.] Packaging & Creation of All-in-One Server263 Incremental Patch (`Server263_Patch_Latest.zip`)
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: All-in-One Incremental Patch Compilation & Packaging for Server263 Distribution (`Server263_Patch_Latest.zip`)
+- **รายละเอียด**:
+  1. **การรวมไฟล์แพตช์และการปรับปรุงสคริปต์ ([`tools/create_patch.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/create_patch.py), [`Create_Update_Patch.bat`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Create_Update_Patch.bat))**:
+     - อัปเดตสคริปต์ [`tools/create_patch.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/create_patch.py) ให้รวมคู่มือเครือข่าย [`HOW_TO_PLAY_LAN.txt`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/HOW_TO_PLAY_LAN.txt) และโฟลเดอร์นิยามฐานข้อมูล `sql/` เข้าสู่แพ็กเกจอย่างสมบูรณ์
+     - เพิ่มเงื่อนไขในตัวติดตั้งอัตโนมัติ `Apply_Patch.bat` เพื่อรักษาการตั้งค่าคอนฟิก `server.properties` เดิมของผู้เล่นไว้ (ไม่เขียนทับหากมีไฟล์อยู่แล้ว)
+     - สร้างไฟล์แพตช์เดี่ยว **[`Patches/Server263_Patch_Latest.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip)** (ขนาด 173.45 MB) รวม Server Core (`maplestory.jar` ล่าสุด 138.7 MB), Batch Scripts, ฐานข้อมูล `backup.sql`, สคริปต์ `data/scripts/` (7,000+ สคริปต์), ตารางดรอป `data/resources/`, และ `Client_Patch_Files/` (Launcher & Localhost.dll)
+     - ซิงค์ [`data/scripts/npc/warp_service.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/data/scripts/npc/warp_service.py) เพิ่มจุดวาร์ปเรือรบหลวง Arteria และ Carcion
+
 ## 📅 [2026-10-15 08:45 น.] Full Audit & Stabilization of All 15 Explorer (Adventurer) Classes (1st–4th Job, Hyper, V Matrix, and HEXA Mastery I–IV / Origin / Ascent)
 
 ### 🎯 Scope & Technical Details
