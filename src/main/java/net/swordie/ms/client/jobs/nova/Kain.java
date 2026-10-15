@@ -14,6 +14,7 @@ import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
 import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
 import net.swordie.ms.client.jobs.Job;
 import net.swordie.ms.connection.InPacket;
+import net.swordie.ms.constants.FieldConstants;
 import net.swordie.ms.constants.JobConstants;
 import net.swordie.ms.client.character.items.BodyPart;
 import net.swordie.ms.enums.Stat;
@@ -42,6 +43,7 @@ public class Kain extends Job {
     public static final Rect remainIncenseRect = new Rect(-700, -400, 700, 450);
 
     // Beginner Job
+    public static final int FACING_THE_PAST = 60031000;
     public static final int PRIOR_PREPARATION = 60030241;
 
     // 1st Job
@@ -262,6 +264,7 @@ public class Kain extends Job {
     };
 
     public static final int[] addedSkills = new int[] {
+            FACING_THE_PAST,
             PRIOR_PREPARATION
     };
 
@@ -395,7 +398,7 @@ public class Kain extends Job {
     public void setCharCreationStats(Char chr) {
         super.setCharCreationStats(chr);
         CharacterStat cs = chr.getAvatarData().getCharacterStat();
-        cs.setPosMap(410000401);
+        cs.setPosMap(FieldConstants.HOME_MAP);
         cs.setLevel(10);
         chr.setJob(JobConstants.JobEnum.KAIN_1.getJobId());
         chr.addSpToSpecificJob((short) JobConstants.JobEnum.KAIN_1.getJobId(), 5);
@@ -413,19 +416,38 @@ public class Kain extends Job {
     @Override
     public void handleLevelUp(short level) {
         super.handleLevelUp(level);
-        if (level == 10) {
-            chr.setJob(JobConstants.JobEnum.KAIN_1.getJobId());
-            chr.addSpToSpecificJob((short) JobConstants.JobEnum.KAIN_1.getJobId(), 5);
-        } else if (level == 30) {
-            chr.setJob(JobConstants.JobEnum.KAIN_2.getJobId());
-            chr.addSpToSpecificJob((short) JobConstants.JobEnum.KAIN_2.getJobId(), 4);
-        } else if (level == 60) {
-            chr.setJob(JobConstants.JobEnum.KAIN_3.getJobId());
-            chr.addSpToSpecificJob((short) JobConstants.JobEnum.KAIN_3.getJobId(), 4);
-        } else if (level == 100) {
-            chr.setJob(JobConstants.JobEnum.KAIN_4.getJobId());
-            chr.addSpToSpecificJob((short) JobConstants.JobEnum.KAIN_4.getJobId(), 3);
+        short jobId = chr.getJob();
+        if (level >= 10 && jobId == JobConstants.JobEnum.KAIN.getJobId()) {
+            short next = JobConstants.JobEnum.KAIN_1.getJobId();
+            chr.setJob(next);
+            chr.addSpToSpecificJob(next, 5);
+            jobId = next;
         }
+        if (level >= 30 && jobId == JobConstants.JobEnum.KAIN_1.getJobId()) {
+            short next = JobConstants.JobEnum.KAIN_2.getJobId();
+            chr.setJob(next);
+            chr.addSpToSpecificJob(next, 4);
+            jobId = next;
+        }
+        if (level >= 60 && jobId == JobConstants.JobEnum.KAIN_2.getJobId()) {
+            short next = JobConstants.JobEnum.KAIN_3.getJobId();
+            chr.setJob(next);
+            chr.addSpToSpecificJob(next, 4);
+            jobId = next;
+        }
+        if (level >= 100 && jobId == JobConstants.JobEnum.KAIN_3.getJobId()) {
+            short next = JobConstants.JobEnum.KAIN_4.getJobId();
+            chr.setJob(next);
+            chr.addSpToSpecificJob(next, 3);
+        }
+    }
+
+    @Override
+    public void handleInitAfterMigrate(Char chr) {
+        if (chr.getFieldID() >= 410000400 && chr.getFieldID() <= 410000499) {
+            chr.getScriptManager().warp(FieldConstants.HOME_MAP);
+        }
+        super.handleInitAfterMigrate(chr);
     }
 
     @Override
@@ -575,9 +597,12 @@ public class Kain extends Job {
                 o1.nReason = skillID;
                 o1.tTerm = 7;
                 tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                chr.write(UserLocal.showHexaSkillEff(chr));
                 if (chr.getParty() != null) {
                     for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
-                        other.write(UserLocal.showHexaSkillEff(chr));
+                        if (other.getId() != chr.getId()) {
+                            other.write(UserLocal.showHexaSkillEff(chr));
+                        }
                     }
                 }
                 break;
@@ -596,9 +621,12 @@ public class Kain extends Job {
                 o2.tOption = 30;
                 taStats.put(CharacterTemporaryStat.NAAnnihilation, o2);
                 tsm.sendStat(taStats);
+                chr.write(UserLocal.showHexaSkillEff(chr));
                 if (chr.getParty() != null) {
                     for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
-                        other.write(UserLocal.showHexaSkillEff(chr));
+                        if (other.getId() != chr.getId()) {
+                            other.write(UserLocal.showHexaSkillEff(chr));
+                        }
                     }
                 }
                 break;
@@ -669,9 +697,12 @@ public class Kain extends Job {
                     newMobStats.put(MobStat.OriginDebuff, opt2);
                     mts.addStatOptions(targetMob, newMobStats);
                 }
+                chr.write(UserLocal.showHexaSkillEff(chr));
                 if (chr.getParty() != null) {
                     for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
-                        other.write(UserLocal.showHexaSkillEff(chr));
+                        if (other.getId() != chr.getId()) {
+                            other.write(UserLocal.showHexaSkillEff(chr));
+                        }
                     }
                 }
                 break;

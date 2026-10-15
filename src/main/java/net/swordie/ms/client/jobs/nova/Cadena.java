@@ -52,6 +52,7 @@ public class Cadena extends Job {
 
     public static final int HAGGLE = 60020216;
     public static final int BACK_TO_HQ = 60021217;
+    public static final int UNFAIR_ADVANTAGE = 60020218;
     public static final int CHAIN_ARTS_TRASH = 60021278;
     public static final int CHAIN_ARTS_TRASH_2 = 60021279;
 
@@ -84,6 +85,7 @@ public class Cadena extends Job {
     public static final int SUMMON_SPIKED_BAT_3 = 64121011;
 
     public static final int CHAIN_ARTS_TRASH_LINKED_ATTACK_REINFORCE = 64120046;
+    public static final int CHAIN_ARTS_CRUSH = 64121052;
     public static final int SHADOW_DEALER_ELIXIR = 64121054;
     public static final int VETERAN_SHADOWDEALER = 64121053;
     public static final int VETERAN_SHADOW_DEALER_FA = 64121055;
@@ -109,21 +111,66 @@ public class Cadena extends Job {
     public static final int CHAIN_ART_TRASH_IV = 64120000;
     public static final int CHAIN_ART_REIGN_OF_CHAINS = 64121002;
 
+    // 6th Job HEXA Skills
+    public static final int HEXA_CHAIN_ARTS_THRASH = 64141000;
+    public static final int HEXA_CHAIN_ARTS_THRASH_2 = 64141001;
+    public static final int HEXA_CHAIN_ARTS_THRASH_3 = 64141002;
+    public static final int HEXA_CHAIN_ARTS_THRASH_4 = 64141003;
+
+    public static final int HEXA_MUSCLE_MEMORY_BUFF = 64141004;
+    public static final int HEXA_MUSCLE_MEMORY_ATTACK = 64141005;
+    public static final int HEXA_MUSCLE_MEMORY_ATTACK_2 = 64141006;
+    public static final int HEXA_MUSCLE_MEMORY_ATTACK_3 = 64141007;
+
+    public static final int HEXA_SUMMON_SPIKED_BAT_1 = 64141008;
+    public static final int HEXA_SUMMON_SPIKED_BAT_2 = 64141009;
+    public static final int HEXA_SUMMON_SPIKED_BAT_3 = 64141010;
+
+    public static final int HEXA_VETERAN_SHADOWDEALER = 64141011;
+    public static final int HEXA_VETERAN_SHADOW_DEALER_FA = 64141012;
+
+    public static final int HEXA_CHAIN_ARTS_BEATDOWN = 64141013;
+    public static final int HEXA_CHAIN_ARTS_CRUSH = 64141021;
+    public static final int HEXA_SUMMON_SHOTGUN = 64141022;
+    public static final int HEXA_SUMMON_BRICK = 64141023;
+    public static final int HEXA_SUMMON_BRICK_2 = 64141024;
+    public static final int HEXA_SUMMON_BRICK_3 = 64141025;
+    public static final int HEXA_SUMMON_BRICK_4 = 64141026;
+    public static final int HEXA_SUMMON_DAGGERS = 64141027;
+    public static final int HEXA_SUMMON_DECOY_BOMB = 64141028;
+    public static final int HEXA_SUMMON_DECOY_BOMB2 = 64141029;
+    public static final int HEXA_SUMMON_SCIMITAR = 64141030;
+    public static final int HEXA_SUMMON_SCIMITAR2 = 64141031;
+    public static final int HEXA_SUMMON_SHURIKEN = 64141032;
+    public static final int HEXA_SUMMON_SHURIKEN2 = 64141033;
+    public static final int HEXA_SUMMON_CLAW = 64141034;
+
+    public static final int CHAIN_ARTS_GRAND_ARSENAL = 64141500;
+    public static final int CHAIN_ARTS_GRAND_ARSENAL_2 = 64141501;
+    public static final int CHAIN_ARTS_GRAND_ARSENAL_3 = 64141502;
+    public static final int BRUTAL_RAMPAGE = 64141503;
+    public static final int BRUTAL_RAMPAGE_2 = 64141504;
+
     private static final int[] addedSkills = new int[]{
             HAGGLE,
             BACK_TO_HQ,
+            UNFAIR_ADVANTAGE,
     };
 
     private static final int[] muscleMemoryBuff = new int[]{
             MUSCLE_MEMORY_I_BUFF,
             MUSCLE_MEMORY_II_BUFF,
             MUSCLE_MEMORY_III_BUFF,
+            HEXA_MUSCLE_MEMORY_BUFF,
     };
 
     private static final int[] muscleMemoryAttack = new int[]{
             MUSCLE_MEMORY_I_ATTACK,
             MUSCLE_MEMORY_II_ATTACK,
             MUSCLE_MEMORY_III_ATTACK,
+            HEXA_MUSCLE_MEMORY_ATTACK,
+            HEXA_MUSCLE_MEMORY_ATTACK_2,
+            HEXA_MUSCLE_MEMORY_ATTACK_3,
     };
 
     private static final int[] chainArtSkills = new int[]{
@@ -136,6 +183,10 @@ public class Cadena extends Job {
             CHAIN_ART_TRASH_IV,
             CHAIN_ART_REIGN_OF_CHAINS,
             CHAIN_ARTS_VOID_STRIKE_ATTACK,
+            HEXA_CHAIN_ARTS_THRASH,
+            HEXA_CHAIN_ARTS_THRASH_2,
+            HEXA_CHAIN_ARTS_THRASH_3,
+            HEXA_CHAIN_ARTS_THRASH_4,
     };
 
     private static final int[] summonedSkills = new int[]{
@@ -160,7 +211,7 @@ public class Cadena extends Job {
                 if (!chr.hasSkill(id)) {
                     Skill skill = SkillData.getSkillDeepCopyById(id);
                     if (skill != null) {
-                        skill.setCurrentLevel(skill.getMasterLevel());
+                        skill.setCurrentLevel(skill.getMaxLevel() > 0 ? skill.getMaxLevel() : skill.getMasterLevel());
                         chr.addSkill(skill);
                     }
                 }
@@ -177,13 +228,16 @@ public class Cadena extends Job {
     @Override
     public void handleShootObject(Char chr, ShootObjectSkillInfo sosi) {
         var skillId = sosi.getSkillId();
-        var slv = sosi.getSlv();
-        TemporaryStatManager tsm = chr.getTemporaryStatManager();
         switch (skillId) {
             case SUMMON_DECOY_BOMB:
             case SUMMON_DECOY_BOMB2:
                 chr.addSkillCooldown(SUMMON_DECOY_BOMB, 8 * 1000);
                 increaseMuscleMemory(SUMMON_DECOY_BOMB);
+                break;
+            case HEXA_SUMMON_DECOY_BOMB:
+            case HEXA_SUMMON_DECOY_BOMB2:
+                chr.addSkillCooldown(HEXA_SUMMON_DECOY_BOMB, 8 * 1000);
+                increaseMuscleMemory(HEXA_SUMMON_DECOY_BOMB);
                 break;
         }
         super.handleShootObject(chr, sosi);
@@ -200,9 +254,12 @@ public class Cadena extends Job {
         EnumMap<MobStat, Option> map = new EnumMap<>(MobStat.class);
 
         if (skillID != VETERAN_SHADOW_DEALER_FA
+                && skillID != HEXA_VETERAN_SHADOW_DEALER_FA
                 && skillID != APOCALYPSE_CANNON_SUMMON
-                && tsm.getOptByCTSAndSkill(TempSecondaryStat, VETERAN_SHADOWDEALER) != null) {
-            chr.write(UserLocal.userBonusAttackRequest(VETERAN_SHADOW_DEALER_FA));
+                && (tsm.getOptByCTSAndSkill(TempSecondaryStat, VETERAN_SHADOWDEALER) != null
+                || tsm.getOptByCTSAndSkill(TempSecondaryStat, HEXA_VETERAN_SHADOWDEALER) != null)) {
+            int faSkill = chr.hasSkill(HEXA_VETERAN_SHADOWDEALER) ? HEXA_VETERAN_SHADOW_DEALER_FA : VETERAN_SHADOW_DEALER_FA;
+            chr.write(UserLocal.userBonusAttackRequest(faSkill));
         }
         if (skillID != CHAIN_ARTS_VOID_STRIKE_ATTACK
                 && tsm.getOptByCTSAndSkill(ChainArtsFury, CHAIN_ARTS_VOID_STRIKE_BUFF) != null
@@ -218,6 +275,10 @@ public class Cadena extends Job {
             case CHAIN_ART_TRASH_II:
             case CHAIN_ART_TRASH_III:
             case CHAIN_ART_TRASH_IV:
+            case HEXA_CHAIN_ARTS_THRASH:
+            case HEXA_CHAIN_ARTS_THRASH_2:
+            case HEXA_CHAIN_ARTS_THRASH_3:
+            case HEXA_CHAIN_ARTS_THRASH_4:
                 if (!mts.hasCurrentMobStatBySkillId(skillID)) {
                     o1.nOption = -30;
                     o1.rOption = skillID;
@@ -226,6 +287,7 @@ public class Cadena extends Job {
                 }
                 break;
             case CHAIN_ART_BEATDOWN:
+            case HEXA_CHAIN_ARTS_BEATDOWN:
                 if (!mts.hasCurrentMobStatBySkillId(skillID)) {
                     o1.nOption = 1;
                     o1.rOption = skillID;
@@ -234,6 +296,7 @@ public class Cadena extends Job {
                 }
                 break;
             case SUMMON_DAGGERS:
+            case HEXA_SUMMON_DAGGERS:
                 if (!mts.hasCurrentMobStatBySkillId(skillID)) {
                     o1.nOption = si.getValue(x, slv);
                     o1.rOption = skillID;
@@ -247,19 +310,23 @@ public class Cadena extends Job {
                 }
                 break;
             case SUMMON_SPIKED_BAT_3:
+            case HEXA_SUMMON_SPIKED_BAT_3:
                 if (!mts.hasCurrentMobStatBySkillId(skillID)) {
                     if (Util.succeedProp(si.getValue(s2, slv))) {
-                        si = SkillData.getSkillInfoById(SUMMON_SPIKED_BAT_1);
-                        slv = chr.getSkill(SUMMON_SPIKED_BAT_1).getCurrentLevel();
-                        o1.nOption = si.getValue(u, slv);
-                        o1.rOption = SUMMON_SPIKED_BAT_3;
-                        o1.tOption = si.getValue(s, slv);
-                        map.put(MobStat.PAD, o1);
-                        o2.nOption = si.getValue(u, slv);
-                        o2.rOption = SUMMON_SPIKED_BAT_3;
-                        o2.tOption = si.getValue(s, slv);
-                        map.put(MobStat.MAD, o2);
-                        mts.addStatOptions(mob, map);
+                        int batParent = skillID == HEXA_SUMMON_SPIKED_BAT_3 ? HEXA_SUMMON_SPIKED_BAT_1 : SUMMON_SPIKED_BAT_1;
+                        si = SkillData.getSkillInfoById(batParent);
+                        slv = chr.getSkillLevel(batParent);
+                        if (si != null && slv > 0) {
+                            o1.nOption = si.getValue(u, slv);
+                            o1.rOption = skillID;
+                            o1.tOption = si.getValue(s, slv);
+                            map.put(MobStat.PAD, o1);
+                            o2.nOption = si.getValue(u, slv);
+                            o2.rOption = skillID;
+                            o2.tOption = si.getValue(s, slv);
+                            map.put(MobStat.MAD, o2);
+                            mts.addStatOptions(mob, map);
+                        }
                     }
                 }
                 break;
@@ -285,11 +352,19 @@ public class Cadena extends Job {
                 chr.addSkillCooldown(SUMMON_SCIMITAR, 4 * 1000);
                 increaseMuscleMemory(SUMMON_SCIMITAR);
                 break;
+            case HEXA_SUMMON_SCIMITAR2:
+                chr.addSkillCooldown(HEXA_SUMMON_SCIMITAR, 4 * 1000);
+                increaseMuscleMemory(HEXA_SUMMON_SCIMITAR);
+                break;
             case SUMMON_DECOY_BOMB2:
                 chr.addSkillCooldown(SUMMON_DECOY_BOMB, 8 * 1000);
                 break;
+            case HEXA_SUMMON_DECOY_BOMB2:
+                chr.addSkillCooldown(HEXA_SUMMON_DECOY_BOMB, 8 * 1000);
+                break;
             case CHAIN_ART_TRASH_I:
-                o2.nOption = si.getValue(x, slv) + (chr.hasSkill(CHAIN_ARTS_TRASH_LINKED_ATTACK_REINFORCE) ? 5 : 0);
+            case HEXA_CHAIN_ARTS_THRASH:
+                o2.nOption = (si != null ? si.getValue(x, slv) : 10) + (chr.hasSkill(CHAIN_ARTS_TRASH_LINKED_ATTACK_REINFORCE) ? 5 : 0);
                 o2.rOption = attackInfo.skillId;
                 o2.tOption = 1;
                 tsm.sendStat(NextAttackEnhance, o2);
@@ -300,7 +375,11 @@ public class Cadena extends Job {
             case CHAIN_ART_TRASH_II:
             case CHAIN_ART_TRASH_III:
             case CHAIN_ART_TRASH_IV:
+            case HEXA_CHAIN_ARTS_THRASH_2:
+            case HEXA_CHAIN_ARTS_THRASH_3:
+            case HEXA_CHAIN_ARTS_THRASH_4:
                 tsm.removeStatsBySkill(CHAIN_ART_TRASH_I);
+                tsm.removeStatsBySkill(HEXA_CHAIN_ARTS_THRASH);
                 break;
             case CHAIN_ARTS_VOID_STRIKE_ATTACK:
                 chr.addSkillCooldown(attackInfo.skillId, 600);
@@ -330,6 +409,32 @@ public class Cadena extends Job {
                 }
                 tsm.removeStat(DarkSight);
                 break;
+            case CHAIN_ARTS_GRAND_ARSENAL:
+            case CHAIN_ARTS_GRAND_ARSENAL_2:
+            case CHAIN_ARTS_GRAND_ARSENAL_3:
+            case BRUTAL_RAMPAGE:
+            case BRUTAL_RAMPAGE_2:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob targetMob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (targetMob == null) continue;
+                    MobTemporaryStat mts = targetMob.getTemporaryStat();
+                    EnumMap<MobStat, Option> newMobStats = new EnumMap<>(MobStat.class);
+                    Option opt1 = new Option();
+                    opt1.nOption = 1;
+                    opt1.rOption = skillID;
+                    opt1.tOption = 10; // 10s Absolute Freeze
+                    opt1.cOption = chr.getId();
+                    newMobStats.put(MobStat.Freeze, opt1);
+                    Option opt2 = new Option();
+                    opt2.nOption = 1;
+                    opt2.rOption = skillID;
+                    opt2.tOption = 20; // 20s Origin Debuff
+                    opt2.cOption = chr.getId();
+                    newMobStats.put(MobStat.OriginDebuff, opt2);
+                    mts.addStatOptions(targetMob, newMobStats);
+                }
+                setMuscleMemory(8);
+                break;
         }
     }
 
@@ -344,6 +449,7 @@ public class Cadena extends Job {
         int amount = 1;
         if (lastAttack == skillId
                 || SUMMON_SHURIKEN2 == skillId
+                || HEXA_SUMMON_SHURIKEN2 == skillId
                 || APOCALYPSE_CANNON_SUMMON == skillId
                 || Arrays.stream(chainArtSkills).anyMatch(s -> s == skillId)
                 || Arrays.stream(muscleMemoryAttack).anyMatch(s -> s == skillId)) {
@@ -351,7 +457,8 @@ public class Cadena extends Job {
         }
         if (tsm.hasStat(WeaponVariety)) {
             amount = tsm.getOption(WeaponVariety).nOption;
-            if (amount < Arrays.stream(summonedSkills).filter(skill -> chr.hasSkill(skill)).count()) {
+            long maxStacks = Math.max(8, Arrays.stream(summonedSkills).filter(skill -> chr.hasSkill(skill)).count());
+            if (amount < maxStacks) {
                 amount++;
             }
         }
@@ -370,12 +477,12 @@ public class Cadena extends Job {
         Option o1 = new Option();
         o1.nOption = mmCombo;
         o1.rOption = skill.getSkillId();
-        o1.tOption = si.getValue(time, slv);
+        o1.tOption = si != null && si.getValue(time, slv) > 0 ? si.getValue(time, slv) : 20;
         tsm.sendStat(WeaponVariety, o1);
 
         if (mmCombo > 0 && (lastMMAttack + 500 < Util.getCurrentTime())) {
             lastMMAttack = Util.getCurrentTime();
-            chr.write(UserLocal.userBonusAttackRequest(getMMAttackByMMBuff(getMuscleMemorySkill().getSkillId())));
+            chr.write(UserLocal.userBonusAttackRequest(getMMAttackByMMBuff(skill.getSkillId())));
         }
     }
 
@@ -397,12 +504,14 @@ public class Cadena extends Job {
                 return MUSCLE_MEMORY_II_ATTACK;
             case MUSCLE_MEMORY_III_BUFF:
                 return MUSCLE_MEMORY_III_ATTACK;
+            case HEXA_MUSCLE_MEMORY_BUFF:
+                return HEXA_MUSCLE_MEMORY_ATTACK;
             default:
                 return 0;
         }
     }
 
-    private void applyCheapShotDoT(Mob mob, long damage) { // Doesn't to damage? wut
+    private void applyCheapShotDoT(Mob mob, long damage) {
         if (!chr.hasSkill(CHEAP_SHOT_II)) {
             return;
         }
@@ -457,18 +566,19 @@ public class Cadena extends Job {
             case SHADOW_DEALER_ELIXIR:
                 o1.nReason = skillID;
                 o1.nValue = si.getValue(indieDamR, slv);
-                o1.tTerm = si.getValue(time, slv) * 1000;
+                o1.tTerm = si.getValue(time, slv);
                 newStats.put(IndieDamR, o1);
                 o2.nReason = skillID;
                 o2.nValue = si.getValue(indieCr, slv);
-                o2.tTerm = si.getValue(time, slv) * 1000;
+                o2.tTerm = si.getValue(time, slv);
                 newStats.put(IndieCrR, o2);
                 tsm.sendStat(newStats);
                 break;
-            case VETERAN_SHADOWDEALER: // TODO double MuscleMemory Buff with this buff
+            case VETERAN_SHADOWDEALER:
+            case HEXA_VETERAN_SHADOWDEALER:
                 o1.nOption = 1;
                 o1.rOption = skillID;
-                o1.tOption = si.getValue(time, slv);
+                o1.tOption = si != null && si.getValue(time, slv) > 0 ? si.getValue(time, slv) : 30;
                 tsm.sendStat(TempSecondaryStat, o1);
                 break;
             case CHAIN_ARTS_VOID_STRIKE_BUFF:
@@ -494,7 +604,31 @@ public class Cadena extends Job {
                 chr.getField().spawnAffectedAreaAndRemoveOld(aa);
                 break;
             case SUMMON_BRICK:
-                increaseMuscleMemory(SUMMON_BRICK);
+            case HEXA_SUMMON_BRICK:
+                increaseMuscleMemory(skillID);
+                break;
+            case CHAIN_ARTS_CRUSH:
+            case HEXA_CHAIN_ARTS_CRUSH:
+                setMuscleMemory(8);
+                break;
+            case CHAIN_ARTS_GRAND_ARSENAL:
+            case BRUTAL_RAMPAGE:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 7;
+                tsm.sendStat(IndieNotDamaged, o1);
+                chr.write(UserLocal.showHexaSkillEff(chr));
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        if (other.getId() != chr.getId()) {
+                            other.write(UserLocal.showHexaSkillEff(chr));
+                        }
+                    }
+                }
+                setMuscleMemory(8);
                 break;
         }
 
@@ -510,7 +644,7 @@ public class Cadena extends Job {
     public void setCharCreationStats(Char chr) {
         super.setCharCreationStats(chr);
         CharacterStat cs = chr.getAvatarData().getCharacterStat();
-        cs.setPosMap(FieldConstants.HOME_MAP);//cs.setPosMap(FieldConstants.HENESYS_ID);
+        cs.setPosMap(FieldConstants.HOME_MAP);
         cs.setLevel(10);
         cs.setJob(6400);
         cs.setStr(4);
@@ -528,14 +662,29 @@ public class Cadena extends Job {
     public void addItemToNewCharacter(Char chr) {
         super.addItemToNewCharacter(chr);
         Item secondary = ItemData.getItemDeepCopy(1353300);
-        chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
-        secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
-        secondary.setCharID(chr.getId());
-        secondary.setInvType(EQUIPPED);
-        secondary.setBagIndex(BodyPart.Shield.getVal());
-        secondary.saveToSQL();
-        chr.getAvatarData().getAvatarLook().getHairEquips().add(secondary.getItemId());
-        chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+        if (secondary != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
+            secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            secondary.setCharID(chr.getId());
+            secondary.setInvType(EQUIPPED);
+            secondary.setBagIndex(BodyPart.Shield.getVal());
+            secondary.saveToSQL();
+            chr.getAvatarData().getAvatarLook().getHairEquips().add(secondary.getItemId());
+            chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+        }
+        if (chr.getEquippedItemByBodyPart(BodyPart.Weapon) == null) {
+            Item weapon = ItemData.getItemDeepCopy(1272000);
+            if (weapon != null) {
+                chr.addItemToInventoryToNewCharacter(EQUIPPED, weapon, true);
+                weapon.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+                weapon.setCharID(chr.getId());
+                weapon.setInvType(EQUIPPED);
+                weapon.setBagIndex(BodyPart.Weapon.getVal());
+                weapon.saveToSQL();
+                chr.getAvatarData().getAvatarLook().setWeaponId(weapon.getItemId());
+                chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+            }
+        }
     }
 
     @Override

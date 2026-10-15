@@ -2053,8 +2053,18 @@ public class SkillConstants {
             case 31211002: //DA - Shield Charge (Spikes)
                 return 31211011; //DA - Shield Charge (Rush)
 
+            case 61001004: //Kaiser - Dragon Slash 2nd Hit
+            case 61001005: //Kaiser - Dragon Slash 3rd Hit
+            case 61110212: //Kaiser - Dragon Slash 1st Enhanced
             case 61120219: //Kaiser - Dragon Slash (Final Form)
                 return 61001000; //Kaiser - Dragon Slash 1
+
+            case 61001006: //Kaiser - Vertical Grapple
+            case 61001207: //Kaiser - Vertical Grapple FF
+                return 61001002; //Kaiser - Vertical Grapple
+
+            case 61110211: //Kaiser - Tempest Blades (3) FF
+                return 61101002; //Kaiser - Tempest Blades (3)
 
             case 61111215: //Kaiser - Flame Surge (Final Form)
                 return 61001101; //Kaiser - Flame Surge
@@ -2066,22 +2076,37 @@ public class SkillConstants {
                 return 61101101; //Kaiser - Piercing Blaze
 
             case 61111111: //Kaiser - Wing Beat (Final Form)
+            case 61111113: //Kaiser - Wing Beat Hit
+            case 61111218: //Kaiser - Wing Beat FF Sub
                 return 61111100; //Kaiser - Wing Beat
 
             case 61111219: //Kaiser - Pressure Chain (Final Form)
                 return 61111101; //Kaiser - Pressure Chain
 
+            case 61111220: //Kaiser - Stone Dragon (Final Form)
+                return 61111002; //Kaiser - Stone Dragon
+
             case 61121201: //Kaiser - Gigas Wave (Final Form)
                 return 61121100; //Kaiser - Gigas Wave
 
+            case 61120018: //Kaiser - Inferno Breath Tile
             case 61121222: //Kaiser - Inferno Breath (Final Form)
                 return 61121105; //Kaiser - Inferno Breath
 
+            case 61121026: //Kaiser - Dragon Barrage Sub
             case 61121203: //Kaiser - Dragon Barrage (Final Form)
                 return 61121102; //Kaiser - Dragon Barrage
 
+            case 61121124: //Kaiser - Blade Burst Explosion
             case 61121221: //Kaiser - Blade Burst (Final Form)
+            case 61121225: //Kaiser - Blade Burst Explosion (Final Form)
                 return 61121104; //Kaiser - Blade Burst
+
+            case 61121217: //Kaiser - Advanced Tempest Blades (5) FF
+                return 61120007; //Kaiser - Advanced Tempest Blades (5)
+
+            case 61121220: //Kaiser - Prominence (Final Form)
+                return 61121015; //Kaiser - Prominence
 
             // Kaiser 6th Job HEXA Mappings
             case 61141001: // HEXA Gigas Wave (Final Form)
@@ -2930,39 +2955,87 @@ public class SkillConstants {
             case 152141509:
                 return 152141508; // Excidium (2nd 6th Job Ascent)
             // Kain Sub-Skills & 6th Job Mappings
+            case 63001001:
+            case 63001100:
+                return 63001000; // Strike Arrow
+            case 63001003:
+            case 63001005:
+                return 63001002; // Shadow Swift
+            case 63001009:
+                return 63001006; // Grappling Wire
             case 63101003:
-                return 63101002; // Strike Arrow II
+            case 63100100:
+            case 63101100:
+                return 63100002; // Strike Arrow II
+            case 63100104:
+            case 63101104:
+                return 63101004; // Scattering Shot
+            case 63101006:
+                return 63101005; // Dragon Fang
+            case 63111002:
+                return 63110001; // Strike Arrow III
+            case 63111012:
+            case 63111013:
+                return 63110011; // Death's Blessing
+            case 63111004:
             case 63111005:
+            case 63110103:
+            case 63111103:
+            case 63111104:
+            case 63111105:
+            case 63111106:
                 return 63111003; // Shaft Break
             case 63111010:
                 return 63111009; // Remain Incense
-            case 63111013:
-                return 63110002; // Death's Blessing Realization
+            case 63120102:
+            case 63121102:
+            case 63121103:
+                return 63121002; // Falling Dust
             case 63121005:
-                return 63121004; // Falling Dust
+                return 63121004; // Chain Sickle
             case 63121007:
                 return 63121006; // Poison Needle
-            case 63141001:
-            case 63141002:
-            case 63141003:
-                return 63141000; // HEXA Strike Arrow
+            case 63121041:
+            case 63120140:
+            case 63121140:
+            case 63121141:
+                return 63121040; // Sneak Attack / Unseen Sniper
+            case 63140100:
+            case 63141100:
+            case 63141101:
+                return 63141000; // HEXA Falling Dust
             case 63141005:
-                return 63141004; // HEXA Scattering Shot
+            case 63141006:
+                return 63141004; // HEXA Poison Needle
             case 63141008:
-                return 63141007; // HEXA Shaft Break
-            case 63141010:
-                return 63141009; // HEXA Falling Dust
+            case 63140107:
+            case 63141107:
+                return 63141007; // HEXA Strike Arrow
+            case 63140109:
+            case 63141109:
+                return 63141009; // HEXA Scattering Shot
             case 63141012:
                 return 63141011; // HEXA Chain Sickle
-            case 63141015:
+            case 63141014:
+                return 63141013; // HEXA Dragon Fang
             case 63141016:
             case 63141017:
-                return 63141014; // HEXA Poison Needle / Death Blessing
+                return 63141015; // HEXA Death's Blessing
             case 63141019:
             case 63141020:
-                return 63141018; // HEXA Sneak Attack / Unseen Sniper
+            case 63140118:
+            case 63141118:
+            case 63141119:
+            case 63141120:
+            case 63141121:
+                return 63141018; // HEXA Shaft Break
             case 63141023:
-                return 63141022; // HEXA Remain Incense
+                return 63141022; // HEXA Lasting Grudge
+            case 63141027:
+            case 63140126:
+            case 63141126:
+            case 63141127:
+                return 63141026; // HEXA Unseen Sniper
             case 63141501:
             case 63141502:
             case 63141503:
@@ -2973,6 +3046,92 @@ public class SkillConstants {
             case 63141507:
             case 63141508:
                 return 63141506; // Churning Malice (2nd 6th Job Ascent)
+            // Cadena Sub-Skills & 5th/6th Job Mappings
+            case 64001006:
+                return 64001001; // Chain Arts: Pursuit
+            case 64001007:
+            case 64001008:
+            case 64001009:
+            case 64001010:
+            case 64001011:
+            case 64001012:
+                return 64001000; // Chain Arts: Thrash
+            case 64001013:
+                return 64001002; // Summon Scimitar
+            case 64001014:
+                return 64001003; // Shadowstep
+            case 64101008:
+                return 64101002; // Summon Claw
+            case 64101009:
+                return 64100004; // Muscle Memory I
+            case 64111012:
+                return 64111004; // Summon Brick
+            case 64111013:
+                return 64110005; // Muscle Memory II
+            case 64121011:
+            case 64121016:
+                return 64121003; // Summon Spiked Bat
+            case 64120010:
+                return 64121002; // Chain Arts: Tough Hustle
+            case 64121012:
+            case 64121013:
+            case 64121014:
+            case 64121015:
+            case 64121017:
+            case 64121018:
+            case 64121019:
+                return 64121001; // Chain Arts: Beatdown
+            case 64121020:
+            case 64121025:
+            case 64121026:
+                return 64120006; // Muscle Memory III
+            case 64121022:
+            case 64121023:
+            case 64121024:
+                return 64121021; // Chain Arts: Thrash II
+            case 64121055:
+                return 64121053; // Veteran Shadowdealer
+            case 400041033:
+            case 400041034:
+                return 400041035; // Chain Arts: Void Strike
+            case 400041075:
+                return 400041074; // Muscle Memory Finale
+            case 64141001:
+            case 64141002:
+            case 64141003:
+                return 64141000; // HEXA Chain Arts: Thrash
+            case 64141005:
+            case 64141006:
+            case 64141007:
+                return 64141004; // HEXA Muscle Memory
+            case 64141009:
+            case 64141010:
+                return 64141008; // HEXA Summon Spiked Bat
+            case 64141012:
+                return 64141011; // HEXA Veteran Shadowdealer
+            case 64141014:
+            case 64141015:
+            case 64141016:
+            case 64141017:
+            case 64141018:
+            case 64141019:
+            case 64141020:
+                return 64141013; // HEXA Chain Arts: Beatdown
+            case 64141024:
+            case 64141025:
+            case 64141026:
+                return 64141023; // HEXA Summon Brick
+            case 64141029:
+                return 64141028; // HEXA Summon Decoy Bomb
+            case 64141031:
+                return 64141030; // HEXA Summon Scimitar
+            case 64141033:
+                return 64141032; // HEXA Summon Shuriken
+            case 64141501:
+            case 64141502:
+                return 64141500; // Chain Arts: Grand Arsenal
+            case 64141504:
+                return 64141503; // Brutal Rampage
             // Resistance 6th Job & Ascent Mappings
             case 37141002:
             case 37141003:
@@ -4592,6 +4751,9 @@ public class SkillConstants {
             case Aran.MAHAS_DOMAIN_SKILL_USE:
             case Kaiser.WING_BEAT:
             case Kaiser.WING_BEAT_FINAL_FORM:
+            case Kaiser.HEXA_WING_BEAT:
+            case Kaiser.HEXA_WING_BEAT_FINAL_FORM:
+            case 61141017: // HEXA Wing Beat Hit
             case Mechanic.ADV_HOMING_BEACON:
             case DemonSlayer.CHAOS_LOCK:
             case DarkKnight.RADIANT_EVIL:
@@ -4636,6 +4798,9 @@ public class SkillConstants {
             case Kaiser.TEMPEST_BLADES_FIVE_FF:
             case Kaiser.TEMPEST_BLADES_THREE:
             case Kaiser.TEMPEST_BLADES_THREE_FF:
+            case Kaiser.HEXA_TEMPEST_BLADES:
+            case Kaiser.HEXA_TEMPEST_BLADES_FF:
+            case Kaiser.HEXA_TEMPEST_BLADES_ATOM:
             case AngelicBuster.SOUL_RESONANCE:
             case Ark.VENGEFUL_HATE:
             case Ark.BLISSFUL_RESTRAINT_ATTACK:
@@ -4911,8 +5076,13 @@ public class SkillConstants {
             case Kaiser.TEMPEST_BLADES_THREE_FF:
             case Kaiser.TEMPEST_BLADES_FIVE:
             case Kaiser.TEMPEST_BLADES_FIVE_FF:
+            case Kaiser.HEXA_TEMPEST_BLADES:
+            case Kaiser.HEXA_TEMPEST_BLADES_FF:
+            case Kaiser.HEXA_TEMPEST_BLADES_ATOM:
                 // Angelic Buster
             case AngelicBuster.SOUL_SEEKER_ATOM:
+            case AngelicBuster.HEXA_SOUL_SEEKER_ATOM:
+            case AngelicBuster.HEXA_SOUL_SEEKER_EXPERT_ATOM:
             case AngelicBuster.SPARKLE_BURST:
                 // Illium
             case Illium.RADIANT_JAVELIN:

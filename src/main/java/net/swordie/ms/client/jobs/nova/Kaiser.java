@@ -156,12 +156,18 @@ public class Kaiser extends Job {
     public static final int NOVA_TRIUMPHANT_FINISHER = 61141501;
     public static final int PYROCLASTIC_INSTINCT = 61141502; // Active Skill
 
+    public static final int IRON_WILL = 60000222;
+    public static final int GUARDIANS_RETURN = 60001296;
+
     private final int[] addedSkills = new int[]{
             REALIGN_ATTACKER_MODE,
             REALIGN_DEFENDER_MODE,
             VERTICAL_GRAPPLE,
             TRANSFIGURATION,
-            DRAGON_LINK,};
+            DRAGON_LINK,
+            IRON_WILL,
+            GUARDIANS_RETURN,
+    };
 
     private long lastSelfRecovery = 0L;
     private long lastBlazeFireOrb = 0L;
@@ -174,7 +180,7 @@ public class Kaiser extends Job {
                 if (!chr.hasSkill(id)) {
                     Skill skill = SkillData.getSkillDeepCopyById(id);
                     if (skill != null) {
-                        skill.setCurrentLevel(skill.getMasterLevel());
+                        skill.setCurrentLevel(skill.getMaxLevel() > 0 ? skill.getMaxLevel() : skill.getMasterLevel());
                         chr.addSkill(skill);
                     }
                 }
@@ -214,7 +220,7 @@ public class Kaiser extends Job {
     public void setCharCreationStats(Char chr) {
         super.setCharCreationStats(chr);
         CharacterStat cs = chr.getAvatarData().getCharacterStat();
-        chr.getAvatarData().getCharacterStat().setPosMap(JobConstants.KAISER_CREATION_MAP);
+        cs.setPosMap(FieldConstants.HOME_MAP);
         cs.setLevel(10);
         cs.setJob(6100);
         cs.setStr(49);
@@ -227,14 +233,29 @@ public class Kaiser extends Job {
     public void addItemToNewCharacter(Char chr) {
         super.addItemToNewCharacter(chr);
         Item secondary = ItemData.getItemDeepCopy(1352500);
-        chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
-        secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
-        secondary.setCharID(chr.getId());
-        secondary.setInvType(EQUIPPED);
-        secondary.setBagIndex(BodyPart.Shield.getVal());
-        secondary.saveToSQL();
-        chr.getAvatarData().getAvatarLook().getHairEquips().add(secondary.getItemId());
-        chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+        if (secondary != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
+            secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            secondary.setCharID(chr.getId());
+            secondary.setInvType(EQUIPPED);
+            secondary.setBagIndex(BodyPart.Shield.getVal());
+            secondary.saveToSQL();
+            chr.getAvatarData().getAvatarLook().getHairEquips().add(secondary.getItemId());
+            chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+        }
+        if (chr.getEquippedItemByBodyPart(BodyPart.Weapon) == null) {
+            Item weapon = ItemData.getItemDeepCopy(1402001);
+            if (weapon != null) {
+                chr.addItemToInventoryToNewCharacter(EQUIPPED, weapon, true);
+                weapon.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+                weapon.setCharID(chr.getId());
+                weapon.setInvType(EQUIPPED);
+                weapon.setBagIndex(BodyPart.Weapon.getVal());
+                weapon.saveToSQL();
+                chr.getAvatarData().getAvatarLook().setWeaponId(weapon.getItemId());
+                chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+            }
+        }
     }
 
     public void giveRealignAttackBuffs() {
@@ -493,27 +514,27 @@ public class Kaiser extends Job {
             }
             case NOVA_TRIUMPHANT:
             case NOVA_TRIUMPHANT_FINISHER:
+            case PYROCLASTIC_INSTINCT:
                 for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
                     Mob targetMob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
                     if (targetMob == null) continue;
                     MobTemporaryStat mts = targetMob.getTemporaryStat();
+                    EnumMap<MobStat, Option> newMobStats = new EnumMap<>(MobStat.class);
                     Option opt1 = new Option();
                     opt1.nOption = 1;
                     opt1.rOption = attackInfo.skillId;
                     opt1.tOption = 10; // 10s Absolute Freeze
                     opt1.cOption = chr.getId();
-                    mts.addStatOptions(targetMob, MobStat.Freeze, opt1);
+                    newMobStats.put(MobStat.Freeze, opt1);
                     Option opt2 = new Option();
                     opt2.nOption = 1;
                     opt2.rOption = attackInfo.skillId;
                     opt2.tOption = 20; // 20s Origin Debuff
                     opt2.cOption = chr.getId();
-                    mts.addStatOptions(targetMob, MobStat.OriginDebuff, opt2);
+                    newMobStats.put(MobStat.OriginDebuff, opt2);
+                    mts.addStatOptions(targetMob, newMobStats);
                 }
-                incrementMorphGauge(1000); // Fully charge Morph Gauge
-                break;
-            case PYROCLASTIC_INSTINCT:
-                incrementMorphGauge(100);
+                incrementMorphGauge(attackInfo.skillId == PYROCLASTIC_INSTINCT ? 100 : 1000);
                 break;
         }
     }
@@ -663,11 +684,17 @@ public class Kaiser extends Job {
                 o1.tOption = si.getValue(time, slv);
                 tsm.sendStat(DamageReduce, o1);
                 break;
+            case NOVA_WARRIOR_KAISER:
+                o1.nReason = skillID;
+                o1.nValue = si != null ? si.getValue(x, slv) : 15;
+                o1.tTerm = si != null ? si.getValue(time, slv) : 900;
+                tsm.sendStat(IndieStatR, o1);
+                break;
             case TEMPEST_BLADES_THREE:
             {
                 Item item = chr.getEquippedItemByBodyPart(BodyPart.Weapon);
                 StopForceAtom stopForceAtom = new StopForceAtom();
-                int weaponID = item.getItemId();
+                int weaponID = item != null ? item.getItemId() : 1402001;
                 if (tsm.getOption(StopForceAtomInfo).nOption != 1 && tsm.hasStat(StopForceAtomInfo)) {
                     tsm.removeStat(StopForceAtomInfo);
                 }
@@ -686,7 +713,7 @@ public class Kaiser extends Job {
             {
                 Item item = chr.getEquippedItemByBodyPart(BodyPart.Weapon);
                 StopForceAtom stopForceAtom = new StopForceAtom();
-                int weaponID = item.getItemId();
+                int weaponID = item != null ? item.getItemId() : 1402001;
                 if (tsm.getOption(StopForceAtomInfo).nOption != 3 && tsm.hasStat(StopForceAtomInfo)) {
                     tsm.removeStat(StopForceAtomInfo);
                 }
@@ -705,7 +732,7 @@ public class Kaiser extends Job {
             case HEXA_TEMPEST_BLADES: {
                 Item item = chr.getEquippedItemByBodyPart(BodyPart.Weapon);
                 StopForceAtom stopForceAtom = new StopForceAtom();
-                int weaponID = item.getItemId();
+                int weaponID = item != null ? item.getItemId() : 1402001;
                 if (tsm.hasStat(StopForceAtomInfo) && tsm.getOption(StopForceAtomInfo).nOption != 2) {
                     tsm.removeStat(StopForceAtomInfo);
                 }
@@ -725,7 +752,7 @@ public class Kaiser extends Job {
             {
                 Item item = chr.getEquippedItemByBodyPart(BodyPart.Weapon);
                 StopForceAtom stopForceAtom = new StopForceAtom();
-                int weaponID = item.getItemId();
+                int weaponID = item != null ? item.getItemId() : 1402001;
                 if (tsm.getOption(StopForceAtomInfo).nOption != 4 && tsm.hasStat(StopForceAtomInfo)) {
                     tsm.removeStat(StopForceAtomInfo);
                 }
@@ -749,7 +776,7 @@ public class Kaiser extends Job {
                 }
                 o6.nOption = 1200;
                 o6.rOption = skillID;
-                o6.tOption = si.getValue(time, slv) * 1000;
+                o6.tOption = si.getValue(time, slv);
                 newStats.put(Morph, o6);
                 o1.nOption = si.getValue(cr, slv);
                 o1.rOption = skillID;
@@ -862,7 +889,27 @@ public class Kaiser extends Job {
                 }
                 break;
             case NOVA_TEMPERANCE_KAISER:
+            case NOVA_TEMPERANCE_KAISER_INV:
                 tsm.removeAllDebuffs();
+                break;
+            case NOVA_TRIUMPHANT:
+            case PYROCLASTIC_INSTINCT:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 7;
+                tsm.sendStat(IndieNotDamaged, o1);
+                chr.write(UserLocal.showHexaSkillEff(chr));
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        if (other.getId() != chr.getId()) {
+                            other.write(UserLocal.showHexaSkillEff(chr));
+                        }
+                    }
+                }
+                incrementMorphGauge(skillID == PYROCLASTIC_INSTINCT ? 100 : 1000);
                 break;
             case DRAGON_BLAZE:
                 var tOpt = si.getValue(time, slv);
@@ -983,37 +1030,38 @@ public class Kaiser extends Job {
     @Override
     public void handleLevelUp(short level) {
         super.handleLevelUp(level);
-        // hacks to bypass the quest glitch (accept but no packet)
         var sm = chr.getScriptManager();
-        if (level == 60 || level == 100) {
-            final short jobID = chr.getJob();
-            if (!JobConstants.canJobAdvance(jobID)) {
-                return;
-            }
-            final short next = JobConstants.nextJob(jobID);
-            sm.setJob(next);
-            sm.completeQuestNoRewards(level == 60 ? 25711 : 25712);
-            sm.giveAndEquip(level == 60 ? 1352502 : 1352503);
-            sm.giveAndEquip(level == 60 ? 1142486 : 1142487);
-            sm.addSPJobAdv(jobID, 5);
-            sm.addSPJobAdv(next, 3);
+        short jobId = chr.getJob();
+        if (level >= 30 && jobId == JobConstants.JobEnum.KAISER1.getJobId()) {
+            short next = JobConstants.JobEnum.KAISER2.getJobId();
+            chr.setJob(next);
+            chr.addSpToSpecificJob(next, 4);
+            sm.giveAndEquip(1352501);
+            jobId = next;
+        }
+        if (level >= 60 && jobId == JobConstants.JobEnum.KAISER2.getJobId()) {
+            short next = JobConstants.JobEnum.KAISER3.getJobId();
+            chr.setJob(next);
+            chr.addSpToSpecificJob(next, 4);
+            sm.completeQuestNoRewards(25711);
+            sm.giveAndEquip(1352502);
+            sm.giveAndEquip(1142486);
+            jobId = next;
+        }
+        if (level >= 100 && jobId == JobConstants.JobEnum.KAISER3.getJobId()) {
+            short next = JobConstants.JobEnum.KAISER4.getJobId();
+            chr.setJob(next);
+            chr.addSpToSpecificJob(next, 3);
+            sm.completeQuestNoRewards(25712);
+            sm.giveAndEquip(1352503);
+            sm.giveAndEquip(1142487);
         }
     }
 
     @Override
     public void handleInitAfterMigrate(Char chr) {
-        if (chr.getLevel() < 30) {
-            ScriptManagerImpl sm = chr.getScriptManager();
-            sm.setJob(JobConstants.JobEnum.KAISER2.getJobId());
-            sm.levelUntil(30);
-            for (int qid = 25720; qid <= 25761; qid++) {
-                sm.completeQuestNoRewards(qid);
-            }
-            sm.addSPJobAdv(JobConstants.JobEnum.KAISER1.getJobId(), 5);
-            sm.addSPJobAdv(JobConstants.JobEnum.KAISER2.getJobId(), 3);
-            sm.giveAndEquip(1402001);
-            sm.giveAndEquip(1352501);
-            sm.warp(FieldConstants.HOME_MAP);
+        if (chr.getFieldID() == JobConstants.KAISER_CREATION_MAP) {
+            chr.getScriptManager().warp(FieldConstants.HOME_MAP);
         }
         super.handleInitAfterMigrate(chr);
     }
@@ -1060,7 +1108,7 @@ public class Kaiser extends Job {
             faiList.add(fai);
         }
         for (int i = targetCount; i < maxCount; i++) {
-            targetList.add(Util.getRandomFromCollection(targetList));
+            targetList.add(targetList.isEmpty() ? 0 : Util.getRandomFromCollection(targetList));
             int firstImpact = new Random().nextInt(5) + 20;
             int secondImpact = new Random().nextInt(5) + 25;
             ForceAtomInfo fai = new ForceAtomInfo(chr.getNewForceAtomKey(), fae.getInc(), firstImpact, secondImpact, 0, 600, Util.getCurrentTime(), 0, 0, new Position());

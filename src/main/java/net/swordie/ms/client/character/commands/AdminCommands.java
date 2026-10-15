@@ -2584,6 +2584,8 @@ public class AdminCommands {
                 targetJob = (int) JobConstants.JobEnum.XENON4.getJobId();
             } else if (JobConstants.isKaiser(curJob)) {
                 targetJob = (int) JobConstants.JobEnum.KAISER4.getJobId();
+            } else if (JobConstants.isCadena(curJob)) {
+                targetJob = (int) JobConstants.JobEnum.CADENA_4.getJobId();
             } else if (JobConstants.isAngelicBuster(curJob)) {
                 targetJob = (int) JobConstants.JobEnum.ANGELIC_BUSTER4.getJobId();
             } else if (JobConstants.isAran(curJob)) {

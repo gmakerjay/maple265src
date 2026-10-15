@@ -10035,32 +10035,35 @@ public class Char {
             case 20000000: // Hero: HEXA Raging Blow
                 list.add(1141001);
                 break;
-            case 20000180: // Hero: HEXA Cry Valhalla / Puncture / Final Attack
+            case 20000100: // Hero: HEXA Beam Blade / Rending Edge
+                list.add(1141004);
+                break;
+            case 20000146: // Hero: HEXA Cry Valhalla / Puncture / Final Attack
                 list.add(1141007);
                 break;
             case 20000001: // Paladin: HEXA Blast / Divine Judgment
                 list.add(1241001);
                 list.add(1241002);
                 break;
-            case 20000138: // Paladin: HEXA Heaven's Hammer / Final Attack
+            case 20000051: // Paladin: HEXA Divine Charge / Divine Mark / Falling Justice
                 list.add(1241004);
-                list.add(1241005);
                 list.add(1241006);
                 break;
-            case 20000181: // Paladin: HEXA Sanctuary / Vessel of Light
+            case 20000101: // Paladin: HEXA Heaven's Hammer
                 list.add(1241008);
-                list.add(1241009);
+                break;
+            case 20000147: // Paladin: HEXA Final Attack / Rising Justice
                 list.add(1241010);
                 break;
-            case 20000089: // Dark Knight: HEXA Dark Impale / Evil Eye Shock
+            case 20000052: // Dark Knight: HEXA Dark Impale / Nightshade Explosion
                 list.add(1341002);
                 break;
-            case 20000139: // Dark Knight: HEXA Revenge of the Evil Eye / Final Attack
+            case 20000102: // Dark Knight: HEXA Revenge of the Evil Eye / Final Attack
                 list.add(1341005);
                 list.add(1341006);
                 list.add(1340007);
                 break;
-            case 20000182: // Dark Knight: HEXA Nightshade Explosion
+            case 20000148: // Dark Knight: HEXA Evil Eye Shock
                 list.add(1341009);
                 break;
             // Explorer Magician HEXA Mastery Companion Sub-Skills
@@ -10068,16 +10071,16 @@ public class Char {
                 list.add(2141001);
                 list.add(2141002);
                 break;
-            case 20000090: // Fire/Poison: HEXA Flame Haze
+            case 20000053: // Fire/Poison: HEXA Flame Haze / Mist Eruption
                 list.add(2141004);
                 break;
-            case 20000140: // Fire/Poison: HEXA Megiddo Flame / Meteor Shower
+            case 20000103: // Fire/Poison: HEXA Ignite / Ifrit / Inferno Aura
                 list.add(2140006);
                 list.add(2141007);
                 list.add(2140008);
                 list.add(2141009);
                 break;
-            case 20000183: // Fire/Poison: HEXA Mist Eruption / Ignite / Ifrit
+            case 20000149: // Fire/Poison: HEXA Creeping Toxin / Meteor Shower / Megiddo Flame
                 list.add(2141011);
                 list.add(2141012);
                 list.add(2140013);
@@ -10088,24 +10091,26 @@ public class Char {
             case 20000004: // Ice/Lightning: HEXA Chain Lightning
                 list.add(2241001);
                 break;
-            case 20000141: // Ice/Lightning: HEXA Blizzard / Lightning Orb / Cryo Shock
+            case 20000054: // Ice/Lightning: HEXA Frozen Orb / Blizzard
                 list.add(2241004);
+                break;
+            case 20000104: // Ice/Lightning: HEXA Lightning Orb / Cryo Shock
                 list.add(2241010);
                 break;
-            case 20000184: // Ice/Lightning: HEXA Thunder Sphere / Elquines
+            case 20000150: // Ice/Lightning: HEXA Thunder Sphere / Elquines
                 list.add(2241008);
                 break;
             case 20000005: // Bishop: HEXA Angel Ray
                 list.add(2341001);
                 break;
-            case 20000092: // Bishop: HEXA Big Bang
+            case 20000055: // Bishop: HEXA Big Bang / Triumph Feather
                 list.add(2341003);
-                break;
-            case 20000142: // Bishop: HEXA Triumph Feather / Angelic Wrath
                 list.add(2341005);
+                break;
+            case 20000105: // Bishop: HEXA Angelic Wrath / Fountain of Vengeance / Bahamut
                 list.add(2341008);
                 break;
-            case 20000185: // Bishop: HEXA Genesis / Heaven's Door
+            case 20000151: // Bishop: HEXA Genesis / Heaven's Door
                 list.add(2341010);
                 list.add(2341012);
                 break;
@@ -10113,14 +10118,18 @@ public class Char {
             case 20000006: // BowMaster: HEXA Hurricane
                 list.add(3141001);
                 break;
-            case 20000093: // BowMaster: HEXA Arrow Stream
+            case 20000056: // BowMaster: HEXA Arrow Blaster / Arrow Stream
                 list.add(3141003);
                 break;
-            case 20000143: // BowMaster: HEXA Final Attack / Quiver Cartridge
+            case 20000106: // BowMaster: HEXA Quiver Cartridge / Phoenix / Extra Quiver Cartridge
                 list.add(3140004);
-                break;
-            case 20000186: // BowMaster: HEXA Gritty Gust / Speed Mirage
+                list.add(3141006);
+                list.add(3141007);
+                list.add(3141008);
+                list.add(3141010);
                 list.add(3141011);
+                break;
+            case 20000152: // BowMaster: HEXA Speed Mirage / Gritty Gust
                 list.add(3140012);
                 list.add(3141013);
                 list.add(3141014);
@@ -10131,7 +10140,7 @@ public class Char {
                 list.add(3241003);
                 list.add(3241004);
                 break;
-            case 20000094: // Marksman: HEXA Piercing Arrow
+            case 20000057: // Marksman: HEXA Piercing Arrow
                 list.add(3241006);
                 list.add(3241007);
                 list.add(3241008);
@@ -10139,21 +10148,21 @@ public class Char {
                 list.add(3241010);
                 list.add(3241011);
                 break;
-            case 20000144: // Marksman: HEXA Final Attack / High Speed Shot / Frostprey
+            case 20000107: // Marksman: HEXA Frostprey / Bolt Burst
                 list.add(3240012);
                 break;
-            case 20000187: // Marksman: HEXA Bolt Swiftness
+            case 20000153: // Marksman: HEXA Final Attack / High Speed Shot
                 list.add(3241015);
                 break;
             case 20000008: // Pathfinder: HEXA Cardinal Burst / Bountiful Burst
                 list.add(3341001);
                 list.add(3341003);
                 break;
-            case 20000095: // Pathfinder: HEXA Cardinal Deluge / Glyph of Impalement
+            case 20000058: // Pathfinder: HEXA Cardinal Deluge / Bountiful Deluge
                 list.add(3341005);
-                list.add(3341007);
                 break;
-            case 20000145: // Pathfinder: HEXA Cardinal Torrent / Ancient Astra
+            case 20000108: // Pathfinder: HEXA Cardinal Torrent / Glyph of Impalement / Ancient Astra
+                list.add(3341007);
                 list.add(3341009);
                 list.add(3341011);
                 list.add(3341012);
@@ -10161,7 +10170,7 @@ public class Char {
                 list.add(3341014);
                 list.add(3341015);
                 break;
-            case 20000188: // Pathfinder: HEXA Combo Assault
+            case 20000154: // Pathfinder: HEXA Shadow Raven / Combo Assault / Manifest Curse
                 list.add(3341017);
                 list.add(3341018);
                 list.add(3341019);
@@ -10174,45 +10183,45 @@ public class Char {
             case 20000009: // Night Lord: HEXA Quad Star
                 list.add(4141001);
                 break;
-            case 20000096: // Night Lord: HEXA Assassin's Mark
+            case 20000059: // Night Lord: HEXA Assassin's Mark
                 list.add(4141003);
                 list.add(4141004);
                 break;
-            case 20000146: // Night Lord: HEXA Showdown / Dark Flare
+            case 20000109: // Night Lord: HEXA Showdown / Dark Flare / Darkness Shuriken
                 list.add(4141006);
                 break;
-            case 20000189: // Night Lord: HEXA Sudden Raid / Death Star / Dark Sight
+            case 20000155: // Night Lord: HEXA Sudden Raid / Death Star
                 list.add(4141010);
                 list.add(4141012);
                 list.add(4141013);
                 break;
-            case 20000010: // Shadower: HEXA Assassinate / Pulverize / Cruel Stab
+            case 20000010: // Shadower: HEXA Assassinate
                 list.add(4241001);
                 list.add(4241002);
                 list.add(4241003);
                 list.add(4241004);
                 list.add(4241005);
                 break;
-            case 20000097: // Shadower: HEXA Meso Explosion
+            case 20000060: // Shadower: HEXA Meso Explosion
                 list.add(4241007);
                 list.add(4241008);
                 list.add(4241009);
                 list.add(4241010);
                 break;
-            case 20000147: // Shadower: HEXA Dark Flare / Cruel Stab / Shadow Veil
+            case 20000110: // Shadower: HEXA Dark Flare / Cruel Stab
                 list.add(4240014);
                 break;
-            case 20000190: // Shadower: HEXA Into Darkness / Covert Edge
+            case 20000156: // Shadower: HEXA Sudden Raid / Shadow Veil / Covert Edge
                 list.add(4240016);
                 list.add(4241017);
                 list.add(4241018);
                 list.add(4241019);
                 break;
-            case 20000098: // Dual Blade: HEXA Blade Clone / Mortality
+            case 20000111: // Dual Blade: HEXA Blade Clone / Mortality
                 list.add(4360002);
                 list.add(4361002);
                 break;
-            case 20000148: // Dual Blade: HEXA Blade Fury
+            case 20000157: // Dual Blade: HEXA Blade Fury / Sudden Raid
                 list.add(4361004);
                 break;
             // Explorer Pirate HEXA Mastery Companion Sub-Skills
@@ -10221,53 +10230,289 @@ public class Char {
                 list.add(5141002);
                 list.add(5141003);
                 break;
-            case 20000099: // Buccaneer: HEXA Sea Serpent Burst / Rage
+            case 20000062: // Buccaneer: HEXA Sea Serpent / Rage / Burst / Nautilus Strike
                 list.add(5141005);
                 list.add(5141006);
                 list.add(5141007);
                 list.add(5141008);
                 break;
-            case 20000149: // Buccaneer: HEXA Sea Serpent Assault / Serpent Scale
+            case 20000112: // Buccaneer: HEXA Serpent Scale
                 list.add(5140010);
                 list.add(5141011);
                 list.add(5141012);
                 list.add(5141013);
                 list.add(5141014);
                 break;
-            case 20000192: // Buccaneer: HEXA Hook Bomber / Nautilus Strike
+            case 20000158: // Buccaneer: HEXA Hook Bomber
                 list.add(5141016);
                 list.add(5141017);
                 break;
             case 20000013: // Corsair: HEXA Rapid Fire
                 list.add(5241001);
                 break;
-            case 20000100: // Corsair: HEXA Broadside / Parrotargeting
+            case 20000063: // Corsair: HEXA Broadside
                 list.add(5241003);
                 break;
-            case 20000150: // Corsair: HEXA Brain Scrambler / Eight-Legs Easton / Siege Bomber
+            case 20000113: // Corsair: HEXA Brain Scrambler / Eight-Legs Easton / Firing Orders
                 list.add(5241006);
                 list.add(5241009);
                 break;
-            case 20000193: // Corsair: HEXA Scurvy Summons / Ugly Bomb
+            case 20000159: // Corsair: HEXA Siege Bomber / Scurvy Summons / Nautilus Strike / Ugly Bomb
                 list.add(5241011);
                 list.add(5241012);
                 list.add(5241013);
                 break;
-            case 20000014: // Cannoneer: HEXA Cannon Barrage / Cannon Bazooka / Monkey Mortar
+            case 20000064: // Cannoneer: HEXA Cannon Bazooka / Monkey Mortar / Anchors Aweigh / Nautilus Strike
                 list.add(5341002);
                 list.add(5341003);
                 list.add(5341004);
                 break;
-            case 20000151: // Cannoneer: HEXA Mini Cannonball / Nautilus Strike / Rolling Rainbow
+            case 20000114: // Cannoneer: HEXA Rolling Rainbow
                 list.add(5341007);
                 list.add(5341008);
                 list.add(5341014);
                 break;
-            case 20000194: // Cannoneer: HEXA Monkey Militia / Anchors Aweigh / Monkey Fury
+            case 20000160: // Cannoneer: HEXA Monkey Militia / Monkey Fury
                 list.add(5340010);
                 list.add(5340011);
                 list.add(5341013);
                 break;
+
+            // Nova (Kaiser, Kain, Cadena, Angelic Buster) HEXA Mastery & Origin/Ascent Companion Sub-Skills
+            // Kaiser (6112)
+            case 20000034: // Kaiser Mastery I: HEXA Gigas Wave
+                list.add(61141001);
+                break;
+            case 20000084: // Kaiser Mastery II: HEXA Blade Burst / HEXA Tempest Blades
+                list.add(61141003);
+                list.add(61141004);
+                list.add(61141005);
+                list.add(61141007);
+                list.add(61141008);
+                break;
+            case 20000134: // Kaiser Mastery III: HEXA Inferno Breath
+                list.add(61141010);
+                list.add(61141011);
+                list.add(61141012);
+                break;
+            case 20000180: // Kaiser Mastery IV: HEXA Wing Beat / HEXA Stone Dragon
+                list.add(61141014);
+                list.add(61141016);
+                list.add(61141017);
+                break;
+            case 10000034: // Kaiser Origin: Nova Triumphant
+                list.add(61141501);
+                break;
+
+            // Kain (6312)
+            case 20000035: // Kain Mastery I: HEXA Falling Dust / HEXA Poison Needle
+                list.add(63140100);
+                list.add(63141100);
+                list.add(63141101);
+                list.add(63141005);
+                list.add(63141006);
+                break;
+            case 20000085: // Kain Mastery II: HEXA Strike Arrow / Scattering Shot / Tearing Knife / Chain Sickle
+                list.add(63141008);
+                list.add(63140107);
+                list.add(63141107);
+                list.add(63140109);
+                list.add(63141109);
+                list.add(63141012);
+                break;
+            case 20000135: // Kain Mastery III: HEXA Dragon Fang / Shaft Break / Phantom Blade / Lasting Grudge
+                list.add(63141014);
+                list.add(63141019);
+                list.add(63141020);
+                list.add(63140118);
+                list.add(63141118);
+                list.add(63141119);
+                list.add(63141120);
+                list.add(63141121);
+                list.add(63141023);
+                break;
+            case 20000181: // Kain Mastery IV: HEXA Death's Blessing / Chasing Shot / Unseen Sniper
+                list.add(63141016);
+                list.add(63141017);
+                list.add(63141027);
+                list.add(63140126);
+                list.add(63141126);
+                list.add(63141127);
+                break;
+            case 10000035: // Kain Origin: Total Annihilation
+                list.add(63141501);
+                list.add(63141502);
+                list.add(63141503);
+                list.add(63141504);
+                list.add(63141505);
+                break;
+            case 10000087: // Kain Ascent: Churning Malice
+                list.add(63141507);
+                list.add(63141508);
+                break;
+
+            // Cadena (6412)
+            case 20000036: // Cadena Mastery I: HEXA Chain Arts: Thrash
+                list.add(64141001);
+                list.add(64141002);
+                list.add(64141003);
+                break;
+            case 20000086: // Cadena Mastery II: HEXA Muscle Memory
+                list.add(64141005);
+                list.add(64141006);
+                list.add(64141007);
+                break;
+            case 20000136: // Cadena Mastery III: Scimitar / Claw / Shuriken / Spiked Bat / Crush
+                list.add(64141031);
+                list.add(64141033);
+                list.add(64141009);
+                list.add(64141010);
+                break;
+            case 20000182: // Cadena Mastery IV: Shotgun / Daggers / Decoy Bomb / Brick / Beatdown / Veteran Shadowdealer
+                list.add(64141029);
+                list.add(64141024);
+                list.add(64141025);
+                list.add(64141026);
+                list.add(64141014);
+                list.add(64141015);
+                list.add(64141016);
+                list.add(64141017);
+                list.add(64141018);
+                list.add(64141019);
+                list.add(64141020);
+                list.add(64141012);
+                break;
+            case 10000036: // Cadena Origin: Chain Arts: Grand Arsenal
+                list.add(64141501);
+                list.add(64141502);
+                break;
+            case 10000088: // Cadena Ascent: Brutal Rampage
+                list.add(64141504);
+                break;
+
+            // Angelic Buster (6512)
+            case 20000087: // Angelic Buster Mastery II: HEXA Soul Seeker / HEXA Soul Seeker Expert
+                list.add(65141003);
+                list.add(65141004);
+                break;
+            case 10000037: // Angelic Buster Origin: Grand Finale
+                list.add(65141501);
+                list.add(65141502);
+                list.add(65141503);
+                break;
+            case 10000089: // Angelic Buster Ascent: Surprise Encore
+                list.add(65141505);
+                break;
+
+            // Flora (Adele, Illium, Khali, Ark) HEXA Mastery & Origin/Ascent Companion Sub-Skills
+            case 20000040: // Adele Mastery I: HEXA Cleave / Magic Dispatch / Aetherial Arms
+                list.add(151141001);
+                break;
+            case 20000140: // Adele Mastery III: HEXA Impale / Resonance Rush / Noble Summons / Aether Bloom
+                list.add(151141012);
+                list.add(151141013);
+                break;
+            case 20000186: // Adele Mastery IV: HEXA Aether Forge / Reign of Destruction / Shardbreaker
+                list.add(151141007);
+                list.add(151141008);
+                list.add(151141009);
+                list.add(151141018);
+                list.add(151141019);
+                list.add(151141020);
+                break;
+            case 10000040: // Adele Origin: Maestro
+                list.add(151141501);
+                break;
+            case 10000092: // Adele Ascent: Einheit
+                list.add(151141503);
+                list.add(151141504);
+                break;
+            case 20000041: // Illium Mastery I: HEXA Radiant Javelin / Winged Javelin
+                list.add(152141001);
+                list.add(152141002);
+                list.add(152141003);
+                list.add(152141004);
+                list.add(152141005);
+                list.add(152141006);
+                break;
+            case 20000141: // Illium Mastery III: HEXA Ex / Machina / Crystal Skill: Deus
+                list.add(152141013);
+                break;
+            case 10000041: // Illium Origin: Mytocrystal Expanse
+                list.add(152141501);
+                list.add(152141502);
+                list.add(152141503);
+                list.add(152141504);
+                list.add(152141505);
+                list.add(152141506);
+                list.add(152141507);
+                break;
+            case 10000093: // Illium Ascent: Excidium
+                list.add(152141509);
+                break;
+            case 20000042: // Khali Mastery I: HEXA Arts: Flurry / Crescentum
+                list.add(154141002);
+                break;
+            case 20000092: // Khali Mastery II: HEXA Void Rush / Void Blitz / Chakram Split
+                list.add(154141004);
+                list.add(154141005);
+                list.add(154141006);
+                list.add(154141008);
+                break;
+            case 20000188: // Khali Mastery IV: HEXA Resonate / Deceiving Blade
+                list.add(154141015);
+                list.add(154141016);
+                break;
+            case 10000042: // Khali Origin: Hex: Sandstorm
+                list.add(154141501);
+                list.add(154141502);
+                list.add(154141503);
+                break;
+            case 10000094: // Khali Ascent: Wake the Void
+                list.add(154141505);
+                break;
+            case 20000043: // Ark Mastery I: HEXA Charge Drives
+                list.add(155141001);
+                list.add(155141002);
+                list.add(155141003);
+                list.add(155141005);
+                list.add(155141006);
+                list.add(155141007);
+                list.add(155141008);
+                list.add(155141009);
+                list.add(155141010);
+                list.add(155141012);
+                list.add(155141013);
+                list.add(155141014);
+                list.add(155141015);
+                list.add(155141017);
+                list.add(155141018);
+                list.add(155141019);
+                list.add(155141020);
+                break;
+            case 20000093: // Ark Mastery II: HEXA Grievous Wound / Insatiable Hunger / Unbridled Chaos
+                list.add(155141022);
+                list.add(155141023);
+                list.add(155141025);
+                list.add(155141026);
+                list.add(155141028);
+                break;
+            case 20000143: // Ark Mastery III: HEXA Vengeful Hate / Blissful Restraint / Endless Agony
+                list.add(155141030);
+                list.add(155141032);
+                list.add(155141033);
+                break;
+            case 20000189: // Ark Mastery IV: HEXA Ominous Nightmare / Ominous Dream
+                list.add(155141036);
+                list.add(155141037);
+                break;
+            case 10000043: // Ark Origin: Primordial Abyss
+                list.add(155141501);
+                break;
+            case 10000095: // Ark Ascent: Whisper of Deepest Abyss
+                list.add(155141503);
+                break;
+
             default:
                 if ((coreID >= 1 && coreID <= 52) || (coreID >= 300 && coreID <= 306)) {
                     list.add(500081000);

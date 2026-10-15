@@ -14,6 +14,7 @@ import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
 import net.swordie.ms.client.jobs.Job;
 import net.swordie.ms.connection.InPacket;
 import net.swordie.ms.connection.packet.*;
+import net.swordie.ms.constants.FieldConstants;
 import net.swordie.ms.constants.JobConstants;
 import net.swordie.ms.constants.SkillConstants;
 import net.swordie.ms.enums.*;
@@ -46,27 +47,29 @@ public class AngelicBuster extends Job {
     public static final int SOUL_BUSTER = 60011216;
     public static final int HYPER_COORDINATE = 60011221;
     public static final int GRAPPLING_HEART = 60011218;
+    public static final int TERMS_AND_CONDITIONS = 60011219;
     public static final int DAY_DREAMER = 60011220;
     public static final int TRUE_HEART_INHERITANCE = 60010217;
+    public static final int ON_STAGE = 60011301;
 
     public static final int AB_NORMAL_ATTACK = 60011216;
 
     //1st Job
     public static final int STAR_BUBBLE = 65001100;
-    public static final int MELODY_CROSS = 65001002; //Buff
+    public static final int MELODY_CROSS = 65000005; // Passive in v265
 
     //2nd job
     public static final int LOVELY_STING = 65101100;
     public static final int LOVELY_STING_EXPLOSION = 65101006;
     public static final int PINK_PUMMEL = 65101001;
-    public static final int POWER_TRANSFER = 65101002; //Buff
+    public static final int POWER_TRANSFER = 65100007; // Passive in v265
 
     //3rd Job
     public static final int SOUL_SEEKER = 65111100;
     public static final int SOUL_SEEKER_ATOM = 65111007;
-    public static final int SHINING_STAR_BURST = 65111101;
+    public static final int SHINING_STAR_BURST = 65111101; // Star Crash in v265
     public static final int HEAVENLY_CRASH = 65111002;
-    public static final int IRON_BLOSSOM = 65111004; //Buff
+    public static final int IRON_BLOSSOM = 65110008; // Blossoming Star Passive in v265
 
     //4th Job
     public static final int CELESTIAL_ROAR = 65121100;
@@ -75,7 +78,7 @@ public class AngelicBuster extends Job {
     public static final int TRINITY_3 = 65121008;
     //65121101 - Trinity -combo count-
     public static final int FINALE_RIBBON = 65121002;
-    public static final int STAR_GAZER = 65121004; //Buff
+    public static final int STAR_GAZER = 65121004; //Passive/Buff
     public static final int NOVA_WARRIOR_AB = 65121009; //Buff
     public static final int SOUL_SEEKER_EXPERT = 65121011; //ON/OFF Buff
     public static final int NOVA_TEMPERANCE_AB = 65121010;
@@ -125,10 +128,11 @@ public class AngelicBuster extends Job {
     private final int[] addedSkills = new int[]{
             DRESS_UP,
             SOUL_BUSTER,
-            HYPER_COORDINATE,
             GRAPPLING_HEART,
+            TERMS_AND_CONDITIONS,
             DAY_DREAMER,
             TRUE_HEART_INHERITANCE,
+            ON_STAGE,
     };
 
     private int affinityHeartIIcounter = 0;
@@ -158,7 +162,7 @@ public class AngelicBuster extends Job {
                 if (!chr.hasSkill(id)) {
                     Skill skill = SkillData.getSkillDeepCopyById(id);
                     if (skill != null) {
-                        skill.setCurrentLevel(skill.getMasterLevel());
+                        skill.setCurrentLevel(skill.getMaxLevel() > 0 ? skill.getMaxLevel() : skill.getMasterLevel());
                         chr.addSkill(skill);
                     }
                 }
@@ -178,7 +182,7 @@ public class AngelicBuster extends Job {
         chr.setStat(Stat.dex, 49);
         chr.setStat(Stat.mp, 0);
         chr.setStat(Stat.mmp, 0);
-        chr.getAvatarData().getCharacterStat().setPosMap(JobConstants.ANGELIC_BUSTER_CREATION_MAP);
+        chr.getAvatarData().getCharacterStat().setPosMap(FieldConstants.HOME_MAP);
         chr.getAvatarData().getCharacterStat().setJob(JobConstants.JobEnum.ANGELIC_BUSTER1.getJobId());
         chr.setSpToCurrentJob(5);
     }
@@ -187,14 +191,64 @@ public class AngelicBuster extends Job {
     public void addItemToNewCharacter(Char chr) {
         super.addItemToNewCharacter(chr);
         Item secondary = ItemData.getItemDeepCopy(1352601);
-        chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
-        secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
-        secondary.setCharID(chr.getId());
-        secondary.setInvType(EQUIPPED);
-        secondary.setBagIndex(BodyPart.Shield.getVal());
-        secondary.saveToSQL();
-        chr.getAvatarData().getAvatarLook().getHairEquips().add(secondary.getItemId());
-        chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+        if (secondary != null) {
+            chr.addItemToInventoryToNewCharacter(EQUIPPED, secondary, true);
+            secondary.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+            secondary.setCharID(chr.getId());
+            secondary.setInvType(EQUIPPED);
+            secondary.setBagIndex(BodyPart.Shield.getVal());
+            secondary.saveToSQL();
+            chr.getAvatarData().getAvatarLook().getHairEquips().add(secondary.getItemId());
+            chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+        }
+        if (chr.getEquippedItemByBodyPart(BodyPart.Weapon) == null) {
+            Item weapon = ItemData.getItemDeepCopy(1222000);
+            if (weapon != null) {
+                chr.addItemToInventoryToNewCharacter(EQUIPPED, weapon, true);
+                weapon.setInventoryID(chr.getInventoryByType(EQUIPPED).getId());
+                weapon.setCharID(chr.getId());
+                weapon.setInvType(EQUIPPED);
+                weapon.setBagIndex(BodyPart.Weapon.getVal());
+                weapon.saveToSQL();
+                chr.getAvatarData().getAvatarLook().setWeaponId(weapon.getItemId());
+                chr.getAvatarData().getAvatarLook().updateAvatarLookToSQL();
+            }
+        }
+    }
+
+    @Override
+    public void handleLevelUp(short level) {
+        super.handleLevelUp(level);
+        ScriptManagerImpl sm = chr.getScriptManager();
+        short jobId = chr.getJob();
+        if (level >= 30 && jobId == JobConstants.JobEnum.ANGELIC_BUSTER1.getJobId()) {
+            short next = JobConstants.JobEnum.ANGELIC_BUSTER2.getJobId();
+            chr.setJob(next);
+            chr.addSpToSpecificJob(next, 4);
+            sm.giveAndEquip(1352602);
+            jobId = next;
+        }
+        if (level >= 60 && jobId == JobConstants.JobEnum.ANGELIC_BUSTER2.getJobId()) {
+            short next = JobConstants.JobEnum.ANGELIC_BUSTER3.getJobId();
+            chr.setJob(next);
+            chr.addSpToSpecificJob(next, 4);
+            sm.giveAndEquip(1352603);
+            jobId = next;
+        }
+        if (level >= 100 && jobId == JobConstants.JobEnum.ANGELIC_BUSTER3.getJobId()) {
+            short next = JobConstants.JobEnum.ANGELIC_BUSTER4.getJobId();
+            chr.setJob(next);
+            chr.addSpToSpecificJob(next, 3);
+            sm.giveAndEquip(1352604);
+        }
+    }
+
+    @Override
+    public void handleInitAfterMigrate(Char chr) {
+        if (chr.getFieldID() == JobConstants.ANGELIC_BUSTER_CREATION_MAP) {
+            chr.getScriptManager().warp(FieldConstants.HOME_MAP);
+        }
+        super.handleInitAfterMigrate(chr);
     }
 
     // Attack related methods ------------------------------------------------------------------------------------------
@@ -213,12 +267,12 @@ public class AngelicBuster extends Job {
                 }
                 break;
             case FINALE_RIBBON:
+            case ENCORE_RIBBON:
                 if (!mts.hasCurrentMobStatBySkillId(skillID)) {
                     o1.nOption = 1;
                     o1.rOption = skillID;
-                    o1.tOption = si.getValue(time, slv);
+                    o1.tOption = si != null && si.getValue(time, slv) > 0 ? si.getValue(time, slv) : 20;
                     mts.addStatOptions(mob, MobStat.TotalDamParty, o1);
-                    //TODO Check if this is the Correct MobStat
                 }
                 break;
             case CELESTIAL_ROAR:    //Stun Debuff
@@ -234,21 +288,6 @@ public class AngelicBuster extends Job {
                     }
                 }
                 break;
-            case LOVELY_STING_EXPLOSION:
-                if (mts.hasCurrentMobStat(MobStat.Explosion)) {
-                    mts.removeMobStat(mob, MobStat.Explosion);
-                }
-                break;
-            case HEAVENLY_CRASH:
-                if (chr.hasSkill(SHINING_STAR_BURST)) {
-                    if (!mts.hasCurrentMobStatBySkillId(skillID)) {
-                        o1.nOption = 100;
-                        o1.rOption = SHINING_STAR_BURST;
-                        o1.tOption = 5;
-                        mts.addStatOptions(mob, MobStat.AddDamSkill, o1);
-                    }
-                }
-                break;
         }
         super.handleDebuffOnMob(c, mob, si, skillID, slv, damage);
     }
@@ -261,30 +300,27 @@ public class AngelicBuster extends Job {
         boolean hasHitMobs = !attackInfo.mobAttackInfo.isEmpty();
 
         if (hasHitMobs) {
-            //Recharging System
+            //Recharging System (100% in v265 Remaster)
             if (Util.succeedProp(getRechargeProc(attackInfo))) {
                 rechargeABSkills();
                 affinityHeartIIIcounter = 0;
-            } else {
-                //Affinity Heart IV passive
-                if (chr.hasSkill(AFFINITY_HEART_IV) && Util.succeedProp(getRechargeProc(attackInfo))) {
-                    Skill ah4Skill = chr.getSkill(AFFINITY_HEART_IV);
-                    byte ah4LV = (byte) ah4Skill.getCurrentLevel();
-                    SkillInfo ah4SI = SkillData.getSkillInfoById(ah4Skill.getSkillId());
-                    if (Util.succeedProp(ah4SI.getValue(x, ah4LV))) {
-                        rechargeABSkills();
-                        affinityHeartIIIcounter = 0;
-                        affinityHeartIV(tsm, ah4LV);
-                    }
-                } else {
-                    //Affinity Heart III passive
-                    if (!chr.hasSkill(AFFINITY_HEART_III)) {
-                        return;
-                    }
-                    affinityHeartIIIcounter++;
-                    if (affinityHeartIIIcounter > 2) {
-                        rechargeABSkills();
-                    }
+                if (chr.hasSkill(AFFINITY_HEART_IV)) {
+                    affinityHeartIV(tsm, chr.getSkillLevel(AFFINITY_HEART_IV));
+                }
+            } else if (chr.hasSkill(AFFINITY_HEART_IV) && Util.succeedProp(getRechargeProc(attackInfo))) {
+                Skill ah4Skill = chr.getSkill(AFFINITY_HEART_IV);
+                byte ah4LV = (byte) ah4Skill.getCurrentLevel();
+                SkillInfo ah4SI = SkillData.getSkillInfoById(ah4Skill.getSkillId());
+                if (Util.succeedProp(ah4SI.getValue(x, ah4LV))) {
+                    rechargeABSkills();
+                    affinityHeartIIIcounter = 0;
+                    affinityHeartIV(tsm, ah4LV);
+                }
+            } else if (chr.hasSkill(AFFINITY_HEART_III)) {
+                affinityHeartIIIcounter++;
+                if (affinityHeartIIIcounter > 2) {
+                    rechargeABSkills();
+                    affinityHeartIIIcounter = 0;
                 }
             }
             affinityHeartII(attackInfo);
@@ -299,8 +335,6 @@ public class AngelicBuster extends Job {
                 soulSeekerExpert(AB_NORMAL_ATTACK, chr.getSkillLevel(AB_NORMAL_ATTACK), attackInfo);
                 break;
             case TRINITY:
-            case TRINITY_2:
-            case TRINITY_3:
             case TRINITY_FUSION:
             case HEXA_TRINITY:
                 trinityBuff(tsm);
@@ -309,36 +343,28 @@ public class AngelicBuster extends Job {
             case GRAND_FINALE_CHEER:
             case GRAND_FINALE_ATTACK:
             case GRAND_FINALE_HIT:
+            case SURPRISE_ENCORE:
+            case SURPRISE_ENCORE_ATTACK:
                 for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
                     Mob targetMob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
                     if (targetMob == null) continue;
                     MobTemporaryStat mts = targetMob.getTemporaryStat();
+                    EnumMap<MobStat, Option> newMobStats = new EnumMap<>(MobStat.class);
                     Option opt1 = new Option();
                     opt1.nOption = 1;
                     opt1.rOption = attackInfo.skillId;
                     opt1.tOption = 10; // 10s Absolute Freeze
                     opt1.cOption = chr.getId();
-                    mts.addStatOptions(targetMob, MobStat.Freeze, opt1);
+                    newMobStats.put(MobStat.Freeze, opt1);
                     Option opt2 = new Option();
                     opt2.nOption = 1;
                     opt2.rOption = attackInfo.skillId;
                     opt2.tOption = 20; // 20s Origin Debuff
                     opt2.cOption = chr.getId();
-                    mts.addStatOptions(targetMob, MobStat.OriginDebuff, opt2);
+                    newMobStats.put(MobStat.OriginDebuff, opt2);
+                    mts.addStatOptions(targetMob, newMobStats);
                 }
                 rechargeABSkills();
-                break;
-            case SURPRISE_ENCORE:
-            case SURPRISE_ENCORE_ATTACK:
-                rechargeABSkills();
-                break;
-            case HEAVENLY_CRASH:
-                if (chr.hasSkill(SHINING_STAR_BURST)) {
-                    o1.nOption = 1;
-                    o1.rOption = SHINING_STAR_BURST;
-                    o1.tOption = 5;
-                    tsm.sendStat(NextAttackEnhance, o1);
-                }
                 break;
         }
     }
@@ -481,13 +507,13 @@ public class AngelicBuster extends Job {
     private int getRechargeProc(AttackInfo attackInfo) {
         Skill skill = chr.getSkill(SkillConstants.getActualSkillIDfromSkillID(attackInfo.skillId));
         if (skill == null) {
-            return 0;
+            return 100;
         }
         int slv = skill.getCurrentLevel();
         SkillInfo rechargeInfo = SkillData.getSkillInfoById(skill.getSkillId());
-        int rechargeproc = rechargeInfo.getValue(onActive, slv);
+        int rechargeproc = rechargeInfo != null ? rechargeInfo.getValue(onActive, slv) : 0;
         if (rechargeproc == 0) {
-            return rechargeproc;
+            return 100;
         }
         if (chr.hasSkill(AFFINITY_HEART_I)) {
             SkillInfo ah1 = SkillData.getSkillInfoById(AFFINITY_HEART_I);
@@ -577,7 +603,7 @@ public class AngelicBuster extends Job {
         SkillInfo si = SkillData.getSkillInfoById(MIGHTY_MASCOT);
         int slv = chr.getSkillLevel(MIGHTY_MASCOT);
         Summon mightyMascot = getMightyMascot();
-        if (mightyMascot == null) {
+        if (mightyMascot == null || si == null) {
             return;
         }
         if (new Random().nextBoolean()) {
@@ -597,6 +623,9 @@ public class AngelicBuster extends Job {
         Option o = new Option();
         Option prevOpt = tsm.getOptByCTSAndSkill(IndieEmpty, MIGHTY_MASCOT);
         SkillInfo si = SkillData.getSkillInfoById(MIGHTY_MASCOT);
+        if (prevOpt == null || si == null) {
+            return;
+        }
         int slv = chr.getSkillLevel(MIGHTY_MASCOT);
         int termInc = si.getValue(q, slv);
         o.nValue = prevOpt.nValue;
@@ -658,13 +687,30 @@ public class AngelicBuster extends Job {
                 o1.nOption = si.getValue(x, slv);
                 o1.rOption = skillID;
                 o1.tOption = si.getValue(time, slv);
-                tsm.sendStat(SharpEyes, o1); //Changed IncCriticalDamMax to SharpEyes
+                tsm.sendStat(SharpEyes, o1);
+                break;
+            case NOVA_WARRIOR_AB:
+                o1.nReason = skillID;
+                o1.nValue = si != null ? si.getValue(x, slv) : 15;
+                o1.tTerm = si != null ? si.getValue(time, slv) : 900;
+                tsm.sendStat(IndieStatR, o1);
+                break;
+            case TERMS_AND_CONDITIONS:
+                o1.nReason = skillID;
+                o1.nValue = si != null && si.getValue(indieDamR, slv) > 0 ? si.getValue(indieDamR, slv) : 60;
+                o1.tTerm = si != null && si.getValue(time, slv) > 0 ? si.getValue(time, slv) : 10;
+                tsm.sendStat(IndieDamR, o1);
                 break;
             case SOUL_SEEKER_EXPERT:
             case HEXA_SOUL_SEEKER_EXPERT:
-                o1.nOption = 1;
-                o1.rOption = skillID;
-                tsm.sendStat(AngelicBursterSoulSeeker, o1);
+                if (tsm.hasStat(AngelicBursterSoulSeeker)) {
+                    tsm.removeStatsBySkill(SOUL_SEEKER_EXPERT);
+                    tsm.removeStatsBySkill(HEXA_SOUL_SEEKER_EXPERT);
+                } else {
+                    o1.nOption = 1;
+                    o1.rOption = skillID;
+                    tsm.sendStat(AngelicBursterSoulSeeker, o1);
+                }
                 break;
             case PRETTY_EXALTATION:
                 if (tsm.hasStatBySkillId(skillID)) {
@@ -703,6 +749,38 @@ public class AngelicBuster extends Job {
                 tsm.sendStat(EnergyBust, o1);
                 // Sparkle Burst (400051011) has no <summon> node in Skill.wz/40005 (v265) - it is a buff + attack only.
                 // Spawning a summon for it makes the client crash on SUMMONED_CREATED, so no summon is created here.
+                break;
+            case SUPER_STAR_SPOTLIGHT:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = si != null && si.getValue(time, slv) > 0 ? si.getValue(time, slv) : 30;
+                tsm.sendStat(FifthSpotLight, o1);
+                break;
+            case MIGHTY_MASCOT:
+                Summon summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
+                summon.setFlyMob(true);
+                summon.setMoveAbility(MoveAbility.Walk);
+                summon.setAssistType(AssistType.SequenceAttack);
+                chr.getField().spawnSummon(summon);
+                break;
+            case GRAND_FINALE:
+            case SURPRISE_ENCORE:
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 7;
+                tsm.sendStat(IndieNotDamaged, o1);
+                chr.write(UserLocal.showHexaSkillEff(chr));
+                if (chr.getParty() != null) {
+                    for (Char other : chr.getParty().getPartyMembersInSameField(chr)) {
+                        if (other.getId() != chr.getId()) {
+                            other.write(UserLocal.showHexaSkillEff(chr));
+                        }
+                    }
+                }
+                rechargeABSkills();
                 break;
             case SOUL_SEEKER:
             case HEXA_SOUL_SEEKER:
