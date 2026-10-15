@@ -285,7 +285,7 @@ public class Ren extends Job {
                 break;
             case RIOTOUS_HEART:
             case HEXA_RIOTOUS_HEART:
-                chr.setSkillCooldown(skillID, 10000);
+                chr.addSkillCooldown(skillID, 10000);
                 break;
             case HEARTS_UNITED:
             case HEXA_HEARTS_UNITED:

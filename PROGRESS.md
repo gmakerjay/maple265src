@@ -3,6 +3,34 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-15 23:55 น.] Deep Audit of Ren (`16002`, `16100`–`16114`): Zero-Skill-Injection Compliance, 1st–4th Job & V Matrix Condition Review, and Riotous Heart Cooldown Fix
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: การตรวจสอบและไขข้อข้องใจเชิงลึกเกี่ยวกับคำสั่ง `!endgame` ของอาชีพ Ren, การตรวจสอบความถูกต้องของสกิลคลาส 1–4, V Matrix, HEXA Matrix เทียบกับไฟล์ข้อมูลจริงใน WZ (`wz265` / `dat265`), และการแก้ไขบั๊กคูลดาวน์ของ `Riotous Heart` / `HEXA Riotous Heart` ใน [`Ren.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/anima/Ren.java)
+- **รายละเอียด**:
+  1. **การตรวจสอบคำสั่ง `!endgame` และการปรากฏของสกิลตัวละคร (Zero-Skill-Injection Compliance)**:
+     - **ข้อสงสัย**: คำสั่ง `!endgame` พยายามยัดสกิลลงไปหรือไม่? ทำไมจึงเห็นสกิลปรากฏขึ้นมา?
+     - **ผลการตรวจสอบเชิงเทคนิค**:
+       - ตรวจสอบคำสั่ง `setupEndgame` ใน [`AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java): ยืนยัน 100% ว่า**ไม่มีการพยายามยัดสกิล หรือเซ็ตเลเวลสกิลของ Ren เลยแม้แต่สกิลเดียว** ปฏิบัติตามกฎเหล็ก **Strict Zero-Skill-Injection Policy** อย่างเคร่งครัด
+       - สาเหตุที่ผู้เล่นเห็นโครงสร้างสกิลปรากฏขึ้นมาเกิดจากกลไกธรรมชาติ 3 ส่วนของเซิร์ฟเวอร์:
+         1. **SwordieMS Core (`Char.setJob`)**: เมื่อเปลี่ยนเป็นคลาส 4 (`16112`) ระบบจะส่งรายการสกิลของ Job Chain (`16002`, `16100`, `16110`, `16111`, `16112`) ไปให้ Client ด้วยเลเวล 0 (`currentLevel = 0`) เพื่อให้ไอคอนสกิลแสดงขึ้นมาในหน้าต่าง Skill Book ให้ผู้เล่นกดอัป SP ด้วยตนเอง
+         2. **Beginner Skills (`Ren.java` Constructor)**: ระบบมอบสกิลติดตัวพื้นฐานของเผ่า Anima จำนวน 5 สกิล (`160021074` วาร์ปกลับเมือง, `160020000`, `160020001`, `160021005`, `160021075`) เช่นเดียวกับสกิลประจำเผ่าของทุกอาชีพ
+         3. **Sub-Skills Auto-Sync (`UserStatHandler.java`)**: อาชีพ Ren มีสกิลย่อยคอมโบ 14 ท่าที่ไม่มีปุ่มให้อัปใน UI เมื่อผู้เล่นคลิกอัปสกิลหลัก ระบบจะปรับเลเวลสกิลย่อยให้เท่ากันอัตโนมัติเพื่อให้แอนิเมชันและดาเมจคอมโบทำงานได้จริง
+  2. **การตรวจสอบและแก้ไขคูลดาวน์ HEXA Matrix (6th Job)**:
+     - ตรวจสอบเทียบ WZ Data (`16114.xml`): `Divided Heavens` (Origin 1) มีคูลดาวน์ 360s, `Heartbound Verse` (Origin 2 / Ascent) คูลดาวน์ 240s, `Burrowing Earth` คูลดาวน์ 20s, `Hearts United` คูลดาวน์ 30s ตรงตาม WZ 100%
+     - **บั๊กที่ตรวจพบและแก้ไข**: ใน [`Ren.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/anima/Ren.java) บรรทัด 288 สกิล `RIOTOUS_HEART` (`161121005`) และ `HEXA_RIOTOUS_HEART` (`161141009`) เรียกใช้ `chr.setSkillCooldown(skillID, 10000);` ซึ่งพารามิเตอร์ตัวที่ 2 ของเมธอดนี้คือ `slv` (Skill Level) ไม่ใช่ระยะเวลา Milliseconds ทำให้ระบบไปค้นหาคูลดาวน์ของสกิลเลเวล 10,000 ส่งผลให้คูลดาวน์ 10 วินาทีไม่ทำงาน ได้ทำการแก้ไขเป็น `chr.addSkillCooldown(skillID, 10000);` ถูกต้องสมบูรณ์
+  3. **การตรวจสอบสกิลคลาส 1–4 และ Hyper ละเอียดยิบทุกสกิล**:
+     - ตรวจสอบเทียบ WZ XML (`16100.xml`, `16110.xml`, `16111.xml`, `16112.xml`):
+       - คลาส 1: `Slice`, `Serene Breeze` 2 ทิศทาง, `Lilting Petal` (CD 10s->5s), Passives ทำงานสมบูรณ์
+       - คลาส 2: `Strike`, `Petal Flash` (ฟื้นฟู HP % MaxHP), `Blossoming Blade` (Booster +2 AS), `Spirit Strike`, Passives ทำงานสมบูรณ์
+       - คลาส 3: `Slash`, `Raining Blossoms` (SecondAtom ลอยยิง 35% ดาเมจตรงตามสูตร), `Spirit Strike II`, `Serpent's Blessing` (ต้านทานสถานะ 100% นาน 4s CD 6s), `Burrowing Earth` (CD 20s), Passives ทำงานสมบูรณ์
+       - คลาส 4 & Hyper: `Storm` (KeyDownMoving), `Hearts United` (CD 30s), `Unity` (CD 1s), `Unbowed Blade` (อมตะ 3s CD 70s), `Spirit Strike III`, `Serpent's Fang` (Final Attack 60% สลับ Hexa อัตโนมัติ), `Ravenous Spirit`, `Anima Warrior`, `Anima Hero's Will`, `Sublimation` (CD 120s), `Plum Branch Snare` (Bind 10s CD 120s), `Years Uncounted` (Burn DoT 5s) ทำงานสมบูรณ์
+  4. **การตรวจสอบ V Matrix (5th Job - `40001.xml`)**:
+     - `Thousand Blossom Flurry` (`400011147`): คูลดาวน์ 120s ระยะเวลา 30s โจมตีสะสมคอมโบ 30/70/125 ฮิตระเบิดดอกท้อ 20/40/65 ลูก ตรงตามเงื่อนไข WZ 100%
+     - `Soul Immeasurable` (`400011150`): คูลดาวน์ 120s ระยะเวลา 20s สะสมเกจวิญญาณ ปล่อยโบนัสแอทแทค และระเบิดท่าปิด 12 ฮิต ตรงตามเงื่อนไข WZ 100%
+     - `Dancing Annihilation` (`400011153`): คูลดาวน์ 120s ฟันกวาดล้าง 6 ฮิต ตรงตามเงื่อนไข WZ 100%
+     - `Blade of the Unbound Heart` (`400011154`/`155`/`157`): คูลดาวน์ 1s ปล่อยอสรพิษวิญญาณ 12 ตัวพุ่งล็อกเป้าหมายรอบตัว ตรงตามเงื่อนไข WZ 100%
+
 ## 📅 [2026-10-15 20:10 น.] Exhaustive Audit & Stabilization of All 15 Adventurer (Explorer) Classes Across 1st–4th Job, Hyper, V Matrix, HEXA Matrix & `!endgame`
 
 ### 🎯 Scope & Technical Details
