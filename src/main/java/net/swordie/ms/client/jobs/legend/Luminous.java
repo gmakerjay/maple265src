@@ -63,20 +63,25 @@ public class Luminous extends Job {
     public static final int STANDARD_MAGIC_GUARD = 27000003;
     public static final int FLASH_SHOWER = 27001100;
     public static final int ABYSSALL_DROP = 27001201;
+    public static final int LIGHT_LEAP = 27001008;
     public static final int LIGHT_AFFINITY = 27000106;
     public static final int DARK_AFFINITY = 27000207;
-
 
     public static final int SHADOW_SHELL = 27111004; //Buff
     public static final int RAY_OF_REDEMPTION = 27111101; // Attack + heals party members
     public static final int DUSK_GUARD = 27110005; // Passive in v265 (was 27111005)
     public static final int PHOTIC_MEDITATION = 27111006; //Buff
     public static final int LUNAR_TIDE = 27110007; // Self Recovery in v265
+    public static final int LIGHT_SPEED_BOOST = 27111008; // Toggle
+    public static final int EQUILIBRIUM_LIBERATION = 27111009; // Toggle
     public static final int DEATH_SCYTHE = 27111303;
 
     public static final int DARK_CRESCENDO = 27120005; // Passive stacking buff on attack in v265 (was 27121005)
     public static final int ARCANE_PITCH = 27121006; //Buff
     public static final int MAPLE_WARRIOR_LUMI = 27121009; // Passive in v265
+    public static final int TWILIGHT_NOVA = 27121113;
+    public static final int TWILIGHT_NOVA_DARK = 27121114;
+    public static final int TWILIGHT_NOVA_EQ = 27121115;
     public static final int ENDER = 27121303;
     public static final int DARKNESS_MASTERY = 27120008;
     public static final int HEROS_WILL_LUMI = 27121010;
@@ -101,14 +106,19 @@ public class Luminous extends Job {
 
     // ===== 6th Job HEXA Matrix Skills =====
     public static final int HARMONIC_PARADOX = 27141500; // Origin Skill
+    public static final int HARMONIC_PARADOX_KEY = 27141501;
     public static final int LUSTROUS_ORB = 27141502; // Origin Second Skill
     public static final int HARMONIC_PARADOX_FINISHER = 27141503;
     public static final int HEXA_ENDER = 27141000;
     public static final int HEXA_REFLECTION = 27141001;
     public static final int HEXA_ENDLESS_DARKNESS = 27140002;
+    public static final int HEXA_ENDLESS_DARKNESS_ACTIVE = 27141003;
     public static final int HEXA_APOCALYPSE = 27141004;
     public static final int HEXA_ETERNAL_LIGHT = 27140005;
+    public static final int HEXA_ETERNAL_LIGHT_ACTIVE = 27141006;
     public static final int HEXA_TWILIGHT_NOVA = 27141007;
+    public static final int HEXA_TWILIGHT_NOVA_DARK = 27141008;
+    public static final int HEXA_TWILIGHT_NOVA_EQ = 27141009;
 
     private final int[] addedSkills = new int[]{
             EQUILIBRIUM_DARK,
@@ -118,6 +128,14 @@ public class Luminous extends Job {
             ECLIPSE,
             INNER_LIGHT,
             FLASH_BLINK
+    };
+
+    private static final int[] FIRST_JOB_INVISIBLE_SKILLS = new int[]{
+            FLASH_SHOWER,
+            ABYSSALL_DROP,
+            LIGHT_LEAP,
+            LIGHT_AFFINITY,
+            DARK_AFFINITY
     };
 
     private long darkCrescendoTimer;
@@ -135,81 +153,98 @@ public class Luminous extends Job {
                     }
                 }
             }
+            ensureFirstJobVisibleSkills(chr);
             if (chr.getTemporaryStatManager().getLarknessManager() == null) {
                 chr.getTemporaryStatManager().setLarknessManager(new LarknessManager(chr));
             }
         }
     }
 
-   /*public static void changeBlackBlessingCount(Char chr, boolean increment) {
-        TemporaryStatManager tsm = chr.getTemporaryStatManager();
-
-        int amount = 1;
-        if (tsm.hasStat(BlessOfDarkness)) {
-            amount = tsm.getOption(BlessOfDarkness).nOption;
-
-            if (increment) {
-                if (amount < 2) {
-                    amount += 2;
-                }
-            } else {
-                if (amount > 0) {
-                    amount--;
+    public static void ensureFirstJobVisibleSkills(Char chr) {
+        if (chr == null || !JobConstants.isLuminous(chr.getJob())) {
+            return;
+        }
+        for (int skillId : FIRST_JOB_INVISIBLE_SKILLS) {
+            if (chr.getSkill(skillId) == null) {
+                Skill skill = SkillData.getSkillDeepCopyById(skillId);
+                if (skill != null) {
+                    int maxLv = skill.getMaxLevel() > 0 ? skill.getMaxLevel() : skill.getMasterLevel();
+                    skill.setMasterLevel(maxLv);
+                    skill.setCurrentLevel(0);
+                    chr.addSkill(skill);
                 }
             }
         }
-
-        int orbmad = switch (amount) {
-            case 1 -> 15;
-            case 2 -> 24;
-            case 3 -> 30;
-            default -> 0;
-        };
-
-        if (amount > 0) {
-            EnumMap<CharacterTemporaryStat, Option> newStats = new EnumMap<>(CharacterTemporaryStat.class);
-            Option o1 = new Option();
-            Option o2 = new Option();
-            o1.nOption = amount;
-            o1.rOption = BLACK_BLESSING;
-            newStats.put(BlessOfDarkness, o1);
-            o2.nOption = orbmad;
-            o2.rOption = BLACK_BLESSING;
-            newStats.put(MAD, o2);
-            tsm.sendStat(newStats);
-        }
-    }*/
+    }
 
     @Override
     public boolean isHandlerOfJob(short id) {
         return JobConstants.isLuminous(id);
     }
 
+    private boolean isInEquilibrium() {
+        return equilibriumTimer != null && !equilibriumTimer.isDone();
+    }
+
+    private void enterEquilibrium(boolean fromDark) {
+        TemporaryStatManager tsm = chr.getTemporaryStatManager();
+        LarknessManager lm = tsm.getLarknessManager();
+        if (equilibriumTimer != null && !equilibriumTimer.isDone()) {
+            equilibriumTimer.cancel(true);
+        }
+        int eqDuration = getMoreEquilibriumTime();
+        Option o = new Option();
+        o.nOption = 1;
+        o.rOption = fromDark ? EQUILIBRIUM_DARK : EQUILIBRIUM_LIGHT;
+        o.tOption = eqDuration;
+        if (fromDark) {
+            lm.setGauge(0);
+        } else {
+            lm.setGauge(10000);
+        }
+        tsm.sendStat(Larkness, o);
+        equilibriumTimer = chr.getTimer().addEvent(this::changeMode, eqDuration, TimeUnit.SECONDS);
+        chr.resetSkillCoolTime(ENDER);
+        chr.resetSkillCoolTime(HEXA_ENDER);
+        chr.resetSkillCoolTime(DEATH_SCYTHE);
+        chr.resetSkillCoolTime(BAPTISM_OF_LIGHT_AND_DARKNESS);
+        chr.resetSkillCoolTime(GATE_OF_LIGHT);
+    }
+
     private void changeLarknessState(int skillID) {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         LarknessManager lm = tsm.getLarknessManager();
-        Option o = new Option();
+        if (lm == null) {
+            lm = new LarknessManager(chr);
+            tsm.setLarknessManager(lm);
+        }
+
+        // Heal 1% Max HP when using Light skills in Sunfire or Equilibrium
+        if (SkillConstants.isLarknessLightSkill(skillID) && (!lm.isDark() || isInEquilibrium())) {
+            chr.heal(Math.max(1, chr.getMaxHP() / 100));
+        }
+
+        // Do not alter gauge while already in Equilibrium
+        if (isInEquilibrium()) {
+            return;
+        }
+
+        SkillInfo si = SkillData.getSkillInfoById(skillID);
+        int slv = Math.max(1, chr.getSkillLevel(skillID));
+        int gaugeInc = (si != null && si.getValue(gauge, slv) > 0) ? si.getValue(gauge, slv) : 250;
+        if (chr.hasSkill(DARKNESS_MASTERY)) {
+            gaugeInc += 380;
+        }
+
         if (SkillConstants.isLarknessLightSkill(skillID)) {
-            lm.addGauge(200, false);
-            if (lm.getGauge() == 10000) {
-                o.nOption = 1;
-                o.rOption = EQUILIBRIUM_LIGHT;
-                tsm.sendStat(Larkness, o);
-                equilibriumTimer = chr.getTimer().addEvent(this::changeMode, getMoreEquilibriumTime(), TimeUnit.SECONDS);
-                chr.resetSkillCoolTime(ENDER);
-                chr.resetSkillCoolTime(HEXA_ENDER);
-                chr.resetSkillCoolTime(DEATH_SCYTHE);
+            lm.addGauge(gaugeInc, false);
+            if (lm.getGauge() >= 10000) {
+                enterEquilibrium(false);
             }
         } else if (SkillConstants.isLarknessDarkSkill(skillID)) {
-            lm.addGauge(200, true);
-            if (lm.getGauge() == 0) {
-                o.nOption = 1;
-                o.rOption = EQUILIBRIUM_DARK;
-                tsm.sendStat(Larkness, o);
-                equilibriumTimer = chr.getTimer().addEvent(this::changeMode, getMoreEquilibriumTime(), TimeUnit.SECONDS);
-                chr.resetSkillCoolTime(ENDER);
-                chr.resetSkillCoolTime(HEXA_ENDER);
-                chr.resetSkillCoolTime(DEATH_SCYTHE);
+            lm.addGauge(gaugeInc, true);
+            if (lm.getGauge() <= 0) {
+                enterEquilibrium(true);
             }
         }
     }
@@ -220,6 +255,9 @@ public class Luminous extends Job {
     public void changeMode() {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         LarknessManager lm = tsm.getLarknessManager();
+        if (lm == null) {
+            return;
+        }
         lm.setGauge(5000);
         lm.changeMode();
         Option o = new Option();
@@ -231,8 +269,9 @@ public class Luminous extends Job {
     public int getMoreEquilibriumTime() {
         int eqTime = 10;
         SkillInfo eqi = SkillData.getSkillInfoById(DARKNESS_MASTERY);
-        if (chr.hasSkill(DARKNESS_MASTERY)) {
-            eqTime += eqi.getValue(time, eqi.getCurrentLevel());
+        if (chr.hasSkill(DARKNESS_MASTERY) && eqi != null) {
+            int dmSlv = chr.getSkillLevel(DARKNESS_MASTERY);
+            eqTime += eqi.getValue(time, dmSlv);
             eqTime += 5;
         }
         return eqTime;
@@ -274,6 +313,17 @@ public class Luminous extends Job {
         if (chr.getJob() != 2004) { // Beginner Luminous
             changeLarknessState(skillID);
         }
+
+        // Sync 6th Job HEXA Eternal Light (27140005 -> 27141006) & Endless Darkness (27140002 -> 27141003) active sub-skills
+        if (chr.hasSkill(HEXA_ETERNAL_LIGHT) && !chr.hasSkill(HEXA_ETERNAL_LIGHT_ACTIVE)) {
+            int elLv = chr.getSkillLevel(HEXA_ETERNAL_LIGHT);
+            chr.addSkill(HEXA_ETERNAL_LIGHT_ACTIVE, elLv, 30);
+        }
+        if (chr.hasSkill(HEXA_ENDLESS_DARKNESS) && !chr.hasSkill(HEXA_ENDLESS_DARKNESS_ACTIVE)) {
+            int edLv = chr.getSkillLevel(HEXA_ENDLESS_DARKNESS);
+            chr.addSkill(HEXA_ENDLESS_DARKNESS_ACTIVE, edLv, 30);
+        }
+
         int crescendoProp = getCrescendoProp();
         if (hasHitMobs) {
             // Eclipse/Sunfire Mode
@@ -341,20 +391,22 @@ public class Luminous extends Job {
         }
         switch (skillID) {
             case HARMONIC_PARADOX:
+            case HARMONIC_PARADOX_KEY:
             case LUSTROUS_ORB:
             case HARMONIC_PARADOX_FINISHER:
+                int originRoot = (skillID == LUSTROUS_ORB || skillID == HARMONIC_PARADOX_FINISHER) ? LUSTROUS_ORB : HARMONIC_PARADOX;
                 for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
                     Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
                     if (mob != null && mob.getHp() > 0) {
                         MobTemporaryStat mts = mob.getTemporaryStat();
                         Option opt1 = new Option();
                         opt1.nOption = 1;
-                        opt1.rOption = HARMONIC_PARADOX;
+                        opt1.rOption = originRoot;
                         opt1.tOption = 10; // 10s Absolute Freeze / Bind
                         opt1.cOption = chr.getId();
                         Option opt2 = new Option();
                         opt2.nOption = 1;
-                        opt2.rOption = HARMONIC_PARADOX;
+                        opt2.rOption = originRoot;
                         opt2.tOption = 20;
                         EnumMap<MobStat, Option> originStats = new EnumMap<>(MobStat.class);
                         originStats.put(MobStat.Freeze, opt1);
@@ -380,8 +432,12 @@ public class Luminous extends Job {
                 break;
             case ENDER:
             case HEXA_ENDER:
+            case DEATH_SCYTHE:
                 if (chr.hasSkill(BAPTISM_OF_LIGHT_AND_DARKNESS)) {
                     incrementSwordsOfConsciousness();
+                    if (chr.hasSkillOnCooldown(BAPTISM_OF_LIGHT_AND_DARKNESS)) {
+                        chr.reduceSkillCoolTime(BAPTISM_OF_LIGHT_AND_DARKNESS, 3000);
+                    }
                 }
                 break;
         }
@@ -435,11 +491,34 @@ public class Luminous extends Job {
         LarknessManager lm = tsm.getLarknessManager();
         Option o1 = new Option();
         switch (skillID) {
+            case CHANGE_LIGHT_DARK:
+            case EQUILIBRIUM_LIBERATION:
+                if (lm.getGauge() >= 10000) {
+                    enterEquilibrium(false);
+                } else if (lm.getGauge() <= 0) {
+                    enterEquilibrium(true);
+                } else {
+                    changeMode();
+                }
+                chr.dispose();
+                break;
+            case LIGHT_SPEED_BOOST:
+                if (tsm.hasStatBySkillId(LIGHT_SPEED_BOOST)) {
+                    tsm.removeStatsBySkill(LIGHT_SPEED_BOOST);
+                } else {
+                    o1.nOption = si != null ? si.getValue(x, slv) : 120;
+                    o1.rOption = LIGHT_SPEED_BOOST;
+                    tsm.sendStat(TeleportMasteryRange, o1);
+                }
+                chr.dispose();
+                break;
             case MAGIC_BOOSTER:
-                o1.nOption = si.getValue(x, slv);
-                o1.rOption = skillID;
-                o1.tOption = si.getValue(time, slv);
-                tsm.sendStat(Booster, o1);
+                if (si != null && si.getValue(time, slv) > 0) {
+                    o1.nOption = si.getValue(x, slv);
+                    o1.rOption = skillID;
+                    o1.tOption = si.getValue(time, slv);
+                    tsm.sendStat(Booster, o1);
+                }
                 break;
             case MAPLE_WARRIOR_LUMI:
                 if (si != null && si.getValue(time, slv) > 0) {
@@ -450,10 +529,9 @@ public class Luminous extends Job {
                 }
                 break;
             case SHADOW_SHELL:
-                o1.nOption = 3;
+                o1.nOption = si != null && si.getValue(u, slv) > 0 ? si.getValue(u, slv) : 7;
                 o1.rOption = skillID;
-                o1.tOption = si.getValue(time, slv);
-                // no bOption for Luminous' AntiMagicShell
+                o1.tOption = 0; // Permanent until blocks are consumed
                 tsm.sendStat(AntiMagicShell, o1);
                 break;
             case DUSK_GUARD:
@@ -489,21 +567,7 @@ public class Luminous extends Job {
                 tsm.sendStat(ElementalReset, o1);
                 break;
             case EQUALIZE:
-                if (lm.isDark()) {
-                    o1.nOption = 1;
-                    o1.rOption = EQUILIBRIUM_DARK;
-                    lm.setGauge(0);
-                    tsm.sendStat(Larkness, o1);
-                } else {
-                    o1.nOption = 1;
-                    o1.rOption = EQUILIBRIUM_LIGHT;
-                    lm.setGauge(10000);
-                    tsm.sendStat(Larkness, o1);
-                }
-                this.equilibriumTimer = chr.getTimer().addEvent(this::changeMode, getMoreEquilibriumTime(), TimeUnit.SECONDS);
-                chr.resetSkillCoolTime(ENDER);
-                chr.resetSkillCoolTime(HEXA_ENDER);
-                chr.resetSkillCoolTime(DEATH_SCYTHE);
+                enterEquilibrium(lm.isDark());
                 break;
             case HEROIC_MEMORIES_LUMI:
                 o1.nReason = skillID;
@@ -518,17 +582,19 @@ public class Luminous extends Job {
                 summon.setAssistType(AssistType.Attack);
                 summon.setAttackActive(true);
                 chr.getField().spawnSummon(summon);
-                if (lm.isDark()) {
-                    o1.nOption = 1;
-                    o1.rOption = SUNFIRE;
-                    tsm.sendStat(Larkness, o1);
-                } else {
-                    o1.nOption = 1;
-                    o1.rOption = ECLIPSE;
-                    tsm.sendStat(Larkness, o1);
+                if (!isInEquilibrium()) {
+                    if (lm.isDark()) {
+                        o1.nOption = 1;
+                        o1.rOption = SUNFIRE;
+                        tsm.sendStat(Larkness, o1);
+                    } else {
+                        o1.nOption = 1;
+                        o1.rOption = ECLIPSE;
+                        tsm.sendStat(Larkness, o1);
+                    }
+                    lm.changeMode();
+                    lm.setFeathers(0);
                 }
-                lm.changeMode();
-                lm.setFeathers(0);
                 break;
             case AETHER_CONDUIT_L:
             case AETHER_CONDUIT_D:
@@ -545,11 +611,21 @@ public class Luminous extends Job {
                 summon.setAssistType(AssistType.SequenceAttack);
                 chr.getField().spawnSummon(summon);
                 break;
+            case LIBERATION_ORB:
+                int orbTime = si != null && si.getValue(time, slv) > 0 ? si.getValue(time, slv) : 45;
+                o1.nOption = 1;
+                o1.rOption = LIBERATION_ORB;
+                o1.tOption = orbTime;
+                tsm.sendStat(EquinoxActive, o1);
+                chr.dispose();
+                break;
             case HEROS_WILL_LUMI:
                 tsm.removeAllDebuffs();
                 break;
             case HARMONIC_PARADOX:
+            case HARMONIC_PARADOX_KEY:
             case LUSTROUS_ORB:
+            case HARMONIC_PARADOX_FINISHER:
                 // Origin cutscene invincibility (7s) + enter Equilibrium
                 o1.nOption = 1;
                 o1.rOption = skillID;
@@ -559,15 +635,7 @@ public class Luminous extends Job {
                 o1.tTerm = 7;
                 tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
                 chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
-                Option eqOpt = new Option();
-                eqOpt.nOption = 1;
-                eqOpt.rOption = EQUILIBRIUM_LIGHT;
-                tsm.sendStat(Larkness, eqOpt);
-                this.equilibriumTimer = chr.getTimer().addEvent(this::changeMode, getMoreEquilibriumTime(), TimeUnit.SECONDS);
-                chr.resetSkillCoolTime(ENDER);
-                chr.resetSkillCoolTime(HEXA_ENDER);
-                chr.resetSkillCoolTime(DEATH_SCYTHE);
-                chr.chatMessage(ChatType.Notice, "[Origin] Harmonic Paradox! Equilibrium awakened.");
+                enterEquilibrium(false);
                 chr.dispose();
                 break;
 
@@ -606,16 +674,6 @@ public class Luminous extends Job {
         }
         if (tsm.hasStat(Larkness) && tsm.getOption(Larkness).rOption == EQUILIBRIUM_DARK) {
             return;
-        } else {
-            /*
-            if (tsm.hasStat(BlessOfDarkness) && chr.hasSkill(BLACK_BLESSING) && hitInfo.hpDamage > 0) {
-                Skill skill = chr.getSkill(BLACK_BLESSING);
-                SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
-                int slv = skill.getCurrentLevel();
-                changeBlackBlessingCount(chr, false); // deduct orbs as player gets hit
-                int dmgAbsorbed = si.getValue(x, slv);
-                hitInfo.hpDamage = (int) (hitInfo.hpDamage * ((double) dmgAbsorbed / 100));
-            }*/
         }
         super.handleHit(c, inPacket, hitInfo);
     }
@@ -636,8 +694,6 @@ public class Luminous extends Job {
             return;
         }
         Skill skill = chr.getSkill(SHADOW_SHELL);
-        SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
-        int slv = skill.getCurrentLevel();
         Option o = new Option();
         if (tsm.hasStat(AntiMagicShell)) {
             int shadowShellCount = tsm.getOption(AntiMagicShell).nOption;
@@ -651,7 +707,7 @@ public class Luminous extends Job {
             } else {
                 o.nOption = shadowShellCount;
                 o.rOption = skill.getSkillId();
-                o.tOption = si.getValue(time, slv);
+                o.tOption = 0;
                 tsm.sendStat(AntiMagicShell, o);
             }
             chr.write(UserPacket.effect(Effect.skillSpecial(skill.getSkillId())));
@@ -705,6 +761,7 @@ public class Luminous extends Job {
 
     @Override
     public void handleInitAfterMigrate(Char chr) {
+        ensureFirstJobVisibleSkills(chr);
         if (chr.getLevel() < 30) {
             ScriptManagerImpl sm = chr.getScriptManager();
             for (int qid = 25000; qid <= 25015; qid++) {
@@ -732,8 +789,12 @@ public class Luminous extends Job {
     @Override
     public int handleSetCoolDownSkill(int skillId) {
         switch (skillId) {
-            case HARMONIC_PARADOX -> {
+            case HARMONIC_PARADOX, HARMONIC_PARADOX_KEY -> {
                 chr.setSkillCooldown(HARMONIC_PARADOX, chr.getSkillLevel(HARMONIC_PARADOX));
+                return 1;
+            }
+            case LUSTROUS_ORB, HARMONIC_PARADOX_FINISHER -> {
+                chr.setSkillCooldown(LUSTROUS_ORB, chr.getSkillLevel(LUSTROUS_ORB));
                 return 1;
             }
             case HEXA_ENDER -> {
@@ -746,6 +807,22 @@ public class Luminous extends Job {
             }
             case HEXA_APOCALYPSE -> {
                 chr.setSkillCooldown(27121202, chr.getSkillLevel(HEXA_APOCALYPSE));
+                return 1;
+            }
+            case TWILIGHT_NOVA, TWILIGHT_NOVA_DARK, TWILIGHT_NOVA_EQ -> {
+                chr.setSkillCooldown(TWILIGHT_NOVA, chr.getSkillLevel(TWILIGHT_NOVA));
+                return 1;
+            }
+            case HEXA_TWILIGHT_NOVA, HEXA_TWILIGHT_NOVA_DARK, HEXA_TWILIGHT_NOVA_EQ -> {
+                chr.setSkillCooldown(HEXA_TWILIGHT_NOVA, chr.getSkillLevel(HEXA_TWILIGHT_NOVA));
+                return 1;
+            }
+            case HEXA_ENDLESS_DARKNESS_ACTIVE -> {
+                chr.setSkillCooldown(HEXA_ENDLESS_DARKNESS, chr.getSkillLevel(HEXA_ENDLESS_DARKNESS));
+                return 1;
+            }
+            case HEXA_ETERNAL_LIGHT_ACTIVE -> {
+                chr.setSkillCooldown(HEXA_ETERNAL_LIGHT, chr.getSkillLevel(HEXA_ETERNAL_LIGHT));
                 return 1;
             }
         }

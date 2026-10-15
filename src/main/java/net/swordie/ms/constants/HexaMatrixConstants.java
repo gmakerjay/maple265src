@@ -24,11 +24,20 @@ public class HexaMatrixConstants {
     public static int getHexaStatByCoreID(int coreID) {
         switch (coreID) {
             case 50000000: // Stat Node I
+            case 1000:
                 return 0;
             case 50000001: // Stat Node II
+            case 1001:
                 return 1;
             case 50000002: // Stat Node III
+            case 1002:
                 return 2;
+            case 1003:
+                return 3;
+            case 1004:
+                return 4;
+            case 1005:
+                return 5;
         }
         return 0;
     }

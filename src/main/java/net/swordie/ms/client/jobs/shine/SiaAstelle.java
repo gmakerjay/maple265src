@@ -254,14 +254,13 @@ public class SiaAstelle extends Job {
 
     // HexaCore.img job 18212: Origin, Mastery (SHINE Ray + SHINE Antares), 4x Boost, Sol Janus
     private static final int[] SIA_ERDA_LINK_CORES = {10000051, 20000204, 30000205, 30000206, 30000207, 30000208, 40000000};
+    private static final int[] SIA_ERDA_LINK_STONES = {10000, 500, 102, 103, 101, 104, 105, 106, 107, 100};
     private static final int ERDA_FOUNTAIN = 400001064;
     private static final int ERDA_LINK_STATS = 500081000;
 
     /**
-     * Opens every Erda Link core at Lv.1 (only cores that are still locked) and repairs cores whose
-     * connected skills are missing. Connected skills are granted by Char#setHexaSkill at the core
-     * level (from HexaCore.img), so they are never pre-added at Lv.30 here (that desynced the
-     * skill level from the core level shown in the Erda Link / HEXA UI).
+     * Opens every Erda Link core at Lv.1 (only cores that are still locked), mirrors HexaCore IDs
+     * to ErdaLink stone IDs (10000, 500, 100..107), and repairs cores whose connected skills are missing.
      */
     public void unlockErdaLink() {
         boolean changed = false;
@@ -272,14 +271,31 @@ public class SiaAstelle extends Job {
                 changed = true;
                 continue;
             }
+            List<Integer> connected = Char.getSiaErdaLinkSkills(coreId);
             HexaCore.HexaSkillCoreData coreData = HexaCore.getSkillCoreData(coreId);
-            List<Integer> connected = coreData != null ? coreData.getConnectSkills() : Char.getSiaErdaLinkSkills(coreId);
+            if (coreData != null) {
+                for (int sId : coreData.getConnectSkills()) {
+                    if (!connected.contains(sId)) {
+                        connected.add(sId);
+                    }
+                }
+            }
+            boolean needsSync = false;
             for (int sId : connected) {
                 if (!chr.hasSkill(sId)) {
-                    chr.setHexaSkill(coreId, coreLv);
-                    changed = true;
+                    needsSync = true;
                     break;
                 }
+            }
+            if (needsSync) {
+                chr.setHexaSkill(coreId, coreLv);
+                changed = true;
+            }
+        }
+        for (int stoneId : SIA_ERDA_LINK_STONES) {
+            if (chr.getHexaSkillLevel(stoneId) <= 0) {
+                chr.setHexaSkill(stoneId, 1);
+                changed = true;
             }
         }
         // Not part of any core row
@@ -641,8 +657,10 @@ public class SiaAstelle extends Job {
 
             case SAVIOR_CIRCLE:
                 o1.nReason = skillID;
+                o1.nOption = 1;
                 o1.nValue = 1;
                 o1.tTerm = si != null && si.getValue(SkillStat.time, slv) > 0 ? si.getValue(SkillStat.time, slv) : 10;
+                o1.tOption = o1.tTerm;
                 tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
                 chr.chatMessage(ChatType.Notice, "[Savior Circle] Star sanctuary protects you from harm!");
                 chr.dispose();
@@ -660,9 +678,12 @@ public class SiaAstelle extends Job {
             case CELESTIAL_DESIGN:
             case CELESTIAL_DESIGN_SUB:
                 o1.nReason = skillID;
+                o1.nOption = 1;
                 o1.nValue = 1;
                 o1.tTerm = 7;
+                o1.tOption = 7;
                 tsm.sendStat(CharacterTemporaryStat.IndieNotDamaged, o1);
+                chr.write(net.swordie.ms.connection.packet.UserLocal.showHexaSkillEff(chr));
                 chr.chatMessage(ChatType.Notice, "[Origin] Celestial Design unleashed! Primordial starlight purifies the universe.");
                 chr.dispose();
                 break;
@@ -710,17 +731,26 @@ public class SiaAstelle extends Job {
             }
         }
 
-        // Origin Skill Celestial Design (10s Absolute Freeze / Bind)
+        // Origin Skill Celestial Design (10s Absolute Freeze / Bind + 20s OriginDebuff)
         if (skillID == CELESTIAL_DESIGN || skillID == CELESTIAL_DESIGN_SUB) {
             for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
                 Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
                 if (mob != null && mob.getHp() > 0) {
                     MobTemporaryStat mts = mob.getTemporaryStat();
-                    Option o = new Option();
-                    o.nOption = 1;
-                    o.rOption = skillID;
-                    o.tOption = 10;
-                    mts.addStatOptions(mob, MobStat.Freeze, o);
+                    Option oFreeze = new Option();
+                    oFreeze.nOption = 1;
+                    oFreeze.rOption = CELESTIAL_DESIGN;
+                    oFreeze.tOption = 10;
+
+                    Option oDebuff = new Option();
+                    oDebuff.nOption = 1;
+                    oDebuff.rOption = CELESTIAL_DESIGN;
+                    oDebuff.tOption = 20;
+
+                    java.util.EnumMap<MobStat, Option> stats = new java.util.EnumMap<>(MobStat.class);
+                    stats.put(MobStat.Freeze, oFreeze);
+                    stats.put(MobStat.OriginDebuff, oDebuff);
+                    mts.addStatOptions(mob, stats);
                 }
             }
         }

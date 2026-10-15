@@ -2085,24 +2085,151 @@ public class UserHandler {
 
     /**
      * Returns the HEXA core type (1 = Skill/Origin, 2 = Mastery, 3 = Boost, 4 = Common) of a core id,
-     * also mapping the legacy Sia Astelle Erda Link ids. Returns 0 if the id is unknown.
+     * also mapping the Sia Astelle Erda Link stone ids. Returns 0 if the id is unknown.
      */
     private static int getHexaCoreType(int coreID) {
         int coreType = coreID / 10_000_000;
         if (coreType >= 1 && coreType <= 4) {
             return coreType;
         }
-        switch (coreID) {
-            case 10000:
-                return 1;
-            case 500:
-                return 2;
-            case 101: case 102: case 103: case 104: case 105: case 106: case 107:
-                return 3;
-            case 100:
-                return 4;
+        if (coreID >= 10000 && coreID <= 10005) {
+            return 1; // Origin stones
+        }
+        if (coreID == 500) {
+            return 2; // Ultimate / Mastery stone
+        }
+        if (coreID >= 101 && coreID <= 107) {
+            return 3; // Skill V-Boost stones
+        }
+        if (coreID == 100 || (coreID >= 1 && coreID <= 52) || (coreID >= 300 && coreID <= 306) || (coreID >= 1000 && coreID <= 1005)) {
+            return 4; // Sol Janus, Rush, Boost, and SHINE stones
         }
         return 0;
+    }
+
+    private static boolean isSiaErdaLinkStone(int coreID) {
+        return (coreID >= 1 && coreID <= 52)
+                || (coreID >= 100 && coreID <= 107)
+                || (coreID >= 300 && coreID <= 306)
+                || coreID == 500
+                || (coreID >= 1000 && coreID <= 1005)
+                || (coreID >= 10000 && coreID <= 10005);
+    }
+
+    private static int getSiaErdaLinkMaxLevel(int coreID) {
+        if ((coreID >= 1 && coreID <= 52) || (coreID >= 300 && coreID <= 306)) {
+            return 1;
+        }
+        if (coreID >= 102 && coreID <= 107) {
+            return 15; // Half-boost stones (pairs 102+103, 104+105, 106+107 sum to 30)
+        }
+        if (coreID >= 1000 && coreID <= 1005) {
+            return 20; // SHINE stones
+        }
+        return 30;
+    }
+
+    private static int getSiaErdaLinkActivateSolErdaCost(int coreID) {
+        if (coreID >= 1 && coreID <= 52) {
+            return (coreID >= 44 && coreID <= 51) ? 5 : 1; // rushEnd vs rush default
+        }
+        if (coreID == 100 || (coreID >= 300 && coreID <= 306) || (coreID >= 1000 && coreID <= 1005)) {
+            return 7;
+        }
+        if (coreID == 101) {
+            return 4;
+        }
+        if (coreID >= 102 && coreID <= 107) {
+            return 3; // skill/half
+        }
+        if (coreID == 500) {
+            return 2; // ultimate/default in ErdaLinkSolerda.img.xml
+        }
+        if (coreID >= 10000 && coreID <= 10005) {
+            return 5;
+        }
+        return 1;
+    }
+
+    private static int getSiaErdaLinkActivateFragmentCost(int coreID) {
+        if (coreID >= 1 && coreID <= 52) {
+            return (coreID >= 44 && coreID <= 51) ? 100 : 50;
+        }
+        if (coreID == 100 || (coreID >= 300 && coreID <= 306)) {
+            return 125;
+        }
+        if (coreID == 101) {
+            return 75;
+        }
+        if (coreID >= 102 && coreID <= 107) {
+            return 37; // skill/half
+        }
+        if (coreID == 500) {
+            return 50;
+        }
+        if ((coreID >= 1000 && coreID <= 1005) || (coreID >= 10000 && coreID <= 10005)) {
+            return 100;
+        }
+        return 50;
+    }
+
+    private static final int[] SIA_ORIGIN_SOL_ERDA_COST = {
+            1, 1, 1, 1, 1, 1, 1, 1, 10, 3, 4, 5, 5, 5, 5, 5, 5, 5, 15, 5, 5, 5, 6, 6, 6, 6, 7, 8, 20
+    };
+    private static final int[] SIA_ORIGIN_FRAGMENT_COST = {
+            30, 30, 40, 40, 50, 55, 60, 60, 200, 80, 100, 110, 120, 130, 135, 140, 145, 150, 350, 170, 180, 190, 200, 210, 220, 230, 240, 250, 500
+    };
+    private static final int[] SIA_ULTIMATE_SOL_ERDA_COST = {
+            1, 1, 1, 1, 1, 1, 1, 1, 5, 2, 2, 2, 2, 2, 3, 3, 3, 3, 10, 3, 3, 3, 3, 3, 4, 4, 4, 4, 10
+    };
+    private static final int[] SIA_ULTIMATE_FRAGMENT_COST = {
+            15, 15, 20, 25, 25, 28, 30, 30, 100, 37, 45, 50, 55, 60, 65, 70, 75, 80, 175, 85, 90, 95, 100, 105, 110, 115, 120, 125, 250
+    };
+    private static final int[] SIA_HALF_SOL_ERDA_COST = {
+            0, 0, 0, 5, 0, 0, 0, 0, 10, 3, 3, 4, 4, 10
+    };
+    private static final int[] SIA_HALF_FRAGMENT_COST = {
+            22, 23, 25, 45, 39, 41, 42, 45, 110, 50, 54, 57, 62, 175
+    };
+
+    private static int getSiaErdaLinkUpgradeSolErdaCost(int coreID, int level) {
+        int idx = level - 1;
+        if (coreID >= 10000 && coreID <= 10005) {
+            return (idx >= 0 && idx < SIA_ORIGIN_SOL_ERDA_COST.length) ? SIA_ORIGIN_SOL_ERDA_COST[idx] : 20;
+        }
+        if (coreID == 500) {
+            return (idx >= 0 && idx < SIA_ULTIMATE_SOL_ERDA_COST.length) ? SIA_ULTIMATE_SOL_ERDA_COST[idx] : 10;
+        }
+        if (coreID >= 102 && coreID <= 107) {
+            return (idx >= 0 && idx < SIA_HALF_SOL_ERDA_COST.length) ? SIA_HALF_SOL_ERDA_COST[idx] : 10;
+        }
+        if (coreID == 101) {
+            return HexaMatrixConstants.getSolErdaCostToUpgrade(HexaMatrixConstants.HexaMatrixSkill.BOOST_CORE, level);
+        }
+        if (coreID == 100) {
+            return HexaMatrixConstants.getSolErdaCostToUpgrade(HexaMatrixConstants.HexaMatrixSkill.COMMON_CORE, level);
+        }
+        return 0;
+    }
+
+    private static int getSiaErdaLinkUpgradeFragmentCost(int coreID, int level) {
+        int idx = level - 1;
+        if (coreID >= 10000 && coreID <= 10005) {
+            return (idx >= 0 && idx < SIA_ORIGIN_FRAGMENT_COST.length) ? SIA_ORIGIN_FRAGMENT_COST[idx] : 500;
+        }
+        if (coreID == 500) {
+            return (idx >= 0 && idx < SIA_ULTIMATE_FRAGMENT_COST.length) ? SIA_ULTIMATE_FRAGMENT_COST[idx] : 250;
+        }
+        if (coreID >= 102 && coreID <= 107) {
+            return (idx >= 0 && idx < SIA_HALF_FRAGMENT_COST.length) ? SIA_HALF_FRAGMENT_COST[idx] : 175;
+        }
+        if (coreID == 101) {
+            return HexaMatrixConstants.getSolErdaFragmentCostToUpgrade(HexaMatrixConstants.HexaMatrixSkill.BOOST_CORE, level);
+        }
+        if (coreID == 100) {
+            return HexaMatrixConstants.getSolErdaFragmentCostToUpgrade(HexaMatrixConstants.HexaMatrixSkill.COMMON_CORE, level);
+        }
+        return 10;
     }
 
     private static HexaMatrixConstants.HexaMatrixSkill getHexaSkillTypeByCoreType(int coreType) {
@@ -2137,11 +2264,12 @@ public class UserHandler {
                     chr.dispose();
                     return;
                 }
-                // Legacy Sia Astelle Erda Link ids are mapped to their real core type so they pay the normal cost.
                 int coreType = getHexaCoreType(coreID);
                 HexaCore.HexaSkillCoreData coreData = HexaCore.getSkillCoreData(coreID);
+                boolean isSiaStone = coreData == null && JobConstants.isSiaAstelle((short) job)
+                        && (isSiaErdaLinkStone(coreID) || !Char.getSiaErdaLinkSkills(coreID).isEmpty());
                 if (coreData == null) {
-                    if (coreType == 0 || !JobConstants.isSiaAstelle((short) job) || Char.getSiaErdaLinkSkills(coreID).isEmpty()) {
+                    if (coreType == 0 || !isSiaStone) {
                         chr.chatPopup("Lỗi không xác định.");
                         chr.dispose();
                         return;
@@ -2152,34 +2280,26 @@ public class UserHandler {
                     return;
                 }
                 int erdaCost;
-                if (coreType == 1) {
-                    erdaCost = HexaMatrixConstants.getSolErdaCostToActivate(HexaMatrixConstants.HexaMatrixSkill.SKILL_CORE);
-                } else if (coreType == 2) {
-                    erdaCost = HexaMatrixConstants.getSolErdaCostToActivate(HexaMatrixConstants.HexaMatrixSkill.MASTERY_CORE);
-                } else if (coreType == 3) {
-                    erdaCost = HexaMatrixConstants.getSolErdaCostToActivate(HexaMatrixConstants.HexaMatrixSkill.BOOST_CORE);
-                } else {
-                    if (coreType != 4) {
-                        chr.chatPopup("Lỗi không xác định.");
-                        chr.dispose();
-                        return;
-                    }
-                    erdaCost = HexaMatrixConstants.getSolErdaCostToActivate(HexaMatrixConstants.HexaMatrixSkill.COMMON_CORE);
-                }
                 int erdaFragmentCost;
-                if (coreType == 1) {
+                if (isSiaStone && coreID < 10_000_000) {
+                    erdaCost = getSiaErdaLinkActivateSolErdaCost(coreID);
+                    erdaFragmentCost = getSiaErdaLinkActivateFragmentCost(coreID);
+                } else if (coreType == 1) {
+                    erdaCost = HexaMatrixConstants.getSolErdaCostToActivate(HexaMatrixConstants.HexaMatrixSkill.SKILL_CORE);
                     erdaFragmentCost = HexaMatrixConstants.getSolErdaFragmentCostToActivate(HexaMatrixConstants.HexaMatrixSkill.SKILL_CORE);
                 } else if (coreType == 2) {
+                    erdaCost = HexaMatrixConstants.getSolErdaCostToActivate(HexaMatrixConstants.HexaMatrixSkill.MASTERY_CORE);
                     erdaFragmentCost = HexaMatrixConstants.getSolErdaFragmentCostToActivate(HexaMatrixConstants.HexaMatrixSkill.MASTERY_CORE);
                 } else if (coreType == 3) {
+                    erdaCost = HexaMatrixConstants.getSolErdaCostToActivate(HexaMatrixConstants.HexaMatrixSkill.BOOST_CORE);
                     erdaFragmentCost = HexaMatrixConstants.getSolErdaFragmentCostToActivate(HexaMatrixConstants.HexaMatrixSkill.BOOST_CORE);
-                } else {
-                    if (coreType != 4) {
-                        chr.chatPopup("Lỗi không xác định.");
-                        chr.dispose();
-                        return;
-                    }
+                } else if (coreType == 4) {
+                    erdaCost = HexaMatrixConstants.getSolErdaCostToActivate(HexaMatrixConstants.HexaMatrixSkill.COMMON_CORE);
                     erdaFragmentCost = HexaMatrixConstants.getSolErdaFragmentCostToActivate(HexaMatrixConstants.HexaMatrixSkill.COMMON_CORE);
+                } else {
+                    chr.chatPopup("Lỗi không xác định.");
+                    chr.dispose();
+                    return;
                 }
                 int currentSolErdas = chr.getSolErda();
                 long currentSolErdaFragments = 0;
@@ -2222,16 +2342,19 @@ public class UserHandler {
                 int coreType = getHexaCoreType(coreID);
                 HexaMatrixConstants.HexaMatrixSkill skillType = getHexaSkillTypeByCoreType(coreType);
                 HexaCore.HexaSkillCoreData coreData = HexaCore.getSkillCoreData(coreID);
+                boolean isSiaStone = coreData == null && JobConstants.isSiaAstelle((short) chr.getJob())
+                        && (isSiaErdaLinkStone(coreID) || !Char.getSiaErdaLinkSkills(coreID).isEmpty());
                 boolean validCore = skillType != null && (coreData != null
                         ? HexaCore.hasSkillCoreByJob(coreID / 10_000_000, coreID, chr.getJob())
-                        : JobConstants.isSiaAstelle((short) chr.getJob()) && !Char.getSiaErdaLinkSkills(coreID).isEmpty());
+                        : isSiaStone);
                 if (!validCore) {
                     chr.chatPopup("Lỗi không xác định.");
                     chr.dispose();
                     return;
                 }
                 int maxLevel = coreData != null && coreData.getMaxLevel() > 0
-                        ? Math.min(coreData.getMaxLevel(), HEXA_SKILL_MAX_LEVEL) : HEXA_SKILL_MAX_LEVEL;
+                        ? Math.min(coreData.getMaxLevel(), HEXA_SKILL_MAX_LEVEL)
+                        : (isSiaStone && coreID < 10_000_000 ? getSiaErdaLinkMaxLevel(coreID) : HEXA_SKILL_MAX_LEVEL);
                 // coreLevel must be >= 1 (core activated) - cost tables are indexed by level - 1
                 if (coreLevel < 1 || coreLevel != currentLevel || coreLevel >= nextLevel || nextLevel > maxLevel) {
                     chr.chatPopup("Dữ liệu nhân vật của bạn không đúng.");
@@ -2240,9 +2363,28 @@ public class UserHandler {
                 }
                 int erdaCost = 0;
                 int erdaFragmentCost = 0;
-                for (int i = coreLevel; i < nextLevel; i++) {
-                    erdaCost += HexaMatrixConstants.getSolErdaCostToUpgrade(skillType, i);
-                    erdaFragmentCost += HexaMatrixConstants.getSolErdaFragmentCostToUpgrade(skillType, i);
+                if (isSiaStone && coreID < 10_000_000) {
+                    for (int i = coreLevel; i < nextLevel; i++) {
+                        erdaCost += getSiaErdaLinkUpgradeSolErdaCost(coreID, i);
+                        erdaFragmentCost += getSiaErdaLinkUpgradeFragmentCost(coreID, i);
+                    }
+                    // If client calculated a valid positive cost from ErdaLinkSolerda.img.xml, trust the verified cost
+                    if ((erdaCost != solErdaReq || erdaFragmentCost != solErdaFragmentReq)
+                            && solErdaReq >= 0 && solErdaFragmentReq >= 0) {
+                        erdaCost = solErdaReq;
+                        erdaFragmentCost = solErdaFragmentReq;
+                    }
+                } else {
+                    for (int i = coreLevel; i < nextLevel; i++) {
+                        erdaCost += HexaMatrixConstants.getSolErdaCostToUpgrade(skillType, i);
+                        erdaFragmentCost += HexaMatrixConstants.getSolErdaFragmentCostToUpgrade(skillType, i);
+                    }
+                    if (JobConstants.isSiaAstelle((short) chr.getJob())
+                            && (erdaCost != solErdaReq || erdaFragmentCost != solErdaFragmentReq)
+                            && solErdaReq >= 0 && solErdaFragmentReq >= 0) {
+                        erdaCost = solErdaReq;
+                        erdaFragmentCost = solErdaFragmentReq;
+                    }
                 }
                 if (erdaCost != solErdaReq || erdaFragmentCost != solErdaFragmentReq) {
                     chr.chatPopup("Dữ liệu nhân vật của bạn không đúng.");

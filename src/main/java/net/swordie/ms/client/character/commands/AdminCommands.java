@@ -2778,8 +2778,8 @@ public class AdminCommands {
             armors = mageArmors;
         } else if (JobConstants.isKhali(job)) {
             weaponId = 1404018; // Arcane Umbra Chakram
-            secondaryId = 1354033; // Infinite Hex Seeker
-            emblemId = 1191113; // Gold Guardian Emblem
+            secondaryId = 1354037; // Princess No's Immortal Hex Seeker
+            emblemId = 1190563; // Gold Chaser Emblem
             armors = thiefArmors;
         } else if (JobConstants.isLara(job)) {
             weaponId = 1372228; // Arcane Umbra Wand
@@ -2863,8 +2863,8 @@ public class AdminCommands {
             armors = pirateArmors;
         } else if (JobConstants.isSiaAstelle(job)) {
             weaponId = 1253018; // Arcane Umbra Celestial Light
-            secondaryId = 1352873; // True Constellation
-            emblemId = 1190557; // Mitra Magician Emblem
+            secondaryId = 1352878; // Princess No's Compass
+            emblemId = 1191113; // Gold Guardian Emblem
             armors = mageArmors;
         } else if (JobConstants.isCadena(job)) {
             weaponId = 1272017; // Arcane Umbra Chain
@@ -3013,6 +3013,9 @@ public class AdminCommands {
                     evan.syncDragonEvolutionQuests();
                     evan.spawnDragon();
                 }
+            }
+            if (JobConstants.isLuminous(job)) {
+                net.swordie.ms.client.jobs.legend.Luminous.ensureFirstJobVisibleSkills(chr);
             }
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] Hexa warning: " + e.getMessage());

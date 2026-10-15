@@ -1673,6 +1673,7 @@ public class SkillConstants {
             case 27120211:
             case 27121201:
             case 27121202:
+            case 27121114: // Twilight Nova (Dark)
             case 27121214: // Twilight Nova (Dark)
             case 27141004: // HEXA_APOCALYPSE
             case 27140002: // HEXA_ENDLESS_DARKNESS (passive)
@@ -2401,21 +2402,85 @@ public class SkillConstants {
             case 24141502: // Defying Fate Attack
                 return 24141500; // Defying Fate Origin
 
-            // Luminous 6th Job & V-Matrix Sub-Skills
-            case 27141501: // Harmonic Paradox Buff
-            case 27141502: // Lustrous Orb
-            case 27141503: // Harmonic Paradox Finisher
+            // Luminous 4th Job, 5th Job & 6th Job Sub-Skills
+            case 27121114: // Twilight Nova (Dark)
+            case 27121115: // Twilight Nova (Equilibrium)
+                return 27121113; // Twilight Nova (Light / Root)
+            case 27141008: // HEXA Twilight Nova (Dark)
+            case 27141009: // HEXA Twilight Nova (Equilibrium)
+                return 27141007; // HEXA Twilight Nova (Light / Root)
+            case 27141501: // Harmonic Paradox Finisher
                 return 27141500; // Harmonic Paradox Origin
+            case 27141502: // Lustrous Orb (2nd 6th Job Ascent)
+            case 27141503: // Lustrous Orb Sub-Attack
+                return 27141502; // Lustrous Orb
             case 27141003: // HEXA Endless Darkness Attack
-                return 27141004; // HEXA Apocalypse
+                return 27140002; // HEXA Endless Darkness
             case 27141006: // HEXA Eternal Light Attack
-                return 27141001; // HEXA Reflection
+                return 27140005; // HEXA Eternal Light
             case 400021106: // Liberation Orb Imbalance ForceAtom
             case 400021107: // Liberation Orb Light Zone
             case 400021108: // Liberation Orb Dark Bullet
             case 400021109: // Liberation Orb Imbalance Attack
             case 400021110: // Liberation Orb Balance Attack
                 return 400021105; // Liberation Orb
+
+            // Khali 1st-4th Job, 5th Job & 6th Job Sub-Skills
+            case 154001002:
+                return 154001001; // Void Rush
+            case 154101002:
+                return 154101001; // Hex: Chakram Sweep
+            case 154111003:
+                return 154111002; // Hex: Chakram Split
+            case 154110000:
+                return 154110001; // Summon Chakri
+            case 154120004:
+                return 154120003; // Resonate
+            case 154121007:
+            case 154121008:
+            case 154121010:
+            case 154121011:
+                return 154121003; // Hex: Chakram Fury
+            case 154121012:
+            case 154121013:
+            case 154121014:
+            case 154121015:
+                return 154121009; // Death Blossom
+            case 154141002:
+                return 154141001; // HEXA Arts: Crescentum
+            case 154141004:
+            case 154141005:
+            case 154141006:
+                return 154141003; // HEXA Hex: Chakram Split
+            case 154141008:
+                return 154141007; // HEXA Hex: Chakram Sweep
+            case 154141013:
+            case 154141014:
+            case 154141015:
+            case 154141016:
+                return 154141012; // HEXA Death Blossom
+            case 154141501:
+            case 154141502:
+            case 154141503:
+                return 154141500; // Hex: Sandstorm
+            case 154141504:
+            case 154141505:
+                return 154141504; // Wake the Void (2nd 6th Job Ascent)
+            case 400041083:
+                return 400041082; // Hex: Pandemonium
+            case 400041085:
+            case 400041086:
+                return 400041084; // Void Burst
+            case 400041088:
+                return 400041087; // Arts: Astra
+            case 400041090:
+                return 400041089; // Resonate: Ultimatum
+
+            // Sia Astelle 6th Job Sub-Skills
+            case 182141002:
+                return 182141001; // HEXA Shine
+            case 182141501:
+                return 182141500; // Celestial Design
 
             // Shade 6th Job & V-Matrix Sub-Skills
             case 25141501: // Advent of the Fox God Sub 1

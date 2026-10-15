@@ -3060,7 +3060,7 @@ public abstract class Job {
     private void ensureSecondaryWeapon(short job) {
         int secondaryId = 0;
         if (JobConstants.isSiaAstelle(job)) {
-            secondaryId = 1352873; // True Constellation
+            secondaryId = 1352878; // Princess No's Compass (or 1352873 True Constellation)
         } else if (JobConstants.isLynn(job)) {
             secondaryId = 1352813; // Beast Bell
         } else if (JobConstants.isMoXuan(job)) {
@@ -3070,15 +3070,17 @@ public abstract class Job {
         } else if (JobConstants.isPathFinder(job)) {
             secondaryId = 1352014; // Relic
         } else if (JobConstants.isAdele(job)) {
-            secondaryId = 1353804; // Bladebinder
+            secondaryId = 1354003; // Noble Bladebinder
         } else if (JobConstants.isKhali(job)) {
-            secondaryId = 1354034; // Chakram
+            secondaryId = 1354033; // Infinite Hex Seeker
         } else if (JobConstants.isHoYoung(job)) {
-            secondaryId = 1353704; // Fan Tassel
+            secondaryId = 1353803; // Moonstone Fan Tassel
         } else if (JobConstants.isKain(job)) {
             secondaryId = 1354013; // D100 Custom Weapon Belt (4th Job)
         } else if (JobConstants.isLara(job)) {
             secondaryId = 1354023; // Radiant Four-Jade Ornament (4th Job)
+        } else if (JobConstants.isLuminous(job)) {
+            secondaryId = 1352406; // Princess No's Soul Orb
         } else if (JobConstants.isCadena(job)) {
             secondaryId = 1353303; // Transmitter
         } else if (JobConstants.isKinesis(job)) {

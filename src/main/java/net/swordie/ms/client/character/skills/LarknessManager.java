@@ -66,11 +66,11 @@ public class LarknessManager {
      */
     public void addGauge(int amount, boolean dark) {
         if (dark) {
-            setGauge(getGauge() - amount);
+            setGauge(Math.max(0, Math.min(10000, getGauge() - amount)));
         } else {
-            setGauge(getGauge() + amount);
+            setGauge(Math.max(0, Math.min(10000, getGauge() + amount)));
         }
-        if (getGauge() == 10000 || getGauge() == 0) {
+        if (getGauge() >= 10000 || getGauge() <= 0) {
             setFeathers(1);
         }
         updateInfo();

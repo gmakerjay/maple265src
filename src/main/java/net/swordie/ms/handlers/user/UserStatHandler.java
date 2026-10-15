@@ -93,6 +93,9 @@ public class UserStatHandler {
                         break;
                     default:
                         max = curSkill == null ? skill.getMasterLevel() : curSkill.getMasterLevel();
+                        if (max <= 0) {
+                            max = skill.getMaxLevel();
+                        }
                         break;
                 }
                 int newLevel;
@@ -102,10 +105,10 @@ public class UserStatHandler {
                 } else {
                     newLevel = curLevel + amount;
                 }
-                if (curSkill != null) {
-                    if (curSkill.getMasterLevel() > skill.getMasterLevel()) {
-                        skill.setMasterLevel(curSkill.getMasterLevel());
-                    }
+                if (curSkill != null && curSkill.getMasterLevel() > skill.getMasterLevel()) {
+                    skill.setMasterLevel(curSkill.getMasterLevel());
+                } else if (skill.getMasterLevel() < max) {
+                    skill.setMasterLevel(max);
                 }
                 skill.setCurrentLevel(newLevel);
                 esp.setSpToJobLevel(jobLevel, currentSp - amount);
@@ -123,6 +126,9 @@ public class UserStatHandler {
             if (currentSp >= amount) {
                 int curLevel = curSkill == null ? 0 : curSkill.getCurrentLevel();
                 int max = curSkill == null ? skill.getMasterLevel() : curSkill.getMasterLevel();
+                if (max <= 0) {
+                    max = skill.getMaxLevel();
+                }
                 int newLevel;
                 if (curLevel + amount > max) {
                     newLevel = max;
@@ -130,15 +136,16 @@ public class UserStatHandler {
                 } else {
                     newLevel = curLevel + amount;
                 }
-                if (curSkill != null) {
-                    if (curSkill.getMasterLevel() > skill.getMasterLevel()) {
-                        skill.setMasterLevel(curSkill.getMasterLevel());
-                    }
+                if (curSkill != null && curSkill.getMasterLevel() > skill.getMasterLevel()) {
+                    skill.setMasterLevel(curSkill.getMasterLevel());
+                } else if (skill.getMasterLevel() < max) {
+                    skill.setMasterLevel(max);
                 }
                 skill.setCurrentLevel(newLevel);
                 chr.getAvatarData().getCharacterStat().setSp(currentSp - amount);
                 chr.addSkill(skill);
                 chr.write(WvsContext.changeSkillRecordResult(skill));
+                syncMoXuanSubSkills(chr, skillID, newLevel);
                 stats = new HashMap<>();
                 stats.put(Stat.sp, chr.getAvatarData().getCharacterStat().getSp());
             } else {
@@ -489,6 +496,7 @@ public class UserStatHandler {
         chr.addToBaseStatCache(skill);
         chr.addSkill(skill);
         chr.write(WvsContext.changeSkillRecordResult(skill));
+        syncMoXuanSubSkills(chr, skillID, skill.getCurrentLevel());
         chr.dispose();
         if (EventConstants.HYPER_BURNING_MAX
                 && chr.hasQuest(102446)
@@ -547,6 +555,7 @@ public class UserStatHandler {
 
     public static void syncMoXuanSubSkills(Char chr, int mainSkillId, int level) {
         int[] subIds = switch (mainSkillId) {
+            // Mo Xuan
             case 175000001 -> new int[]{175001002};
             case 175100000 -> new int[]{175101001};
             case 175111002 -> new int[]{175111003};
@@ -554,6 +563,31 @@ public class UserStatHandler {
             case 175120017 -> new int[]{175121001, 175121006};
             case 175120018 -> new int[]{175121002, 175121007};
             case 175121003 -> new int[]{175121004};
+            // Sia Astelle
+            case 182001000 -> new int[]{182001006};
+            case 182001001 -> new int[]{182001002};
+            case 182001003 -> new int[]{182001007, 182001008};
+            case 182101001 -> new int[]{182101002, 182101003, 182101004};
+            case 182111000 -> new int[]{182111010};
+            case 182111001 -> new int[]{182111002};
+            case 182111003 -> new int[]{182111004};
+            case 182111005 -> new int[]{182111006, 182111007};
+            case 182110001 -> new int[]{182111009, 182111011};
+            case 182120000 -> new int[]{182121014, 182121015};
+            case 182121001 -> new int[]{182121002};
+            case 182121003 -> new int[]{182121004, 182121005, 182121006};
+            case 182121007 -> new int[]{182121008, 182121009, 182121010};
+            case 182121041 -> new int[]{182121042};
+            case 182121043 -> new int[]{182121044};
+            // Khali
+            case 154001001 -> new int[]{154001002};
+            case 154101001 -> new int[]{154101002};
+            case 154111002 -> new int[]{154111003};
+            case 154110000 -> new int[]{154110001};
+            case 154121001 -> new int[]{154121002, 154121003};
+            case 154120003 -> new int[]{154120004};
+            // Luminous
+            case 27121113 -> new int[]{27121114, 27121115};
             default -> null;
         };
         if (subIds != null) {
@@ -561,8 +595,10 @@ public class UserStatHandler {
             for (int subId : subIds) {
                 Skill subSkill = SkillData.getSkillDeepCopyById(subId);
                 if (subSkill != null) {
-                    subSkill.setCurrentLevel(level);
-                    subSkill.setMasterLevel(Math.max(level, subSkill.getMasterLevel()));
+                    int subMax = subSkill.getMaxLevel() > 0 ? subSkill.getMaxLevel() : (subSkill.getMasterLevel() > 0 ? subSkill.getMasterLevel() : level);
+                    int targetLv = Math.min(level, subMax);
+                    subSkill.setCurrentLevel(targetLv);
+                    subSkill.setMasterLevel(Math.max(targetLv, subMax));
                     chr.addSkill(subSkill);
                     subSkills.add(subSkill);
                 }

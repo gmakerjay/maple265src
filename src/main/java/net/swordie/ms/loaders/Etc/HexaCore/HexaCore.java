@@ -519,6 +519,14 @@ public class HexaCore {
                 return coreData;
             }
         }
+        if (coreID >= 1000 && coreID <= 1005) {
+            HexaStatCoreData shineCore = new HexaStatCoreData(coreID);
+            shineCore.setName("SHINE Stone " + (coreID - 999));
+            shineCore.setReqLevel(260);
+            shineCore.setMaxLevel(20);
+            shineCore.setReqCore(coreID > 1000 ? coreID - 1 : 0);
+            return shineCore;
+        }
         return null;
     }
 }

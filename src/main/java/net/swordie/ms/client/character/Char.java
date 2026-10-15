@@ -9987,12 +9987,19 @@ public class Char {
         switch (coreID) {
             case 10000051: // Origin: Celestial Design
             case 10000:
+            case 10001:
+            case 10002:
+            case 10003:
+            case 10004:
+            case 10005:
                 list.add(182141500);
+                list.add(182141501);
                 break;
             case 20000204: // Mastery: SHINE Ray / SHINE Antares
             case 500:
                 list.add(182141000);
                 list.add(182141001);
+                list.add(182141002);
                 break;
             case 30000205: // Shine Boost
             case 102:
@@ -10016,75 +10023,126 @@ public class Char {
             case 40000000: // Sol Janus
             case 100:
                 list.add(500001000);
+                list.add(500001001);
+                list.add(500001002);
                 list.add(400001064);
+                break;
+            case 300:
+                list.add(400007012);
+                list.add(500081000);
+                break;
+            case 304:
+                list.add(400007101);
+                list.add(500081000);
+                break;
+            default:
+                if ((coreID >= 1 && coreID <= 52) || (coreID >= 300 && coreID <= 306)) {
+                    list.add(500081000);
+                }
                 break;
         }
         return list;
     }
 
-    public void setHexaSkill(int coreID, int level) {
-        boolean hasCore = false;
-        HexaCore.HexaSkillCoreData coreData = HexaCore.getSkillCoreData(coreID);
-        if (coreData == null) {
-            List<Integer> siaSkills = getSiaErdaLinkSkills(coreID);
-            if (!siaSkills.isEmpty()) {
-                for (HexaSkill hexaSkill : getHexaSkills()) {
-                    if (hexaSkill.getSkillId() == coreID) {
-                        hexaSkill.setSkillLevel(level);
-                        hexaSkill.saveToSQL();
-                        hasCore = true;
-                        break;
-                    }
-                }
-                if (!hasCore) {
-                    HexaSkill hexaSkill = new HexaSkill(coreID, level);
-                    hexaSkill.setCharId(getId());
-                    getHexaSkills().add(hexaSkill);
-                    hexaSkill.saveToSQL();
-                }
-                List<Skill> skills = new ArrayList<>();
-                for (Integer sId : siaSkills) {
-                    Skill s = SkillData.getSkillDeepCopyById(sId);
-                    if (s != null) {
-                        s.setCharId(getId());
-                        s.setCurrentLevel(Math.min(30, level));
-                        s.setMasterLevel(30);
-                        s.setMaxLevel(30);
-                        skills.add(s);
-                    }
-                }
-                // applySkillList persists through addSkill (updates existing rows instead of inserting copies)
-                applySkillList(skills);
-            }
-            return;
-        }
-        List<Integer> coreSkillList = coreData.getConnectSkills();
-        if (coreSkillList.isEmpty()) {
-            return;
-        }
+    private void upsertHexaSkillRecord(int coreID, int level) {
         for (HexaSkill hexaSkill : getHexaSkills()) {
             if (hexaSkill.getSkillId() == coreID) {
                 hexaSkill.setSkillLevel(level);
                 hexaSkill.saveToSQL();
-                hasCore = true;
-                break;
+                return;
             }
         }
-        if (!hasCore) {
-            HexaSkill hexaSkill = new HexaSkill(coreID, level);
-            hexaSkill.setCharId(getId());
-            getHexaSkills().add(hexaSkill);
-            hexaSkill.saveToSQL();
+        HexaSkill hexaSkill = new HexaSkill(coreID, level);
+        hexaSkill.setCharId(getId());
+        getHexaSkills().add(hexaSkill);
+        hexaSkill.saveToSQL();
+    }
+
+    public void setHexaSkill(int coreID, int level) {
+        upsertHexaSkillRecord(coreID, level);
+
+        // Mirror Sia Astelle ErdaLink Stone IDs <-> HexaCore IDs so both UIs stay synchronized
+        int effectiveSkillLevel = level;
+        switch (coreID) {
+            case 10000:
+                upsertHexaSkillRecord(10000051, level);
+                break;
+            case 10000051:
+                upsertHexaSkillRecord(10000, level);
+                break;
+            case 500:
+                upsertHexaSkillRecord(20000204, level);
+                break;
+            case 20000204:
+                upsertHexaSkillRecord(500, level);
+                break;
+            case 101:
+                upsertHexaSkillRecord(30000206, level);
+                break;
+            case 30000206:
+                upsertHexaSkillRecord(101, level);
+                break;
+            case 100:
+                upsertHexaSkillRecord(40000000, level);
+                break;
+            case 40000000:
+                if (JobConstants.isSiaAstelle(getJob())) {
+                    upsertHexaSkillRecord(100, level);
+                }
+                break;
+            case 102:
+            case 103:
+                effectiveSkillLevel = Math.min(30, getHexaSkillLevel(102) + getHexaSkillLevel(103));
+                upsertHexaSkillRecord(30000205, effectiveSkillLevel);
+                break;
+            case 30000205:
+                upsertHexaSkillRecord(102, Math.min(15, (level + 1) / 2));
+                upsertHexaSkillRecord(103, Math.min(15, level / 2));
+                break;
+            case 104:
+            case 105:
+                effectiveSkillLevel = Math.min(30, getHexaSkillLevel(104) + getHexaSkillLevel(105));
+                upsertHexaSkillRecord(30000207, effectiveSkillLevel);
+                break;
+            case 30000207:
+                upsertHexaSkillRecord(104, Math.min(15, (level + 1) / 2));
+                upsertHexaSkillRecord(105, Math.min(15, level / 2));
+                break;
+            case 106:
+            case 107:
+                effectiveSkillLevel = Math.min(30, getHexaSkillLevel(106) + getHexaSkillLevel(107));
+                upsertHexaSkillRecord(30000208, effectiveSkillLevel);
+                break;
+            case 30000208:
+                upsertHexaSkillRecord(106, Math.min(15, (level + 1) / 2));
+                upsertHexaSkillRecord(107, Math.min(15, level / 2));
+                break;
         }
-        int maxLevel = coreData.getMaxLevel();
+
+        HexaCore.HexaSkillCoreData coreData = HexaCore.getSkillCoreData(coreID);
+        List<Integer> coreSkillList = new ArrayList<>();
+        int maxLevel = 30;
+        if (coreData != null) {
+            coreSkillList.addAll(coreData.getConnectSkills());
+            maxLevel = coreData.getMaxLevel() > 0 ? coreData.getMaxLevel() : 30;
+        }
+        for (Integer sId : getSiaErdaLinkSkills(coreID)) {
+            if (!coreSkillList.contains(sId)) {
+                coreSkillList.add(sId);
+            }
+        }
+        if (coreSkillList.isEmpty()) {
+            return;
+        }
         List<Skill> skills = new ArrayList<>();
         for (Integer skillID : coreSkillList) {
             Skill skill = SkillData.getSkillDeepCopyById(skillID);
             if (skill != null) {
+                int skillMax = skill.getMaxLevel() > 0 ? skill.getMaxLevel() : maxLevel;
                 skill.setCharId(getId());
-                skill.setCurrentLevel(Math.min(maxLevel, level));
-                skill.setMasterLevel(maxLevel);
-                skill.setMaxLevel(maxLevel);
+                skill.setCurrentLevel(Math.min(skillMax, effectiveSkillLevel));
+                skill.setMasterLevel(skillMax);
+                skill.setMaxLevel(skillMax);
                 skills.add(skill);
             }
         }
@@ -12642,13 +12700,35 @@ public class Char {
                 addSkill(skill);
             }
         }
-        if (JobConstants.isMoXuan(job)) {
-            int[] moxuanSubSkills = new int[]{
-                    175000006, 175001002, 175001003, 175101001,
-                    175111003, 175111011, 175121001, 175121002,
-                    175121004, 175121006, 175121007
-            };
-            for (int subId : moxuanSubSkills) {
+        if (JobConstants.isMoXuan(job) || JobConstants.isSiaAstelle(job)
+                || JobConstants.isKhali(job) || JobConstants.isLuminous(job)) {
+            int[] extraSubSkills;
+            if (JobConstants.isMoXuan(job)) {
+                extraSubSkills = new int[]{
+                        175000006, 175001002, 175001003, 175101001,
+                        175111003, 175111011, 175121001, 175121002,
+                        175121004, 175121006, 175121007
+                };
+            } else if (JobConstants.isSiaAstelle(job)) {
+                extraSubSkills = new int[]{
+                        182001002, 182001006, 182001007, 182001008,
+                        182101002, 182101003, 182101004,
+                        182111002, 182111004, 182111006, 182111007, 182111009, 182111010, 182111011,
+                        182121002, 182121004, 182121005, 182121006, 182121008, 182121009, 182121010,
+                        182121014, 182121015
+                };
+            } else if (JobConstants.isKhali(job)) {
+                extraSubSkills = new int[]{
+                        154001002, 154101002, 154111003, 154110001,
+                        154121002, 154121003, 154120004
+                };
+            } else {
+                extraSubSkills = new int[]{
+                        27001100, 27001201, 27001008, 27000106, 27000207,
+                        27121114, 27121115
+                };
+            }
+            for (int subId : extraSubSkills) {
                 short subJobId = (short) (subId / 10000);
                 if (!jobs.contains(subJobId)) {
                     continue;
