@@ -171,7 +171,7 @@ public class Shadower extends Thief {
     private void activateFlipTheCoin(TemporaryStatManager tsm) {    //TODO  Change to proc on Critical Hits
         if (tsm.getOption(FlipTheCoin).nOption < 5) {
             if (Util.succeedProp(50)) { //Proc on Crit<<<
-                c.write(WvsContext.flipTheCoinEnabled((byte) 1));
+                chr.write(WvsContext.flipTheCoinEnabled((byte) 1));
             }
         }
     }
@@ -470,6 +470,8 @@ public class Shadower extends Thief {
         Collections.shuffle(starts);
         var fae = ForceAtomEnum.COVETOUS_DARKNESS;
         int mobOid = mob.getObjectId();
+        List<ForceAtomInfo> faiList = new ArrayList<>(count);
+        List<Integer> targetList = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
             Position startPos = starts.get(i);
             ForceAtomInfo fai = new ForceAtomInfo(
@@ -478,15 +480,15 @@ public class Shadower extends Thief {
                     0, 2900, Util.getCurrentTime(),
                     1, 0,
                     startPos);
-            List<Integer> targetList = new ArrayList<>(1);
+            faiList.add(fai);
             targetList.add(mobOid);
-            ForceAtom fa = new ForceAtom(false, chr.getId(), chr.getId(), fae,
-                    true, targetList, COVETOUS_DARKNESS, List.of(fai),
-                    new Rect(), 0, 0,
-                    new Position(), COVETOUS_DARKNESS, new Position(), 0);
-            fa.setRect(rect);
-            chr.createForceAtom(fa);
         }
+        ForceAtom fa = new ForceAtom(false, chr.getId(), chr.getId(), fae,
+                true, targetList, COVETOUS_DARKNESS_FA, faiList,
+                new Rect(), 0, 0,
+                new Position(), COVETOUS_DARKNESS_FA, new Position(), 0);
+        fa.setRect(rect);
+        chr.createForceAtom(fa);
     }
 
     private void createMesoExplosionForceAtom() {

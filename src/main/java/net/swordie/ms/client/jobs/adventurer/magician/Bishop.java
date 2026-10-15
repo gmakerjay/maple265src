@@ -136,7 +136,7 @@ public class Bishop extends Magician {
         } else {
             tsm.removeStatsBySkill(skillID);
         }
-        chr.chatMessage("Bạn được hồi sinh bởi kỹ năng " + StringData.getSkillStringById(skillID).getName() + ".");
+        chr.chatMessage("You have been revived by " + StringData.getSkillStringById(skillID).getName() + ".");
         var lotusFlower = chr.getField().getSummonBySkillId(chr, LOTUS_FLOWER);
         if (lotusFlower != null) {
             chr.getField().removeSummon(LOTUS_FLOWER, chr.getId());
@@ -146,7 +146,7 @@ public class Bishop extends Magician {
 
     @Override
     public boolean isHandlerOfJob(short id) {
-        return JobConstants.isAdventurerMage(id);
+        return JobConstants.isBishop(id);
     }
 
     private void changeBlessedCount() {
@@ -285,11 +285,6 @@ public class Bishop extends Magician {
                     o1.nOption = si != null && si.getValue(x, slv) > 0 ? si.getValue(x, slv) : 25;
                     o1.rOption = skillID;
                     o1.tOption = si != null && si.getValue(subTime, slv) > 0 ? si.getValue(subTime, slv) : 10;
-                    mts.addStatOptions(mob, MobStat.BahamutLightElemAddDam, o1);
-                }
-                break;
-            case TELEPORT_MASTERY:
-                if (!mts.hasCurrentMobStatBySkillId(skillID)) {
                     mts.addStatOptions(mob, MobStat.BahamutLightElemAddDam, o1);
                 }
                 break;
@@ -547,7 +542,7 @@ public class Bishop extends Magician {
                     tsm.removeStat(TeleportMasteryOn);
                     tsm.removeStat(TeleportMasteryRange);
                 } else {
-                    o1.nOption = si.getValue(x, slv);
+                    o1.nOption = si.getValue(y, slv) > 0 ? si.getValue(y, slv) : si.getValue(x, slv);
                     o1.rOption = skillID;
                     tsm.sendStat(TeleportMasteryOn, o1);
                 }
@@ -669,18 +664,19 @@ public class Bishop extends Magician {
                 if (!chr.hasSkillOnCooldown(skillID)) {
                     chr.addSkillCooldown(skillID, 120000);
                 }
+                int bloodDuration = si != null && si.getValue(time, slv) > 0 ? si.getValue(time, slv) : 10;
                 o1.nOption = 1;
                 o1.rOption = skillID;
-                o1.tOption = 10;
+                o1.tOption = bloodDuration;
                 newStats.put(HolyBlood, o1);
                 o2.nReason = skillID;
-                o2.nValue = si.getValue(indieMad, slv);
-                o2.tTerm = 10;
+                o2.nValue = si != null ? si.getValue(u, slv) : 5;
+                o2.tTerm = bloodDuration;
                 newStats.put(IndiePMdR, o2);
                 o3.nReason = skillID;
-                o3.nValue = si.getValue(indieBooster, slv);
-                o3.tTerm = 10;
-                newStats.put(IndieHitDamR, o3);
+                o3.nValue = si != null ? si.getValue(v, slv) : 10;
+                o3.tTerm = bloodDuration;
+                newStats.put(IndieIgnoreMobpdpR, o3);
                 tsm.sendStat(newStats);
                 break;
             case HOLY_SYMBOL:

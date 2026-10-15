@@ -190,6 +190,7 @@ public class Paladin extends Warrior {
                 }
                 break;
             case DIVINE_CHARGE:
+            case 1221021: // Divine Charge IV
             case HEXA_DIVINE_CHARGE:
                 if (!mts.hasCurrentMobStatBySkillId(skillID)) {
                     if (Util.succeedProp(si.getValue(prop, slv))) {
@@ -307,8 +308,13 @@ public class Paladin extends Warrior {
             final int randY = chr.getPosition().getY() - Util.getRandom(100, 200);
             final var pos = new Position(randX, randY);
             SecondAtom fa = new SecondAtom(sai, chr.getNewSecondAtomKey(), chr.getId(), mob != null ? mob.getObjectId() : 0, key, si.getSkillId(), pos, now);
-            fa.setCustoms(sai.getCustoms());
-            fa.setDataIndex(Util.getRandomFromCollection(sai.getCustoms().values()));
+            if (sai.getCustoms() != null && !sai.getCustoms().isEmpty()) {
+                fa.setCustoms(sai.getCustoms());
+                Integer dataIdx = Util.getRandomFromCollection(sai.getCustoms().values());
+                if (dataIdx != null) {
+                    fa.setDataIndex(dataIdx);
+                }
+            }
             secondAtoms.add(fa);
             key++;
         }

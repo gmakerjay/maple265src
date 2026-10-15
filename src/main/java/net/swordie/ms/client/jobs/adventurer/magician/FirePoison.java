@@ -76,6 +76,7 @@ public class FirePoison extends Magician {
     public static final int POISON_CHAIN_3 = 400021103;
 
     // HEXA Skills
+    public static final int FLAME_SWEEP = 2111002;
     public static final int HEXA_METEOR_SHOWER = 2141012;
     public static final int HEXA_METEOR_SHOWER_FA = 2140013;
     public static final int HEXA_FLAME_SWEEP = 2141000;
@@ -92,7 +93,9 @@ public class FirePoison extends Magician {
     public static final int HEXA_MEGIDDO_FLAME_EXPLOSION = 2141016;
     public static final int HEXA_FLAME_SWEEP_EXTRA = 2141002;
     public static final int INFERNAL_VENOM = 2141500;
-    public static final int INFERNAL_VENOM_ICON = 2141501;
+    public static final int INFERNAL_VENOM_SUB = 2141501;
+    public static final int INFERNAL_VENOM_ICON = 2141502;
+    public static final int INFERNAL_VENOM_SUB_2 = 2141503;
     public static final int IMMORTAL_FLAME = 2141504;
     public static final int IMMORTAL_FLAME_SUB = 2141505;
 
@@ -158,6 +161,11 @@ public class FirePoison extends Magician {
         long damageDot = !chr.getDamageCalc().getDamages().isEmpty() ? Util.getRandomFromCollection(chr.getDamageCalc().getDamages()) : 1;
         switch (skillID) {
             case POISON_BREATH:
+            case FLAME_SWEEP:
+            case CREEPING_TOXIN:
+            case CREEPING_TOXIN_EXTRA:
+            case HEXA_CREEPING_TOXIN:
+            case HEXA_CREEPING_TOXIN_EXTRA:
             case IFRIT:
             case HEXA_IFRIT:
             case MEGIDDO_FLAME:
@@ -166,11 +174,15 @@ public class FirePoison extends Magician {
             case INFERNO_AURA:
             case HEXA_INFERNO_AURA:
             case DOT_PUNISHER:
+            case ELEMENTAL_FURY:
             case HEXA_FLAME_SWEEP:
             case HEXA_FLAME_SWEEP_GIANT:
             case HEXA_FLAME_SWEEP_EXTRA:
             case INFERNAL_VENOM:
+            case INFERNAL_VENOM_SUB:
+            case INFERNAL_VENOM_SUB_2:
             case IMMORTAL_FLAME:
+            case IMMORTAL_FLAME_SUB:
                 bi = BurnedInfo.createBurnInfo(chr, skillID, slv, damageDot);
                 mts.createAndAddBurnedInfo(mob, bi, skillID);
                 break;
@@ -270,7 +282,9 @@ public class FirePoison extends Magician {
                 tsm.sendStat(FlameSweep, o1);
                 break;
             case INFERNAL_VENOM:
+            case INFERNAL_VENOM_SUB:
             case INFERNAL_VENOM_ICON:
+            case INFERNAL_VENOM_SUB_2:
                 if (!tsm.hasStat(SixthDotBasedBuff)) {
                     o1.nOption = 10;
                     o1.rOption = INFERNAL_VENOM_ICON;
@@ -570,6 +584,7 @@ public class FirePoison extends Magician {
                 break;
             case IFRIT:
             case HEXA_IFRIT:
+            case ELEMENTAL_FURY:
                 summon = Summon.getSummonByAndSetStat(c.getChr(), skillID, slv);
                 field = c.getChr().getField();
                 summon.setFlyMob(true);

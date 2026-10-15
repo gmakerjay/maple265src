@@ -39,7 +39,7 @@ public class IceLightning extends Magician {
     public static final int MP_EATER = 2200000;
     public static final int CHILLING_STEP = 2201009;
     public static final int COLD_BEAM = 2201008;
-    public static final int FREEZING_CRUSH = 2200012;
+    public static final int FREEZING_CRUSH = 2200011;
     public static final int FROST_CLUTCH = 2220015;
 
     public static final int MAGIC_BOOSTER = 2201010;
@@ -226,8 +226,11 @@ public class IceLightning extends Magician {
                 break;
             case FROZEN_ORB:
             case HEXA_FROZEN_ORB:
-                if (!chr.hasSkillOnCooldown(FROZEN_ORB)) {
+                if (!chr.hasSkillOnCooldown(skillID)) {
                     chr.addSkillCooldown(FROZEN_ORB, 5000);
+                    if (skillID == HEXA_FROZEN_ORB) {
+                        chr.addSkillCooldown(HEXA_FROZEN_ORB, 5000);
+                    }
                 }
                 break;
             case HEXA_CHAIN_LIGHTNING:

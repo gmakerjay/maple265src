@@ -86,7 +86,9 @@ public class Marksman extends Archer {
     public static final int HEXA_ULTIMATE_PIECING_ARROW = 3241007;
     public static final int HEXA_SNIPE = 3241000;
     public static final int HEXA_EMPOWERED_SNIPE = 3241001;
+    public static final int HEXA_EMPOWERED_SNIPE_BONUS = 3241002;
     public static final int ULTIMATE_SNIPE = 3241003;
+    public static final int ULTIMATE_SNIPE_BONUS = 3241004;
     public static final int HEXA_BOLT_BURST = 3241013;
     public static final int HEXA_HIGH_SPEED_SHOT = 3241015;
 
@@ -164,10 +166,12 @@ public class Marksman extends Archer {
 
     private void setEnhanceSniping(Mob mob, boolean advMarked) {
         mob.setAdvMarked(advMarked);
+        int snipeSkillId = chr.hasSkill(HEXA_SNIPE) ? HEXA_EMPOWERED_SNIPE : EMPOWERED_SNIPE;
         if (!advMarked) {
-            chr.write(UserLocal.attackAdvMark(EMPOWERED_SNIPE_BONUS, EMPOWERED_SNIPE, mob.getObjectId()));
+            int bonusSkillId = chr.hasSkill(HEXA_SNIPE) ? HEXA_EMPOWERED_SNIPE_BONUS : EMPOWERED_SNIPE_BONUS;
+            chr.write(UserLocal.attackAdvMark(bonusSkillId, snipeSkillId, mob.getObjectId()));
         }
-        chr.write(UserLocal.setMobAdvMark(EMPOWERED_SNIPE, advMarked, mob.getObjectId()));
+        chr.write(UserLocal.setMobAdvMark(snipeSkillId, advMarked, mob.getObjectId()));
     }
 
     @Override
@@ -181,7 +185,8 @@ public class Marksman extends Archer {
         boolean hasHitMobs = !attackInfo.mobAttackInfo.isEmpty();
         int slv = attackInfo.slv;
         if (hasHitMobs) {
-            if (skillID == FINAL_AIM || skillID == FINAL_AIM_ATTACK) {
+            if (skillID == FINAL_AIM || skillID == FINAL_AIM_ATTACK
+                    || skillID == FATAL_TRIGGER || skillID == FATAL_TRIGGER_ATTACK) {
                 Option oOrigin1 = new Option();
                 Option oOrigin2 = new Option();
                 oOrigin1.nOption = 1;
@@ -217,6 +222,10 @@ public class Marksman extends Archer {
                 var val = tsm.hasStat(EnhancePiercing) ? tsm.getOption(EnhancePiercing).nOption + 1 : 1;
                 o1.nOption = Math.max(val, 0);
                 tsm.sendStat(EnhancePiercing, o1);
+                if (skillID == HEXA_PIECING_ARROW && o1.nOption >= 3) {
+                    o2.nOption = 1;
+                    tsm.sendStat(UltimatePiercing, o2);
+                }
                 break;
             case EMPOWERED_PIECING_ARROW:
             case EMPOWERED_PIECING_ARROW_II:
@@ -224,8 +233,8 @@ public class Marksman extends Archer {
                 tsm.sendStat(EnhancePiercing, o1);
                 break;
             case HEXA_EMPOWERED_PIECING_ARROW:
-                o1 = tsm.getOption(EnhancePiercing);
-                o1.nOption = o1.nOption == 1 ? 2 : 1;
+                Option curPiercing = tsm.getOption(EnhancePiercing);
+                o1.nOption = (curPiercing != null && curPiercing.nOption == 1) ? 2 : 1;
                 tsm.sendStat(EnhancePiercing, o1);
                 if (o1.nOption == 1) {
                     o2.nOption = 1;
@@ -242,10 +251,14 @@ public class Marksman extends Archer {
                 val = tsm.hasStat(EnhanceSniping) ? tsm.getOption(EnhanceSniping).nOption + 1 : 1;
                 o1.nOption = Math.max(val, 0);
                 tsm.sendStat(EnhanceSniping, o1);
+                if (skillID == HEXA_SNIPE && o1.nOption >= 3) {
+                    o2.nOption = 1;
+                    tsm.sendStat(UltimateSniping, o2);
+                }
                 break;
             case HEXA_EMPOWERED_SNIPE:
-                o1 = tsm.getOption(EnhanceSniping);
-                o1.nOption = o1.nOption == 1 ? 2 : 1;
+                Option curSniping = tsm.getOption(EnhanceSniping);
+                o1.nOption = (curSniping != null && curSniping.nOption == 1) ? 2 : 1;
                 tsm.sendStat(EnhanceSniping, o1);
                 if (o1.nOption == 1) {
                     o2.nOption = 1;
@@ -263,12 +276,14 @@ public class Marksman extends Archer {
                 break;
             case PERFECT_SHOT_HIT:
                 o1 = tsm.getOption(CursorSniping);
-                int curCount = o1.nOption - 1;
-                if (curCount <= 0) {
-                    tsm.removeStat(CursorSniping);
-                } else {
-                    o1.nOption = curCount;
-                    tsm.updateStat(CursorSniping, o1);
+                if (o1 != null) {
+                    int curCount = o1.nOption - 1;
+                    if (curCount <= 0) {
+                        tsm.removeStat(CursorSniping);
+                    } else {
+                        o1.nOption = curCount;
+                        tsm.updateStat(CursorSniping, o1);
+                    }
                 }
                 break;
             case FULL_BURST_SHOT:
@@ -447,13 +462,15 @@ public class Marksman extends Archer {
                 tsm.sendStat(RepeatinCartrige, o1);
                 break;
             case FINAL_AIM:
+            case FATAL_TRIGGER:
                 o1.nOption = 1;
+                o1.nValue = 1;
                 o1.rOption = skillID;
+                o1.nReason = skillID;
                 o1.tOption = 7;
+                o1.tTerm = 7;
                 tsm.sendStat(IndieNotDamaged, o1);
                 chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
-                break;
-            case FATAL_TRIGGER:
                 break;
             case HEROS_WILL:
                 tsm.removeAllDebuffs();
@@ -483,12 +500,14 @@ public class Marksman extends Archer {
                 int skillID = BOLT_BURST;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
                 return 1;
             }
             case HEXA_HIGH_SPEED_SHOT -> {
                 int skillID = HIGH_SPEED_SHOT;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
                 return 1;
             }
         }

@@ -142,6 +142,10 @@ public class Thief extends Beginner {
             if (!JobConstants.canJobAdvance(jobID)) {
                 return;
             }
+            if ((level == 60 && jobID != 410 && jobID != 420)
+                    || (level == 100 && jobID != 411 && jobID != 421)) {
+                return;
+            }
             final short next = JobConstants.nextJob(jobID);
             sm.setJob(next);
             sm.completeQuestNoRewards(level == 60 ? 1441 : 1456);

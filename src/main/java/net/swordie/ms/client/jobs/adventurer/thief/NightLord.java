@@ -408,7 +408,7 @@ public class NightLord extends Thief {
         final var pos = chr.getPosition().add(sai.getPos());
 
         SecondAtom sa = new SecondAtom(sai, chr.getNewSecondAtomKey(), chr.getId(), 0, 0, si.getSkillId(), pos, now);
-        sa.setExpire(durationSec * 10000);
+        sa.setExpire(durationSec * 1000);
         chr.createSecondAtom(sa);
 
         // reset vòng đời cộng dồn cho lần sau

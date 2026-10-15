@@ -58,6 +58,7 @@ public class Corsair extends Pirate {
     public static final int FIRING_ORDERS = 5221029;
     public static final int BROADSIDE = 5221022;
     public static final int BROADSIDE_SUMMON = 5221027;
+    public static final int UGLY_BOMB = 5221052;
     public static final int EPIC_ADVENTURER = 5221053;
     public static final int WHALERS_POTION = 5221054;
 
@@ -77,11 +78,14 @@ public class Corsair extends Pirate {
     public static final int HEXA_BROADSIDE_SUMMON = 5241003;
     public static final int HEXA_BRAIN_SCRAMBLER = 5241005;
     public static final int CONDEMNATION = 5241006;
+    public static final int HEXA_EIGHT_LEGS_EASTON = 5241007;
+    public static final int HEXA_EIGHT_LEGS_EASTON_DOWN = 5241008;
     public static final int HEXA_FIRING_ORDERS = 5241009;
     public static final int HEXA_SCURVY_SUMMONS = 5241010;
     public static final int HEXA_SCURVY_SUMMONS_ATOM = 5241011;
     public static final int HEXA_ALL_ABOARD_SHOOT = 5241013; //Summon
     public static final int HEXA_SIEGE_BOMBER = 5241015;
+    public static final int HEXA_UGLY_BOMB = 5241017;
     public static final int HEXA_NAUTILUS_STRIKE = 5241018; //Special Attack
 
     // Origin & Ascent (6th Job)
@@ -468,6 +472,11 @@ public class Corsair extends Pirate {
 
     private void handleScurvySummons(SkillInfo si, int slv) {
         final long now = System.currentTimeMillis();
+        var oldCrew = Arrays.asList(SCURVY_SUMMONS, ALL_ABOARD, 5211019, 5211020, 5211021, HEXA_SCURVY_SUMMONS, 5241011, 5241012, HEXA_ALL_ABOARD_SHOOT);
+        for (int crewId : oldCrew) {
+            chr.getField().removeSummon(crewId, chr.getId());
+            chr.getTemporaryStatManager().removeStatsBySkill(crewId);
+        }
         int[] summons;
         if (si.getSkillId() == HEXA_SCURVY_SUMMONS) {
             summons = new int[]{5241012, si.getSkillId()};
@@ -579,8 +588,8 @@ public class Corsair extends Pirate {
                 chr.setSkillCooldown(skillId, slv);
                 return 1;
             }
-            case 5241017 -> {
-                int skillID = 5221052;
+            case HEXA_UGLY_BOMB -> {
+                int skillID = UGLY_BOMB;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
                 chr.setSkillCooldown(skillId, slv);

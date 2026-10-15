@@ -10031,18 +10031,21 @@ public class Char {
                 list.add(400007101);
                 list.add(500081000);
                 break;
-            // Explorer Warrior HEXA Mastery Companion Sub-Skills
+            // Explorer Warrior HEXA Mastery & Origin/Ascent Companion Sub-Skills
             case 20000000: // Hero: HEXA Raging Blow
                 list.add(1141001);
                 break;
             case 20000100: // Hero: HEXA Beam Blade / Rending Edge
                 list.add(1141004);
+                list.add(1140010);
                 break;
             case 20000146: // Hero: HEXA Cry Valhalla / Puncture / Final Attack
                 list.add(1141007);
                 break;
+            case 10000000: // Hero Origin 1: Spirit Calibur
+                list.add(1141501);
+                break;
             case 20000001: // Paladin: HEXA Blast / Divine Judgment
-                list.add(1241001);
                 list.add(1241002);
                 break;
             case 20000051: // Paladin: HEXA Divine Charge / Divine Mark / Falling Justice
@@ -10050,10 +10053,15 @@ public class Char {
                 list.add(1241006);
                 break;
             case 20000101: // Paladin: HEXA Heaven's Hammer
-                list.add(1241008);
-                break;
-            case 20000147: // Paladin: HEXA Final Attack / Rising Justice
                 list.add(1241010);
+                break;
+            case 10000001: // Paladin Origin 1: Sacred Bastion
+                list.add(1241501);
+                list.add(1241502);
+                list.add(1241503);
+                break;
+            case 10000053: // Paladin Origin 2 (Ascent): Dominus Oblivion
+                list.add(1241505);
                 break;
             case 20000052: // Dark Knight: HEXA Dark Impale / Nightshade Explosion
                 list.add(1341002);
@@ -10066,7 +10074,13 @@ public class Char {
             case 20000148: // Dark Knight: HEXA Evil Eye Shock
                 list.add(1341009);
                 break;
-            // Explorer Magician HEXA Mastery Companion Sub-Skills
+            case 10000002: // Dark Knight Origin 1: Dead Space
+                list.add(1341501);
+                break;
+            case 10000054: // Dark Knight Origin 2 (Ascent): Darkness Aura
+                list.add(1341503);
+                break;
+            // Explorer Magician HEXA Mastery & Origin/Ascent Companion Sub-Skills
             case 20000003: // Fire/Poison: HEXA Flame Sweep
                 list.add(2141001);
                 list.add(2141002);
@@ -10075,7 +10089,6 @@ public class Char {
                 list.add(2141004);
                 break;
             case 20000103: // Fire/Poison: HEXA Ignite / Ifrit / Inferno Aura
-                list.add(2140006);
                 list.add(2141007);
                 list.add(2140008);
                 list.add(2141009);
@@ -10088,6 +10101,14 @@ public class Char {
                 list.add(2141015);
                 list.add(2141016);
                 break;
+            case 10000003: // Fire/Poison Origin 1: Infernal Venom
+                list.add(2141501);
+                list.add(2141502);
+                list.add(2141503);
+                break;
+            case 10000055: // Fire/Poison Origin 2 (Ascent): Immortal Flame
+                list.add(2141505);
+                break;
             case 20000004: // Ice/Lightning: HEXA Chain Lightning
                 list.add(2241001);
                 break;
@@ -10099,6 +10120,14 @@ public class Char {
                 break;
             case 20000150: // Ice/Lightning: HEXA Thunder Sphere / Elquines
                 list.add(2241008);
+                break;
+            case 10000004: // Ice/Lightning Origin 1: Frozen Lightning
+                list.add(2241501);
+                list.add(2241503);
+                list.add(2241504);
+                break;
+            case 10000056: // Ice/Lightning Origin 2 (Ascent): Paralyzing Torrent
+                list.add(2241506);
                 break;
             case 20000005: // Bishop: HEXA Angel Ray
                 list.add(2341001);
@@ -10114,7 +10143,18 @@ public class Char {
                 list.add(2341010);
                 list.add(2341012);
                 break;
-            // Explorer Archer HEXA Mastery Companion Sub-Skills
+            case 10000005: // Bishop Origin 1: Holy Advent
+                list.add(2341501);
+                list.add(2341502);
+                list.add(2341503);
+                list.add(2341504);
+                list.add(2341505);
+                list.add(2341506);
+                break;
+            case 10000057: // Bishop Origin 2 (Ascent): Command of Heaven
+                list.add(2341508);
+                break;
+            // Explorer Archer HEXA Mastery & Origin/Ascent Companion Sub-Skills
             case 20000006: // BowMaster: HEXA Hurricane
                 list.add(3141001);
                 break;
@@ -10122,17 +10162,22 @@ public class Char {
                 list.add(3141003);
                 break;
             case 20000106: // BowMaster: HEXA Quiver Cartridge / Phoenix / Extra Quiver Cartridge
-                list.add(3140004);
-                list.add(3141006);
-                list.add(3141007);
-                list.add(3141008);
-                list.add(3141010);
-                list.add(3141011);
+                list.add(3140006);
+                list.add(3140007);
+                list.add(3140008);
+                list.add(3140010);
+                list.add(3140011);
                 break;
             case 20000152: // BowMaster: HEXA Speed Mirage / Gritty Gust
-                list.add(3140012);
                 list.add(3141013);
                 list.add(3141014);
+                break;
+            case 10000006: // BowMaster Origin 1: Ascendant Shade
+                list.add(3141501);
+                list.add(3141502);
+                break;
+            case 10000058: // BowMaster Origin 2 (Ascent): Flashpoint
+                list.add(3141504);
                 break;
             case 20000007: // Marksman: HEXA Snipe
                 list.add(3241001);
@@ -10148,11 +10193,14 @@ public class Char {
                 list.add(3241010);
                 list.add(3241011);
                 break;
-            case 20000107: // Marksman: HEXA Frostprey / Bolt Burst
-                list.add(3240012);
-                break;
             case 20000153: // Marksman: HEXA Final Attack / High Speed Shot
                 list.add(3241015);
+                break;
+            case 10000007: // Marksman Origin 1: Final Aim
+                list.add(3241501);
+                break;
+            case 10000059: // Marksman Origin 2 (Ascent): Fatal Trigger
+                list.add(3241503);
                 break;
             case 20000008: // Pathfinder: HEXA Cardinal Burst / Bountiful Burst
                 list.add(3341001);
@@ -10179,7 +10227,13 @@ public class Char {
                 list.add(3341022);
                 list.add(3341023);
                 break;
-            // Explorer Thief HEXA Mastery Companion Sub-Skills
+            case 10000008: // Pathfinder Origin 1: Forsaken Relic
+                list.add(3341501);
+                list.add(3341502);
+                list.add(3341503);
+                list.add(3341504);
+                break;
+            // Explorer Thief HEXA Mastery & Origin/Ascent Companion Sub-Skills
             case 20000009: // Night Lord: HEXA Quad Star
                 list.add(4141001);
                 break;
@@ -10189,11 +10243,18 @@ public class Char {
                 break;
             case 20000109: // Night Lord: HEXA Showdown / Dark Flare / Darkness Shuriken
                 list.add(4141006);
+                list.add(4140012);
                 break;
             case 20000155: // Night Lord: HEXA Sudden Raid / Death Star
                 list.add(4141010);
-                list.add(4141012);
                 list.add(4141013);
+                break;
+            case 10000009: // Night Lord Origin 1: Life and Death
+                list.add(4141501);
+                list.add(4141502);
+                break;
+            case 10000061: // Night Lord Origin 2 (Ascent): Deep Consideration
+                list.add(4141504);
                 break;
             case 20000010: // Shadower: HEXA Assassinate
                 list.add(4241001);
@@ -10208,59 +10269,90 @@ public class Char {
                 list.add(4241009);
                 list.add(4241010);
                 break;
-            case 20000110: // Shadower: HEXA Dark Flare / Cruel Stab
-                list.add(4240014);
-                break;
             case 20000156: // Shadower: HEXA Sudden Raid / Shadow Veil / Covert Edge
+                list.add(4240014);
                 list.add(4240016);
-                list.add(4241017);
+                list.add(4240017);
                 list.add(4241018);
                 list.add(4241019);
                 break;
+            case 10000010: // Shadower Origin 1: Halve Cut
+                list.add(4241501);
+                list.add(4241502);
+                break;
+            case 10000062: // Shadower Origin 2 (Ascent): Covetous Darkness
+                list.add(4241504);
+                list.add(4241505);
+                list.add(4241506);
+                break;
             case 20000111: // Dual Blade: HEXA Blade Clone / Mortality
-                list.add(4360002);
                 list.add(4361002);
                 break;
             case 20000157: // Dual Blade: HEXA Blade Fury / Sudden Raid
                 list.add(4361004);
                 break;
-            // Explorer Pirate HEXA Mastery Companion Sub-Skills
+            case 10000011: // Dual Blade Origin 1: Karma Blade
+                list.add(4361501);
+                list.add(4361502);
+                list.add(4361503);
+                break;
+            case 10000063: // Dual Blade Origin 2 (Ascent): Enmity
+                list.add(4361505);
+                list.add(4361506);
+                break;
+            // Explorer Pirate HEXA Mastery & Origin/Ascent Companion Sub-Skills
             case 20000012: // Buccaneer: HEXA Octopunch
                 list.add(5141001);
                 list.add(5141002);
                 list.add(5141003);
                 break;
             case 20000062: // Buccaneer: HEXA Sea Serpent / Rage / Burst / Nautilus Strike
-                list.add(5141005);
                 list.add(5141006);
-                list.add(5141007);
                 list.add(5141008);
+                list.add(5140010);
                 break;
             case 20000112: // Buccaneer: HEXA Serpent Scale
-                list.add(5140010);
                 list.add(5141011);
                 list.add(5141012);
                 list.add(5141013);
                 list.add(5141014);
                 break;
-            case 20000158: // Buccaneer: HEXA Hook Bomber
-                list.add(5141016);
-                list.add(5141017);
+            case 10000012: // Buccaneer Origin 1: Unleash Neptunus
+                list.add(5141501);
+                list.add(5141502);
+                list.add(5141503);
+                list.add(5141504);
+                list.add(5141505);
+                list.add(5141506);
+                break;
+            case 10000064: // Buccaneer Origin 2 (Ascent): Haymaker
+                list.add(5141508);
                 break;
             case 20000013: // Corsair: HEXA Rapid Fire
                 list.add(5241001);
                 break;
             case 20000063: // Corsair: HEXA Broadside
                 list.add(5241003);
+                list.add(5241004);
                 break;
             case 20000113: // Corsair: HEXA Brain Scrambler / Eight-Legs Easton / Firing Orders
                 list.add(5241006);
+                list.add(5241008);
                 list.add(5241009);
                 break;
             case 20000159: // Corsair: HEXA Siege Bomber / Scurvy Summons / Nautilus Strike / Ugly Bomb
                 list.add(5241011);
                 list.add(5241012);
                 list.add(5241013);
+                list.add(5241014);
+                list.add(5241016);
+                break;
+            case 10000013: // Corsair Origin 1: The Dreadnought
+                list.add(5241501);
+                list.add(5241502);
+                break;
+            case 10000065: // Corsair Origin 2 (Ascent): Bombardment
+                list.add(5241504);
                 break;
             case 20000064: // Cannoneer: HEXA Cannon Bazooka / Monkey Mortar / Anchors Aweigh / Nautilus Strike
                 list.add(5341002);
@@ -10276,6 +10368,12 @@ public class Char {
                 list.add(5340010);
                 list.add(5340011);
                 list.add(5341013);
+                break;
+            case 10000014: // Cannoneer Origin 1: Super Cannon Explosion
+                list.add(5341501);
+                break;
+            case 10000066: // Cannoneer Origin 2 (Ascent): Barrel of Monkeys
+                list.add(5341503);
                 break;
 
             // Nova (Kaiser, Kain, Cadena, Angelic Buster) HEXA Mastery & Origin/Ascent Companion Sub-Skills

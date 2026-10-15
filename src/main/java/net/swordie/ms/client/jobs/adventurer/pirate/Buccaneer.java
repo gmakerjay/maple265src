@@ -97,10 +97,10 @@ public class Buccaneer extends Pirate {
     public static final int LIBERATOR_ATTACK_2 = 5141502;
     public static final int LIBERATOR_ATTACK_3 = 5141503;
     public static final int LIBERATOR_ATTACK_4 = 5141504;
-    public static final int UNLEASHED_DRAGON = 5141505;
-    public static final int UNLEASHED_DRAGON_ATTACK_1 = 5141506;
-    public static final int UNLEASHED_DRAGON_ATTACK_2 = 5141507;
-    public static final int UNLEASHED_DRAGON_ATTACK_3 = 5141508;
+    public static final int LIBERATOR_ATTACK_5 = 5141505;
+    public static final int LIBERATOR_ATTACK_6 = 5141506;
+    public static final int UNLEASHED_DRAGON = 5141507;
+    public static final int UNLEASHED_DRAGON_ATTACK_1 = 5141508;
 
     private long lastPerseverance = 0L;
     private long lastVStackBuff = 0L;
@@ -183,7 +183,7 @@ public class Buccaneer extends Pirate {
         int skillID = attackInfo.skillId;
         boolean hasHitMobs = !attackInfo.mobAttackInfo.isEmpty();
         if (hasHitMobs) {
-            if (skillID >= LIBERATOR && skillID <= UNLEASHED_DRAGON_ATTACK_3) {
+            if (skillID >= LIBERATOR && skillID <= UNLEASHED_DRAGON_ATTACK_1) {
                 Option oOrigin1 = new Option();
                 Option oOrigin2 = new Option();
                 oOrigin1.nOption = 1;
@@ -222,7 +222,7 @@ public class Buccaneer extends Pirate {
         if (chr.hasSkill(PERSEVERANCE)) {
             SkillInfo siP = SkillData.getSkillInfoById(PERSEVERANCE);
             int slvP = chr.getSkillLevel(PERSEVERANCE);
-            if (siP != null && lastPerseverance <= now - siP.getValue(y, slvP)) {
+            if (siP != null && lastPerseverance <= now - siP.getValue(y, slvP) * 1000L) {
                 int healRate = siP.getValue(x, slvP);
                 if (chr.getHP() < chr.getMaxHP()) {
                     chr.heal((int) ((long) chr.getMaxHP() * healRate / 100L));
@@ -788,7 +788,7 @@ public class Buccaneer extends Pirate {
                 chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
                 break;
             case UNLEASHED_DRAGON:
-            case UNLEASHED_DRAGON_ATTACK_2:
+            case UNLEASHED_DRAGON_ATTACK_1:
                 o1.nOption = 1;
                 o1.nValue = 1;
                 o1.rOption = skillID;

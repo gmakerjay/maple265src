@@ -136,8 +136,6 @@ public class BowMaster extends Archer {
     }
 
     private int getQuiverCartridgeSkill() {
-        if (chr.hasSkill(EXTRA_QUIVER_CARTRIDGE))
-            return EXTRA_QUIVER_CARTRIDGE;
         if (chr.hasSkill(HEXA_QUIVER_CARTRIDGE))
             return HEXA_QUIVER_CARTRIDGE;
         if (chr.hasSkill(ENCHANTED_QUIVER))
@@ -158,6 +156,14 @@ public class BowMaster extends Archer {
         }
         int qSlv = skill.getCurrentLevel();
         SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
+        if (si == null || (si.getValue(u, qSlv) == 0 && si.getValue(w, qSlv) == 0)) {
+            int fallbackId = chr.hasSkill(ENCHANTED_QUIVER) ? ENCHANTED_QUIVER : QUIVER_CARTRIDGE;
+            qSlv = Math.max(1, chr.getSkillLevel(fallbackId));
+            si = SkillData.getSkillInfoById(fallbackId);
+            if (si == null) {
+                return;
+            }
+        }
         if (tsm.hasStat(QuiverFullBurst)) {
             bloodArrowEffect(si, qSlv);
             magicArrowEffect(mob, si, qSlv);
@@ -271,7 +277,8 @@ public class BowMaster extends Archer {
         int skillID = attackInfo.skillId;
         boolean hasHitMobs = !attackInfo.mobAttackInfo.isEmpty();
         if (hasHitMobs) {
-            if (skillID == ASCENDANT_SHADOW || skillID == ASCENDANT_SHADOW_ATTACK_1 || skillID == ASCENDANT_SHADOW_ATTACK_2) {
+            if (skillID == ASCENDANT_SHADOW || skillID == ASCENDANT_SHADOW_ATTACK_1 || skillID == ASCENDANT_SHADOW_ATTACK_2
+                    || skillID == FLASHPOINT || skillID == FLASHPOINT_ATTACK) {
                 Option o1 = new Option();
                 Option o2 = new Option();
                 o1.nOption = 1;
@@ -301,7 +308,13 @@ public class BowMaster extends Archer {
             if (skillID != QUIVER_BARRAGE_ATOM && tsm.hasStat(QuiverFullBurst)) {
                 createQuiverBarrageBurstForceAtom(attackInfo, now);
             }
-            final boolean inHumanSpeedPsdAttacks = SkillData.getSkillInfoById(INHUMAN_SPEED).getSkillList1().contains(skillID);
+            final boolean inHumanSpeedPsdAttacks = SkillData.getSkillInfoById(INHUMAN_SPEED).getSkillList1().contains(skillID)
+                    || skillID == HEXA_GRITTY_GUST
+                    || skillID == HEXA_ARROW_BLASTER
+                    || skillID == HEXA_QUIVER_CARTRIDGE_ATOM
+                    || skillID == HEXA_QUIVER_CARTRIDGE_MAGIC
+                    || skillID == HEXA_QUIVER_CARTRIDGE_BLOOD
+                    || skillID == HEXA_SILHOUETTE_MIRAGE_ATTACK;
             if (chr.hasSkill(INHUMAN_SPEED)) {
                 if (skillID == INHUMAN_SPEED) {
                     List<Integer> mobOIDs = new ArrayList<>();
@@ -513,7 +526,7 @@ public class BowMaster extends Archer {
                 field.spawnAffectedArea(aa);
             }
             stormArrowTimer = chr.getTimer().addEvent(this::stormOfArrowAA, 5, TimeUnit.SECONDS);
-        } else {
+        } else if (stormArrowTimer != null) {
             stormArrowTimer.cancel(false);
             stormArrowTimer = null;
         }
@@ -668,6 +681,7 @@ public class BowMaster extends Archer {
         Option o2 = new Option();
         switch (skillID) {
             case QUIVER_CARTRIDGE:
+            case HEXA_QUIVER_CARTRIDGE:
                 if (tsm.hasStat(QuiverCatridge)) {
                     o1 = tsm.getOption(QuiverCatridge);
                     o1.nOption = o1.nOption == 1 ? 2 : 1;
@@ -724,6 +738,7 @@ public class BowMaster extends Archer {
                 tsm.sendStat(SharpEyes, o1);
                 break;
             case ENCHANTED_QUIVER:
+            case EXTRA_QUIVER_CARTRIDGE:
                 o1.nOption = 1;
                 o1.rOption = skillID;
                 o1.tOption = si.getValue(time, slv);
@@ -774,13 +789,15 @@ public class BowMaster extends Archer {
                 chr.write(WvsContext.updateSkillStackRequestResult(SILHOUETTE_MIRAGE, (byte) o1.xOption));
                 break;
             case ASCENDANT_SHADOW:
+            case FLASHPOINT:
                 o1.nOption = 1;
+                o1.nValue = 1;
                 o1.rOption = skillID;
+                o1.nReason = skillID;
                 o1.tOption = 7;
+                o1.tTerm = 7;
                 tsm.sendStat(IndieNotDamaged, o1);
                 chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
-                break;
-            case FLASHPOINT:
                 break;
             case HEROS_WILL:
                 tsm.removeAllDebuffs();
@@ -797,7 +814,7 @@ public class BowMaster extends Archer {
         opt.xOption++;
         opt.xOption = Math.max(0, Math.min(opt.xOption, 2));
         tsm.sendStat(ShadowShield, opt);
-        chr.write(WvsContext.updateSkillStackRequestResult(QUIVER_BARRAGE, (byte) opt.xOption));
+        chr.write(WvsContext.updateSkillStackRequestResult(SILHOUETTE_MIRAGE, (byte) opt.xOption));
     }
 
     private void decreaseSilhouetteMirageClone() {
@@ -808,7 +825,7 @@ public class BowMaster extends Archer {
         var opt = tsm.getOption(ShadowShield);
         opt.xOption -= 1;
         tsm.sendStat(ShadowShield, opt);
-        chr.write(WvsContext.updateSkillStackRequestResult(QUIVER_BARRAGE, (byte) opt.xOption));
+        chr.write(WvsContext.updateSkillStackRequestResult(SILHOUETTE_MIRAGE, (byte) opt.xOption));
     }
 
     // Hit related methods ---------------------------------------------------------------------------------------------

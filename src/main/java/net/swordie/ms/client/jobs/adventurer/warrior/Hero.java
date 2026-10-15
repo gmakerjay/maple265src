@@ -311,7 +311,7 @@ public class Hero extends Warrior {
             case HEXA_PUNCTURE:
                 if (!mts.hasCurrentMobStatBySkillId(skillID)) {
                     bi = BurnedInfo.createBurnInfo(chr, skillID, slv, damage);
-                    o1.nOption = si.getValue(y, slv);
+                    o1.nOption = si.getValue(y, slv) > 0 ? si.getValue(y, slv) : si.getValue(x, slv);
                     o1.rOption = skillID;
                     o1.tOption = si.getValue(time, slv);
                     mts.addStatOptions(mob, MobStat.TotalDamParty, o1);
@@ -339,12 +339,12 @@ public class Hero extends Warrior {
         if (chr.hasSkill(SELF_RECOVERY)) {
             SkillInfo siSR = SkillData.getSkillInfoById(SELF_RECOVERY);
             int slvSR = chr.getSkillLevel(SELF_RECOVERY);
-            if (now - lastSelfRecovery >= siSR.getValue(hcHp, slvSR)) {
+            if (siSR != null && slvSR > 0 && now - lastSelfRecovery >= 4000L) {
                 if (chr.getHP() < chr.getMaxHP()) {
-                    chr.heal(siSR.getValue(hp, slvSR));
+                    chr.heal(chr.getHPPerc(siSR.getValue(x, slvSR)));
                 }
                 if (chr.getMP() < chr.getMaxMP()) {
-                    chr.healMP(siSR.getValue(mp, slvSR));
+                    chr.healMP(chr.getMPPerc(siSR.getValue(y, slvSR)));
                 }
                 lastSelfRecovery = now;
             }
@@ -363,7 +363,7 @@ public class Hero extends Warrior {
                     chr.write(UserLocal.userBonusAttackRequest(comboInstinctSkillId));
                 }
             }
-            if (skillID != RENDING_EDGE) {
+            if (skillID != RENDING_EDGE && skillID != RENDING_EDGE_) {
                 doRendingEdge(attackInfo);
             }
             if (skillID != CRY_VALHALLA_S && skillID != HEXA_CRY_VALHALLA_S) {
@@ -374,8 +374,6 @@ public class Hero extends Warrior {
         Option o2 = new Option();
         switch (skillID) {
             case COMBO_FURY:
-            case PUNCTURE:
-            case HEXA_PUNCTURE:
                 removeCombo(1);
                 break;
             case FLASH_BLADE:

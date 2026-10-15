@@ -543,6 +543,7 @@ public class Cannoneer extends Job {
                 summon.setMoveAbility(MoveAbility.Stop);
                 field.spawnSummon(summon);
                 break;
+            case HEXA_ROLLING_RAINBOW:
             case HEXA_ROLLING_RAINBOW_SUMMON: //Stationary, Attacks
             case HEXA_ROLLING_RAINBOW_ATTACK:
                 o1 = tsm.getOption(CannonShooter_RollingCannon);
@@ -775,6 +776,20 @@ public class Cannoneer extends Job {
             }
             case HEXA_MONKEY_FURY -> {
                 int skillID = MONKEY_FURY;
+                int slv = chr.getSkillLevel(skillID);
+                chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
+                return 1;
+            }
+            case HEXA_ANCHOR_AWEIGH -> {
+                int skillID = ANCHOR_AWEIGH;
+                int slv = chr.getSkillLevel(skillID);
+                chr.setSkillCooldown(skillID, slv);
+                chr.setSkillCooldown(skillId, slv);
+                return 1;
+            }
+            case HEXA_ROLLING_RAINBOW, HEXA_ROLLING_RAINBOW_SUMMON, HEXA_ROLLING_RAINBOW_ATTACK -> {
+                int skillID = ROLLING_RAINBOW;
                 int slv = chr.getSkillLevel(skillID);
                 chr.setSkillCooldown(skillID, slv);
                 chr.setSkillCooldown(skillId, slv);

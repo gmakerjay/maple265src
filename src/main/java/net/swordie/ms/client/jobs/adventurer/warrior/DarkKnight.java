@@ -277,17 +277,22 @@ public class DarkKnight extends Warrior {
                 }
                 break;
             case EVIL_EYE:
-                if (tsm.hasStat(Beholder) && tsm.getOption(Beholder).ssOption > 0) {
+            case EVIL_EYE_SHOCK:
+            case 1311019:
+            case 1321024:
+            case HEXA_EVIL_EYE_SHOCK:
+            case HEXA_EVIL_EYE_SHOCK_SHOOT:
+                if (tsm.hasStat(Beholder)) {
                     int shockSkillId = chr.hasSkill(HEXA_EVIL_EYE_SHOCK) ? HEXA_EVIL_EYE_SHOCK : EVIL_EYE_SHOCK;
                     Skill skill = chr.getSkill(shockSkillId);
                     if (skill != null) {
                         si = SkillData.getSkillInfoById(skill.getSkillId());
                         slv = skill.getCurrentLevel();
-                        if (si != null && !mts.hasCurrentMobStatBySkillId(skillID)) {
+                        if (si != null && !mts.hasCurrentMobStatBySkillId(skill.getSkillId())) {
                             if (Util.succeedProp(si.getValue(prop, slv)) && !mob.isBoss()) {
                                 o1.nOption = 1;
                                 o1.rOption = skill.getSkillId();
-                                o1.tOption = si.getValue(time, slv);
+                                o1.tOption = Math.max(1, si.getValue(time, slv));
                                 mts.addStatOptions(mob, MobStat.Stun, o1);
                             }
                         }
@@ -337,10 +342,6 @@ public class DarkKnight extends Warrior {
                         c.write(MobPool.damaged(mob.getObjectId(), dmg, mob.getTemplateId(), (byte) 1, (int) mob.getHp(), mob.getMaxHp()));
                     }
                 }
-                break;
-            case EVIL_EYE:
-                chr.addSkillCooldown(EVIL_EYE_SHOCK, 12000);
-                chr.addSkillCooldown(RADIANT_EVIL, 20000);
                 break;
             case CALAMITOUS_CYCLONE_FINAL_ATTACK:
                 if (hasHitMobs) {
@@ -645,17 +646,32 @@ public class DarkKnight extends Warrior {
             if (skill != null) {
                 int slv = skill.getCurrentLevel();
                 SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
-                int proc = si.getValue(prop, slv);
-                int cd = 1000 * si.getValue(cooltime, slv);
-                int heal = si.getValue(x, slv);
-                if (evilEye != null && (tsm.hasStat(Beholder) || tsm.hasStatBySkillId(EVIL_EYE))) {
-                    if (cd + revengeEvilEye < System.currentTimeMillis()) {
-                        if (Util.succeedProp(proc)) {
-                            c.write(Summoned.beholderRevengeAttack(evilEye, hitInfo.mobID));
-                            if (heal > 0) {
-                                chr.heal((int) (chr.getMaxHP() / ((double) 100 / heal)));
+                if (si != null) {
+                    int proc = si.getValue(prop, slv) > 0 ? si.getValue(prop, slv) : 100;
+                    int cdSec = si.getValue(cooltime, slv) > 0 ? si.getValue(cooltime, slv) : si.getValue(u2, slv);
+                    int cd = 1000 * Math.max(2, cdSec);
+                    int heal = si.getValue(x, slv);
+                    if (heal <= 0 && chr.hasSkill(REVENGE_OF_THE_EVIL_EYE)) {
+                        SkillInfo baseSi = SkillData.getSkillInfoById(REVENGE_OF_THE_EVIL_EYE);
+                        if (baseSi != null) {
+                            heal = baseSi.getValue(x, chr.getSkillLevel(REVENGE_OF_THE_EVIL_EYE));
+                        }
+                    }
+                    if (evilEye != null && (tsm.hasStat(Beholder) || tsm.hasStatBySkillId(EVIL_EYE))) {
+                        long now = System.currentTimeMillis();
+                        if (cd + revengeEvilEye < now) {
+                            if (Util.succeedProp(proc)) {
+                                c.write(Summoned.beholderRevengeAttack(evilEye, hitInfo.mobID));
+                                if (chr.hasSkill(HEXA_REVENGE_OF_THE_EVIL_EYE) && !chr.hasSkillOnCooldown(EVIL_EYE_PUNISHMENT)) {
+                                    chr.write(UserLocal.userBonusAttackRequest(EVIL_EYE_PUNISHMENT, hitInfo.mobID));
+                                    int punishCdSec = si.getValue(u, slv) > 0 ? si.getValue(u, slv) : 10;
+                                    chr.addSkillCooldown(EVIL_EYE_PUNISHMENT, punishCdSec * 1000);
+                                }
+                                if (heal > 0) {
+                                    chr.heal((int) (chr.getMaxHP() / ((double) 100 / heal)));
+                                }
+                                revengeEvilEye = now;
                             }
-                            revengeEvilEye = System.currentTimeMillis();
                         }
                     }
                 }

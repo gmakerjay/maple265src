@@ -109,9 +109,10 @@ public class Warrior extends Beginner {
     public void handleHit(Client c, InPacket inPacket, HitInfo hitInfo) {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         if (tsm.hasStat(FifthAdvWarriorShield)) {
-            int blockedHP = tsm.getOptByCTSAndSkill(FifthAdvWarriorShield, BLITZ_SHIELD_BUFF).nOption;
-            if (hitInfo.hpDamage >= chr.getHP()) {
-                hitInfo.hpDamage = chr.getHP() - blockedHP;
+            Option opt = tsm.getOptByCTSAndSkill(FifthAdvWarriorShield, BLITZ_SHIELD_BUFF);
+            int blockedHP = opt != null ? opt.nOption : 0;
+            if (hitInfo.hpDamage >= chr.getHP() && blockedHP > 0) {
+                hitInfo.hpDamage = Math.max(0, hitInfo.hpDamage - blockedHP);
                 removeBlitzNotByHit = false;
                 tsm.removeStatsBySkill(BLITZ_SHIELD_BUFF);
             }
@@ -126,15 +127,17 @@ public class Warrior extends Beginner {
         var sm = chr.getScriptManager();
         if (level == 60 || level == 100) {
             final short jobID = chr.getJob();
-            if (!JobConstants.canJobAdvance(jobID)) {
+            if (jobID == 100 || !JobConstants.canJobAdvance(jobID)) {
                 return;
             }
             final short next = JobConstants.nextJob(jobID);
+            if (next <= 0 || next == 101) {
+                return;
+            }
             sm.setJob(next);
             sm.completeQuestNoRewards(level == 60 ? 1430 : 1450);
             sm.addSPJobAdv(jobID, 5);
             sm.addSPJobAdv(next, 3);
-            chr.maxSkills();
         }
     }
 

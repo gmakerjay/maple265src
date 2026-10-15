@@ -302,12 +302,6 @@ public class DualBlade extends Job {
                 o1.setInMillis(true);
                 tsm.sendStat(IndieNotDamaged, o1);
                 break;
-            case BLADES_OF_DESTINY:
-                o1.nValue = si.getValue(ignoreMobpdpR, slv);
-                o1.nReason = skillID;
-                o1.tTerm = si.getValue(cooltime, slv);
-                tsm.sendStat(IndieIgnoreMobpdpR, o1);
-                break;
             case KARMA_BLADE_AFTER_ATTACK:
                 if (!tsm.hasStat(KarmaBlade)) {
                     o1.nOption = 25;

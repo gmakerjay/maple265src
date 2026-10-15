@@ -2600,6 +2600,36 @@ public class AdminCommands {
                 targetJob = (int) JobConstants.JobEnum.LUMINOUS4.getJobId();
             } else if (JobConstants.isShade(curJob)) {
                 targetJob = (int) JobConstants.JobEnum.SHADE4.getJobId();
+            } else if (JobConstants.isHero(curJob)) {
+                targetJob = 112;
+            } else if (JobConstants.isPaladin(curJob)) {
+                targetJob = 122;
+            } else if (JobConstants.isDarkKnight(curJob)) {
+                targetJob = 132;
+            } else if (JobConstants.isFirePoison(curJob)) {
+                targetJob = 212;
+            } else if (JobConstants.isIceLightning(curJob)) {
+                targetJob = 222;
+            } else if (JobConstants.isBishop(curJob)) {
+                targetJob = 232;
+            } else if (JobConstants.isBowMaster(curJob)) {
+                targetJob = 312;
+            } else if (JobConstants.isMarksman(curJob)) {
+                targetJob = 322;
+            } else if (JobConstants.isPathFinder(curJob)) {
+                targetJob = 332;
+            } else if (JobConstants.isNightLord(curJob)) {
+                targetJob = 412;
+            } else if (JobConstants.isShadower(curJob)) {
+                targetJob = 422;
+            } else if (JobConstants.isDualBlade(curJob)) {
+                targetJob = 434;
+            } else if (JobConstants.isBuccaneer(curJob)) {
+                targetJob = 512;
+            } else if (JobConstants.isCorsair(curJob)) {
+                targetJob = 522;
+            } else if (JobConstants.isCannoneer(curJob)) {
+                targetJob = 532;
             } else if (curJob % 100 < 12 && (curJob % 100 == 0 || curJob % 100 == 10 || curJob % 100 == 11)) {
                 targetJob = (curJob / 100) * 100 + 12;
             }
@@ -2873,11 +2903,6 @@ public class AdminCommands {
             secondaryId = 1353303; // Transmitter
             emblemId = 1190558; // Mitra Thief Emblem
             armors = thiefArmors;
-        } else if (JobConstants.isPathFinder(job)) {
-            weaponId = 1592020; // Arcane Umbra Ancient Bow
-            secondaryId = 1352014; // Relic
-            emblemId = 1190556; // Mitra Archer Emblem
-            armors = archerArmors;
         } else if (JobConstants.isKinesis(job)) {
             weaponId = 1262039; // Arcane Umbra Psy-limiter
             secondaryId = 1353203; // Chess Piece
@@ -2954,7 +2979,7 @@ public class AdminCommands {
             emblemId = 1190556; // Mitra Bowman Emblem
             armors = archerArmors;
         } else if (JobConstants.isPathFinder(job)) {
-            weaponId = 1592022; // Arcane Umbra Ancient Bow
+            weaponId = 1592020; // Arcane Umbra Ancient Bow
             secondaryId = 1353707; // Princess No's Immortal Relic
             emblemId = 1190556; // Mitra Bowman Emblem
             armors = archerArmors;
@@ -2984,6 +3009,7 @@ public class AdminCommands {
             secondaryId = 1352916; // Princess No's Falcon Eye
             emblemId = 1190559; // Mitra Pirate Emblem
             armors = pirateArmors;
+            giveTestItem(chr, 2330005, 5000); // Eternal Bullet
         } else if (JobConstants.isCannoneer(job)) {
             weaponId = 1532150; // Arcane Umbra Siege Gun
             secondaryId = 1352928; // Princess No's Fire Bomb
@@ -3136,9 +3162,9 @@ public class AdminCommands {
                     targetJob = 122;
                 } else if (arg.contains("darkknight") || arg.contains("drk")) {
                     targetJob = 132;
-                } else if (arg.contains("fp") || arg.contains("firepoison")) {
+                } else if (arg.equals("fp") || arg.equals("f/p") || arg.contains("firepoison")) {
                     targetJob = 212;
-                } else if (arg.contains("il") || arg.contains("icelightning")) {
+                } else if (arg.equals("il") || arg.equals("i/l") || arg.contains("icelightning")) {
                     targetJob = 222;
                 } else if (arg.contains("bishop") || arg.contains("bish")) {
                     targetJob = 232;

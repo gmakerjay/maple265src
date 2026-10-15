@@ -108,6 +108,10 @@ public class Pirate extends Beginner {
             if (!JobConstants.canJobAdvance(jobID)) {
                 return;
             }
+            if ((level == 60 && jobID != 510 && jobID != 520)
+                    || (level == 100 && jobID != 511 && jobID != 521)) {
+                return;
+            }
             final short next = JobConstants.nextJob(jobID);
             sm.setJob(next);
             sm.completeQuestNoRewards(level == 60 ? 1444 : 1458);

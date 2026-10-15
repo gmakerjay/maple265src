@@ -123,6 +123,10 @@ public class Pathfinder extends Job {
 
     // ===== 6th Job HEXA Matrix Skills =====
     public static final int FORSAKEN_RELIC = 3341500; // Origin Skill
+    public static final int FORSAKEN_RELIC_BUFF = 3341501;
+    public static final int FORSAKEN_RELIC_ATOM = 3341502;
+    public static final int FORSAKEN_RELIC_WRATH = 3341503;
+    public static final int FORSAKEN_RELIC_FINAL = 3341504;
     public static final int PIERCING_RELIC = 3341505; // Origin Second Skill
     public static final int HEXA_CARDINAL_BURST = 3341000;
     public static final int HEXA_BOUNTIFUL_BURST = 3341002;
@@ -133,6 +137,7 @@ public class Pathfinder extends Job {
     public static final int HEXA_ANCIENT_ASTRA = 3341010;
     public static final int HEXA_SHADOW_RAVEN = 3341024;
     public static final int HEXA_COMBO_ASSAULT = 3341016;
+    public static final int MANIFEST_CURSE = 3340025;
 
     private static final int[] addedSkills = new int[]{
             ANCIENT_CURSE,
@@ -403,6 +408,8 @@ public class Pathfinder extends Job {
         Option o1 = new Option();
         switch (skillID) {
             case FORSAKEN_RELIC:
+            case FORSAKEN_RELIC_WRATH:
+            case FORSAKEN_RELIC_FINAL:
             case PIERCING_RELIC:
                 for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
                     Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
@@ -691,10 +698,17 @@ public class Pathfinder extends Job {
             case SHARP_EYES_ABOW:
                 int cr = si.getValue(x, slv);
                 int crDmg = si.getValue(y, slv);
+                if (chr.hasSkill(SHARP_EYES_ABOW_CRITICAL_CHANCE)) {
+                    cr += SkillData.getSkillInfoById(SHARP_EYES_ABOW_CRITICAL_CHANCE).getValue(x, chr.getSkillLevel(SHARP_EYES_ABOW_CRITICAL_CHANCE));
+                }
                 o1.nOption = (cr << 8) + crDmg;
-                o1.nValue = si.getValue(y, slv);
+                o1.nValue = crDmg;
                 o1.rOption = skillID;
-                o1.tOption = si.getValue(time, slv);
+                o1.tOption = si.getValue(time, slv) + (chr.hasSkill(SHARP_EYES_ABOW_PERSIST)
+                        ? SkillData.getSkillInfoById(SHARP_EYES_ABOW_PERSIST).getValue(time, chr.getSkillLevel(SHARP_EYES_ABOW_PERSIST)) : 0);
+                if (chr.hasSkill(SHARP_EYES_ABOW_GUARDBREAK)) {
+                    o1.mOption = SkillData.getSkillInfoById(SHARP_EYES_ABOW_GUARDBREAK).getValue(ignoreMobpdpR, chr.getSkillLevel(SHARP_EYES_ABOW_GUARDBREAK));
+                }
                 tsm.sendStat(SharpEyes, o1);
                 break;
             case RETURN_TO_PARTEM:
@@ -1016,8 +1030,11 @@ public class Pathfinder extends Job {
                     180, 0, Util.getCurrentTime(), 0, 0,
                     new Position(mob.getX(), mob.getY() + 50));
             faiList.add(fai);
-            targetList.add(Util.getRandomFromCollection(chr.getField().getMobsInRect(mob.getRectAround(rect))).getObjectId());
-            targetList.add(Util.getRandomFromCollection(chr.getField().getMobsInRect(mob.getRectAround(rect))).getObjectId());
+            List<Mob> mobsInRect = chr.getField().getMobsInRect(mob.getRectAround(rect));
+            Mob t1 = Util.getRandomFromCollection(mobsInRect);
+            Mob t2 = Util.getRandomFromCollection(mobsInRect);
+            targetList.add(t1 != null ? t1.getObjectId() : mob.getObjectId());
+            targetList.add(t2 != null ? t2.getObjectId() : mob.getObjectId());
         }
         ForceAtom fa = new ForceAtom(false, chr.getId(), chr.getId(), fae,
                 true, targetList, SWARM_SHOT_ATOM, faiList, rect, 0, 0,
@@ -1052,8 +1069,11 @@ public class Pathfinder extends Job {
                     rand.nextInt(randAngle) + (chr.isLeft() ? 100 : 265), rand.nextInt(100), Util.getCurrentTime(), 0, 0,
                     new Position(mob.getX() + (chr.isLeft() ? -initXdistance : initXdistance), mob.getY() + initYdistance));
             faiList.add(fai);
-            targetList.add(Util.getRandomFromCollection(chr.getField().getMobsInRect(mob.getRectAround(rect))).getObjectId());
-            targetList.add(Util.getRandomFromCollection(chr.getField().getMobsInRect(mob.getRectAround(rect))).getObjectId());
+            List<Mob> mobsInRect = chr.getField().getMobsInRect(mob.getRectAround(rect));
+            Mob t1 = Util.getRandomFromCollection(mobsInRect);
+            Mob t2 = Util.getRandomFromCollection(mobsInRect);
+            targetList.add(t1 != null ? t1.getObjectId() : mob.getObjectId());
+            targetList.add(t2 != null ? t2.getObjectId() : mob.getObjectId());
         }
         int atomSkillId = chr.hasSkill(HEXA_ANCIENT_ASTRA) ? 3341012 : ANCIENT_ASTRA_DELUGE_ATOM;
         ForceAtom fa = new ForceAtom(false, chr.getId(), chr.getId(), fae,
@@ -1069,17 +1089,6 @@ public class Pathfinder extends Job {
         summon.setSummonTerm(220);
         Field field = chr.getField();
         field.spawnSummon(summon);
-    }
-
-
-    public int alterCooldownSkill(int skillId) {
-        Skill skill = chr.getSkill(skillId);
-        if (skill != null) {
-            if (skillId == BowMaster.ARROW_PLATTER) {
-                return 0;
-            }
-        }
-        return super.alterCooldownSkill(skillId);
     }
 
     @Override

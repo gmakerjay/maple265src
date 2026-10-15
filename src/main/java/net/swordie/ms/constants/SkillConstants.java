@@ -1319,10 +1319,34 @@ public class SkillConstants {
                 return AngelicBuster.SOUL_SEEKER;
             case Shadower.MESO_EXPLOSION_ATOM:
                 return Shadower.MESO_EXPLOSION;
+            case 4241008:
+            case 4241009:
+                return 4241006; // HEXA Meso Explosion
+            case 4220021:
+                return 4221018; // Shadow Twist / Mark
+            case 4241504:
+                return 4241503; // Covetous Darkness
             case NightLord.ASSASSINS_MARK_ATOM:
                 return NightLord.ASSASSINS_MARK;
             case NightLord.NIGHTLORD_MARK_ATOM:
                 return NightLord.NIGHT_LORD_MARK;
+            case 4141003:
+            case 4141004:
+                return 4141002; // HEXA Assassin's Mark
+            case 4141006:
+                return 4141005; // HEXA Showdown Challenge
+            case 3140006:
+            case 3140007:
+            case 3140008:
+                return 3141005; // HEXA Quiver Cartridge
+            case 3341003:
+                return 3341002; // HEXA Bountiful Burst
+            case 3341005:
+                return 3341004; // HEXA Cardinal Deluge
+            case 3341012:
+                return 3341010; // HEXA Ancient Astra (Deluge Atom)
+            case 3341502:
+                return 3341500; // Forsaken Relic
             case Shade.FOX_SPIRITS_ATOM:
                 return Shade.FOX_SPIRITS_INIT;
             case Shade.FOX_SPIRITS_ATOM_2:
@@ -2554,13 +2578,17 @@ public class SkillConstants {
 
             // Buccaneer 1st-4th & 6th Job Sub-Skills
             case Buccaneer.SEA_SERPENT_BURST:
-                return 5100018;
+            case 5100018:
+                return Buccaneer.SEA_SERPENT; // 5101017
             case Buccaneer.GREATER_SEA_SERPENT_I_BURST:
                 return 5110016;
+            case 5110018:
+                return Buccaneer.SERPENT_SCALE; // 5111017
             case Buccaneer.GREATER_SEA_SERPENT_II_BURST:
-                return 5120029;
+            case 5120029:
             case Buccaneer.SEA_SERPENT_RAGE:
-                return 5120024;
+            case 5120024:
+                return Buccaneer.GREATER_SEA_SERPENT_II; // 5120022
             case 5121027:
                 return 5120026;
             case 5120021:
@@ -2609,14 +2637,47 @@ public class SkillConstants {
             // Hero Sub-Skills & 2nd 6th Job Ascent
             case 1120017:
                 return 1121008; // Raging Blow Enrage
+            case 1121055:
+                return 1121054; // Cry Valhalla Attack
+            case 1141001:
+                return 1141000; // HEXA Raging Blow Enrage
+            case 1141004:
+                return 1141003; // HEXA Rending Edge
+            case 1140010:
+                return 1140005; // HEXA Rending Edge Passive
+            case 1141007:
+                return 1141006; // HEXA Cry Valhalla Attack
             case 1141502:
                 return 1141502; // Ultrasonic Slash (Ascent Root)
+            case 400011002:
+                return 400011001; // Burning Soul Blade Stationary
+            case 400011074:
+            case 400011075:
+            case 400011076:
+            case 400011156:
+                return 400011073; // Instinctual Combo Waves
+            case 400011125:
+            case 400011126:
+            case 400011143:
+                return 400011124; // Sword Illusion Subs
             // Paladin Sub-Skills & 2nd 6th Job Ascent
+            case 1221020:
+                return 1221019; // Heaven's Hammer Tile
             case 1221023:
                 return 1220022; // Divine Judgment Attack
+            case 1241002:
+                return 1240001; // HEXA Divine Judgment Attack
+            case 1241006:
+                return 1241005; // HEXA Divine Mark Explosion
+            case 1241010:
+                return 1241007; // HEXA Heaven's Hammer Tile
             case 1241504:
             case 1241505:
                 return 1241504; // Dominus Oblivion (Ascent Root)
+            case 400011053:
+                return 400011052; // Hammers of the Righteous Active
+            case 400011132:
+                return 400011131; // Mighty Mjolnir Explosion
             // Dark Knight Sub-Skills & 2nd 6th Job Ascent
             case 1321024:
             case 1321025:
@@ -2632,9 +2693,15 @@ public class SkillConstants {
             case 1341502:
             case 1341503:
                 return 1341502; // Dark Halidom (Ascent Root)
+            case 400011069:
+                return 400011068; // Radiant Evil Sub
+            case 400011085:
+                return 400011047; // Spear of Darkness Atom
             // Fire/Poison Sub-Skills & 2nd 6th Job Ascent
             case 2100010:
                 return 2101010; // Ignite Tile
+            case 2111014:
+                return 2111013; // Teleport Mastery: Poison Mist
             case 2120013:
                 return 2121007; // Meteor Shower FA
             case 2141001:
@@ -2654,13 +2721,22 @@ public class SkillConstants {
             case 2141504:
             case 2141505:
                 return 2141504; // Immortal Flame (Ascent Root)
+            case 400021029:
+                return 400021028; // Poison Nova Explosion
+            case 400021102:
+            case 400021103:
+                return 400021101; // Poison Chain Subs
             // Ice/Lightning Sub-Skills & 2nd 6th Job Ascent
             case 2211015:
                 return 2211011; // Glacial Wall Tile
             case 2220014:
                 return 2221007; // Blizzard FA
+            case 2221055:
+            case 2221056:
+                return 2221054; // Ice Aura Subs
             case 2241001:
-                return 2241000; // HEXA Chain Lightning Tile
+            case 2240006:
+                return 2241000; // HEXA Chain Lightning Tile & Cryo Shock
             case 2241004:
                 return 2241003; // HEXA Blizzard FA
             case 2241008:
@@ -2670,6 +2746,13 @@ public class SkillConstants {
             case 2241505:
             case 2241506:
                 return 2241505; // Parabolic Bolt (Ascent Root)
+            case 400020002:
+                return 400021002; // Ice Age Tile
+            case 400021031:
+            case 400021040:
+                return 400021030; // Bolt Barrage Tiles
+            case 400021112:
+                return 400021094; // Jupiter Thunder Shock
             // Bishop Sub-Skills & 2nd 6th Job Ascent
             case 2301010:
                 return 2301002; // Heal Debuff
@@ -2695,11 +2778,23 @@ public class SkillConstants {
             case 2341507:
             case 2341508:
                 return 2341507; // Commandment of Heaven (Ascent Root)
+            case 400021033:
+            case 400021052:
+                return 400021032; // Angel of Balance Subs
+            case 400021077:
+                return 400021070; // Peacemaker Explosion
             // Bowmaster 6th Job Sub-Skills & 2nd 6th Job Ascent
             case 3141001:
                 return 3141000; // HEXA Hurricane Sub
             case 3141003:
                 return 3141002; // HEXA Arrow Stream Sub
+            case 3140006:
+            case 3140007:
+            case 3140008:
+                return 3141005; // HEXA Quiver Cartridge Atoms
+            case 3140010:
+            case 3140011:
+                return 3141009; // Extra Quiver Cartridge Subs
             case 3141014:
                 return 3141013; // HEXA Speed Mirage Sub
             case 3141503:
@@ -2726,8 +2821,6 @@ public class SkillConstants {
                 return 3341000; // HEXA Cardinal Burst Attack
             case 3341003:
                 return 3341002; // HEXA Bountiful Burst Sub
-            case 3341005:
-                return 3341004; // HEXA Bountiful Deluge Sub
             case 3341007:
                 return 3341006; // HEXA Glyph of Impalement Sub
             case 3341009:
@@ -2747,8 +2840,7 @@ public class SkillConstants {
             case 3341023:
                 return 3341016; // HEXA Combo Assault Subs
             case 3341505:
-            case 3341506:
-                return 3341505; // Relic Materialize (Ascent Root)
+                return 3341505; // Piercing Relic (Ascent Root)
             // Night Lord 6th Job Sub-Skills & 2nd 6th Job Ascent
             case 4141001:
                 return 4141000; // HEXA Enhanced Quad Star
@@ -2837,6 +2929,8 @@ public class SkillConstants {
                 return 5241002; // HEXA Broadside Summon & Bomb
             case 5241006:
                 return 5241005; // Condemnation -> HEXA Brain Scrambler
+            case 5241008:
+                return 5241007; // HEXA Eight-Legs Easton Sub
             case 5241011:
             case 5241012:
             case 5241013:
@@ -4564,9 +4658,17 @@ public class SkillConstants {
     public static boolean isDivineEchoMimicSkills(int skillId) {
         switch (skillId) {
             case Paladin.DIVINE_CHARGE:
+            case 1221021: // Divine Charge IV
             case Paladin.BLAST:
             case Paladin.HEAVENS_HAMMER:
+            case 1221019: // Heaven's Hammer 2
+            case 1221020: // Heaven's Hammer Tile
             case Paladin.SMITE_SHIELD:
+            case 1241000: // HEXA Blast
+            case 1241003: // HEXA Divine Charge
+            case 1241004: // HEXA Divine Charge 2
+            case 1241007: // HEXA Heaven's Hammer
+            case 1241010: // HEXA Heaven's Hammer Tile
 
             case Paladin.NOBLE_DEMAND:
             case Paladin.MAGIC_CRASH:
@@ -4774,8 +4876,10 @@ public class SkillConstants {
     public static boolean isNoCoolDownAttack(int skillID) {
         switch (skillID) {
             case DarkKnight.GUNGNIR_DESCENT:
+            case DarkKnight.HEXA_GUNGNIR_DESCENT:
             case Bishop.HEAL:
             case Bishop.TRIUMPH_FEATHER_ATOM:
+            case Bishop.HEXA_TRIUMPH_FEATHER_ATOM:
             case IceLightning.FROZEN_ORB:
             case IceLightning.HEXA_FROZEN_ORB:
             case IceLightning.THUNDER_SPHERE:
@@ -5071,6 +5175,9 @@ public class SkillConstants {
             case Archer.GUIDED_ARROW:
                 // BowMaster
             case BowMaster.QUIVER_CARTRIDGE_ATOM:
+            case 3140006:
+            case 3140007:
+            case 3140008:
             case BowMaster.QUIVER_BARRAGE_ATOM:
             case BowMaster.INHUMAN_SPEED:
                 // Pathfinder
@@ -5081,13 +5188,25 @@ public class SkillConstants {
             case Pathfinder.SWARM_SHOT_ATOM:
             case Pathfinder.BOUNTIFUL_BURST:
             case Pathfinder.ANCIENT_ASTRA_DELUGE_ATOM:
+            case 3341002:
+            case 3341003:
+            case 3341004:
+            case 3341005:
+            case 3341012:
+            case 3341502:
                 // Night Lord
             case NightLord.ASSASSINS_MARK_ATOM:
             case NightLord.NIGHTLORD_MARK_ATOM:
             case NightLord.HEXA_ASSASSINS_MARK_ATOM:
+            case 4141003:
+            case 4141006:
             case NightLord.DARK_LORDS_OMEN:
                 // Shadower
             case Shadower.MESO_EXPLOSION_ATOM:
+            case 4220021:
+            case 4241008:
+            case 4241009:
+            case 4241504:
                 // Blaze Wizard
             case BlazeWizard.ORBITAL_FLAME_ATOM:
             case BlazeWizard.GREATER_ORBITAL_FLAME_ATOM:
