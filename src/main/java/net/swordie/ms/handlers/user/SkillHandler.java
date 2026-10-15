@@ -1393,6 +1393,10 @@ public class SkillHandler {
         chr.setQRValueByKey(QuestConstants.SKILL_COMMAND_LOCK_ARK, "161121015", skillID + "");
         chr.write(UserPacket.skillOnOffEffect(chr.getId(), Ren.RIOTOUS_HEART));
         chr.write(UserPacket.skillOnOffEffect(chr.getId(), Ren.HEARTS_UNITED));
+        if (chr.hasSkill(Ren.HEXA_RIOTOUS_HEART)) {
+            chr.write(UserPacket.skillOnOffEffect(chr.getId(), Ren.HEXA_RIOTOUS_HEART));
+            chr.write(UserPacket.skillOnOffEffect(chr.getId(), Ren.HEXA_HEARTS_UNITED));
+        }
     }
 
     public static void handleFinalPactRequest(Char chr, InPacket inPacket) {

@@ -50,44 +50,53 @@ public class Ren extends Job {
     public static final int EXCLUSIVE_SPELL = 160021005; // MaxLevelBuff nOption 4
     public static final int SHAPESHIFT = 160021075;
 
-    // 1st Job
-    public static final int PLUM_BLOSSOM_SWORD_SLICE = 164001000;
+    // 1st Job (16100)
+    public static final int PLUM_BLOSSOM_SWORD_SLICE = 161001000;
+    public static final int SERENE_BREEZE = 161001001;
+    public static final int SERENE_BREEZE_SUB = 161001002;
+    public static final int LILTING_PETAL = 161001003;
 
-    // 2nd Job
+    // 2nd Job (16110)
+    public static final int PLUM_BLOSSOM_SWORD_STRIKE = 161101000;
+    public static final int FIRST_PLUM_BLOSSOM_SWORD_PETAL_FLASH = 161101001;
+    public static final int FIRST_PLUM_BLOSSOM_SWORD_PETAL_FLASH_UNSHEATHE = 161101009;
+    public static final int FIRST_PLUM_BLOSSOM_SWORD_PETAL_FLASH_SHEATHE = 161101002;
+    public static final int IMUGI_SPIRIT_SWORD_SPIRIT_STRIKE = 161100003;
+    public static final int IMUGI_SPIRIT_SWORD_SPIRIT_STRIKE_ATT = 161101004;
     public static final int BLOSSOMING_BLADE = 161101005; // Booster
 
-    // 3rd Job
+    // 3rd Job (16111)
+    public static final int PLUM_BLOSSOM_SWORD_TORRENT = 161111000;
     public static final int SECOND_PLUM_BLOSSOM_SWORD_RAINING_BLOSSOMS = 161110001; // REGISTER_EXTRA_SKILL
     public static final int SECOND_PLUM_BLOSSOM_SWORD_RAINING_BLOSSOMS_ATOM = 161111002;
+    public static final int IMUGI_SPIRIT_SWORD_SPIRIT_STRIKE_II = 161110003;
+    public static final int IMUGI_SPIRIT_SWORD_SPIRIT_STRIKE_II_ATT = 161111004;
     public static final int FIRST_IMUGI_SPIRIT_SWORD_SERPENT_BLESSING = 161110005;
-    // Contained stat IndieAsrR (29)
-    // Contained stat IndieCheckTimeByClient (68)
-    public static final int FIRST_IMUGI_SPIRIT_SWORD_BURROWING_EARTH = 161111007; // invisible
+    public static final int WISH_UNENDING = 161111006;
+    public static final int FIRST_IMUGI_SPIRIT_SWORD_BURROWING_EARTH = 161110007;
     public static final int FIRST_IMUGI_SPIRIT_SWORD_BURROWING_EARTH_EFF = 161111008; // invisible
     public static final int FIRST_IMUGI_SPIRIT_SWORD_BURROWING_EARTH_2 = 161111011;
 
-    // 4th Job
-    public static final int SECOND_IMUGI_SPIRIT_SWORD_SERPENT_FANG = 161120006; // Final Attack
+    // 4th Job (16112) & Hyper
+    public static final int PLUM_BLOSSOM_SWORD_STORM = 161121000; // KeyDownMoving nOption = 1
+    public static final int IMUGI_SPIRIT_SWORD_SPIRIT_STRIKE_III = 161120001;
+    public static final int IMUGI_SPIRIT_SWORD_SPIRIT_STRIKE_III_ATT = 161121002;
     public static final int FINAL_IMUGI_SPIRIT_SWORD_RAVENOUS_SPIRIT = 161120003;
     public static final int FINAL_IMUGI_SPIRIT_SWORD_RAVENOUS_SPIRIT_EFF = 161121004;
-    public static final int FINAL_IMUGI_SPIRIT_SWORD_YEARS_UNCOUNTED = 161121043;
-    public static final int FINAL_IMUGI_SPIRIT_SWORD_YEARS_UNCOUNTED_DEBUFF = 161121044;
-    public static final int HEXA_SECOND_IMUGI_SPIRIT_SWORD_SERPENT_FANG = 161140010; // Final Attack
-    public static final int ANIMA_WARRIOR = 161121009;
-    public static final int ANIMA_HERO_WILL = 161121010;
-
-    public static final int PLUM_BLOSSOM_SWORD_STORM = 161121000; // KeyDownMoving nOption = 1 hasMovingAffectingStat 17
-    // RenPlumSwordForm3Shoot nOption = 2 ~ 25, 26, 27, 28 hasMovingAffectingStat 0 | SHOOT_OBJECT_CREATED
-    // RenPlumSwordForm3Stack nOption = 1
-    public static final int PLUM_BLOSSOM_SWORD_UNBOWED_BLADE = 161121008; // IndieNotDamaged nValue = 1 (3 giây)
-
     public static final int RIOTOUS_HEART = 161121005; // Shoot Object
     public static final int HEARTS_UNITED = 161121014; // Shoot Object
-
+    public static final int UNITY = 161121015;
+    public static final int SECOND_IMUGI_SPIRIT_SWORD_SERPENT_FANG = 161120006; // Final Attack
+    public static final int FOURTH_PLUM_BLOSSOM_SWORD_UNBOWED_BLADE = 161121007;
+    public static final int PLUM_BLOSSOM_SWORD_UNBOWED_BLADE = 161121008; // IndieNotDamaged nValue = 1 (3s)
+    public static final int ANIMA_WARRIOR = 161121009;
+    public static final int ANIMA_HERO_WILL = 161121010;
     public static final int SUBLIMATION = 161121041; // Sublimation nValue = 3
     public static final int PLUM_BRANCH_SNARE = 161121042; // Plum Branch Snare
+    public static final int FINAL_IMUGI_SPIRIT_SWORD_YEARS_UNCOUNTED = 161121043;
+    public static final int FINAL_IMUGI_SPIRIT_SWORD_YEARS_UNCOUNTED_DEBUFF = 161121044;
 
-    // V Skills
+    // V Skills (40001)
     public static final int THOUSAND_BLOSSOM_FLURRY = 400011147;
     public static final int THOUSAND_BLOSSOM_FLURRY_EX = 400011148; // RenPlumSwordEx
     public static final int THOUSAND_BLOSSOM_FLURRY_ATOM = 400011149; // RenPlumSwordEx
@@ -96,18 +105,31 @@ public class Ren extends Job {
     public static final int SOUL_IMMEASURABLE_SPE = 400011152; // Soul Immeasurable
     public static final int DANCING_ANNIHILATION = 400011153;
     public static final int FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART = 400011154;
+    public static final int FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART_2 = 400011155;
     public static final int FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART_ATT = 400011157; // Skill Activation
 
-    // HEXA skills
+    // HEXA Skills (16114)
+    public static final int HEXA_PLUM_BLOSSOM_SWORD_STORM = 161141000;
+    public static final int HEXA_IMUGI_SPIRIT_SWORD_SPIRIT_STRIKE = 161141001;
+    public static final int HEXA_SECOND_IMUGI_SPIRIT_SWORD_SERPENT_FANG = 161140010; // Final Attack
+    public static final int HEXA_WISH_UNENDING = 161140005;
+    public static final int HEXA_WISH_UNENDING_ATT = 161141006;
+    public static final int HEXA_FINAL_IMUGI_SPIRIT_SWORD_BURROWING_EARTH = 161141002;
+    public static final int HEXA_FINAL_IMUGI_SPIRIT_SWORD_BURROWING_EARTH_2 = 161141011;
+    public static final int HEXA_FINAL_IMUGI_SPIRIT_SWORD_RAVENOUS_SPIRIT = 161141003;
     public static final int HEXA_FINAL_IMUGI_SPIRIT_SWORD_YEARS_UNCOUNTED = 161141004;
     public static final int HEXA_FINAL_IMUGI_SPIRIT_SWORD_YEARS_UNCOUNTED_DEBUFF = 161141012;
     public static final int HEXA_SECOND_PLUM_BLOSSOM_SWORD_RAINING_BLOSSOMS = 161140007; // REGISTER_EXTRA_SKILL
     public static final int HEXA_SECOND_PLUM_BLOSSOM_SWORD_RAINING_BLOSSOMS_ATOM = 161141008;
     public static final int HEXA_RIOTOUS_HEART = 161141009; // Shoot Object
     public static final int HEXA_HEARTS_UNITED = 161141013; // Shoot Object
-    public static final int HEARTBOUND_VERSE = 161141506; // Rising Azure Dragon: Heartbound Verse
+    public static final int DIVIDED_HEAVENS = 161141500; // Rising Azure Dragon: Divided Heavens (Origin 1)
+    public static final int DIVIDED_HEAVENS_FINISH = 161141501; // Rising Azure Dragon: Divided Heavens Finish
+    public static final int HEARTBOUND_VERSE = 161141506; // Rising Azure Dragon: Heartbound Verse (Origin 2 / Ascent)
     public static final int HEARTBOUND_VERSE_FALLING_FLOWER = 161141502; // Rising Azure Dragon: Heartbound Verse - Falling Flower
     public static final int HEARTBOUND_VERSE_CLIMBING_SERPENT = 161141503; // Rising Azure Dragon: Heartbound Verse - Climbing Serpent
+    public static final int HEARTBOUND_VERSE_SOARING_DRAGON = 161141504; // Rising Azure Dragon: Heartbound Verse - Soaring Dragon
+    public static final int HEARTBOUND_VERSE_FALLING_FLOWER_ATT = 161141505; // Rising Azure Dragon: Heartbound Verse - Falling Flower Attack
 
     private static final int[] addedSkills = new int[]{
             RETURN_TO_SERPENT_HEARTWATERS,
@@ -125,7 +147,10 @@ public class Ren extends Job {
                 if (!chr.hasSkill(id)) {
                     Skill skill = SkillData.getSkillDeepCopyById(id);
                     if (skill != null) {
-                        skill.setCurrentLevel(skill.getMasterLevel());
+                        int maxLv = skill.getMaxLevel() > 0 ? skill.getMaxLevel() : skill.getMasterLevel();
+                        if (maxLv <= 0) maxLv = 1;
+                        skill.setCurrentLevel(maxLv);
+                        skill.setMasterLevel(maxLv);
                         chr.addSkill(skill);
                     }
                 }
@@ -138,7 +163,24 @@ public class Ren extends Job {
         return JobConstants.isRen(id);
     }
 
-
+    private boolean isFinalImugiSpiritSwordSkill(int skillID) {
+        return switch (skillID) {
+            case FIRST_IMUGI_SPIRIT_SWORD_BURROWING_EARTH,
+                 FIRST_IMUGI_SPIRIT_SWORD_BURROWING_EARTH_EFF,
+                 FIRST_IMUGI_SPIRIT_SWORD_BURROWING_EARTH_2,
+                 FINAL_IMUGI_SPIRIT_SWORD_RAVENOUS_SPIRIT,
+                 FINAL_IMUGI_SPIRIT_SWORD_RAVENOUS_SPIRIT_EFF,
+                 FINAL_IMUGI_SPIRIT_SWORD_YEARS_UNCOUNTED,
+                 HEXA_FINAL_IMUGI_SPIRIT_SWORD_BURROWING_EARTH,
+                 HEXA_FINAL_IMUGI_SPIRIT_SWORD_BURROWING_EARTH_2,
+                 HEXA_FINAL_IMUGI_SPIRIT_SWORD_RAVENOUS_SPIRIT,
+                 HEXA_FINAL_IMUGI_SPIRIT_SWORD_YEARS_UNCOUNTED,
+                 FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART,
+                 FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART_2,
+                 FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART_ATT -> true;
+            default -> false;
+        };
+    }
 
     // Attack related methods ------------------------------------------------------------------------------------------
     @Override
@@ -151,7 +193,7 @@ public class Ren extends Job {
                 if (!mts.hasCurrentMobStatBySkillId(skillID)) {
                     o1.nOption = 1;
                     o1.rOption = skillID;
-                    o1.tOption = si.getValue(time, slv);
+                    o1.tOption = si != null ? si.getValue(time, slv) : 10;
                     mts.addStatOptions(mob, MobStat.Stun, o1);
                 }
                 break;
@@ -166,11 +208,13 @@ public class Ren extends Job {
                     ox.nOption = 1;
                     ox.cOption = chr.getId();
                     ox.rOption = skillID;
-                    ox.mOption = skillID + 1;
+                    ox.mOption = skillID == HEXA_FINAL_IMUGI_SPIRIT_SWORD_YEARS_UNCOUNTED
+                            ? HEXA_FINAL_IMUGI_SPIRIT_SWORD_YEARS_UNCOUNTED_DEBUFF
+                            : FINAL_IMUGI_SPIRIT_SWORD_YEARS_UNCOUNTED_DEBUFF;
                     ox.xOption = mob.getPosition().getX();
                     ox.yOption = mob.getPosition().getY();
                     ox.zOption = mob.getPosition().getY() + 10;
-                    ox.tOption = 5000; // 5 giây
+                    ox.tOption = 5000; // 5s
                     ox.uOption = 10;
                     options.add(ox);
                     o1.extraOpts = new ArrayList<>(options);
@@ -195,26 +239,47 @@ public class Ren extends Job {
                     && skillID != THOUSAND_BLOSSOM_FLURRY_EX
                     && skillID != THOUSAND_BLOSSOM_FLURRY_ATOM
                     && skillID != SOUL_IMMEASURABLE_ATT
-                    && skillID != SOUL_IMMEASURABLE_SPE) {
+                    && skillID != SOUL_IMMEASURABLE_SPE
+                    && skillID != HEXA_WISH_UNENDING_ATT) {
                 serpentBlessing();
                 rainingBlossoms();
                 thousandBlossomsFlurry(attackInfo);
                 soulImmeasuable(attackInfo);
             }
+            if (isFinalImugiSpiritSwordSkill(skillID)
+                    && chr.hasSkill(HEXA_WISH_UNENDING)
+                    && !chr.hasSkillOnCooldown(HEXA_WISH_UNENDING_ATT)) {
+                chr.write(UserLocal.userBonusAttackRequest(HEXA_WISH_UNENDING_ATT));
+                chr.addSkillCooldown(HEXA_WISH_UNENDING_ATT, 1000);
+            }
         }
         Option o1 = new Option();
         chr.write(WvsContext.renImugiSpiritSwordRequest(skillID));
         switch (attackInfo.skillId) {
+            case FIRST_PLUM_BLOSSOM_SWORD_PETAL_FLASH:
+            case FIRST_PLUM_BLOSSOM_SWORD_PETAL_FLASH_UNSHEATHE:
+            case FIRST_PLUM_BLOSSOM_SWORD_PETAL_FLASH_SHEATHE: {
+                SkillInfo pSi = SkillData.getSkillInfoById(FIRST_PLUM_BLOSSOM_SWORD_PETAL_FLASH);
+                int pSlv = Math.max(1, chr.getSkillLevel(FIRST_PLUM_BLOSSOM_SWORD_PETAL_FLASH));
+                int healR = pSi != null ? pSi.getValue(mhpR, pSlv) : (4 + pSlv / 3);
+                if (healR > 0) {
+                    chr.heal((int) (chr.getMaxHP() * (healR / 100D)));
+                }
+                break;
+            }
             case PLUM_BLOSSOM_SWORD_STORM:
+            case HEXA_PLUM_BLOSSOM_SWORD_STORM:
                 o1.nOption = 1;
                 o1.rOption = skillID;
-                o1.tOption = si.getValue(SkillStat.time, slv);
+                o1.tOption = si != null ? si.getValue(SkillStat.time, slv) : 0;
                 o1.xOption = 1;
                 tsm.sendStat(KeyDownMoving, o1);
                 break;
+            case FOURTH_PLUM_BLOSSOM_SWORD_UNBOWED_BLADE:
             case PLUM_BLOSSOM_SWORD_UNBOWED_BLADE:
                 o1.nValue = 1;
                 o1.nReason = skillID;
+                o1.tTerm = 3;
                 o1.tOption = 3;
                 tsm.sendStat(IndieNotDamaged, o1);
                 break;
@@ -226,6 +291,38 @@ public class Ren extends Job {
             case HEXA_HEARTS_UNITED:
                 chr.addSkillCooldown(skillID, 30000);
                 break;
+            case DIVIDED_HEAVENS:
+            case DIVIDED_HEAVENS_FINISH:
+            case HEARTBOUND_VERSE:
+            case HEARTBOUND_VERSE_FALLING_FLOWER:
+            case HEARTBOUND_VERSE_CLIMBING_SERPENT:
+            case HEARTBOUND_VERSE_SOARING_DRAGON:
+            case HEARTBOUND_VERSE_FALLING_FLOWER_ATT:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob == null) {
+                        continue;
+                    }
+                    MobTemporaryStat mts = mob.getTemporaryStat();
+                    EnumMap<MobStat, Option> stats = new EnumMap<>(MobStat.class);
+
+                    Option oFreeze = new Option();
+                    oFreeze.nOption = 1;
+                    oFreeze.rOption = skillID;
+                    oFreeze.tOption = 10;
+                    oFreeze.cOption = chr.getId();
+                    stats.put(MobStat.Freeze, oFreeze);
+
+                    Option oDebuff = new Option();
+                    oDebuff.nOption = 1;
+                    oDebuff.rOption = skillID;
+                    oDebuff.tOption = 20;
+                    oDebuff.cOption = chr.getId();
+                    stats.put(MobStat.OriginDebuff, oDebuff);
+
+                    mts.addStatOptions(mob, stats);
+                }
+                break;
         }
     }
 
@@ -233,17 +330,21 @@ public class Ren extends Job {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         int skillID = SOUL_IMMEASURABLE;
         if (tsm.hasStatBySkillId(skillID)) {
-            int slv = chr.getSkillLevel(skillID);
+            int slv = Math.max(1, chr.getSkillLevel(skillID));
             SkillInfo si = SkillData.getSkillInfoById(skillID);
-            if (this.soulImmeasuableStack < si.getValue(u2, slv)) {
+            if (si == null) {
+                return;
+            }
+            int maxStack = Math.max(90, si.getValue(u2, slv));
+            if (this.soulImmeasuableStack < maxStack) {
                 Option o2 = new Option();
-                this.soulImmeasuableStack += attackInfo.mobCount;
+                this.soulImmeasuableStack = Math.min(maxStack, this.soulImmeasuableStack + Math.max(1, attackInfo.mobCount));
                 o2.nOption = this.soulImmeasuableStack;
                 o2.rOption = skillID;
                 o2.tOption = si.getValue(time, slv);
                 tsm.sendStat(SpiritAwakeningStack, o2);
                 chr.write(UserLocal.userBonusAttackRequest(SOUL_IMMEASURABLE_ATT));
-                if (this.soulImmeasuableStack == 90) {
+                if (this.soulImmeasuableStack >= maxStack) {
                     chr.write(UserLocal.userBonusAttackRequest(SOUL_IMMEASURABLE_SPE));
                 }
             }
@@ -252,18 +353,33 @@ public class Ren extends Job {
 
     private void rainingBlossoms() {
         if (chr.hasSkill(SECOND_PLUM_BLOSSOM_SWORD_RAINING_BLOSSOMS)) {
-
-            int originalSkillID = chr.hasSkill(HEXA_SECOND_PLUM_BLOSSOM_SWORD_RAINING_BLOSSOMS) ?
-                    HEXA_SECOND_PLUM_BLOSSOM_SWORD_RAINING_BLOSSOMS
+            boolean isHexa = chr.hasSkill(HEXA_SECOND_PLUM_BLOSSOM_SWORD_RAINING_BLOSSOMS);
+            int originalSkillID = isHexa
+                    ? HEXA_SECOND_PLUM_BLOSSOM_SWORD_RAINING_BLOSSOMS
                     : SECOND_PLUM_BLOSSOM_SWORD_RAINING_BLOSSOMS;
 
-            int atomSkillID = chr.hasSkill(originalSkillID) ?
-                    HEXA_SECOND_PLUM_BLOSSOM_SWORD_RAINING_BLOSSOMS_ATOM
+            int atomSkillID = isHexa
+                    ? HEXA_SECOND_PLUM_BLOSSOM_SWORD_RAINING_BLOSSOMS_ATOM
                     : SECOND_PLUM_BLOSSOM_SWORD_RAINING_BLOSSOMS_ATOM;
 
-            var si = SkillData.getSkillInfoById(atomSkillID);
-            if (Util.succeedProp(35)) {
-                int bulletCount = si.getValue(SkillStat.bulletCount, chr.getSkillLevel(originalSkillID));
+            int slv = Math.max(1, chr.getSkillLevel(originalSkillID));
+            SkillInfo origSi = SkillData.getSkillInfoById(originalSkillID);
+            SkillInfo si = SkillData.getSkillInfoById(atomSkillID);
+            if (si == null || si.getSecondAtomInfos() == null || si.getSecondAtomInfos().isEmpty()) {
+                return;
+            }
+            int propVal = origSi != null ? origSi.getValue(SkillStat.prop, slv) : 35;
+            if (propVal <= 0) {
+                propVal = 35;
+            }
+            if (Util.succeedProp(propVal)) {
+                int bulletCount = si.getValue(SkillStat.bulletCount, slv);
+                if (bulletCount <= 0 && origSi != null) {
+                    bulletCount = origSi.getValue(SkillStat.bulletCount, slv);
+                }
+                if (bulletCount <= 0) {
+                    bulletCount = isHexa ? 7 : 5;
+                }
                 List<SecondAtom> secondAtoms = new LinkedList<>();
                 Rect rect = chr.getRectAround(new Rect(-500, -500, 500, 500));
                 if (!chr.isLeft()) rect = rect.horizontalFlipAround(chr.getPosition().getX());
@@ -277,7 +393,7 @@ public class Ren extends Job {
                 for (int i = 0; i < bulletCount; i++) {
                     var mob = Util.getRandomFromCollection(mobs);
                     if (mob == null) continue;
-                    SecondAtom fa = new SecondAtom(sai, chr.getNewSecondAtomKey(), chr.getId(), mob != null ? mob.getObjectId() : 0, i,
+                    SecondAtom fa = new SecondAtom(sai, chr.getNewSecondAtomKey(), chr.getId(), mob.getObjectId(), i,
                             si.getSkillId(), pos, start);
                     fa.setDataIndex(dataIndex);
                     fa.setCustomrotate(360);
@@ -319,8 +435,11 @@ public class Ren extends Job {
                 tsm.sendStat(RenPlumSwordEx, o1);
             }
             if (count == 30 || count == 70 || count == 125) {
-                int bulletCount = count - 10;
+                int bulletCount = count == 30 ? 20 : count == 70 ? 40 : 65;
                 SkillInfo si = SkillData.getSkillInfoById(THOUSAND_BLOSSOM_FLURRY_ATOM);
+                if (si == null || si.getSecondAtomInfos() == null) {
+                    return;
+                }
                 List<SecondAtom> secondAtoms = new LinkedList<>();
                 Rect rect = chr.getRectAround(new Rect(-1000, -1000, 1000, 1000));
                 if (!chr.isLeft()) rect = rect.horizontalFlipAround(chr.getPosition().getX());
@@ -335,7 +454,7 @@ public class Ren extends Job {
                     for (int i = 0; i < bulletCount; i++) {
                         var mob = Util.getRandomFromCollection(mobs);
                         if (mob == null) continue;
-                        SecondAtom fa = new SecondAtom(sai, chr.getNewSecondAtomKey(), chr.getId(), mob != null ? mob.getObjectId() : 0,
+                        SecondAtom fa = new SecondAtom(sai, chr.getNewSecondAtomKey(), chr.getId(), mob.getObjectId(),
                                 i, si.getSkillId(), pos, start);
                         secondAtoms.add(fa);
                     }
@@ -401,11 +520,30 @@ public class Ren extends Job {
                 o1.tOption = si.getValue(SkillStat.time, slv);
                 tsm.sendStat(MaxLevelBuff, o1);
                 break;
+            case FIRST_PLUM_BLOSSOM_SWORD_PETAL_FLASH:
+            case FIRST_PLUM_BLOSSOM_SWORD_PETAL_FLASH_UNSHEATHE:
+            case FIRST_PLUM_BLOSSOM_SWORD_PETAL_FLASH_SHEATHE: {
+                SkillInfo pSi = SkillData.getSkillInfoById(FIRST_PLUM_BLOSSOM_SWORD_PETAL_FLASH);
+                int pSlv = Math.max(1, chr.getSkillLevel(FIRST_PLUM_BLOSSOM_SWORD_PETAL_FLASH));
+                int healR = pSi != null ? pSi.getValue(mhpR, pSlv) : (4 + pSlv / 3);
+                if (healR > 0) {
+                    chr.heal((int) (chr.getMaxHP() * (healR / 100D)));
+                }
+                break;
+            }
             case BLOSSOMING_BLADE:
                 o1.nOption = si.getValue(SkillStat.x, slv);
                 o1.rOption = skillID;
                 o1.tOption = si.getValue(SkillStat.time, slv);
                 tsm.sendStat(Booster, o1);
+                break;
+            case FOURTH_PLUM_BLOSSOM_SWORD_UNBOWED_BLADE:
+            case PLUM_BLOSSOM_SWORD_UNBOWED_BLADE:
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 3;
+                o1.tOption = 3;
+                tsm.sendStat(IndieNotDamaged, o1);
                 break;
             case SUBLIMATION:
                 o1.nOption = si.getValue(SkillStat.w, slv);
@@ -454,7 +592,13 @@ public class Ren extends Job {
                 newStats.put(SpiritAwakeningStack, o2);
                 tsm.sendStat(newStats);
                 break;
-            case FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART: {
+            case FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART:
+            case FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART_2:
+            case FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART_ATT: {
+                SkillInfo atomSi = SkillData.getSkillInfoById(FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART);
+                if (atomSi == null || atomSi.getSecondAtomInfos() == null) {
+                    break;
+                }
                 List<SecondAtom> secondAtoms = new LinkedList<>();
                 Rect rect = chr.getRectAround(new Rect(-800, -800, 800, 800));
                 if (!chr.isLeft()) rect = rect.horizontalFlipAround(chr.getPosition().getX());
@@ -464,10 +608,10 @@ public class Ren extends Job {
                 }
                 int key = 0;
                 final long start = System.currentTimeMillis();
-                for (SkillInfo.SecondAtomInfo sai : si.getSecondAtomInfos().values()) {
+                for (SkillInfo.SecondAtomInfo sai : atomSi.getSecondAtomInfos().values()) {
                     final var pos = chr.getPosition().add(sai.getPos());
-                    SecondAtom fa = new SecondAtom(sai, chr.getNewSecondAtomKey(), chr.getId(), mob != null ? mob.getObjectId() : 0, key,
-                            skillID, pos, start);
+                    SecondAtom fa = new SecondAtom(sai, chr.getNewSecondAtomKey(), chr.getId(), mob.getObjectId(), key,
+                            FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART, pos, start);
                     fa.setDataIndex(107);
                     fa.setSpecialAtom(true);
                     secondAtoms.add(fa);
@@ -476,6 +620,19 @@ public class Ren extends Job {
                 chr.createSecondAtom(secondAtoms);
                 break;
             }
+            case DIVIDED_HEAVENS:
+            case DIVIDED_HEAVENS_FINISH:
+            case HEARTBOUND_VERSE:
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 7;
+                o1.tOption = 7;
+                tsm.sendStat(IndieNotDamaged, o1);
+                chr.write(UserLocal.showHexaSkillEff(chr));
+                if (chr.getParty() != null) {
+                    chr.getParty().broadcast(UserLocal.showHexaSkillEff(chr), chr);
+                }
+                break;
             case HEARTBOUND_VERSE_FALLING_FLOWER:
                 summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
                 summon.setMoveAbility(MoveAbility.Stop);
@@ -569,7 +726,6 @@ public class Ren extends Job {
             sm.addSPJobAdv(JobConstants.JobEnum.REN_3.getJobId(), 5);
             sm.addSPJobAdv(JobConstants.JobEnum.REN_4.getJobId(), 5);
             sm.giveAndEquip(1354043);
-            chr.maxSkills();
         } else if (level >= 60 && curJob < JobConstants.JobEnum.REN_3.getJobId()) {
             for (int qid = 36821; qid <= 36839; qid++) {
                 sm.completeQuestNoRewards(qid);
@@ -603,8 +759,11 @@ public class Ren extends Job {
     public int handleSetCoolDownSkill(int skillId) {
         switch (skillId) {
             case FIRST_IMUGI_SPIRIT_SWORD_BURROWING_EARTH_EFF,
-                 FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART -> {
+                 HEXA_FINAL_IMUGI_SPIRIT_SWORD_BURROWING_EARTH -> {
                 chr.addSkillCooldown(FIRST_IMUGI_SPIRIT_SWORD_BURROWING_EARTH_EFF, 20000);
+                if (chr.hasSkill(HEXA_FINAL_IMUGI_SPIRIT_SWORD_BURROWING_EARTH)) {
+                    chr.addSkillCooldown(HEXA_FINAL_IMUGI_SPIRIT_SWORD_BURROWING_EARTH, 20000);
+                }
                 return 1;
             }
         }
@@ -628,28 +787,23 @@ public class Ren extends Job {
             sm.addSPJobAdv(JobConstants.JobEnum.REN_3.getJobId(), 5);
             sm.addSPJobAdv(JobConstants.JobEnum.REN_4.getJobId(), 5);
             sm.giveAndEquip(1354043);
-            chr.maxSkills();
-            chr.chatMessage(net.swordie.ms.enums.ChatType.Notice, "[Ren] Job Auto-Repair: Advanced to 4th Job (16112) and maxed all skills!");
         } else if (chr.getLevel() >= 60 && curJob < JobConstants.JobEnum.REN_3.getJobId()) {
+            for (int qid = 36821; qid <= 36839; qid++) {
+                sm.completeQuestNoRewards(qid);
+            }
+            sm.completeQuestNoRewards(36840);
             sm.setJob(JobConstants.JobEnum.REN_3.getJobId());
             sm.addSPJobAdv(JobConstants.JobEnum.REN_2.getJobId(), 5);
             sm.addSPJobAdv(JobConstants.JobEnum.REN_3.getJobId(), 3);
             sm.giveAndEquip(1354042);
-        } else if (chr.getLevel() < 30) {
-            sm.levelUntil(30);
-            sm.setJob(JobConstants.JobEnum.REN_2.getJobId());
+        } else if (chr.getLevel() >= 30 && curJob < JobConstants.JobEnum.REN_2.getJobId()) {
             for (int qid = 36821; qid <= 36839; qid++) {
                 sm.completeQuestNoRewards(qid);
             }
+            sm.setJob(JobConstants.JobEnum.REN_2.getJobId());
             sm.addSPJobAdv(JobConstants.JobEnum.REN_1.getJobId(), 5);
             sm.addSPJobAdv(JobConstants.JobEnum.REN_2.getJobId(), 3);
-            sm.giveAndEquip(1215002);
             sm.giveAndEquip(1354041);
-            sm.warp(FieldConstants.HOME_MAP);
-        }
-
-        if (chr.getJob() == JobConstants.JobEnum.REN_4.getJobId() && !chr.hasSkill(161121000)) {
-            chr.maxSkills();
         }
 
         incrementRiotousHeart();

@@ -735,6 +735,21 @@ public class MatrixHandler {
         for (int skillID : new int[]{core.getSkillID1(), core.getSkillID2(), core.getSkillID3()}) {
             if (skillID > 0) {
                 skillIDs.add(skillID);
+                switch (skillID) {
+                    case 400011147 -> { // Ren: Thousand Blossom Flurry
+                        skillIDs.add(400011148);
+                        skillIDs.add(400011149);
+                    }
+                    case 400011150 -> { // Ren: Soul Immeasurable
+                        skillIDs.add(400011151);
+                        skillIDs.add(400011152);
+                    }
+                    case 400011154, 400011157 -> { // Ren: Final Imugi Spirit Sword: Blade of the Unbound Heart
+                        skillIDs.add(400011154);
+                        skillIDs.add(400011155);
+                        skillIDs.add(400011157);
+                    }
+                }
             }
         }
         return skillIDs;

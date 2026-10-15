@@ -705,6 +705,18 @@ public class UserStatHandler {
             case 65111100 -> new int[]{65111007};
             case 65121011 -> new int[]{65120011};
             case 65121003 -> new int[]{65121012};
+            // Anima - Ren (16100-16112)
+            case 161001001 -> new int[]{161001002};
+            case 161101001 -> new int[]{161101009, 161101002};
+            case 161100003 -> new int[]{161101004};
+            case 161110001 -> new int[]{161111002};
+            case 161110003 -> new int[]{161111004};
+            case 161110007 -> new int[]{161111008, 161111011, 161111006};
+            case 161121005 -> new int[]{161121014, 161121015};
+            case 161121007 -> new int[]{161121008};
+            case 161120001 -> new int[]{161121002};
+            case 161120003 -> new int[]{161121004};
+            case 161121043 -> new int[]{161121044};
             default -> null;
         };
         if (subIds != null) {

@@ -10513,6 +10513,26 @@ public class Char {
                 list.add(155141503);
                 break;
 
+            // Anima - Ren (16112) HEXA Mastery & Origin/Ascent Companion Sub-Skills
+            case 20000202: // Ren Mastery III: HEXA Wish Unending / Burrowing Earth / Ravenous Spirit / Years Uncounted
+                list.add(161141006);
+                list.add(161141011);
+                list.add(161141012);
+                break;
+            case 20000203: // Ren Mastery IV: HEXA Raining Blossoms / Riotous Heart
+                list.add(161141008);
+                list.add(161141013);
+                break;
+            case 10000050: // Ren Origin: Rising Azure Dragon: Divided Heavens
+                list.add(161141501);
+                break;
+            case 10000096: // Ren Ascent: Rising Azure Dragon: Heartbound Verse
+                list.add(161141502);
+                list.add(161141503);
+                list.add(161141504);
+                list.add(161141505);
+                break;
+
             default:
                 if ((coreID >= 1 && coreID <= 52) || (coreID >= 300 && coreID <= 306)) {
                     list.add(500081000);
@@ -13180,7 +13200,8 @@ public class Char {
             }
         }
         if (JobConstants.isMoXuan(job) || JobConstants.isSiaAstelle(job)
-                || JobConstants.isKhali(job) || JobConstants.isLuminous(job)) {
+                || JobConstants.isKhali(job) || JobConstants.isLuminous(job)
+                || JobConstants.isRen(job)) {
             int[] extraSubSkills;
             if (JobConstants.isMoXuan(job)) {
                 extraSubSkills = new int[]{
@@ -13200,6 +13221,12 @@ public class Char {
                 extraSubSkills = new int[]{
                         154001002, 154101002, 154111003, 154110001,
                         154121002, 154121003, 154120004
+                };
+            } else if (JobConstants.isRen(job)) {
+                extraSubSkills = new int[]{
+                        161001002, 161101009, 161101002, 161101004,
+                        161111002, 161111004, 161111006, 161111008, 161111011,
+                        161121002, 161121004, 161121008, 161121014, 161121015
                 };
             } else {
                 extraSubSkills = new int[]{

@@ -3229,6 +3229,57 @@ public class SkillConstants {
             case 31241504:
             case 31241505:
                 return 31241503; // Demon Avenger 2nd 6th Job Ascent
+            // Anima - Ren (16100-16114) Sub-Skills & 5th/6th Job Mappings
+            case 161001002:
+                return 161001001; // Serene Breeze
+            case 161101009:
+            case 161101002:
+                return 161101001; // First Plum Blossom Sword: Petal Flash
+            case 161101004:
+                return 161100003; // Imugi Spirit Sword: Spirit Strike
+            case 161111002:
+                return 161110001; // Second Plum Blossom Sword: Raining Blossoms
+            case 161111004:
+                return 161110003; // Imugi Spirit Sword: Spirit Strike II
+            case 161111008:
+            case 161111011:
+                return 161110007; // Final Imugi Spirit Sword: Burrowing Earth
+            case 161121014:
+                return 161121005; // Third Plum Blossom Sword: Riotous Heart / Hearts United
+            case 161121008:
+                return 161121007; // Fourth Plum Blossom Sword: Unbowed Blade
+            case 161121002:
+                return 161120001; // Imugi Spirit Sword: Spirit Strike III
+            case 161121004:
+                return 161120003; // Final Imugi Spirit Sword: Ravenous Spirit
+            case 161121044:
+                return 161121043; // Final Imugi Spirit Sword: Years Uncounted
+            case 161141006:
+                return 161140005; // HEXA Wish Unending
+            case 161141011:
+                return 161141002; // HEXA Final Imugi Spirit Sword: Burrowing Earth
+            case 161141012:
+                return 161141004; // HEXA Final Imugi Spirit Sword: Years Uncounted
+            case 161141008:
+                return 161140007; // HEXA Second Plum Blossom Sword: Raining Blossoms
+            case 161141013:
+                return 161141009; // HEXA Third Plum Blossom Sword: Riotous Heart / Hearts United
+            case 161141501:
+                return 161141500; // Rising Azure Dragon: Divided Heavens (Origin 1)
+            case 161141502:
+            case 161141503:
+            case 161141504:
+            case 161141505:
+                return 161141506; // Rising Azure Dragon: Heartbound Verse (Origin 2 / Ascent)
+            case 400011148:
+            case 400011149:
+                return 400011147; // Thousand Blossom Flurry
+            case 400011151:
+            case 400011152:
+                return 400011150; // Soul Immeasurable
+            case 400011154:
+            case 400011155:
+                return 400011157; // Final Imugi Spirit Sword: Blade of the Unbound Heart
             default:
                 // Universal 6th Job Origin Sub-Skill Redirection (xxx41501-xxx41599 -> xxx41500)
                 int subOrigin = skillID % 100000;
@@ -3621,6 +3672,8 @@ public class SkillConstants {
             return 80010006;
         } else if (JobConstants.isSiaAstelle(job)) { // Tree of Stars
             return 80010343;
+        } else if (JobConstants.isRen(job)) { // Grounded Body
+            return 80003877;
         }
         return 0;
     }
@@ -3628,6 +3681,9 @@ public class SkillConstants {
     public static int getOriginalOfLinkedSkill(int skillID) {
         int result = 0;
         switch (skillID) {
+            case 80003877:
+                result = 160020001; // Grounded Body
+                break;
             case 80003018:
                 result = 60030241; // Time to Prepare
                 break;
@@ -4894,12 +4950,20 @@ public class SkillConstants {
             case Kain.HEXA_POISON_NEEDLE_2:
             case Kain.CHAIN_SICKLE_2:
             case Kain.HEXA_CHAIN_SICKLE_1:
-            // Ren 5th Job
+            // Ren 5th & 6th Job / Multi-hit
+            case Ren.PLUM_BLOSSOM_SWORD_STORM:
+            case 161141000: // HEXA Plum Blossom Sword: Storm
+            case Ren.SECOND_PLUM_BLOSSOM_SWORD_RAINING_BLOSSOMS_ATOM:
+            case Ren.HEXA_SECOND_PLUM_BLOSSOM_SWORD_RAINING_BLOSSOMS_ATOM:
             case Ren.THOUSAND_BLOSSOM_FLURRY:
             case Ren.THOUSAND_BLOSSOM_FLURRY_EX:
+            case Ren.THOUSAND_BLOSSOM_FLURRY_ATOM:
             case Ren.SOUL_IMMEASURABLE:
             case Ren.SOUL_IMMEASURABLE_ATT:
+            case Ren.SOUL_IMMEASURABLE_SPE:
             case Ren.DANCING_ANNIHILATION:
+            case Ren.FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART:
+            case 400011155: // Final Imugi Spirit Sword: Blade of the Unbound Heart 2
             case Ren.FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART_ATT:
             // Lynn 5th Job
             case Lynn.BEAST_RAGE:
