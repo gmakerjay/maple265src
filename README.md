@@ -73,6 +73,11 @@ MapleStory_Server_Runner/
 │   ├── apache-maven-3.9.15/      # Portable Maven สำหรับ Build โค้ด
 │   └── jdk21/                    # Portable JDK 21 Compiler
 │
+├── docs/                         # โฟลเดอร์รวมเอกสารและคู่มือการใช้งาน
+│   ├── MapleStory_Commands_Guide.md # คู่มือคำสั่ง GM และผู้เล่นครบ 117 คำสั่ง
+│   ├── HOW_TO_USE.txt            # คู่มือการใช้งานเซิร์ฟเวอร์แบบละเอียด
+│   └── HOW_TO_PLAY_LAN.txt       # คู่มือการเปิดเล่นร่วมกับเพื่อนผ่านวง LAN / VPN
+│
 ├── Patches/                      # โฟลเดอร์เก็บไฟล์แพตช์อัปเดตแบบเบา (.zip)
 ├── tools/                        # สคริปต์เครื่องมือเสริม เช่น create_patch.py
 ├── Create_Update_Patch.bat       # สคริปต์สร้างไฟล์แพตช์อัปเดตอัตโนมัติ
