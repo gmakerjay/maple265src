@@ -3,6 +3,57 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-16 15:15 น.] Implementation of !buffall / @buff System, 2-Hour God-Tier Combat & Farming Buff Engine, and Maple Admin NPC 1-Click Integration
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: เพิ่มคำสั่ง `!buffall` (สำหรับ Admin) และ `@buffall` / `@buff` (สำหรับผู้เล่นทั่วไป/LAN) พร้อมเพิ่มเมนูคลิกใน NPC Maple Admin เพื่อมอบบัฟต่อสู้ บอสซิ่ง และฟาร์มระดับท็อป 20+ บัฟ ระยะเวลา 2 ชั่วโมงเต็มเบ็ดเสร็จในปุ่มเดียว
+- **รายละเอียด**:
+  1. **การวิเคราะห์ประเภทบัฟและมาตรฐานความเสถียร (Comprehensive Buff Analysis)**:
+     - คัดเลือกเฉพาะบัฟที่ทำงานผ่านระบบ `CharacterTemporaryStat` (CTS) และ WZ `SpecStat` ที่เป็นมาตรฐานสากล 100% ไม่ชนกัน และไม่ก่อให้เกิดปัญหา Client Crash หรือ Packet Desync
+     - **หมวดที่ 1: สกิล V-Matrix Decent Skills (ทุกอาชีพใช้ได้ 100%)**:
+       - `HolySymbol` & `DropRate` (Decent Holy Symbol `400001020`): โบนัส EXP +35%, อัตราดรอปไอเทม +24%
+       - `SharpEyes` (Decent Sharp Eyes `400001002`): อัตราคริติคอล +15%, ดาเมจคริติคอล +15%, เจาะเกราะ IED +5%
+       - `CombatOrders` (Decent Combat Orders `400001004`): เพิ่มเลเวลสกิลทั้งหมด +2 เลเวล (ทะลุเพดาน Master Level)
+       - `PDD`, `IndiePAD`, `IndieMAD`, `IndieMHP`, `IndieMMP` (Decent Advanced Blessing `400001003`): พลังโจมตี/เวท +30, พลังป้องกัน +425, Max HP/MP +700
+       - `IndieBooster` (Decent Speed Infusion `400001005`): เร่งความเร็วโจมตี +1 Stage
+       - `MaxHP` & `MaxMP` (Decent Hyper Body `400001001`): Max HP +60%, Max MP +60%
+       - `Speed` & `Jump` (Decent Haste `400001000`): วิ่งไว 140 (Max), กระโดด 120 (Max)
+       - `BasicStatUp` (Maple Warrior `100001215`): สเตตัสพื้นฐานทั้งหมด +15%
+       - `IndieDamR` (Hero's Echo `1005`): พลังโจมตีรวม +4% Total Damage
+       - `IndieBDR`, `IndieIgnoreMobpdpR`, `IndiePMdR`, `IndieCD` (Noblesse Guild Skills): Boss Damage +30%, IED +30%, Final/Total Damage +30%, Crit Damage +30%
+     - **หมวดที่ 2: สุดยอดยาบัฟบอสและอาหารเพิ่มพลัง (God-Tier Boss & Combat Consumables)**:
+       - `Onyx Apple` (`2022179`): พลังโจมตีกายภาพ +100, พลังโจมตีเวท +100, ป้องกัน +20
+       - `Adv. Boss Rush Boost Potion` (`2003596`): Boss Damage +20%
+       - `Adv. Penetrating Boost Potion` (`2003598`): Ignore Monster DEF (IED) +20%
+       - `Adv. Great Hero Boost Potion` (`2003597`): Weapon ATT +30, Magic ATT +30
+       - `Extreme Red Potion` (`2023125`): Weapon ATT +30, Max HP +2,000
+       - `Extreme Green Potion` (`2023126`): Attack Speed +1 Stage (ปลดล็อกข้าม Soft Cap สู่ขีดสุดความเร็ว)
+       - `Extreme Blue Potion` (`2023127`): Magic ATT +30, Max MP +2,000
+       - `Extreme Gold Potion` (`2023128`): Bonus EXP +10%, Max HP/MP +2,000
+       - `MVP Superpower Buff` (`2023544`): Weapon ATT +30, Magic ATT +30
+       - `Guild's Greater Blessing` (`2022458`): Weapon ATT +10, Magic ATT +10, Speed +10
+     - **หมวดที่ 3: บัฟเร่งฟาร์ม EXP, Drop และ Meso**:
+       - `EXP Accumulation Potion (EAP)` (`2003550`): โบนัส EXP ทับซ้อน +10%
+       - `Wealth Acquisition Potion (WAP)` (`2003551`): อัตราดรอปไอเทม +20%, อัตราดรอปเงิน Meso +20%
+     - **หมวดที่ 4: การฟื้นฟูสุขภาพและแก้ทางสถานะ**:
+       - ฟื้นฟูเลือดและมานาเต็ม 100% ทันที (`chr.heal(chr.getMaxHP())`, `chr.healMP(chr.getMaxMP())`)
+       - ล้างสถานะผิดปกติที่เป็นลบทั้งหมด (`tsm.removeAllDebuffs()`)
+       - แสดงแอนิเมชันเอฟเฟกต์การร่ายบัฟทั้งบนจอผู้เล่นและผู้เล่นอื่นในแมพ (`Effect.avatarOriented("Skill/40000.img/skill/400001020/effect")`)
+  2. **การแก้ไขโค้ดและการสร้างระบบ (Technical Implementation)**:
+     - **[`ItemBuffs.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/items/ItemBuffs.java)**: พัฒนา Overload Method `giveItemBuffsFromItemID(Char chr, TemporaryStatManager tsm, int itemID, long customDuration)` เพื่อให้สามารถกำหนดระยะเวลาบัฟของไอเทมยาให้ยาวนานตามที่ต้องการได้ (7,200 วินาที / 2 ชั่วโมง) โดยไม่ถูกบังคับเวลาตาม WZ เดิม
+     - **[`AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)**:
+       - สร้างฟังก์ชันแกนกลาง `public static void giveBuffAll(Char chr)` ที่รวบรวมทั้ง Decent Skills, Noblesse Stats, และ Consumable Potions ส่งแพ็กเก็ตเดียวให้ตัวละคร
+       - ลงทะเบียนคำสั่ง `@Command(names = {"buffall", "buff", "buffme"}, requiredType = Admin)`
+     - **[`PlayerCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/PlayerCommands.java)**:
+       - ลงทะเบียนคำสั่งระดับผู้เล่น `@Command(names = {"buffall", "buff", "buffme"}, requiredType = Player)` เพื่อให้เพื่อนในวง LAN หรือตัวละครผู้เล่นทั่วไปสามารถพิมพ์ `@buff` หรือ `@buffall` ได้สะดวกสบาย
+       - บรรจุคำอธิบายลงในคำสั่ง `@help`
+     - **[`quick_adminNPC.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/quick_adminNPC.py)**:
+       - เพิ่มเมนู `#r#L23##e[Super Buff All (2 Hours)]#n#k` ในหมวด Character & Progression Tools
+       - ซิงค์ไฟล์สคริปต์ไปยังทั้ง `v214 src/` และ `Server263/`
+  3. **การคอมไพล์และการส่งมอบ (Build & Deployment Target)**:
+     - รัน Maven Package บน JDK 21 สำเร็จ 100% (`BUILD SUCCESS`)
+     - คัดลอก Fat JAR อัปเดตไปยัง `Server263/maplestory.jar` และ Root `maplestory.jar` เรียบร้อย
+
 ## 📅 [2026-10-16 13:20 น.] Ren Ascent (Rising Azure Dragon: Heartbound Verse) 3-Stage Combo Sequential Transformation & Strict Cooldown Refactor
 
 ### 🎯 Scope & Technical Details

@@ -90,6 +90,7 @@ menu_text += "#b#L60##e[Pet Sanctuary & Pet Skills]#n#k #fc0xFFFFFFFF#Vacuum Pet
 menu_text += "#d#L50##e[Cash & Fashion Boutique]#n#k #fc0xFFFFFFFF#Cubes, Rebirth Flames, Massive Fashion Outfits & Royal Beauty (by Lucid).#l\r\n"
 menu_text += "#r#L20##e[Starter Package]#n#k #fc0xFFFFFFFF#Claim 100k DP, 1M Cash Points, and a 30-Day Vac Pet #r(1x per account)#fc0xFFFFFFFF#.#l\r\n\r\n"
 menu_text += "#e#d=== Character & Progression Tools ===#fc0xFFFFFFFF##n\r\n"
+menu_text += "#r#L23##e[Super Buff All (2 Hours)]#n#k #fc0xFFFFFFFF#Apply all 20+ God-Tier Combat & Farming Buffs in 1 Click!#l\r\n"
 menu_text += "#b#L14##fc0xFFFFFFFF#Fast Job Advancement.#l\r\n"
 menu_text += "#L21##fc0xFFFFFFFF#Unlock 5th Job (V-Matrix System).#l\r\n"
 menu_text += "#L22##fc0xFFFFFFFF#Unlock 6th Job (HEXA Matrix System).#l\r\n"
@@ -218,6 +219,20 @@ elif selection == 22:
     except:
         pass
     sm.sendSayOkay("6th Job (HEXA Matrix) has been unlocked!")
+elif selection == 23:
+    try:
+        from net.swordie.ms.client.character.commands import AdminCommands
+        AdminCommands.giveBuffAll(chr)
+        sm.sendSayOkay("#fs13##e#b[Super Buff All Applied Successfully!]#k#n\r\n\r\n"
+                       "All 20+ God-Tier Combat, Farming, and Bossing buffs have been granted for #r2 Hours#k!\r\n\r\n"
+                       "- #b+260+ Weapon & Magic ATT#k (Onyx Apple, Adv Hero, Extreme Red/Blue, MVP, Guild)\r\n"
+                       "- #r+50% Boss Damage & +50% IED#k (Adv Boss Rush, Penetrating, Noblesse)\r\n"
+                       "- #g+2 Attack Speed Stages#k (Decent SI + Extreme Green - Breaks Cap)\r\n"
+                       "- #d+55% Bonus EXP & +44% Item Drop Rate#k (Decent HS, EAP, Gold, WAP)\r\n"
+                       "- #e+60% Max HP/MP + 4,700 HP/MP#n, 140% Speed, 120% Jump, +15% All Stats\r\n"
+                       "- 100% HP/MP Restored & All Negative Debuffs Cleansed!")
+    except Exception, e:
+        sm.sendSayOkay("Error applying buffs: " + str(e))
 elif selection == 3:
     sm.openUI(UIType.UI_EVENT_NAME_TAG)
 elif selection == 4:

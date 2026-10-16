@@ -51,6 +51,7 @@ public class PlayerCommands {
             chr.chatMessage("@warp: Open Universal Warp Center (Major Towns & Fields).");
             chr.chatMessage("@boss: Open Boss Arena & Boss Warp (Up to Kaling Extreme).");
             chr.chatMessage("@admin: Open Maple Administrator Services.");
+            chr.chatMessage("@buffall / @buff: Apply all 20+ God-Tier Buffs & 2-Hour Boost.");
             chr.chatMessage("@afk: Open offline Idle Hunting session.");
             chr.chatMessage("@ssb: View contents of Surprise Style Box.");
             chr.chatMessage("@end: Save and return to the login screen.");
@@ -534,6 +535,14 @@ public class PlayerCommands {
             } else {
                 chr.chatMessage("Unable to join the event at this time.");
             }
+        }
+    }
+
+    @Command(names = {"buffall", "buff", "buffme"}, requiredType = Player)
+    public static class BuffAllCmd extends PlayerCommand {
+
+        public static void execute(Char chr, String[] args) {
+            AdminCommands.giveBuffAll(chr);
         }
     }
 }

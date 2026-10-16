@@ -22,8 +22,18 @@ import static net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat
 public class ItemBuffs {
 
     public static void giveItemBuffsFromItemID(Char chr, TemporaryStatManager tsm, int itemID) {
+        giveItemBuffsFromItemID(chr, tsm, itemID, -1);
+    }
+
+    public static void giveItemBuffsFromItemID(Char chr, TemporaryStatManager tsm, int itemID, long customDuration) {
+        if (ItemData.getItemInfoByID(itemID) == null) {
+            return;
+        }
         Map<SpecStat, Integer> specStats = ItemData.getItemInfoByID(itemID).getSpecStats();
-        long time = specStats.getOrDefault(SpecStat.time, 0) / 1000;
+        if (specStats == null || specStats.isEmpty()) {
+            return;
+        }
+        long time = customDuration > 0 ? customDuration : (specStats.getOrDefault(SpecStat.time, 0) / 1000);
 
         boolean specialBuffEffect =
                 itemID != GameConstants.BLUE_EXP_ORB_ID

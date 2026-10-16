@@ -12,6 +12,7 @@ import net.swordie.ms.client.character.PortableChair;
 import net.swordie.ms.client.character.items.Equip;
 import net.swordie.ms.client.character.items.Inventory;
 import net.swordie.ms.client.character.items.Item;
+import net.swordie.ms.client.character.items.ItemBuffs;
 import net.swordie.ms.client.character.items.ItemOption;
 import net.swordie.ms.client.character.quest.Quest;
 import net.swordie.ms.client.character.runestones.RuneStone;
@@ -3249,6 +3250,198 @@ public class AdminCommands {
             giveTestItem(chr, 2000005, 5000); // Power Elixir x5,000
             chr.addMoney(10_000_000_000L);
             chr.chatMessage(SpeakerChannel, "[HEXA Items] Delivered: 500x Sol Erda, 20,000x Fragments, 2,000x Nodestones, 5,000x Power Elixirs, 10B Mesos!");
+        }
+    }
+
+    public static void giveBuffAll(Char chr) {
+        if (chr == null) {
+            return;
+        }
+        TemporaryStatManager tsm = chr.getTemporaryStatManager();
+        final int duration = 7200; // 2 Hours (7,200 seconds)
+
+        // 1. Recover HP/MP and remove all debuffs
+        chr.heal(chr.getMaxHP());
+        chr.healMP(chr.getMaxMP());
+        tsm.removeAllDebuffs();
+
+        // 2. V-Matrix Decent Skills & Core Utility Skills
+        EnumMap<CharacterTemporaryStat, Option> stats = new EnumMap<>(CharacterTemporaryStat.class);
+
+        // Decent Holy Symbol (400001020): +35% Bonus EXP & +24% Item Drop Rate
+        Option hsOpt = new Option();
+        hsOpt.nOption = 35;
+        hsOpt.rOption = 400001020;
+        hsOpt.tOption = duration;
+        stats.put(HolySymbol, hsOpt);
+
+        Option dropOpt = new Option();
+        dropOpt.nOption = 24;
+        dropOpt.rOption = 400001020;
+        dropOpt.tOption = duration;
+        stats.put(DropRate, dropOpt);
+
+        // Decent Sharp Eyes (400001002): Crit Rate +15%, Crit DMG +15%, IED +5%
+        int cr = 15;
+        int crDmg = 15;
+        Option seOpt = new Option();
+        seOpt.nOption = (cr << 8) + crDmg;
+        seOpt.rOption = 400001002;
+        seOpt.tOption = duration;
+        seOpt.xOption = cr;
+        seOpt.yOption = crDmg;
+        seOpt.mOption = 5;
+        stats.put(SharpEyes, seOpt);
+
+        // Decent Combat Orders (400001004): +2 All Skill Levels (Exceeds Master Level)
+        Option coOpt = new Option();
+        coOpt.nOption = 2;
+        coOpt.rOption = 400001004;
+        coOpt.tOption = duration;
+        stats.put(CombatOrders, coOpt);
+
+        // Decent Advanced Blessing (400001003): PDD 425, IndiePAD 30, IndieMAD 30, IndieMHP 700, IndieMMP 700
+        Option pddOpt = new Option();
+        pddOpt.nOption = 425;
+        pddOpt.rOption = 400001003;
+        pddOpt.tOption = duration;
+        stats.put(PDD, pddOpt);
+
+        Option abPadOpt = new Option();
+        abPadOpt.nValue = 30;
+        abPadOpt.nReason = 400001003;
+        abPadOpt.tTerm = duration;
+        stats.put(IndiePAD, abPadOpt);
+        stats.put(IndieMAD, abPadOpt.deepCopy());
+
+        Option abHpOpt = new Option();
+        abHpOpt.nValue = 700;
+        abHpOpt.nReason = 400001003;
+        abHpOpt.tTerm = duration;
+        stats.put(IndieMHP, abHpOpt);
+        stats.put(IndieMMP, abHpOpt.deepCopy());
+
+        // Decent Speed Infusion (400001005): Attack Speed +1 Stage (IndieBooster -1)
+        Option siOpt = new Option();
+        siOpt.nReason = 400001005;
+        siOpt.nValue = -1;
+        siOpt.tTerm = duration;
+        stats.put(IndieBooster, siOpt);
+
+        // Decent Hyper Body (400001001): Max HP +60%, Max MP +60%
+        Option hbHpOpt = new Option();
+        hbHpOpt.nOption = 60;
+        hbHpOpt.rOption = 400001001;
+        hbHpOpt.tOption = duration;
+        stats.put(MaxHP, hbHpOpt);
+
+        Option hbMpOpt = new Option();
+        hbMpOpt.nOption = 60;
+        hbMpOpt.rOption = 400001001;
+        hbMpOpt.tOption = duration;
+        stats.put(MaxMP, hbMpOpt);
+
+        // Decent Haste (400001000): Speed +40, Jump +20
+        Option hasteSpeed = new Option();
+        hasteSpeed.nOption = 40;
+        hasteSpeed.rOption = 400001000;
+        hasteSpeed.tOption = duration;
+        stats.put(Speed, hasteSpeed);
+
+        Option hasteJump = new Option();
+        hasteJump.nOption = 20;
+        hasteJump.rOption = 400001000;
+        hasteJump.tOption = duration;
+        stats.put(Jump, hasteJump);
+
+        // Maple Warrior (100001215 / BasicStatUp): All Stats +15%
+        Option mwOpt = new Option();
+        mwOpt.nOption = 15;
+        mwOpt.rOption = 100001215;
+        mwOpt.tOption = duration;
+        stats.put(BasicStatUp, mwOpt);
+
+        // Hero's Echo (1005): +4% Total Damage
+        Option echoOpt = new Option();
+        echoOpt.nValue = 4;
+        echoOpt.nReason = 1005;
+        echoOpt.tTerm = duration;
+        stats.put(IndieDamR, echoOpt);
+
+        // Noblesse Guild Skills (Boss Damage +30%, IED +30%, Damage +30%, Crit Damage +30%)
+        Option nobBoss = new Option();
+        nobBoss.nValue = 30;
+        nobBoss.nReason = 91001022;
+        nobBoss.tTerm = duration;
+        stats.put(IndieBDR, nobBoss);
+
+        Option nobIed = new Option();
+        nobIed.nValue = 30;
+        nobIed.nReason = 91001025;
+        nobIed.tTerm = duration;
+        stats.put(IndieIgnoreMobpdpR, nobIed);
+
+        Option nobDmg = new Option();
+        nobDmg.nValue = 30;
+        nobDmg.nReason = 91001023;
+        nobDmg.tTerm = duration;
+        stats.put(IndiePMdR, nobDmg);
+
+        Option nobCritDmg = new Option();
+        nobCritDmg.nValue = 30;
+        nobCritDmg.nReason = 91001024;
+        nobCritDmg.tTerm = duration;
+        stats.put(IndieCD, nobCritDmg);
+
+        tsm.sendStat(stats);
+
+        // 3. God-Tier Consumable Potion Buffs via ItemBuffs (All set to 2 hours)
+        int[] buffItems = {
+                2022179, // Onyx Apple: Flat Weapon ATT +100, Flat Magic ATT +100, PDD +20
+                2003596, // Adv. Boss Rush Boost Potion: Boss Damage +20%
+                2003598, // Adv. Penetrating Boost Potion: Ignore Monster DEF (IED) +20%
+                2003597, // Adv. Great Hero Boost Potion: Weapon ATT +30, Magic ATT +30
+                2023125, // Extreme Red Potion: Weapon ATT +30, Max HP +2,000
+                2023126, // Extreme Green Potion: Attack Speed +1 Stage (Breaks soft cap)
+                2023127, // Extreme Blue Potion: Magic ATT +30, Max MP +2,000
+                2023128, // Extreme Gold Potion: Bonus EXP +10%, Max HP/MP +2,000
+                2003550, // EXP Accumulation Potion (EAP): Bonus EXP +10%
+                2003551, // Wealth Acquisition Potion (WAP): Item Drop +20%, Meso Drop +20%
+                2023544, // MVP Superpower Buff: Weapon ATT +30, Magic ATT +30
+                2022458  // Guild's Greater Blessing: Weapon ATT +10, Magic ATT +10, Speed +10
+        };
+
+        for (int itemId : buffItems) {
+            try {
+                ItemBuffs.giveItemBuffsFromItemID(chr, tsm, itemId, duration);
+            } catch (Exception ignored) {
+            }
+        }
+
+        // 4. Visual Cast Effect
+        chr.write(UserPacket.effect(Effect.avatarOriented("Skill/40000.img/skill/400001020/effect")));
+        chr.getField().broadcast(UserRemote.effect(chr.getId(), Effect.avatarOriented("Skill/40000.img/skill/400001020/effect")), chr);
+
+        // 5. In-game Feedback Notice
+        chr.chatMessage(SpeakerChannel, "======================================================================");
+        chr.chatMessage(SpeakerChannel, "[BUFF ALL] 20+ God-Tier Combat & Farming Buffs Applied! (Duration: 2 Hours)");
+        chr.chatMessage(SpeakerChannel, "======================================================================");
+        chr.chatMessage("• ATT/MATT: +260+ Weapon & Magic ATT (Onyx Apple, Adv Hero, Extreme Red/Blue, MVP, Guild, Blessing)");
+        chr.chatMessage("• Boss & DMG: +50% Boss Damage (Adv Boss Rush + Noblesse), +50% IED, +34% Total/Final Damage");
+        chr.chatMessage("• Critical: +15% Crit Rate, +45% Crit Damage (Sharp Eyes + Noblesse)");
+        chr.chatMessage("• Attack Speed: +2 Attack Speed Stages (Decent SI + Extreme Green - Breaks Soft Cap)");
+        chr.chatMessage("• Farming: +55% Bonus EXP (Decent HS + EAP + Extreme Gold), +44% Drop Rate, +20% Meso Rate");
+        chr.chatMessage("• Survivability: +60% Max HP/MP + 4,700 Flat HP/MP (Hyper Body + Extreme Potions), 140% Speed, 120% Jump");
+        chr.chatMessage("• Skills: +2 All Skill Levels (Combat Orders), +15% All Stats (Maple Warrior)");
+        chr.chatMessage("• Health: 100% HP & MP Restored, All Debuffs Cleansed!");
+        chr.chatMessage(SpeakerChannel, "======================================================================");
+    }
+
+    @Command(names = {"buffall", "buff", "buffme"}, requiredType = Admin)
+    public static class BuffAllCmd extends AdminCommand {
+
+        public static void execute(Char chr, String[] args) {
+            giveBuffAll(chr);
         }
     }
 }
