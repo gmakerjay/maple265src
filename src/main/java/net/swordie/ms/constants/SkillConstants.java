@@ -3365,6 +3365,7 @@ public class SkillConstants {
             case 161141503:
             case 161141504:
             case 161141505:
+            case 161141506:
                 return 161141506; // Rising Azure Dragon: Heartbound Verse (Origin 2 / Ascent)
             case 400011148:
             case 400011149:

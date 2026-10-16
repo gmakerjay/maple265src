@@ -124,6 +124,11 @@ public class AttackHandler {
                     chr.dispose();
                     return;
                 }
+                // Stage 1 initiator cannot attack repeatedly while on cooldown once cutscene ends
+                if (skillID == 161141502 && chr.hasSkillOnCooldown(actualSkillId) && !tsm.hasStat(CharacterTemporaryStat.IndieNotDamaged)) {
+                    chr.dispose();
+                    return;
+                }
             } else if (skillID == 161141501) { // Divided Heavens finish
                 if (!tsm.hasStat(CharacterTemporaryStat.IndieNotDamaged)) {
                     chr.dispose();

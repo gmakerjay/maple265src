@@ -3,6 +3,37 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-16 13:20 น.] Ren Ascent (Rising Azure Dragon: Heartbound Verse) 3-Stage Combo Sequential Transformation & Strict Cooldown Refactor
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: ปรับปรุงและ Refactor ลอจิกสกิล Ascent คลาส 6 ของอาชีพ Ren (Rising Azure Dragon: Heartbound Verse) ให้ทำงานเป็นท่าชุดคอมโบ 3 ขั้นตอนต่อเนื่องอย่างสมบูรณ์แบบ, แก้ไขการสแปมสกิล 0 คูลดาวน์, และผูกคูลดาวน์ 240 วินาทีอย่างถูกต้อง
+- **รายละเอียด**:
+  1. **การยืนยันกลไกสกิล Ascent (คำตอบต่อคำถามของผู้ใช้)**:
+     - ทักษะทั้ง 3 ทักษะในภาพ (`Falling Flower` รหัส `161141502`, `Climbing Serpent` รหัส `161141503`, และ `Soaring Dragon` รหัส `161141504`) **คือสกิลเดียวกัน 100%**
+     - เป็นท่าคอมโบต่อเนื่อง 3 ลำดับ (3-Stage Sequence) ของสกิล Ascent หลัก `HEARTBOUND_VERSE` (`161141506`) ซึ่งจะอยู่บนปุ่มคีย์ลัดเดียวกัน:
+       - ขั้นที่ 1 (`Falling Flower` 161141502): ร่ายพายุคมดาบกลีบดอกไม้ (มีระยะเวลาทำงาน 30 วินาที) ปุ่มจะเปลี่ยนเป็นขั้นที่ 2
+       - ขั้นที่ 2 (`Climbing Serpent` 161141503): กดซ้ำในระหว่างพายุดาบเพื่อปล่อยมังกรเขี้ยวงู ปุ่มจะเปลี่ยนเป็นขั้นที่ 3
+       - ขั้นที่ 3 (`Soaring Dragon` 161141504): กดซ้ำอีกครั้งเพื่อปล่อยมังกรฟ้าฟาดฟันปิดฉาก
+       - เมื่อกดครบขั้นที่ 3 หรือหมดเวลา 30 วินาที สกิลจะกลับสู่ร่างเดิมและติดคูลดาวน์ 240 วินาที
+  2. **สาเหตุของบั๊ก "กดใช้ได้ตลอดไม่มีคูลดาวน์"**:
+     - ใน `SkillConstants.java`: สกิลหลัก `161141506` ตกไปที่เคส `default` ของ `getActualSkillIDfromSkillID` ทำให้ถูกลดทอนกลายเป็น `161141500` (Origin 1) ส่งผลให้การตรวจเช็คคูลดาวน์คลาดเคลื่อน
+     - ใน `Char.checkAndSetSkillCooltime`: เคส `isAscent` มีการอนุญาตให้สกิลที่อยู่ในสถานะ `Holding` ข้ามการตรวจเช็คคูลดาวน์ได้ แต่ไม่ได้ยกเว้นสกิลเริ่มต้น (Stage 1 / Base) ทำให้เมื่อมีบัฟ `Holding` อยู่ ผู้เล่นสามารถกดร่าย Stage 1 ซ้ำๆ ได้ตลอดเวลาแบบ 0 คูลดาวน์
+     - ใน `Ren.java`: ยังไม่มีระบบ State Machine สลับสเตจ 1 -> 2 -> 3 ผ่านแพ็กเก็ต `UserLocal.registerExtraSkill` และไม่มีการจำกัดสิทธิ์การกดใช้งานตามลำดับขั้น
+  3. **การแก้ไขและการ Refactor**:
+     - **[`SkillConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java)**: เพิ่ม `case 161141506: return 161141506;` ป้องกันไม่ให้รหัส Ascent ถูกแปลงเป็น Origin 1
+     - **[`Char.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java)**: ระบุว่าสกิลเริ่มต้นของ Ascent (`checkAscentId` และ `161141502`) จะต้องปฏิบัติตามคูลดาวน์อย่างเคร่งครัดเสมอ **ห้ามข้ามคูลดาวน์เด็ดขาด** (อนุญาตเฉพาะท่าต่อเนื่องย่อยในระหว่างหน้าต่าง 30 วินาทีเท่านั้น)
+     - **[`Ren.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/anima/Ren.java)**:
+       - สร้างระบบติดตามสเตจ `heartboundVerseStage` (0 = พร้อมใช้งาน, 1 = อยู่ในขั้น Falling Flower, 2 = อยู่ในขั้น Climbing Serpent)
+       - เมื่อกด Stage 1 (`HEARTBOUND_VERSE` / `FALLING_FLOWER`): เช็คคูลดาวน์ 240 วินาที, มอบสถานะอมตะ 7 วินาที, เรียกซัมมอนพายุกลีบดอกไม้, มอบบัฟ `Holding` 30 วินาที, และส่งแพ็กเก็ต `UserLocal.registerExtraSkill` สลับปุ่มเป็น `CLIMBING_SERPENT` (Stage 2)
+       - เมื่อกด Stage 2 (`CLIMBING_SERPENT`): ตรวจสอบว่าอยู่ในสเตจ 1 และมีบัฟ `Holding` หรือไม่ หากถูกต้องจึงทำดาเมจและส่ง `registerExtraSkill` สลับปุ่มเป็น `SOARING_DRAGON` (Stage 3)
+       - เมื่อกด Stage 3 (`SOARING_DRAGON`): ตรวจสอบว่าอยู่ในสเตจ 2 หรือไม่ เมื่อทำดาเมจปิดฉากแล้ว จะทำการเคลียร์บัฟ `Holding`, ปลดซัมมอนออกจากแมพ, และรีเซ็ตปุ่มคีย์ลัดกลับสู่สกิลหลักเพื่อแสดงเวลาคูลดาวน์ที่เหลือ 240 วินาทีอย่างถูกต้อง
+       - ใน `handleAttack`: สกิล `CLIMBING_SERPENT` และ `SOARING_DRAGON` ไม่ถูกฮาร์ดโค้ดคูลดาวน์ 240 วินาทีซ้อนทับ ป้องกันปัญหาท่าต่อเนื่องถูกล็อก
+     - **[`AttackHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/user/AttackHandler.java)**: ป้องกันไม่ให้การโจมตีของ Stage 1 (`161141502`) สแปมซ้ำซ้อนได้หลังจากคัตซีนสิ้นสุดลงหากสกิลหลักติดคูลดาวน์
+  4. **ผลการคอมไพล์ & แพ็กเกจส่งมอบ**:
+     - คอมไพล์ผ่านสมบูรณ์ 100% (`BUILD SUCCESS`)
+     - ส่งมอบ `maplestory.jar` (~138 MB) ไปยัง `Server263/` และ root
+     - อัปเดตไฟล์แพตช์เดี่ยว `Patches/Server263_Patch_Latest.zip` (173.47 MB)
+
 ## 📅 [2026-10-16 12:15 น.] Absolute Elimination of Phantom Sub-Skills from V Matrix & HEXA Matrix UI, Auto-Purge of Dirty Database Records, and Zero-Cooldown Sub-Skill Spam Prevention
 
 ### 🎯 Scope & Technical Details

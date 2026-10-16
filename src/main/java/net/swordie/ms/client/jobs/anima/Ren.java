@@ -139,6 +139,15 @@ public class Ren extends Job {
             GROUNDED_BODY,
     };
     public int soulImmeasuableStack = 0;
+    public int heartboundVerseStage = 0;
+
+    public int getHeartboundVerseStage() {
+        TemporaryStatManager tsm = chr.getTemporaryStatManager();
+        if (!tsm.hasStat(Holding)) {
+            heartboundVerseStage = 0;
+        }
+        return heartboundVerseStage;
+    }
 
     public Ren(Char chr) {
         super(chr);
@@ -328,26 +337,39 @@ public class Ren extends Job {
                 break;
             case HEARTBOUND_VERSE:
             case HEARTBOUND_VERSE_FALLING_FLOWER:
-            case HEARTBOUND_VERSE_CLIMBING_SERPENT:
             case HEARTBOUND_VERSE_FALLING_FLOWER_ATT:
                 if (!chr.hasSkillOnCooldown(HEARTBOUND_VERSE)) {
                     chr.addSkillCooldown(HEARTBOUND_VERSE, 240000);
                     chr.addSkillCooldown(HEARTBOUND_VERSE_FALLING_FLOWER, 240000);
-                    chr.addSkillCooldown(HEARTBOUND_VERSE_CLIMBING_SERPENT, 240000);
-                    chr.addSkillCooldown(HEARTBOUND_VERSE_SOARING_DRAGON, 240000);
-                    chr.addSkillCooldown(HEARTBOUND_VERSE_FALLING_FLOWER_ATT, 240000);
+                }
+                break;
+            case HEARTBOUND_VERSE_CLIMBING_SERPENT:
+                if (getHeartboundVerseStage() == 1) {
+                    heartboundVerseStage = 2;
+                    Option optH = tsm.getOption(Holding);
+                    if (optH != null) {
+                        optH.nOption = 2;
+                        tsm.updateStat(Holding, optH);
+                    }
+                    ExtraSkill extraS3 = new ExtraSkill(HEARTBOUND_VERSE_SOARING_DRAGON, chr.getPosition());
+                    extraS3.Value = 1;
+                    chr.write(UserLocal.registerExtraSkill(HEARTBOUND_VERSE, List.of(extraS3)));
+                    chr.write(UserLocal.registerExtraSkill(HEARTBOUND_VERSE_FALLING_FLOWER, List.of(extraS3)));
+                    chr.write(UserLocal.registerExtraSkill(HEARTBOUND_VERSE_CLIMBING_SERPENT, List.of(extraS3)));
                 }
                 break;
             case HEARTBOUND_VERSE_SOARING_DRAGON:
-                if (!chr.hasSkillOnCooldown(HEARTBOUND_VERSE)) {
-                    chr.addSkillCooldown(HEARTBOUND_VERSE, 240000);
-                    chr.addSkillCooldown(HEARTBOUND_VERSE_FALLING_FLOWER, 240000);
-                    chr.addSkillCooldown(HEARTBOUND_VERSE_CLIMBING_SERPENT, 240000);
-                    chr.addSkillCooldown(HEARTBOUND_VERSE_SOARING_DRAGON, 240000);
-                    chr.addSkillCooldown(HEARTBOUND_VERSE_FALLING_FLOWER_ATT, 240000);
-                }
+                heartboundVerseStage = 0;
                 tsm.removeStatsBySkill(HEARTBOUND_VERSE);
+                tsm.removeStatsBySkill(HEARTBOUND_VERSE_FALLING_FLOWER);
                 tsm.removeStat(Holding);
+                Summon s = chr.getField().getSummonBySkillId(chr, HEARTBOUND_VERSE_FALLING_FLOWER);
+                if (s != null) {
+                    chr.getField().removeLife(s);
+                }
+                chr.write(UserLocal.registerExtraSkill(HEARTBOUND_VERSE, List.of()));
+                chr.write(UserLocal.registerExtraSkill(HEARTBOUND_VERSE_FALLING_FLOWER, List.of()));
+                chr.write(UserLocal.registerExtraSkill(HEARTBOUND_VERSE_CLIMBING_SERPENT, List.of()));
                 break;
         }
     }
@@ -663,47 +685,89 @@ public class Ren extends Job {
                 }
                 break;
             case HEARTBOUND_VERSE:
-                if (!chr.hasSkillOnCooldown(HEARTBOUND_VERSE)) {
-                    chr.addSkillCooldown(HEARTBOUND_VERSE, 240000);
-                    chr.addSkillCooldown(HEARTBOUND_VERSE_FALLING_FLOWER, 240000);
-                    chr.addSkillCooldown(HEARTBOUND_VERSE_CLIMBING_SERPENT, 240000);
-                    chr.addSkillCooldown(HEARTBOUND_VERSE_SOARING_DRAGON, 240000);
-                    chr.addSkillCooldown(HEARTBOUND_VERSE_FALLING_FLOWER_ATT, 240000);
+            case HEARTBOUND_VERSE_FALLING_FLOWER:
+                if (chr.hasSkillOnCooldown(HEARTBOUND_VERSE) || chr.hasSkillOnCooldown(HEARTBOUND_VERSE_FALLING_FLOWER)) {
+                    chr.chatMessage("The skill is currently in cooldown.");
+                    chr.dispose();
+                    return;
                 }
+                chr.addSkillCooldown(HEARTBOUND_VERSE, 240000);
+                chr.addSkillCooldown(HEARTBOUND_VERSE_FALLING_FLOWER, 240000);
+
+                // Cutscene invincibility (7s)
                 o1.nValue = 1;
                 o1.nReason = skillID;
                 o1.tTerm = 7;
                 o1.tOption = 7;
                 tsm.sendStat(IndieNotDamaged, o1);
-                Option oAscent = new Option();
-                oAscent.nOption = 1;
-                oAscent.rOption = skillID;
-                oAscent.tOption = 30;
-                tsm.sendStat(Holding, oAscent);
                 chr.write(UserLocal.showHexaSkillEff(chr));
                 if (chr.getParty() != null) {
                     chr.getParty().broadcast(UserLocal.showHexaSkillEff(chr), chr);
                 }
-                break;
-            case HEARTBOUND_VERSE_FALLING_FLOWER:
-                summon = Summon.getSummonByAndSetStat(chr, skillID, slv);
+
+                // Spawn Falling Flower summon (30s)
+                summon = Summon.getSummonByAndSetStat(chr, HEARTBOUND_VERSE_FALLING_FLOWER, slv);
                 summon.setMoveAbility(MoveAbility.Stop);
                 summon.setAssistType(AssistType.ExplosionAttack);
                 summon.setLeaveType(LeaveType.ASCENT);
                 summon.setMoveAction((byte) 4);
                 field.spawnSummon(summon);
-                o1.nOption = 1;
-                o1.rOption = skillID;
-                o1.tOption = si.getValue(ndTime, slv);
-                o1.isInMillis = true;
-                tsm.sendStat(Holding, o1);
+
+                // Active Ascent window (30s) - Stage 1
+                Option oAscent = new Option();
+                oAscent.nOption = 1; // Stage 1
+                oAscent.rOption = HEARTBOUND_VERSE;
+                oAscent.tOption = 30; // 30 seconds
+                tsm.sendStat(Holding, oAscent);
+                heartboundVerseStage = 1;
+
+                // Register Stage 2 (Climbing Serpent) on key
+                ExtraSkill extra2 = new ExtraSkill(HEARTBOUND_VERSE_CLIMBING_SERPENT, chr.getPosition());
+                extra2.Value = 1;
+                chr.write(UserLocal.registerExtraSkill(HEARTBOUND_VERSE, List.of(extra2)));
+                chr.write(UserLocal.registerExtraSkill(HEARTBOUND_VERSE_FALLING_FLOWER, List.of(extra2)));
                 break;
+
             case HEARTBOUND_VERSE_CLIMBING_SERPENT:
-                tsm.removeStatsBySkill(HEARTBOUND_VERSE_FALLING_FLOWER);
+                if (getHeartboundVerseStage() != 1) {
+                    chr.dispose();
+                    return;
+                }
+                heartboundVerseStage = 2;
+                Option optHolding = tsm.getOption(Holding);
+                if (optHolding != null) {
+                    optHolding.nOption = 2;
+                    tsm.updateStat(Holding, optHolding);
+                }
+
+                // Register Stage 3 (Soaring Dragon) on key
+                ExtraSkill extra3 = new ExtraSkill(HEARTBOUND_VERSE_SOARING_DRAGON, chr.getPosition());
+                extra3.Value = 1;
+                chr.write(UserLocal.registerExtraSkill(HEARTBOUND_VERSE, List.of(extra3)));
+                chr.write(UserLocal.registerExtraSkill(HEARTBOUND_VERSE_FALLING_FLOWER, List.of(extra3)));
+                chr.write(UserLocal.registerExtraSkill(HEARTBOUND_VERSE_CLIMBING_SERPENT, List.of(extra3)));
                 break;
+
             case HEARTBOUND_VERSE_SOARING_DRAGON:
+                if (getHeartboundVerseStage() != 2) {
+                    chr.dispose();
+                    return;
+                }
+                heartboundVerseStage = 0;
                 tsm.removeStatsBySkill(HEARTBOUND_VERSE);
+                tsm.removeStatsBySkill(HEARTBOUND_VERSE_FALLING_FLOWER);
                 tsm.removeStat(Holding);
+
+                // Remove summon
+                Summon oldSummon = chr.getField().getSummonBySkillId(chr, HEARTBOUND_VERSE_FALLING_FLOWER);
+                if (oldSummon != null) {
+                    chr.getField().removeLife(oldSummon);
+                }
+
+                // Reset extra skills so key reverts to base skill
+                chr.write(UserLocal.registerExtraSkill(HEARTBOUND_VERSE, List.of()));
+                chr.write(UserLocal.registerExtraSkill(HEARTBOUND_VERSE_FALLING_FLOWER, List.of()));
+                chr.write(UserLocal.registerExtraSkill(HEARTBOUND_VERSE_CLIMBING_SERPENT, List.of()));
                 break;
         }
     }
@@ -900,13 +964,9 @@ public class Ren extends Job {
                 return 1;
             }
             case HEARTBOUND_VERSE, HEARTBOUND_VERSE_FALLING_FLOWER,
-                 HEARTBOUND_VERSE_CLIMBING_SERPENT, HEARTBOUND_VERSE_SOARING_DRAGON,
                  HEARTBOUND_VERSE_FALLING_FLOWER_ATT -> {
                 chr.addSkillCooldown(HEARTBOUND_VERSE, 240000);
                 chr.addSkillCooldown(HEARTBOUND_VERSE_FALLING_FLOWER, 240000);
-                chr.addSkillCooldown(HEARTBOUND_VERSE_CLIMBING_SERPENT, 240000);
-                chr.addSkillCooldown(HEARTBOUND_VERSE_SOARING_DRAGON, 240000);
-                chr.addSkillCooldown(HEARTBOUND_VERSE_FALLING_FLOWER_ATT, 240000);
                 return 1;
             }
         }
@@ -916,6 +976,11 @@ public class Ren extends Job {
     @Override
     public void handleInitAfterMigrate(Char chr) {
         super.handleInitAfterMigrate(chr);
+
+        heartboundVerseStage = 0;
+        chr.write(UserLocal.registerExtraSkill(HEARTBOUND_VERSE, List.of()));
+        chr.write(UserLocal.registerExtraSkill(HEARTBOUND_VERSE_FALLING_FLOWER, List.of()));
+        chr.write(UserLocal.registerExtraSkill(HEARTBOUND_VERSE_CLIMBING_SERPENT, List.of()));
 
         // Clean up legacy phantom sub-skills from memory & SQL silently (do NOT send packet to client)
         int[] phantomSubSkills = new int[]{

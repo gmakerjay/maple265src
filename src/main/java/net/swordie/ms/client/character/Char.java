@@ -7967,8 +7967,10 @@ public class Char {
                         int ascentId = SkillConstants.getActualSkillIDfromSkillID(skillID);
                         if (hasSkillOnCooldown(ascentId) || hasSkillOnCooldown(skillID)) {
                             // Permit sub-technique hits during active ascent window (within 30s)
-                            if (tsm.hasStatBySkillId(ascentId) || tsm.hasStat(CharacterTemporaryStat.Holding) || tsm.hasStat(CharacterTemporaryStat.IndieNotDamaged)) {
-                                return true;
+                            if (skillID != ascentId && skillID != 161141502) {
+                                if (tsm.hasStatBySkillId(ascentId) || tsm.hasStat(CharacterTemporaryStat.Holding) || tsm.hasStat(CharacterTemporaryStat.IndieNotDamaged)) {
+                                    return true;
+                                }
                             }
                             return false;
                         }
@@ -8047,8 +8049,11 @@ public class Char {
                 return tsm.hasStatBySkillId(Hero.BURNING_SOUL_BLADE) || tsm.hasStatBySkillId(Hero.BURNING_SOUL_BLADE_STATIONARY);
             }
             if (isAscent) {
-                if (tsm.hasStatBySkillId(checkAscentId) || tsm.hasStat(CharacterTemporaryStat.Holding) || tsm.hasStat(CharacterTemporaryStat.IndieNotDamaged)) {
-                    return true;
+                // Initiator skills (checkAscentId / stage 1 161141502) cannot bypass cooldown
+                if (skillID != checkAscentId && skillID != 161141502) {
+                    if (tsm.hasStatBySkillId(checkAscentId) || tsm.hasStat(CharacterTemporaryStat.Holding) || tsm.hasStat(CharacterTemporaryStat.IndieNotDamaged)) {
+                        return true;
+                    }
                 }
             }
             return false;
