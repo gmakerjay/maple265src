@@ -2180,7 +2180,16 @@ public class Char {
         }
         if (mask.isInMask(DBChar.SkillRecord)) {
             outPacket.encodeByte(true);
-            List<Skill> skills = getSkills().stream().filter(s -> !SkillConstants.isUnionSkill(s.getSkillId())).sorted(Comparator.comparingInt(Skill::getSkillId)).collect(Collectors.toList());
+            List<Skill> skills = getSkills().stream()
+                    .filter(s -> !SkillConstants.isUnionSkill(s.getSkillId()))
+                    .filter(s -> !SkillConstants.isSpecialInvisibleSkill(s.getSkillId()))
+                    .filter(s -> {
+                        SkillInfo si = SkillData.getSkillInfoById(s.getSkillId());
+                        return si == null || !si.isInvisible();
+                    })
+                    .filter(s -> s.getCurrentLevel() > 0)
+                    .sorted(Comparator.comparingInt(Skill::getSkillId))
+                    .collect(Collectors.toList());
             outPacket.encodeShort(skills.size());
             for (Skill skill : skills) {
                 outPacket.encodeInt(skill.getSkillId());
@@ -3663,7 +3672,9 @@ public class Char {
                 System.out.println("Unable to addListSkill since Skill is NULL.");
                 continue;
             }
-            if (!SkillConstants.isSpecialInvisibleSkill(skill.getSkillId())) {
+            SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
+            boolean isInvisible = SkillConstants.isSpecialInvisibleSkill(skill.getSkillId()) || (si != null && si.isInvisible());
+            if (!isInvisible && skill.getCurrentLevel() > 0) {
                 visibleSkills.add(skill);
             }
             if (!hasSkill(skill.getSkillId())) {
@@ -3689,7 +3700,9 @@ public class Char {
                 continue;
             }
             addSkill(skill);
-            if (!SkillConstants.isSpecialInvisibleSkill(skill.getSkillId())) {
+            SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
+            boolean isInvisible = SkillConstants.isSpecialInvisibleSkill(skill.getSkillId()) || (si != null && si.isInvisible());
+            if (!isInvisible && skill.getCurrentLevel() > 0) {
                 visibleSkills.add(skill);
             }
         }
@@ -3741,12 +3754,14 @@ public class Char {
         if (skill == null) {
             skill = SkillData.getSkillDeepCopyById(skillID);
         }
-        if (skill != null) {
+        SkillInfo si = SkillData.getSkillInfoById(skillID);
+        boolean isInvisible = SkillConstants.isSpecialInvisibleSkill(skillID) || (si != null && si.isInvisible());
+        if (skill != null && !isInvisible) {
             skill.setCurrentLevel(0);
             skill.setMasterLevel(0);
             write(WvsContext.changeSkillRecordResult(Collections.singletonList(skill), true, false, false));
-            removeSkill(skillID);
         }
+        removeSkill(skillID);
     }
 
     /**
@@ -10672,20 +10687,10 @@ public class Char {
                 break;
 
             // Anima - Ren (16112) HEXA Mastery & Origin/Ascent Companion Sub-Skills
-            case 20000202: // Ren Mastery III: HEXA Wish Unending / Burrowing Earth / Ravenous Spirit / Years Uncounted
-                list.add(161141006);
-                list.add(161141011);
-                list.add(161141012);
-                break;
-            case 20000203: // Ren Mastery IV: HEXA Raining Blossoms / Riotous Heart
-                list.add(161141008);
-                list.add(161141013);
-                break;
-            case 10000050: // Ren Origin: Rising Azure Dragon: Divided Heavens
-                // 161141500 is the core connect skill; internal sub-skill 161141501 must not be added to player Skill Book
-                break;
-            case 10000096: // Ren Ascent: Rising Azure Dragon: Heartbound Verse
-                // 161141506 is the core connect skill; internal sub-skills 161141502-161141505 must not be added to player Skill Book
+            case 20000202: // Ren Mastery III (sub-skills must not be added to player Skill Book)
+            case 20000203: // Ren Mastery IV (sub-skills must not be added to player Skill Book)
+            case 10000050: // Ren Origin: Rising Azure Dragon: Divided Heavens (sub-skills must not be added)
+            case 10000096: // Ren Ascent: Rising Azure Dragon: Heartbound Verse (sub-skills must not be added)
                 break;
 
             default:

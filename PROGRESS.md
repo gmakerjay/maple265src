@@ -3,6 +3,44 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-16 12:15 น.] Absolute Elimination of Phantom Sub-Skills from V Matrix & HEXA Matrix UI, Auto-Purge of Dirty Database Records, and Zero-Cooldown Sub-Skill Spam Prevention
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: กำจัดไอคอนสกิลย่อยขยะซ้ำซ้อนในแท็บ HEXA Matrix และ V Matrix อย่างถาวร 100%, พัฒนาระบบ Auto-Purge ทำความสะอาดตาราง `skills` ในฐานข้อมูล MariaDB อัตโนมัติ, ระงับการส่งแพ็กเก็ตที่กระตุ้นให้ไคลเอนต์สร้างปุ่มสกิลย่อยใน UI, และบล็อกการกดสแปมสกิลย่อยแบบ 0 คูลดาวน์อย่างสมบูรณ์แบบ
+- **รายละเอียด**:
+  1. **การค้นพบสาเหตุที่แท้จริงของไอคอนขยะซ้ำซ้อนใน UI (Root Cause Analysis)**:
+     - **ปัญหาใน HEXA Matrix (รูปที่ 1)**: ปรากฏไอคอน `Rising Azure Dragon..` ซ้ำกันถึง 7 ช่อง (รหัส `161141500` ถึง `161141506`)
+     - **ปัญหาใน V Matrix (รูปที่ 2)**: ปรากฏไอคอนสกิลย่อยซ้ำกันถึง 10 ช่อง ทั้ง `Final Plum Blossom..`, `Soul Immeasurable`, และ `Final Imugi Spirit..` พร้อมสัญลักษณ์ติดกากบาทแดง
+     - **สาเหตุเชิงลึก**:
+       - ไคลเอนต์ MapleStory v265 สำหรับแท็บ V Matrix และ HEXA Matrix จะไม่มีรายการสกิลที่ฮาร์ดโค้ดไว้ แต่จะสร้างปุ่มไอคอนขึ้นมาเมื่อได้รับแพ็กเก็ตอัปเดตสกิล แม้สกิลนั้นจะมีเลเวล 0 ก็ตาม
+       - โค้ดเดิมมีการเรียกใช้ `removeSkillAndSendPacket(pSkill)` ซึ่งส่งแพ็กเก็ต `changeSkillRecordResult` เลเวล 0 ไปยังไคลเอนต์ ทำให้ไคลเอนต์สร้างปุ่มไอคอนสกิลย่อยเหล่านั้นขึ้นมาในหน้าต่างสกิลพร้อมสัญลักษณ์วงกลมแดงกากบาท
+       - ตอนเข้าเกม (`DBChar.SkillRecord` ใน [`Char.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java#L2183)) ตัวเซิร์ฟเวอร์ไม่ได้กรอง `isInvisible()` หรือ `isSpecialInvisibleSkill()` ออกจากแพ็กเก็ต ทำให้สกิลย่อยที่เคยถูกบันทึกค้างไว้ในตาราง `skills` ของ MariaDB ถูกส่งเข้าไคลเอนต์และแสดงผลใน Skill Book ทั้งหมด
+       - ใน `Char.getSiaErdaLinkSkills` มีเคส 20000202 และ 20000203 ที่คอยเพิ่มสกิลย่อย HEXA (`161141006, 161141011, 161141012, 161141008, 161141013`) เข้าสู่ตัวละคร
+       - เมื่อสกิลย่อยปรากฏใน Skill Book ผู้เล่นสามารถลากลง Hotbar ได้ และเนื่องจากสกิลย่อยใน WZ ไม่มีค่า `cooltime` (`cooltime = 0`) จึงสามารถกดสแปมได้แบบไม่มีคูลดาวน์
+  2. **ระบบ Auto-Purge ข้อมูลสกิลขยะในฐานข้อมูล ([`Skill.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/skills/Skill.java#L22))**:
+     - ใน `getSkillsFromSQLByCharID`: เมื่อโหลดสกิลของตัวละครจาก MariaDB ระบบจะสแกนตรวจสอบว่าสกิลใดเป็นสกิลล่องหน (`isSpecialInvisibleSkill` หรือ `si.isInvisible()`) หรือมี `currentLevel <= 0`
+     - หากตรวจพบ จะไม่นำเข้าสู่หน่วยความจำของตัวละคร และสั่งรัน Batch SQL ลบทิ้งทันที (`DELETE FROM skills WHERE charid = ? AND skillid = ?`) ทำให้ตารางฐานข้อมูลสะอาด 100% ตั้งแต่ล็อกอินครั้งแรก
+  3. **การกรองแพ็กเก็ตก่อนส่งไคลเอนต์อย่างเข้มงวด ([`Char.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java))**:
+     - ใน `Char.encode` (`DBChar.SkillRecord`): เพิ่มตัวกรอง `!SkillConstants.isSpecialInvisibleSkill`, `!si.isInvisible()`, และ `currentLevel > 0` เพื่อตัดสกิลย่อยและสกิลเลเวล 0 ออกจากแพ็กเก็ตสร้างหน้าต่างสกิลทั้งหมด
+     - ใน `addListSkill` และ `applySkillList`: กรองสกิลที่เข้าเงื่อนไข Invisible ออก ไม่บรรจุลงใน `visibleSkills` ที่จะส่งไปไคลเอนต์
+     - ใน `removeSkillAndSendPacket`: หากเป็นสกิล Invisible จะเรียก `removeSkill` เพื่อลบออกจากเซิร์ฟเวอร์และฐานข้อมูลอย่างเงียบๆ โดยไม่ส่งแพ็กเก็ต `changeSkillRecordResult` ไปกระตุ้นให้ไคลเอนต์สร้างปุ่มใน UI
+     - ใน `Char.getSiaErdaLinkSkills`: ตัดเคส 20000202 และ 20000203 ของ Ren ออก ป้องกันการสร้างสกิลย่อยจากการอัปเกรด HEXA Core
+  4. **การทำความสะอาดใน Job Handler และ Matrix ([`Ren.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/anima/Ren.java) & [`MatrixHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/ui/MatrixHandler.java))**:
+     - เปลี่ยนจากการเรียก `removeSkillAndSendPacket` มาเป็น `chr.removeSkill(pSkill)` เพื่อเคลียร์สกิลย่อยทั้ง 18 ตัวออกจากหน่วยความจำและฐานข้อมูลโดยตรง โดยไม่ส่งสัญญาณแพ็กเก็ตไปยังไคลเอนต์
+  5. **การบล็อกการสแปมสกิลย่อยแบบ 0 คูลดาวน์ ([`SkillHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/user/SkillHandler.java#L225) & [`AttackHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/user/AttackHandler.java#L115))**:
+     - ใน `SkillHandler.handleUserSkillUseRequest`: หากพบคำขอใช้สกิลที่เป็น Invisible Sub-Skill ผ่านคีย์ลัด จะตรวจสอบ `chr.hasSkillOnCooldown(actualSkillId)` ทันที หากสกิลหลักติดคูลดาวน์ จะแจ้งเตือนและยกเลิกคำขอ (`chr.chatMessage("The skill is currently in cooldown.")`) ป้องกันการกดผ่านคีย์ลัดเดิม
+     - ใน `AttackHandler.handleAttack`: ตรวจสอบสถานะบัฟเงื่อนไขของสกิลย่อย Ren ทั้งหมด:
+       - สกิลย่อย Ascent (`161141502`..`161141505`): ต้องมีบัฟ `Holding` จึงจะโจมตีได้
+       - สกิลย่อย Divided Heavens Finish (`161141501`): ต้องมีบัฟ `IndieNotDamaged`
+       - สกิลย่อย Thousand Blossom Flurry (`400011148`, `400011149`): ต้องมีบัฟ `RenPlumSwordEx`
+       - สกิลย่อย Soul Immeasurable (`400011151`, `400011152`): ต้องมีบัฟ `SpiritAwakening`
+       - หากไม่มีบัฟของสกิลหลักทำงานอยู่ หรือสกิลหลักติดคูลดาวน์ จะทำการปฏิเสธการโจมตีทันที (`chr.dispose(); return;`) ป้องกันการกดสแปม 0 คูลดาวน์ได้ 100%
+  6. **การสร้างแพ็กเกจส่งมอบ & การซิงค์ Git**:
+     - คอมไพล์ Java Core ผ่าน Maven สำเร็จเรียบร้อย (`BUILD SUCCESS`)
+     - ส่งมอบ `maplestory.jar` (~138 MB) ไปยัง `Server263/` และ root
+     - สร้างไฟล์แพตช์เดี่ยว `Patches/Server263_Patch_Latest.zip` (173.46 MB)
+     - ซิงค์โค้ดไปยัง `maple265src` ครบถ้วนทุกไฟล์
+
 ## 📅 [2026-10-16 11:35 น.] Comprehensive Ren Class Refactor: Zero-Cooldown Ascent Sub-Skill Elimination, Monster Freeze Bug Resolution, Complete Arcane Symbol Removal from Endgame, and Full Cooldown Audit (1st–6th Job)
 
 ### 🎯 Scope & Technical Details

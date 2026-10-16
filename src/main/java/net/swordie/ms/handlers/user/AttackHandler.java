@@ -11,6 +11,7 @@ import net.swordie.ms.client.character.skills.info.AttackInfo;
 import net.swordie.ms.client.character.skills.info.MobAttackInfo;
 import net.swordie.ms.client.character.skills.info.SkillInfo;
 import net.swordie.ms.client.character.skills.info.SkillUseInfo;
+import net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat;
 import net.swordie.ms.client.character.skills.temp.TemporaryStatManager;
 import net.swordie.ms.client.jobs.Jianghu.Lynn;
 import net.swordie.ms.client.jobs.Jianghu.MoXuan;
@@ -112,7 +113,40 @@ public class AttackHandler {
             return;
         }
 
-        final boolean isCheckAndSetCoolTime = chr.checkAndSetSkillCooltime(skillID, true);
+        SkillInfo rawSi = attackInfo.skillInfo;
+        boolean isInternalSub = SkillConstants.isSpecialInvisibleSkill(skillID) || (rawSi != null && rawSi.isInvisible());
+
+        if (actualSkillId != 0 && isInternalSub) {
+            // Validate prerequisite state for Ren multi-stage attacks and sub-skills
+            TemporaryStatManager tsm = chr.getTemporaryStatManager();
+            if (skillID >= 161141502 && skillID <= 161141505) { // Heartbound Verse stages
+                if (!tsm.hasStat(CharacterTemporaryStat.Holding)) {
+                    chr.dispose();
+                    return;
+                }
+            } else if (skillID == 161141501) { // Divided Heavens finish
+                if (!tsm.hasStat(CharacterTemporaryStat.IndieNotDamaged)) {
+                    chr.dispose();
+                    return;
+                }
+            } else if (skillID == 400011148 || skillID == 400011149) { // Thousand Blossom Flurry sub
+                if (!tsm.hasStat(CharacterTemporaryStat.RenPlumSwordEx)) {
+                    chr.dispose();
+                    return;
+                }
+            } else if (skillID == 400011151 || skillID == 400011152) { // Soul Immeasurable sub
+                if (!tsm.hasStat(CharacterTemporaryStat.SpiritAwakening)) {
+                    chr.dispose();
+                    return;
+                }
+            } else if (chr.hasSkillOnCooldown(actualSkillId)) {
+                chr.dispose();
+                return;
+            }
+        }
+
+        int cdCheckSkillId = (actualSkillId != 0 && (rawSi == null || rawSi.getValue(SkillStat.cooltime, slv) <= 0)) ? actualSkillId : skillID;
+        final boolean isCheckAndSetCoolTime = chr.checkAndSetSkillCooltime(cdCheckSkillId, true);
 
         if (isCheckAndSetCoolTime || noCoolTimeAttackHeader || attackInfo.byUnreliableMemory) {
 

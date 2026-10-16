@@ -5,8 +5,14 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.swordie.ms.connection.hikariCP.DatabaseManager;
 import net.swordie.ms.util.DataPrinter;
 
+import net.swordie.ms.client.character.skills.info.SkillInfo;
+import net.swordie.ms.constants.SkillConstants;
+import net.swordie.ms.loaders.SkillData;
+
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Skill {
@@ -21,6 +27,7 @@ public class Skill {
 
     public static Int2ObjectMap<Skill> getSkillsFromSQLByCharID(int charID) {
         Int2ObjectMap<Skill> skills = new Int2ObjectOpenHashMap<>();
+        List<Integer> dirtySkillIDs = new ArrayList<>();
         String query = "SELECT * FROM skills WHERE charid = ?";
         try (Connection con = DatabaseManager.getConnection();
              PreparedStatement ps = con.prepareStatement(query)) {
@@ -35,6 +42,13 @@ public class Skill {
                     int currentLevel = rs.getInt("currentlevel");
                     int masterLevel = rs.getInt("masterlevel");
 
+                    SkillInfo si = SkillData.getSkillInfoById(skillID);
+                    boolean isInvisible = SkillConstants.isSpecialInvisibleSkill(skillID) || (si != null && si.isInvisible());
+                    if (isInvisible || currentLevel <= 0) {
+                        dirtySkillIDs.add(skillID);
+                        continue;
+                    }
+
                     Skill skill = new Skill();
                     skill.setId(id);
                     skill.setCharId(charIDFromDatabase);
@@ -45,6 +59,17 @@ public class Skill {
                     skill.setMasterLevel(masterLevel);
 
                     skills.put(skillID, skill);
+                }
+            }
+            if (!dirtySkillIDs.isEmpty()) {
+                String deleteQuery = "DELETE FROM skills WHERE charid = ? AND skillid = ?";
+                try (PreparedStatement delPs = con.prepareStatement(deleteQuery)) {
+                    for (int badId : dirtySkillIDs) {
+                        delPs.setInt(1, charID);
+                        delPs.setInt(2, badId);
+                        delPs.addBatch();
+                    }
+                    delPs.executeBatch();
                 }
             }
         } catch (SQLException sqlException) {

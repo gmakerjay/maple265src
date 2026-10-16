@@ -917,13 +917,15 @@ public class Ren extends Job {
     public void handleInitAfterMigrate(Char chr) {
         super.handleInitAfterMigrate(chr);
 
-        // Clean up legacy phantom sub-skills from HEXA Matrix UI & V-Matrix UI unconditionally
+        // Clean up legacy phantom sub-skills from memory & SQL silently (do NOT send packet to client)
         int[] phantomSubSkills = new int[]{
             161141501, 161141502, 161141503, 161141504, 161141505, // HEXA sub-skills
-            400011148, 400011149, 400011151, 400011152, 400011154, 400011155 // V-Matrix sub-skills
+            161141006, 161141008, 161141011, 161141012, 161141013,
+            400011140, 400011141, 400011143, 400011145, 400011146,
+            400011148, 400011149, 400011151, 400011152, 400011154, 400011155, 400011156 // V-Matrix sub-skills
         };
         for (int pSkill : phantomSubSkills) {
-            chr.removeSkillAndSendPacket(pSkill);
+            chr.removeSkill(pSkill);
         }
 
         ScriptManagerImpl sm = chr.getScriptManager();

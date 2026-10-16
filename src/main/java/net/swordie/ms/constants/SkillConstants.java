@@ -5339,13 +5339,39 @@ public class SkillConstants {
                 || skillID == 161141503
                 || skillID == 161141504
                 || skillID == 161141505
+                // Ren HEXA Mastery Internal Sub-Skills (invisible in WZ)
+                || skillID == 161141006
+                || skillID == 161141008
+                || skillID == 161141011
+                || skillID == 161141012
+                || skillID == 161141013
                 // Ren V-Matrix Multi-Stage Internal Sub-Skills (invisible in WZ)
+                || skillID == 400011140
+                || skillID == 400011141
+                || skillID == 400011143
+                || skillID == 400011145
+                || skillID == 400011146
                 || skillID == 400011148
                 || skillID == 400011149
                 || skillID == 400011151
                 || skillID == 400011152
                 || skillID == 400011154
-                || skillID == 400011155;
+                || skillID == 400011155
+                || skillID == 400011156
+                // Ren 1st-4th Job Internal Sub-Skills (invisible in WZ)
+                || skillID == 161001002
+                || skillID == 161101004
+                || skillID == 161101009
+                || skillID == 161101002
+                || skillID == 161111002
+                || skillID == 161111004
+                || skillID == 161111008
+                || skillID == 161111011
+                || skillID == 161121014
+                || skillID == 161121008
+                || skillID == 161121002
+                || skillID == 161121004
+                || skillID == 161121044;
     }
 
     public static boolean notSureRemoteAttackSkill(int skillID) {

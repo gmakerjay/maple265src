@@ -222,7 +222,25 @@ public class SkillHandler {
         inPacket.decodeInt(); // crc
         int skillID = inPacket.decodeInt();
         int actualSkillId = SkillConstants.getActualSkillIDfromSkillID(skillID);
-        int effectiveSkillId = (actualSkillId != 0 && !chr.hasSkill(skillID) && chr.hasSkill(actualSkillId)) ? actualSkillId : skillID;
+        SkillInfo rawSi = SkillData.getSkillInfoById(skillID);
+        boolean isInternalSub = SkillConstants.isSpecialInvisibleSkill(skillID) || (rawSi != null && rawSi.isInvisible());
+
+        if (isInternalSub) {
+            // Internal sub-skills cannot be cast directly as standalone actions via hotkey
+            if (actualSkillId != 0) {
+                // If base skill is on cooldown, reject immediately
+                if (chr.hasSkillOnCooldown(actualSkillId)) {
+                    chr.chatMessage("The skill is currently in cooldown.");
+                    chr.dispose();
+                    return;
+                }
+            } else {
+                chr.dispose();
+                return;
+            }
+        }
+
+        int effectiveSkillId = actualSkillId != 0 ? actualSkillId : skillID;
         inPacket.decodeInt(); // 0?
         if (JobConstants.isZero(chr.getJob())) {
             inPacket.decodeByte(); // Why zero has a byte before the skill Level and always 0

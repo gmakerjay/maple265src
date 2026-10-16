@@ -751,10 +751,13 @@ public class MatrixHandler {
      *                (they will be set to level 0). May be null (e.g. on login).
      */
     public static void recalcMatrixSkills(Char chr, Collection<Integer> touched) {
-        // Clean up legacy phantom sub-skills from V-Matrix UI (Ren multi-stage sub-attacks)
-        int[] renPhantomVSkills = new int[]{400011148, 400011149, 400011151, 400011152, 400011154, 400011155};
+        // Clean up legacy phantom sub-skills from V-Matrix silently (do NOT send packet to client)
+        int[] renPhantomVSkills = new int[]{
+            400011140, 400011141, 400011143, 400011145, 400011146,
+            400011148, 400011149, 400011151, 400011152, 400011154, 400011155, 400011156
+        };
         for (int pSkill : renPhantomVSkills) {
-            chr.removeSkillAndSendPacket(pSkill);
+            chr.removeSkill(pSkill);
         }
 
         // skillID -> {node level sum, slot level sum, node type}
