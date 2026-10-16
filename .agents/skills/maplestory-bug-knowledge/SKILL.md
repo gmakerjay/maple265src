@@ -26,57 +26,44 @@ description: >-
    - ลบไฟล์ `mariadb\data\my.ini` เก่าทิ้งอัตโนมัติก่อนรัน เพื่อป้องกันการจดจำ Path ของเครื่องเดิม
    - สคริปต์จะทำการ Generate `mariadb\my.ini` แบบไดนามิกตาม Directory ปัจจุบัน พร้อมครอบเครื่องหมายคำพูด `""` ป้องกันปัญหาโฟลเดอร์ที่มีช่องว่าง (Spaces in path)
 
-### 1.3 นโยบายการทดสอบและการจัดทำไฟล์แพตช์ (Testing-First & Incremental Patch Policy)
+### 1.3 โครงสร้างโฟลเดอร์มาตรฐาน & นโยบายความสะอาด (Clean Directory & Zero-Scratch Policy)
+1. **Root Directory**: คงไว้เฉพาะ Smart Launchers (`*.bat`), `AGENTS.md`, `README.md`, `PROGRESS.md`, `backup.sql`, `maplestory.jar`
+2. **รวมคู่มือทั้งหมดใน `docs/`**: เอกสารและคู่มือการใช้งานทั้งหมดต้องอยู่ใน [`docs/`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/docs) (`MapleStory_Commands_Guide.md`, `HOW_TO_USE.txt`, `HOW_TO_PLAY_LAN.txt`)
+3. **Zero-Scratch Policy**: ห้ามสร้างโฟลเดอร์ `scratch/` หรือปล่อยไฟล์สคริปต์ทดสอบชั่วคราวทิ้งไว้ในระบบ สคริปต์ที่ใช้ตรวจสอบชั่วคราวต้องลบทิ้งทันทีก่อนจบงาน
+4. **ห้ามสร้างไฟล์ Handoff ย่อย**: ข้อมูลทั้งหมดต้องบันทึกใน [`PROGRESS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS.md) และ [`AGENTS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/AGENTS.md) เท่านั้น
+
+### 1.4 นโยบายการทดสอบและการจัดทำไฟล์แพตช์ (Testing-First & Single Patch Policy)
 1. **กฎเหล็กการทดสอบก่อนทำแพตช์ (Strict Test-First Policy)**:
-   - **ต้องทดสอบให้เรียบร้อยก่อนเสมอแล้วจึงค่อยทำไฟล์แพตช์**: เมื่อมีการแก้ไขโค้ด Java หรือสคริปต์ ให้ทำการคอมไพล์ รันเซิร์ฟเวอร์ และ**ทดสอบการทำงานจริงในเกม (In-Game Testing) ให้ผ่าน 100% ก่อนเสมอ** เพื่อให้มั่นใจว่าฟีเจอร์ทำงานถูกต้อง ไม่มี Error และไม่เกิด Client/Server Crash แล้วจึงค่อยรันสคริปต์สร้างไฟล์แพตช์ (`Create_Update_Patch.bat` / `tools/create_patch.py`) เพื่อไม่ให้เสียเวลาสร้างไฟล์แพตช์ซ้ำซ้อนไปมาหากพบจุดบกพร่องภายหลัง
+   - **ต้องทดสอบให้เรียบร้อยก่อนเสมอแล้วจึงค่อยทำไฟล์แพตช์**: เมื่อมีการแก้ไขโค้ด Java หรือสคริปต์ ให้ทำการคอมไพล์ รันเซิร์ฟเวอร์ และ**ทดสอบการทำงานจริงในเกม (In-Game Testing) ให้ผ่าน 100% ก่อนเสมอ** เพื่อให้มั่นใจว่าฟีเจอร์ทำงานถูกต้อง ไม่มี Error และไม่เกิด Client/Server Crash แล้วจึงค่อยรันสคริปต์สร้างไฟล์แพตช์
 2. **รวมไฟล์แพตช์เป็นไฟล์เดียวเบ็ดเสร็จ (Single All-in-One Patch Archive)**:
-   - ในโฟลเดอร์ **`Patches/`** จะต้องมี **เพียงไฟล์เดียวเท่านั้น (Strictly Single File 100%)** คือ:
+   - ในโฟลเดอร์ **[`Patches/`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches)** จะต้องมี **เพียงไฟล์เดียวเท่านั้น (Strictly Single File 100%)** คือ:
      - **`Patches/Server263_Patch_Latest.zip`**
-   - **ห้ามสร้างไฟล์แตกย่อยซ้ำซ้อน**: ห้ามแยก Client Patch ออกมาเป็น zip ต่างหาก และห้ามเก็บไฟล์ zip ที่มี Timestamp ซ้ำซ้อน เพื่อไม่ให้กินพื้นที่และไม่ทำให้ผู้ใช้สับสน
-   - ภายในแพ็กเกจเดี่ยวนี้จะรวมครบทุกอย่าง: Server Core (`maplestory.jar`, properties, batch scripts, `backup.sql`), Scripts ล่าสุด (`data/scripts/`), Drop Tables (`data/resources/`), โฟลเดอร์ `Client_Patch_Files/` (Launcher, Localhost.dll, config) และสคริปต์ `Apply_Patch.bat` ที่อัปเดตเซิร์ฟเวอร์พร้อมถามผู้ใช้เพื่อติดตั้งแพตช์เข้าโฟลเดอร์ตัวเกม MapleStory ได้ในคลิกเดียว
+   - ห้ามสร้างไฟล์แตกย่อยซ้ำซ้อน และห้ามเก็บไฟล์ zip ที่มี Timestamp ซ้ำซ้อน
 3. **นโยบายไม่บีบอัดไฟล์ WZ ซ้ำ**:
-   - **ห้ามให้ผู้ใช้บีบอัดไฟล์ WZ ใหม่อีกเด็ดขาด**: ไฟล์ WZ Data (`data/wz265/`) มีขนาดใหญ่มาก (~5 GB, ~400,000 ไฟล์) ผู้ใช้จะทำการบีบอัดไฟล์ตัวเต็ม (Base Package) เพียงครั้งเดียวเท่านั้น
-   - ผู้ใช้นำไฟล์แพตช์ไปก๊อปปี้วางทับใน `Server263/` ด้วย `Apply_Patch.bat` ได้ทันทีใน 2 วินาที โดยรักษาฐานข้อมูลตัวละครและไฟล์ WZ เดิมไว้ 100%
+   - ห้ามให้ผู้ใช้บีบอัดไฟล์ WZ Data (`data/wz265/` ~5 GB) ใหม่อีกเด็ดขาด ผู้ใช้จะบีบอัดตัวเต็มเพียงครั้งเดียว และใช้วิธีนำไฟล์แพตช์ไปวางทับใน `Server263/` ด้วย `Apply_Patch.bat`
 
-### 1.4 คำสั่งลับสำหรับทดสอบระบบเฉพาะผู้พัฒนา (Private Admin Testing Commands: `!endgame`)
-- **ห้ามใส่ปุ่มโกงหรือเมนูทดสอบลงในสคริปต์สาธารณะเด็ดขาด**: ไฟล์สำหรับแจกจ่ายผู้เล่นทั่วไป (`quick_adminNPC.py`, `PlayerCommands.java` ฯลฯ) ต้องสะอาด 100% ปราศจากปุ่มโกง
+### 1.5 คำสั่งลับสำหรับทดสอบระบบเฉพาะผู้พัฒนา (Private Admin Testing Commands: `!endgame`)
+- **ห้ามใส่ปุ่มโกงลงในสคริปต์สาธารณะ**: ไฟล์สำหรับแจกจ่ายผู้เล่นทั่วไป (`quick_adminNPC.py`, `PlayerCommands.java` ฯลฯ) ต้องสะอาด 100%
 - **การทดสอบทำผ่านคำสั่งลับระดับ Admin เท่านั้น** (`requiredType = Admin` ใน `AdminCommands.java` บัญชี `admin`/`admin`):
-  - `!endgame` หรือ `!test6` หรือ `!boost` หรือ `!endgame <class_name>` เช่น `!endgame khali`, `!endgame lara`, `!endgame illium`, `!endgame ark`, `!endgame hoyoung`, `!endgame kain`, `!endgame hayato`, `!endgame kanna`, `!endgame adele` ฯลฯ
+  - `!endgame` หรือ `!test6` หรือ `!boost` หรือ `!endgame <class_name>`
 - **มาตรฐานผลลัพธ์ของคำสั่ง `!endgame` (Strict Zero-Skill-Injection Standard)**:
-  1. **เลเวลและสเตตัส**: ปรับเลเวลตัวละครเป็น 260, ฟื้นฟู HP/MP เต็ม 100%, และมอบค่า AP (1,250 แต้ม)
-  2. **ปลดล็อกระบบ Matrix เควสต์**: สำเร็จเควสต์คลาส 5 (1460-1466) และเควสต์คลาส 6 (1488) เพื่อเปิดใช้งาน Matrix UI
-  3. **แต้ม SP ตามธรรมชาติ**: มอบแต้ม SP เต็มพิกัดผ่าน ExtendSP และ Stat.sp เพื่อให้ผู้เล่นนำไปอัปสกิลคลาส 1 - 4 ด้วยตนเอง
-  4. **ของใช้และวัตถุดิบสำหรับ V Matrix และ HEXA Matrix**:
-     - Nodestones x3,000 (`2435719`)
-     - Experience Nodestones x20 (`2437760`)
-     - Sol Erda Energy x1,000 (`2636421`)
-     - Sol Erda Fragments x30,000 (`4009548`)
-     - Power Elixirs x3,000 (`2000005`)
-  5. **อุปกรณ์สวมใส่ BiS ตรงสายอาชีพ 100%**:
-     - อาวุธ Arcane Umbra ประจำอาชีพ
-     - อาวุธรอง Princess No / BiS Secondary ประจำอาชีพ
-     - Emblem (Mitra Emblem / Gold Emblem) ประจำอาชีพ
-     - เซ็ตชุดเกราะ Arcane Umbra 6 ชิ้น (หมวก, เสื้อ, กางเกง, รองเท้า, ถุงมือ, ผ้าคลุม)
-  6. **เงินทุน**: มอบเงิน 10,000,000,000 Mesos (10B)
-- **กฎเหล็กเด็ดขาด (Strict Zero Skill Injection Policy)**:
-  - ⚠️ **ห้ามยัดสกิล (Skill IDs) หรือเซ็ตเลเวลสกิลลงในตัวละครโดยเด็ดขาด**:
-    - **ห้ามเรียก `chr.addSkill`, `chr.setHexaSkill`, หรือ `mc.setSkillLevel` ใน `!endgame`**
-    - **เหตุผล**: การยัดสกิลลัดขั้นตอนจะทำให้ Skill Book เสียหาย มีไอคอนบัคที่กดไม่ได้ สกิลซ้อนทับกัน คูลดาวน์ชนกัน หรือตัวเกม Crash จากการ Desync ของ Data
-    - **ผู้เล่นจะเป็นผู้กดเปิดหิน Nodestones, ปลดล็อกแกน HEXA Matrix, และจัดสรรแต้ม SP ด้วยตนเองตามกลไกธรรมชาติของระบบเกม**
+  - ปรับเลเวล 260, ฟื้นฟู HP/MP 100%, แต้ม AP 1,250
+  - สำเร็จเควสต์คลาส 5 (1460-1466) และเควสต์คลาส 6 (1488) แบบ `noRewards = true` ป้องกันเควสต์แจกลูกแก้ว Arcane Symbol อัตโนมัติ
+  - มอบแต้ม SP เต็มพิกัดผ่าน ExtendSP เพื่อให้อัปสกิลคลาส 1–4 ตามธรรมชาติ
+  - มอบ Nodestones x3,000 (`2435719`), Experience Nodestones x20, Sol Erda Energy x1,000, Sol Erda Fragments x30,000, Power Elixir x3,000
+  - มอบอุปกรณ์ BiS ครบเซ็ต (Arcane Umbra, Princess No Secondary, Emblem) และเงิน 10B Mesos
+  - ⚠️ **กฎเหล็กเด็ดขาด (Strict Zero Skill Injection Policy)**:
+    - **ห้ามเรียก `chr.addSkill`, `chr.setHexaSkill`, หรือ `mc.setSkillLevel` ใน `!endgame` โดยเด็ดขาด**
+    - **ผู้เล่นจะเป็นผู้กดเปิดหิน Nodestones, ปลดล็อกแกน HEXA Matrix, และจัดสรรแต้ม SP ด้วยตนเองตามกลไกธรรมชาติของระบบเกม เพื่อป้องกัน Skill Book เสียหาย 100%**
 
-### 1.5 มาตรฐานการ Push Git และบันทึก Progress (Git Sync & Progress Logging Standard)
+### 1.6 มาตรฐานการ Push Git และบันทึก Progress (Git Sync & Lean Progress Standard)
 1. **กฎเหล็กการ Push Git ทุกอย่าง (Push Everything Policy)**:
-   - **ต้อง Push ทุกอย่าง รวมถึงไฟล์เอกสารทั้งหมดเสมอ**: เมื่อทำการ Git Commit & Push จะต้องทำ `git add .` หรือระบุทุกไฟล์ที่มีการเปลี่ยนแปลง รวมถึงไฟล์เอกสาร (`PROGRESS.md`, `AGENTS.md`, `README.md`, Markdown guides, scripts, configs, tools)
-   - **ห้ามเว้นไฟล์เอกสารหรือปล่อยค้างไว้ที่ Local เด็ดขาด**: เพื่อให้ทุกเครื่องที่ทำการ `git pull` ได้รับข้อมูลอัปเดตตรงกัน 100% และดำเนินงานไปในทิศทางเดียวกันเสมอ ปราศจากความขัดแย้งของโค้ดและเอกสาร
+   - **ต้อง Push ทุกอย่าง รวมถึงไฟล์เอกสารทั้งหมดเสมอ**: เมื่อทำการ Git Commit & Push จะต้องทำ `git add .` หรือระบุทุกไฟล์ที่มีการเปลี่ยนแปลง รวมถึงไฟล์เอกสาร (`PROGRESS.md`, `AGENTS.md`, `README.md`, `docs/*`, scripts, configs, tools)
+   - **ห้ามเว้นไฟล์เอกสารหรือปล่อยค้างไว้ที่ Local เด็ดขาด**
 2. **มาตรฐานการบันทึกและแจกแจง Progress (`PROGRESS.md`)**:
-   - **ต้องระบุเวลาที่แก้ไขเสมอ**: บันทึกทั้งวันที่และเวลาจริง (เช่น `[2026-10-13 14:45 น.]` หรือ `10fc703f (14:03 น.)`)
-   - **โครงสร้าง 2 บล็อกหลัก**:
-     - `Hash (เวลา น.) — หัวข้อภาษาไทยที่กระชับได้ใจความ (หัวข้ออังกฤษ)`
-     - `- **หัวข้อ**: <Commit Subject / Feature Scope>`
-     - `- **รายละเอียด**:`
-       - แจกแจงแยกหมวดย่อย ปัญหาที่พบ (Problem) -> สาเหตุเชิงเทคนิค -> วิธีแก้ (Fix/Implementation) -> ผลลัพธ์ (Outcome)
-       - ทำ clickable link ไฟล์ที่แก้ไขเสมอ เช่น [`Job.java`](file:///...)
-   - **การจัดเก็บเอกสาร**: บันทึกลงใน [`v214 src/PROGRESS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/PROGRESS.md) และคัดลอกซิงค์มาที่ [`PROGRESS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS.md) ที่รูทเสมอ
+   - ต้องระบุเวลาที่แก้ไขเสมอ: บันทึกทั้งวันที่และเวลาจริง เช่น `[2026-10-16 18:05 น.]` หรือ `e8c54c5d (18:05 น.)`
+   - โครงสร้าง 2 บล็อกหลัก: Problem -> Cause -> Fix -> Outcome
+   - รักษาความกระชับ (Lean Progress): คงไว้เฉพาะประวัติและฟีเจอร์เวอร์ชันปัจจุบัน ซิงค์ตรงกันทั้งใน `v214 src/PROGRESS.md` และ Root `PROGRESS.md`
 
 ---
 

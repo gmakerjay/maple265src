@@ -2,6 +2,24 @@
 
 This file tracks active bug fixes, feature implementations, and system optimizations.
 
+## 📅 [2026-10-16 18:18 น.] Unification & Alignment of Project Agent Directives (AGENTS.md, Rules & Skills)
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: ปรับปรุงและประสานแนวทางของไฟล์ Agent ทั้งหมดให้ทำงานไปในทิศทางเดียวกัน 100% (Unified Agent Directives) ครอบคลุม [`AGENTS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/AGENTS.md), กฎระเบียบใน `.agents/rules/`, และ Skills ใน `.agents/skills/`
+- **รายละเอียด**:
+  1. **การปรับปรุงแม่บทกฎเหล็กสูงสุด ([`AGENTS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/AGENTS.md))**:
+     - เพิ่มหมวดที่ 3: **Clean Directory Standard & Zero-Scratch Policy** กำหนดให้ Root คงไว้เฉพาะ Smart Launchers (`*.bat`), `AGENTS.md`, `README.md`, `PROGRESS.md`, `backup.sql`, และ `maplestory.jar`
+     - กำหนดให้คู่มือทั้งหมดต้องอยู่ใน [`docs/`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/docs) เท่านั้น
+     - ห้ามสร้างโฟลเดอร์ `scratch/` หรือทิ้งไฟล์สคริปต์ทดสอบชั่วคราว และห้ามสร้างไฟล์ Handoff ย่อย
+     - บรรจุมาตรฐาน **Zero Phantom Sub-Skill Policy** และระบบ Auto-Purge ในฐานข้อมูล MariaDB เพื่อป้องกันไอคอนขยะในหน้าต่าง Matrix UI
+     - บรรจุมาตรฐาน **Strict Zero-Skill-Injection Standard** ในคำสั่ง `!endgame`
+     - บรรจุระบบ **Super Buff All 2 Hours** (`!buffall` / `@buff` / NPC 1-Click)
+  2. **การอัปเดตกฎและทักษะใน `.agents/`**:
+     - สร้างกฎใหม่ [`.agents/rules/clean-directory-standard.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/.agents/rules/clean-directory-standard.md)
+     - อัปเดตคู่มือและกฎใน [`.agents/skills/maplestory-server-runner/SKILL.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/.agents/skills/maplestory-server-runner/SKILL.md) และ [`.agents/skills/maplestory-bug-knowledge/SKILL.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/.agents/skills/maplestory-bug-knowledge/SKILL.md) ให้มีเนื้อหาและข้อกำหนดตรงกันทุกข้อ
+  3. **การซิงค์ตรงกัน 100% ข้ามโฟลเดอร์**:
+     - ซิงค์ตรงกันระหว่าง Root Directory, `v214 src/`, และ `maple265src/`
+
 ## 📅 [2026-10-16 18:05 น.] Workspace Document Cleanup & Directory Reorganization
 
 ### 🎯 Scope & Technical Details

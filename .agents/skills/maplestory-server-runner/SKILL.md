@@ -26,31 +26,44 @@ description: >-
    - ลบไฟล์ `mariadb\data\my.ini` เก่าทิ้งอัตโนมัติก่อนรัน เพื่อป้องกันการจดจำ Path ของเครื่องเดิม
    - สคริปต์จะทำการ Generate `mariadb\my.ini` แบบไดนามิกตาม Directory ปัจจุบัน พร้อมครอบเครื่องหมายคำพูด `""` ป้องกันปัญหาโฟลเดอร์ที่มีช่องว่าง (Spaces in path)
 
-### 1.3 นโยบายการแจกจ่ายแบบ Patch (Incremental Patch Policy)
-- **ห้ามบีบอัดไฟล์ WZ ใหม่อีกเด็ดขาด**: ไฟล์ WZ Data (`data/wz265/`) มีขนาดใหญ่มาก (~5 GB, ~400,000 ไฟล์) ผู้ใช้จะทำการบีบอัดไฟล์ตัวเต็ม (Base Package) เพียงครั้งเดียวเท่านั้น
-- **เมื่อมีการแก้ไขโค้ดหรืออัปเดตระบบ**: จัดเตรียมเฉพาะ **"ไฟล์แพตช์ (Incremental Patch)"** ผ่าน [`Create_Update_Patch.bat`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Create_Update_Patch.bat) ซึ่งจะรวมเฉพาะ:
-  - `maplestory.jar` (~138.64 MB)
-  - สคริปต์ใน `data/scripts/` (NPC, บอส, เควสต์, พอร์ทัล)
-  - `Client_Patch_Files/` (Launcher, Localhost.dll, config)
-  - `server.properties` และ Batch scripts
-- ผู้เล่นนำไปลงทับด้วย `Apply_Patch.bat` ได้ใน 2 วินาที โดยไม่แตะต้องไฟล์ WZ และรักษาฐานข้อมูลตัวละคร 100%
+### 1.3 โครงสร้างโฟลเดอร์มาตรฐาน & นโยบายความสะอาด (Clean Directory & Zero-Scratch Policy)
+1. **Root Directory**: คงไว้เฉพาะ Smart Launchers (`*.bat`), `AGENTS.md`, `README.md`, `PROGRESS.md`, `backup.sql`, `maplestory.jar`
+2. **รวมคู่มือทั้งหมดใน `docs/`**: เอกสารและคู่มือการใช้งานทั้งหมดต้องอยู่ใน [`docs/`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/docs) (`MapleStory_Commands_Guide.md`, `HOW_TO_USE.txt`, `HOW_TO_PLAY_LAN.txt`)
+3. **Zero-Scratch Policy**: ห้ามสร้างโฟลเดอร์ `scratch/` หรือปล่อยไฟล์สคริปต์ทดสอบชั่วคราวทิ้งไว้ในระบบ สคริปต์ที่ใช้ตรวจสอบชั่วคราวต้องลบทิ้งทันทีก่อนจบงาน
+4. **ห้ามสร้างไฟล์ Handoff ย่อย**: ข้อมูลทั้งหมดต้องบันทึกใน [`PROGRESS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS.md) และ [`AGENTS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/AGENTS.md) เท่านั้น
 
-### 1.4 การทดสอบผ่านคำสั่งลับระดับ Admin เท่านั้น (Private Admin Testing Commands)
-- **ห้ามใส่ปุ่มโกงหรือเมนูทดสอบลงในสคริปต์สาธารณะเด็ดขาด**: ไฟล์สำหรับแจกจ่ายผู้เล่นทั่วไป (`quick_adminNPC.py`, `PlayerCommands.java` ฯลฯ) ต้องสะอาด 100%
+### 1.4 นโยบายการทดสอบและการจัดทำไฟล์แพตช์ (Testing-First & Single Patch Policy)
+1. **กฎเหล็กการทดสอบก่อนทำแพตช์ (Strict Test-First Policy)**:
+   - **ต้องทดสอบให้เรียบร้อยก่อนเสมอแล้วจึงค่อยทำไฟล์แพตช์**: เมื่อมีการแก้ไขโค้ด Java หรือสคริปต์ ให้ทำการคอมไพล์ รันเซิร์ฟเวอร์ และ**ทดสอบการทำงานจริงในเกม (In-Game Testing) ให้ผ่าน 100% ก่อนเสมอ** เพื่อให้มั่นใจว่าฟีเจอร์ทำงานถูกต้อง ไม่มี Error และไม่เกิด Client/Server Crash แล้วจึงค่อยรันสคริปต์สร้างไฟล์แพตช์
+2. **รวมไฟล์แพตช์เป็นไฟล์เดียวเบ็ดเสร็จ (Single All-in-One Patch Archive)**:
+   - ในโฟลเดอร์ **[`Patches/`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches)** จะต้องมี **เพียงไฟล์เดียวเท่านั้น (Strictly Single File 100%)** คือ:
+     - **`Patches/Server263_Patch_Latest.zip`**
+   - ห้ามสร้างไฟล์แตกย่อยซ้ำซ้อน และห้ามเก็บไฟล์ zip ที่มี Timestamp ซ้ำซ้อน
+3. **นโยบายไม่บีบอัดไฟล์ WZ ซ้ำ**:
+   - ห้ามให้ผู้ใช้บีบอัดไฟล์ WZ Data (`data/wz265/` ~5 GB) ใหม่อีกเด็ดขาด ผู้ใช้จะบีบอัดตัวเต็มเพียงครั้งเดียว และใช้วิธีนำไฟล์แพตช์ไปวางทับใน `Server263/` ด้วย `Apply_Patch.bat`
+
+### 1.5 คำสั่งลับสำหรับทดสอบระบบเฉพาะผู้พัฒนา (Private Admin Testing Commands: `!endgame`)
+- **ห้ามใส่ปุ่มโกงลงในสคริปต์สาธารณะ**: ไฟล์สำหรับแจกจ่ายผู้เล่นทั่วไป (`quick_adminNPC.py`, `PlayerCommands.java` ฯลฯ) ต้องสะอาด 100%
 - **การทดสอบทำผ่านคำสั่งลับระดับ Admin เท่านั้น** (`requiredType = Admin` ใน `AdminCommands.java` บัญชี `admin`/`admin`):
-  - `!endgame` หรือ `!test6` หรือ `!boost` (ปรับเลเวล 260, สกิลคลาส 1-4 เต็ม, สกิล V-Matrix และ HEXA คลาส 6 Lv.30 เต็ม, อาวุธ Arcane Umbra, เงิน 2B Mesos, Sol Erda Energy x20, Sol Erda Fragment x1,000)
-  - `!endgame <class_name>` สำหรับเปลี่ยนอาชีพและรับของฟูลเซ็ตทันที เช่น `!endgame hayato`, `!endgame kanna`, `!endgame khali`, `!endgame lara`, `!endgame kain`, `!endgame illium`, `!endgame ark`, `!endgame hoyoung`
-- เมื่อเพิ่มหรือปรับแก้คลาสใหม่ ให้ลงทะเบียนไอเทมประจำอาชีพและสกิล V-Matrix/HEXA ใน `AdminCommands.setupEndgame` เสมอ
+  - `!endgame` หรือ `!test6` หรือ `!boost` หรือ `!endgame <class_name>`
+- **มาตรฐานผลลัพธ์ของคำสั่ง `!endgame` (Strict Zero-Skill-Injection Standard)**:
+  - ปรับเลเวล 260, ฟื้นฟู HP/MP 100%, แต้ม AP 1,250
+  - สำเร็จเควสต์คลาส 5 (1460-1466) และเควสต์คลาส 6 (1488) แบบ `noRewards = true` ป้องกันเควสต์แจกลูกแก้ว Arcane Symbol อัตโนมัติ
+  - มอบแต้ม SP เต็มพิกัดผ่าน ExtendSP เพื่อให้อัปสกิลคลาส 1–4 ตามธรรมชาติ
+  - มอบ Nodestones x3,000 (`2435719`), Experience Nodestones x20, Sol Erda Energy x1,000, Sol Erda Fragments x30,000, Power Elixir x3,000
+  - มอบอุปกรณ์ BiS ครบเซ็ต (Arcane Umbra, Princess No Secondary, Emblem) และเงิน 10B Mesos
+  - ⚠️ **กฎเหล็กเด็ดขาด (Strict Zero Skill Injection Policy)**:
+    - **ห้ามเรียก `chr.addSkill`, `chr.setHexaSkill`, หรือ `mc.setSkillLevel` ใน `!endgame` โดยเด็ดขาด**
+    - **ผู้เล่นจะเป็นผู้กดเปิดหิน Nodestones, ปลดล็อกแกน HEXA Matrix, และจัดสรรแต้ม SP ด้วยตนเองตามกลไกธรรมชาติของระบบเกม เพื่อป้องกัน Skill Book เสียหาย 100%**
 
-### 1.5 มาตรฐานการบันทึก Progress (Progress Logging Standard)
-- **ต้องระบุเวลาที่แก้ไขเสมอ**: บันทึกทั้งวันที่และเวลาจริง เช่น `[2026-10-12 11:00 น.]` หรือ `34c9857 (22:51 น.)`
-- **โครงสร้าง 2 บล็อกหลัก**:
-  - `Hash (เวลา น.) — หัวข้อภาษาไทยที่กระชับได้ใจความ (หัวข้ออังกฤษ)`
-  - `- **หัวข้อ**: <Commit Subject / Feature Scope>`
-  - `- **รายละเอียด**:`
-    - แจกแจงแยกหมวดย่อย ปัญหาที่พบ (Problem) -> สาเหตุเชิงเทคนิค -> วิธีแก้ (Fix/Implementation) -> ผลลัพธ์ (Outcome)
-    - ทำ clickable link ไฟล์ที่แก้ไขเสมอ เช่น [`SkillConstants.java`](file:///...)
-- **การจัดเก็บเอกสาร**: บันทึกลงใน [`v214 src/PROGRESS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/PROGRESS.md) และคัดลอกซิงค์มาที่ [`PROGRESS.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS.md) ที่รูทเสมอ
+### 1.6 มาตรฐานการ Push Git และบันทึก Progress (Git Sync & Lean Progress Standard)
+1. **กฎเหล็กการ Push Git ทุกอย่าง (Push Everything Policy)**:
+   - **ต้อง Push ทุกอย่าง รวมถึงไฟล์เอกสารทั้งหมดเสมอ**: เมื่อทำการ Git Commit & Push จะต้องทำ `git add .` หรือระบุทุกไฟล์ที่มีการเปลี่ยนแปลง รวมถึงไฟล์เอกสาร (`PROGRESS.md`, `AGENTS.md`, `README.md`, `docs/*`, scripts, configs, tools)
+   - **ห้ามเว้นไฟล์เอกสารหรือปล่อยค้างไว้ที่ Local เด็ดขาด**
+2. **มาตรฐานการบันทึกและแจกแจง Progress (`PROGRESS.md`)**:
+   - ต้องระบุเวลาที่แก้ไขเสมอ: บันทึกทั้งวันที่และเวลาจริง เช่น `[2026-10-16 18:05 น.]` หรือ `e8c54c5d (18:05 น.)`
+   - โครงสร้าง 2 บล็อกหลัก: Problem -> Cause -> Fix -> Outcome
+   - รักษาความกระชับ (Lean Progress): คงไว้เฉพาะประวัติและฟีเจอร์เวอร์ชันปัจจุบัน ซิงค์ตรงกันทั้งใน `v214 src/PROGRESS.md` และ Root `PROGRESS.md`
 
 ---
 
@@ -75,7 +88,7 @@ description: >-
 
 ---
 
-## 3. มาตรฐานการพัฒนาสกิลคลาส 6 & HEXA Matrix
+## 3. มาตรฐานการพัฒนาสกิลคลาส 6 & Matrix UI Integrity
 
 ### 3.1 รูปแบบ Origin Skill (6th Job)
 1. **ใน `handleSkill()`**:
@@ -84,15 +97,25 @@ description: >-
 2. **ใน `handleAttack()`**:
    - ติดสถานะ Absolute Bind ให้มอนสเตอร์: `MobStat.Freeze` (10 วินาที)
    - ติดสถานะ Origin Debuff: `MobStat.OriginDebuff` (20 วินาที) ด้วย `EnumMap<MobStat, Option>`
+   - บังคับคูลดาวน์ 360 วินาทีเคร่งครัด
 
-### 3.2 รูปแบบ HEXA Mastery Skills & Sub-Skill Redirection
-- สกิลคลาส 6 หลายสกิลมี Sub-action packet IDs แยกย่อย (เช่น คอมโบหลายจังหวะ หรือเอฟเฟกต์ระเบิด)
-- **ต้องแมปใน `SkillConstants.getActualSkillIDfromSkillID(int skillID)` เสมอ**: เพื่อให้เซิร์ฟเวอร์ดึงค่า Skill Level และ Mastery จากสกิลหลักได้อย่างถูกต้อง ป้องกันปัญหาดาเมจเป็น 0 หรือ NullPointerException
-- **การเชื่อมโยงระบบเกจ (Gauges)**: นำรหัสสกิลคลาส 6 ไปใส่ในฟังก์ชันสะสมเกจของอาชีพนั้นๆ เสมอ เช่น:
-  - Kaiser: `incrementMorphGauge()`
-  - Hayato: `incrementSwordEnergy()` (+5 ท่าดาบปกติ, +2 ดึงดาบ)
-  - Kanna: `isSpiritWalkerSkill()` สำหรับเกิดเส้นชีพจรวิญญาณ (Mana Veins)
-  - Lara: ธาตุ Earth/River/Wind/Sun interaction
+### 3.2 รูปแบบ Ascent Skill & Transformation State Machine
+- สกิลคอมโบต่อเนื่อง (เช่น Ren Ascent: Falling Flower ➔ Climbing Serpent ➔ Soaring Dragon):
+  - ควบคุมการเปลี่ยนปุ่มด้วย `UserLocal.registerExtraSkill`
+  - ตรวจสอบ State และบัฟสถานะ (เช่น `Holding`) ก่อนอนุญาตให้โจมตี
+  - ท่าปิดฉากต้องเคลียร์บัฟ ปลดซัมมอน และเริ่มนับคูลดาวน์เต็ม (เช่น 240 วินาที)
+
+### 3.3 การป้องกันไอคอนสกิลย่อยขยะใน Matrix UI (Zero Phantom Sub-Skill Policy)
+- สกิลย่อยที่มี `<int name="invisible" value="1"/>`:
+  - **ห้ามส่งแพ็กเก็ตอัปเดตสกิลไปยัง Client**: ห้ามเรียก `removeSkillAndSendPacket` ให้ใช้ `removeSkill` เงียบๆ ในเซิร์ฟเวอร์
+  - **การกรองแพ็กเก็ต**: กรอง `!SkillConstants.isSpecialInvisibleSkill` และ `!si.isInvisible()` ใน `Char.encode` (SkillRecord)
+  - **ระบบ Auto-Purge ในฐานข้อมูล**: ใน `Skill.getSkillsFromSQLByCharID` ให้สแกนและสั่งลบสกิลย่อยเลเวล 0 ออกจากตาราง `skills` ของ MariaDB อัตโนมัติเมื่อตัวละครเข้าเกม
+  - **บล็อกการสแปม 0 คูลดาวน์**: ตรวจสอบเงื่อนไขบัฟและคูลดาวน์ของสกิลหลักใน `SkillHandler` และ `AttackHandler` เสมอ
+
+### 3.4 ระบบ Super Buff All (`!buffall` / `@buff`)
+- คำสั่ง `@buff` และ `@buffall` สำหรับผู้เล่นทั่วไป
+- คำสั่ง `!buffall` สำหรับแอดมิน
+- เมนูคลิกใน NPC Maple Admin (`[Super Buff All (2 Hours)]`) รวม 20+ บัฟระดับท็อป (EXP +55%, Drop +44%, ATT +260+, Boss DMG +50%, IED +50%, Speed +2 Stages) นาน 2 ชั่วโมงเต็ม
 
 ---
 
@@ -110,14 +133,13 @@ description: >-
 
 ---
 
-## 5. กระบวนการทำงาน (Workflow: Development, Build & Patch)
+## 5. กระบวนการทำงานที่เป็นมาตรฐาน (Standardized Workflow)
 
 ```text
 [แก้ไขโค้ด Java หรือ Python Script]
             │
             ▼
-[รัน Maven Package ใน v214 src]
-(mvn clean package -DskipTests หรือ 2_Build_Server.bat)
+[รัน Maven Package ใน v214 src (2_Build_Server.bat)]
             │
             ▼
 [ตรวจสอบ BUILD SUCCESS]
@@ -126,14 +148,14 @@ description: >-
 [Deploy maplestory.jar ไปยัง Server263/ และ Root]
             │
             ▼
-[ซิงค์ data/scripts/ ไปยัง Server263/data/scripts/]
+[รันเซิร์ฟเวอร์และทดสอบจริงในเกม (In-Game Testing) ให้ผ่าน 100%]
             │
             ▼
-[สร้าง Incremental Patch ผ่าน tools/create_patch.py]
+[สร้างไฟล์แพตช์เดี่ยวผ่าน tools/create_patch.py -> Patches/Server263_Patch_Latest.zip]
             │
             ▼
-[บันทึก PROGRESS.md พร้อมระบุเวลาจริง (HH:mm น.)]
+[บันทึก PROGRESS.md ทั้ง root และ v214 src/ พร้อมระบุเวลาจริง]
             │
             ▼
-[Git Add, Commit, Push]
+[Git Add & Git Commit & Git Push ทุกอย่างรวมถึงเอกสารทั้งหมด]
 ```
