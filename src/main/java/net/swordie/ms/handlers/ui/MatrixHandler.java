@@ -735,21 +735,6 @@ public class MatrixHandler {
         for (int skillID : new int[]{core.getSkillID1(), core.getSkillID2(), core.getSkillID3()}) {
             if (skillID > 0) {
                 skillIDs.add(skillID);
-                switch (skillID) {
-                    case 400011147 -> { // Ren: Thousand Blossom Flurry
-                        skillIDs.add(400011148);
-                        skillIDs.add(400011149);
-                    }
-                    case 400011150 -> { // Ren: Soul Immeasurable
-                        skillIDs.add(400011151);
-                        skillIDs.add(400011152);
-                    }
-                    case 400011154, 400011157 -> { // Ren: Final Imugi Spirit Sword: Blade of the Unbound Heart
-                        skillIDs.add(400011154);
-                        skillIDs.add(400011155);
-                        skillIDs.add(400011157);
-                    }
-                }
             }
         }
         return skillIDs;
@@ -766,6 +751,12 @@ public class MatrixHandler {
      *                (they will be set to level 0). May be null (e.g. on login).
      */
     public static void recalcMatrixSkills(Char chr, Collection<Integer> touched) {
+        // Clean up legacy phantom sub-skills from V-Matrix UI (Ren multi-stage sub-attacks)
+        int[] renPhantomVSkills = new int[]{400011148, 400011149, 400011151, 400011152, 400011154, 400011155};
+        for (int pSkill : renPhantomVSkills) {
+            chr.removeSkillAndSendPacket(pSkill);
+        }
+
         // skillID -> {node level sum, slot level sum, node type}
         Map<Integer, int[]> computed = new HashMap<>();
         for (MatrixCore core : chr.getMatrixCore()) {

@@ -254,7 +254,9 @@ public class Ren extends Job {
             }
         }
         Option o1 = new Option();
-        chr.write(WvsContext.renImugiSpiritSwordRequest(skillID));
+        if (isFinalImugiSpiritSwordSkill(skillID)) {
+            chr.write(WvsContext.renImugiSpiritSwordRequest(skillID));
+        }
         switch (attackInfo.skillId) {
             case FIRST_PLUM_BLOSSOM_SWORD_PETAL_FLASH:
             case FIRST_PLUM_BLOSSOM_SWORD_PETAL_FLASH_UNSHEATHE:
@@ -303,29 +305,30 @@ public class Ren extends Job {
                         continue;
                     }
                     MobTemporaryStat mts = mob.getTemporaryStat();
-                    EnumMap<MobStat, Option> stats = new EnumMap<>(MobStat.class);
+                    if (!mts.hasCurrentMobStat(MobStat.Freeze)) {
+                        EnumMap<MobStat, Option> stats = new EnumMap<>(MobStat.class);
 
-                    Option oFreeze = new Option();
-                    oFreeze.nOption = 1;
-                    oFreeze.rOption = skillID;
-                    oFreeze.tOption = 10;
-                    oFreeze.cOption = chr.getId();
-                    stats.put(MobStat.Freeze, oFreeze);
+                        Option oFreeze = new Option();
+                        oFreeze.nOption = 1;
+                        oFreeze.rOption = skillID;
+                        oFreeze.tOption = 10;
+                        oFreeze.cOption = chr.getId();
+                        stats.put(MobStat.Freeze, oFreeze);
 
-                    Option oDebuff = new Option();
-                    oDebuff.nOption = 1;
-                    oDebuff.rOption = skillID;
-                    oDebuff.tOption = 20;
-                    oDebuff.cOption = chr.getId();
-                    stats.put(MobStat.OriginDebuff, oDebuff);
+                        Option oDebuff = new Option();
+                        oDebuff.nOption = 1;
+                        oDebuff.rOption = skillID;
+                        oDebuff.tOption = 20;
+                        oDebuff.cOption = chr.getId();
+                        stats.put(MobStat.OriginDebuff, oDebuff);
 
-                    mts.addStatOptions(mob, stats);
+                        mts.addStatOptions(mob, stats);
+                    }
                 }
                 break;
             case HEARTBOUND_VERSE:
             case HEARTBOUND_VERSE_FALLING_FLOWER:
             case HEARTBOUND_VERSE_CLIMBING_SERPENT:
-            case HEARTBOUND_VERSE_SOARING_DRAGON:
             case HEARTBOUND_VERSE_FALLING_FLOWER_ATT:
                 if (!chr.hasSkillOnCooldown(HEARTBOUND_VERSE)) {
                     chr.addSkillCooldown(HEARTBOUND_VERSE, 240000);
@@ -334,30 +337,17 @@ public class Ren extends Job {
                     chr.addSkillCooldown(HEARTBOUND_VERSE_SOARING_DRAGON, 240000);
                     chr.addSkillCooldown(HEARTBOUND_VERSE_FALLING_FLOWER_ATT, 240000);
                 }
-                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
-                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
-                    if (mob == null) {
-                        continue;
-                    }
-                    MobTemporaryStat mts = mob.getTemporaryStat();
-                    EnumMap<MobStat, Option> stats = new EnumMap<>(MobStat.class);
-
-                    Option oFreeze = new Option();
-                    oFreeze.nOption = 1;
-                    oFreeze.rOption = skillID;
-                    oFreeze.tOption = 10;
-                    oFreeze.cOption = chr.getId();
-                    stats.put(MobStat.Freeze, oFreeze);
-
-                    Option oDebuff = new Option();
-                    oDebuff.nOption = 1;
-                    oDebuff.rOption = skillID;
-                    oDebuff.tOption = 20;
-                    oDebuff.cOption = chr.getId();
-                    stats.put(MobStat.OriginDebuff, oDebuff);
-
-                    mts.addStatOptions(mob, stats);
+                break;
+            case HEARTBOUND_VERSE_SOARING_DRAGON:
+                if (!chr.hasSkillOnCooldown(HEARTBOUND_VERSE)) {
+                    chr.addSkillCooldown(HEARTBOUND_VERSE, 240000);
+                    chr.addSkillCooldown(HEARTBOUND_VERSE_FALLING_FLOWER, 240000);
+                    chr.addSkillCooldown(HEARTBOUND_VERSE_CLIMBING_SERPENT, 240000);
+                    chr.addSkillCooldown(HEARTBOUND_VERSE_SOARING_DRAGON, 240000);
+                    chr.addSkillCooldown(HEARTBOUND_VERSE_FALLING_FLOWER_ATT, 240000);
                 }
+                tsm.removeStatsBySkill(HEARTBOUND_VERSE);
+                tsm.removeStat(Holding);
                 break;
         }
     }
@@ -685,6 +675,11 @@ public class Ren extends Job {
                 o1.tTerm = 7;
                 o1.tOption = 7;
                 tsm.sendStat(IndieNotDamaged, o1);
+                Option oAscent = new Option();
+                oAscent.nOption = 1;
+                oAscent.rOption = skillID;
+                oAscent.tOption = 30;
+                tsm.sendStat(Holding, oAscent);
                 chr.write(UserLocal.showHexaSkillEff(chr));
                 if (chr.getParty() != null) {
                     chr.getParty().broadcast(UserLocal.showHexaSkillEff(chr), chr);
@@ -705,6 +700,10 @@ public class Ren extends Job {
                 break;
             case HEARTBOUND_VERSE_CLIMBING_SERPENT:
                 tsm.removeStatsBySkill(HEARTBOUND_VERSE_FALLING_FLOWER);
+                break;
+            case HEARTBOUND_VERSE_SOARING_DRAGON:
+                tsm.removeStatsBySkill(HEARTBOUND_VERSE);
+                tsm.removeStat(Holding);
                 break;
         }
     }
@@ -829,6 +828,72 @@ public class Ren extends Job {
                 }
                 return 1;
             }
+            case WISH_UNENDING -> {
+                chr.addSkillCooldown(WISH_UNENDING, 20000);
+                return 1;
+            }
+            case RIOTOUS_HEART, HEXA_RIOTOUS_HEART -> {
+                chr.addSkillCooldown(RIOTOUS_HEART, 10000);
+                if (chr.hasSkill(HEXA_RIOTOUS_HEART)) {
+                    chr.addSkillCooldown(HEXA_RIOTOUS_HEART, 10000);
+                }
+                return 1;
+            }
+            case HEARTS_UNITED, HEXA_HEARTS_UNITED -> {
+                chr.addSkillCooldown(HEARTS_UNITED, 30000);
+                if (chr.hasSkill(HEXA_HEARTS_UNITED)) {
+                    chr.addSkillCooldown(HEXA_HEARTS_UNITED, 30000);
+                }
+                return 1;
+            }
+            case UNITY -> {
+                chr.addSkillCooldown(UNITY, 1000);
+                return 1;
+            }
+            case FOURTH_PLUM_BLOSSOM_SWORD_UNBOWED_BLADE, PLUM_BLOSSOM_SWORD_UNBOWED_BLADE -> {
+                chr.addSkillCooldown(FOURTH_PLUM_BLOSSOM_SWORD_UNBOWED_BLADE, 70000);
+                chr.addSkillCooldown(PLUM_BLOSSOM_SWORD_UNBOWED_BLADE, 70000);
+                return 1;
+            }
+            case SUBLIMATION -> {
+                chr.addSkillCooldown(SUBLIMATION, 120000);
+                return 1;
+            }
+            case PLUM_BRANCH_SNARE -> {
+                chr.addSkillCooldown(PLUM_BRANCH_SNARE, 120000);
+                return 1;
+            }
+            case FINAL_IMUGI_SPIRIT_SWORD_YEARS_UNCOUNTED, HEXA_FINAL_IMUGI_SPIRIT_SWORD_YEARS_UNCOUNTED -> {
+                chr.addSkillCooldown(FINAL_IMUGI_SPIRIT_SWORD_YEARS_UNCOUNTED, 60000);
+                if (chr.hasSkill(HEXA_FINAL_IMUGI_SPIRIT_SWORD_YEARS_UNCOUNTED)) {
+                    chr.addSkillCooldown(HEXA_FINAL_IMUGI_SPIRIT_SWORD_YEARS_UNCOUNTED, 60000);
+                }
+                return 1;
+            }
+            case THOUSAND_BLOSSOM_FLURRY, THOUSAND_BLOSSOM_FLURRY_EX, THOUSAND_BLOSSOM_FLURRY_ATOM -> {
+                chr.addSkillCooldown(THOUSAND_BLOSSOM_FLURRY, 120000);
+                chr.addSkillCooldown(THOUSAND_BLOSSOM_FLURRY_EX, 120000);
+                chr.addSkillCooldown(THOUSAND_BLOSSOM_FLURRY_ATOM, 120000);
+                return 1;
+            }
+            case SOUL_IMMEASURABLE, SOUL_IMMEASURABLE_ATT, SOUL_IMMEASURABLE_SPE -> {
+                chr.addSkillCooldown(SOUL_IMMEASURABLE, 120000);
+                chr.addSkillCooldown(SOUL_IMMEASURABLE_ATT, 120000);
+                chr.addSkillCooldown(SOUL_IMMEASURABLE_SPE, 120000);
+                return 1;
+            }
+            case DANCING_ANNIHILATION -> {
+                chr.addSkillCooldown(DANCING_ANNIHILATION, 120000);
+                return 1;
+            }
+            case FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART,
+                 FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART_2,
+                 FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART_ATT -> {
+                chr.addSkillCooldown(FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART, 1000);
+                chr.addSkillCooldown(FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART_2, 1000);
+                chr.addSkillCooldown(FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART_ATT, 1000);
+                return 1;
+            }
             case DIVIDED_HEAVENS, DIVIDED_HEAVENS_FINISH -> {
                 chr.addSkillCooldown(DIVIDED_HEAVENS, 360000);
                 chr.addSkillCooldown(DIVIDED_HEAVENS_FINISH, 360000);
@@ -852,12 +917,13 @@ public class Ren extends Job {
     public void handleInitAfterMigrate(Char chr) {
         super.handleInitAfterMigrate(chr);
 
-        // Clean up legacy phantom sub-skills from HEXA Matrix UI
-        int[] phantomHexaSkills = new int[]{161141501, 161141502, 161141503, 161141504, 161141505};
-        for (int pSkill : phantomHexaSkills) {
-            if (chr.hasSkill(pSkill)) {
-                chr.removeSkillAndSendPacket(pSkill);
-            }
+        // Clean up legacy phantom sub-skills from HEXA Matrix UI & V-Matrix UI unconditionally
+        int[] phantomSubSkills = new int[]{
+            161141501, 161141502, 161141503, 161141504, 161141505, // HEXA sub-skills
+            400011148, 400011149, 400011151, 400011152, 400011154, 400011155 // V-Matrix sub-skills
+        };
+        for (int pSkill : phantomSubSkills) {
+            chr.removeSkillAndSendPacket(pSkill);
         }
 
         ScriptManagerImpl sm = chr.getScriptManager();

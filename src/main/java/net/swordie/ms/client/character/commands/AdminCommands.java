@@ -2680,18 +2680,33 @@ public class AdminCommands {
             chr.addMoney(2000000000L);
         } catch (Exception ignored) {}
 
-        // 4. Complete 5th Job (1460-1466) & 6th Job (1488)
+        // 4. Complete 5th Job (1460-1466) & 6th Job (1488) (noRewards = true: strictly no Arcane Symbol spawning)
         try {
             for (int q = 1460; q <= 1466; q++) {
-                chr.completeQuest(q);
+                chr.completeQuest(q, true);
             }
-            chr.completeQuest(1488);
+            chr.completeQuest(1488, true);
             OutPacket outPacket = new OutPacket(OutHeader.MESSAGE);
             outPacket.encodeByte(QUEST_RECORD_MESSAGE.getVal());
             outPacket.encodeInt(1488);
             outPacket.encodeByte(2);
             outPacket.encodeFT(FileTime.currentTime());
             chr.write(outPacket);
+
+            // Clean up any Arcane Symbols (1712000 - 1712006) from equipped items and inventory as requested
+            for (Item eqItem : new ArrayList<>(chr.getEquippedInventory().getItems())) {
+                if (eqItem != null && eqItem.getItemId() >= 1712000 && eqItem.getItemId() <= 1712006) {
+                    chr.getEquippedInventory().removeItem(eqItem);
+                }
+            }
+            Inventory equipInv = chr.getInventoryByType(InvType.EQUIP);
+            if (equipInv != null) {
+                for (Item invItem : new ArrayList<>(equipInv.getItems())) {
+                    if (invItem != null && invItem.getItemId() >= 1712000 && invItem.getItemId() <= 1712006) {
+                        equipInv.removeItem(invItem);
+                    }
+                }
+            }
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] Quest warning: " + e.getMessage());
         }

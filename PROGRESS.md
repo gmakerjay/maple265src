@@ -3,6 +3,53 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-16 11:35 น.] Comprehensive Ren Class Refactor: Zero-Cooldown Ascent Sub-Skill Elimination, Monster Freeze Bug Resolution, Complete Arcane Symbol Removal from Endgame, and Full Cooldown Audit (1st–6th Job)
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: ปรับปรุงและ Refactor อาชีพ Ren (`16002`, `16100`–`16114`) ครั้งใหญ่และสมบูรณ์แบบทุกจุด: แก้ไขปัญหาสกิลคลาส 6 Ascent `Climbing Serpent` (`161141503`) สแปมได้ตลอดเวลา, แก้ไขบั๊กมอนสเตอร์หยุดเดินเหมือนเซิร์ฟล่มจาก `MobStat.Freeze` ค้าง, ยกเลิกการเสกลูกแก้ว Arcane Symbol ในคำสั่ง `!endgame`, กวาดล้างสกิลย่อยขยะทั้ง V Matrix และ HEXA Matrix ออกจาก UI ถาวร, พร้อมตรวจสอบเงื่อนไขและคูลดาวน์สกิล Ren ครบทั้ง 1–6 คลาส
+- **รายละเอียด**:
+  1. **การแก้ไขบั๊กสกิล Ascent `Climbing Serpent` (`161141503`) สแปมได้ตลอดเวลา**:
+     - **สาเหตุเชิงเทคนิค**: ในไฟล์ WZ (`16114.xml`) สกิลย่อยสเตจแอ็กชันของ Ascent (`161141501`..`161141505`) มีสถานะ `<int name="invisible" value="1"/>` และไม่มีค่า `cooltime` ในตัวเอง (คูลดาวน์ 240 วินาทีผูกอยู่ที่สกิลหลัก `161141506`) ก่อนหน้านี้มีการยัดสกิลย่อยเหล่านี้ลงฐานข้อมูล `skills` ทำให้ผู้เล่นลากสกิลย่อยลง Hotbar ได้ และเมื่อกดใช้งาน `Char.checkAndSetSkillCooltime` ไม่ได้ตรวจเช็คคูลดาวน์ของสกิลหลัก `actualSkillID` ส่งผลให้ผู้เล่นกดสแปมได้ไม่จำกัด
+     - **การแก้ไขใน [`Char.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java)**:
+       - ใน `checkAndSetSkillCooltime`: ตรวจสอบสถานะสกิล Ascent หากผู้เล่นพยายามกดสกิลย่อย (`actualSkillID != skillID`) โดยที่บัฟสถานะ Ascent (`Holding` / `tsm.hasStatBySkillId(actualSkillID)`) ไม่ได้ทำงานอยู่ ระบบจะ **ปฏิเสธการใช้งานทันที (`return false`)** ป้องกันการกดใช้สกิลย่อยลัดขั้นตอน 100%
+       - ตรวจสอบ `hasSkillOnCooldown` ร่วมกันทั้ง `skillID` และ `actualSkillID` หากหมดช่วงเวลา 30 วินาทีของ Ascent หรือติดคูลดาวน์ 240 วินาที จะไม่อนุญาตให้กดใช้ได้อีกเด็ดขาด
+     - **การแก้ไขใน [`Ren.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/anima/Ren.java)**:
+       - เมื่อกดใช้ท่าปิดท้าย `HEARTBOUND_VERSE_SOARING_DRAGON` (`161141504`) ทั้งใน `handleSkill` และ `handleAttack` ระบบจะทำการลบบัฟ `Holding` ออกทันที (`tsm.removeStat(Holding)`) เพื่อปิดสถานะ Ascent อย่างสมบูรณ์
+  2. **การแก้ไขบั๊กมอนสเตอร์หยุดเดินเหมือนเซิร์ฟเวอร์ล่ม (Monster Freeze Lock Issue)**:
+     - **สาเหตุเชิงเทคนิค**: ใน `Ren.handleAttack` มีการใส่โค้ดแจกสถานะ `MobStat.Freeze` (10 วินาที Absolute Bind) ให้กับมอนสเตอร์ทุกตัวที่ถูกโจมตีด้วยสกิลตระกูล `HEARTBOUND_VERSE` และเนื่องจาก `Climbing Serpent` ตีมอนสเตอร์ 15 ตัว ตัวละ 10 ฮิต และถูกสแปมได้ มอนสเตอร์ทั้งแมพจึงติดสถานะ Freeze แช่แข็ง AI และการเคลื่อนไหว 100% ต่อเนื่องตลอดเวลา ทำให้ผู้เล่นเห็นว่ามอนสเตอร์หยุดเดินเหมือนเซิร์ฟค้าง
+     - **การแก้ไข**:
+       - ตัด `MobStat.Freeze` และ `OriginDebuff` ออกจากสกิลตระกูล `HEARTBOUND_VERSE` ทั้งหมด (สกิล Ascent เป็นสกิลโจมตี/บัฟ ไม่ใช่สกิลหยุดมอนสเตอร์)
+       - จำกัดการใช้งาน `MobStat.Freeze` (10s) ไว้เฉพาะคัตซีน Origin 1 (`DIVIDED_HEAVENS` คูลดาวน์ 360 วินาที) เพียงสกิลเดียวเท่านั้น พร้อมเพิ่มเงื่อนไข `!mts.hasCurrentMobStat(MobStat.Freeze)` เพื่อป้องกันการซ้ำซ้อน
+  3. **ยกเลิกการเสกลูกแก้ว Arcane Symbol ในคำสั่ง `!endgame`**:
+     - **การแก้ไขใน [`AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java)**:
+       - ปรับการสำเร็จเควสต์คลาส 5 (`1460`–`1466`) และเควสต์คลาส 6 (`1488`) ให้ส่งอาร์กิวเมนต์ `noRewards = true` (`chr.completeQuest(q, true)`) เพื่อป้องกันเควสต์แจกลูกแก้ว Arcane Symbol อัตโนมัติ
+       - เพิ่มระบบเคลียร์ลูกแก้ว Arcane Symbol (`1712000`–`1712006`) ออกจากทั้งช่องสวมใส่ (`EquippedInventory`) และช่องสัมภาระ (`Equip Inventory`) หากมีหลงเหลืออยู่
+  4. **กวาดล้างสกิลย่อยขยะทั้ง V Matrix และ HEXA Matrix ถาวร**:
+     - ใน [`MatrixHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/ui/MatrixHandler.java): ตัด `switch` ที่เคยยัดสกิลย่อย V Matrix (`400011148, 400011149, 400011151, 400011152, 400011154, 400011155`) ใน `getCoreSkillIds` ออกทั้งหมด
+     - ใน [`SkillConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java): เพิ่มรหัสสกิลย่อยทั้ง 11 สกิลลงใน `isSpecialInvisibleSkill` เพื่อป้องกันไม่ให้ถูกส่งลง UI ของไคลเอนต์
+     - ใน [`Char.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java): แก้ไข `removeSkillAndSendPacket` ให้ส่ง `currentLevel = 0, masterLevel = 0` เพื่อให้ไคลเอนต์ลบไอคอนออกจากหน้าต่าง Skill UI อย่างหมดจด
+     - ใน `Ren.handleInitAfterMigrate` และ `MatrixHandler.recalcMatrixSkills`: เพิ่มโค้ดล้างสกิลย่อยตกค้างในฐานข้อมูลอัตโนมัติเมื่อตัวละครเข้าเกม
+  5. **ตรวจสอบและรองรับคูลดาวน์สกิล Ren ครบถ้วนทั้งคลาส 1–6 ใน [`Ren.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/anima/Ren.java)**:
+     - `Burrowing Earth` / `HEXA`: คูลดาวน์ 20 วินาที
+     - `Wish Unending` (`161111006`): คูลดาวน์ 20 วินาที
+     - `Riotous Heart` / `HEXA`: คูลดาวน์ 10 วินาที
+     - `Hearts United` / `HEXA`: คูลดาวน์ 30 วินาที
+     - `Unity` (`161121015`): คูลดาวน์ 1 วินาที
+     - `Unbowed Blade` (`161121007`): คูลดาวน์ 70 วินาที
+     - `Sublimation` (`161121041`): คูลดาวน์ 120 วินาที
+     - `Plum Branch Snare` (`161121042`): คูลดาวน์ 120 วินาที
+     - `Years Uncounted` / `HEXA`: คูลดาวน์ 60 วินาที
+     - `Thousand Blossom Flurry` (`400011147`): คูลดาวน์ 120 วินาที
+     - `Soul Immeasurable` (`400011150`): คูลดาวน์ 120 วินาที
+     - `Dancing Annihilation` (`400011153`): คูลดาวน์ 120 วินาที
+     - `Blade of the Unbound Heart` (`400011157`): คูลดาวน์ 1 วินาที
+     - `Divided Heavens` (Origin 1 - `161141500`): คูลดาวน์ 360 วินาที
+     - `Heartbound Verse` (Origin 2 / Ascent - `161141506`): คูลดาวน์ 240 วินาที
+  6. **การสร้างแพ็กเกจส่งมอบ (Delivery Package)**:
+     - คอมไพล์ Java Core ผ่าน Maven (`BUILD SUCCESS`)
+     - ส่งมอบ `maplestory.jar` ลงใน `Server263/` และ root
+     - สร้างแพ็กเกจแพตช์เดี่ยว `Patches/Server263_Patch_Latest.zip` (ขนาด 173.46 MB)
+
 ## 📅 [2026-10-16 10:59 น.] Fix Ren & 6th Job Origin/Ascent Cooldown Bypass, Remove Phantom Sub-Skills from HEXA Matrix UI, and Update All-in-One Patch
 
 ### 🎯 Scope & Technical Details

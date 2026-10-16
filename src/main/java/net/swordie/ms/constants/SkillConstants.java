@@ -5332,7 +5332,20 @@ public class SkillConstants {
                 || skillID == FATAL_STRIKE_I
                 || skillID == CHARACTER_BUILDING
                 || skillID == Ark.SPECTER_STATE
-                || skillID == 500071000;
+                || skillID == 500071000
+                // Ren HEXA Origin/Ascent Internal Sub-Skills (invisible in WZ)
+                || skillID == 161141501
+                || skillID == 161141502
+                || skillID == 161141503
+                || skillID == 161141504
+                || skillID == 161141505
+                // Ren V-Matrix Multi-Stage Internal Sub-Skills (invisible in WZ)
+                || skillID == 400011148
+                || skillID == 400011149
+                || skillID == 400011151
+                || skillID == 400011152
+                || skillID == 400011154
+                || skillID == 400011155;
     }
 
     public static boolean notSureRemoteAttackSkill(int skillID) {

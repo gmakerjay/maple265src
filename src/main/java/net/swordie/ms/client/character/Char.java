@@ -3738,9 +3738,12 @@ public class Char {
      */
     public void removeSkillAndSendPacket(int skillID) {
         Skill skill = getSkill(skillID);
+        if (skill == null) {
+            skill = SkillData.getSkillDeepCopyById(skillID);
+        }
         if (skill != null) {
-            skill.setCurrentLevel(-1);
-            skill.setMasterLevel(-1);
+            skill.setCurrentLevel(0);
+            skill.setMasterLevel(0);
             write(WvsContext.changeSkillRecordResult(Collections.singletonList(skill), true, false, false));
             removeSkill(skillID);
         }
@@ -8012,16 +8015,38 @@ public class Char {
                 return true;
             }
         }
-        if (hasSkillOnCooldown(skillID)) {
-            if (skillID == Hero.BURNING_SOUL_BLADE || skillID == Hero.BURNING_SOUL_BLADE_STATIONARY) {
-                return tsm.hasStatBySkillId(Hero.BURNING_SOUL_BLADE) || tsm.hasStatBySkillId(Hero.BURNING_SOUL_BLADE_STATIONARY);
-            } else {
+        int actualSkillID = SkillConstants.getActualSkillIDfromSkillID(skillID);
+        int checkAscentId = actualSkillID != 0 ? actualSkillID : skillID;
+        SkillInfo checkAscentSi = SkillData.getSkillInfoById(checkAscentId);
+        boolean isAscent = checkAscentSi != null && checkAscentSi.isAscentSkill();
+
+        if (isAscent && actualSkillID != 0 && actualSkillID != skillID) {
+            // A sub-technique can ONLY be cast if the Ascent active window is currently running
+            if (!tsm.hasStatBySkillId(actualSkillID) && !tsm.hasStat(CharacterTemporaryStat.Holding)) {
                 return false;
             }
+        }
+
+        if (hasSkillOnCooldown(skillID) || (actualSkillID != 0 && hasSkillOnCooldown(actualSkillID))) {
+            if (skillID == Hero.BURNING_SOUL_BLADE || skillID == Hero.BURNING_SOUL_BLADE_STATIONARY) {
+                return tsm.hasStatBySkillId(Hero.BURNING_SOUL_BLADE) || tsm.hasStatBySkillId(Hero.BURNING_SOUL_BLADE_STATIONARY);
+            }
+            if (isAscent) {
+                if (tsm.hasStatBySkillId(checkAscentId) || tsm.hasStat(CharacterTemporaryStat.Holding) || tsm.hasStat(CharacterTemporaryStat.IndieNotDamaged)) {
+                    return true;
+                }
+            }
+            return false;
         } else {
             int count = getJobHandler().handleSetCoolDownSkill(skillID);
             if (count > 0) {
                 return true;
+            }
+            if (actualSkillID != 0 && actualSkillID != skillID) {
+                int countActual = getJobHandler().handleSetCoolDownSkill(actualSkillID);
+                if (countActual > 0) {
+                    return true;
+                }
             }
             switch (skillID) {
                 case 2321055 -> { // Heaven's Door
@@ -8034,16 +8059,15 @@ public class Char {
                 }
             }
             var si = SkillData.getSkillInfoById(skillID);
-            if (si != null && si.isAscentSkill()) {
-                //return true; TODO
+            if (si == null && actualSkillID != 0) {
+                si = SkillData.getSkillInfoById(actualSkillID);
             }
-            int actualSkillID = SkillConstants.getActualSkillIDfromSkillID(skillID);
             var skill = getSkill(skillID);
-            if (skill == null && actualSkillID != skillID) {
+            if (skill == null && actualSkillID != skillID && actualSkillID != 0) {
                 skill = getSkill(actualSkillID);
             }
             if (skill != null && si != null && si.hasCooltime() && !SkillConstants.isKeydownCDSkill(skillID)) {
-                setSkillCooldown(actualSkillID, getSkillLevel(actualSkillID));
+                setSkillCooldown(actualSkillID != 0 ? actualSkillID : skillID, getSkillLevel(actualSkillID != 0 ? actualSkillID : skillID));
             }
             return true;
         }
