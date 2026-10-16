@@ -3,6 +3,21 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-16 10:22 น.] Generated Single All-in-One Server Runner Incremental Patch Package (`Patches/Server263_Patch_Latest.zip`)
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: จัดทำไฟล์แพตช์ตัวรันอัปเดตแบบเบ็ดเสร็จไฟล์เดียว (Single All-in-One Incremental Patch Archive) ลงใน `Patches/Server263_Patch_Latest.zip` (ขนาด 173.46 MB)
+- **รายละเอียด**:
+  1. **เนื้อหาภายในแพ็กเกจแพตช์**:
+     - **Server Runner Core**: `maplestory.jar` (เวอร์ชันล่าสุดที่ผ่านการคอมไพล์และแก้ไขบั๊กคูลดาวน์ Ren คลาส 5/6, ปรับปรุงระบบ SP ธรรมชาติ), `server.properties`, batch scripts (`1_Start_Server.bat`, `3_Stop_Server.bat`, `4_Server_Control_Panel.bat`, `Import_Database.bat`, `Create_Account.bat`, `Create_Update_Patch.bat`, `HOW_TO_USE.txt`, `HOW_TO_PLAY_LAN.txt`, `backup.sql`)
+     - **NPC & Quest Scripts**: โฟลเดอร์ `data/scripts/` (7,389 สคริปต์ ปราศจากไฟล์แคช/คลาสขยะ)
+     - **Resources & Drops**: โฟลเดอร์ `data/resources/` (ตารางดรอป `mob_drops.json` และทรัพยากรอีเวนต์)
+     - **SQL Schemas**: โฟลเดอร์ `sql/`
+     - **Client Patch Files**: โฟลเดอร์ `Client_Patch_Files/` (`Launcher.exe`, `Localhost.dll`, `launcher.ini`, `Change_IP_or_Account.bat`, `Install_Client_Patch.bat`)
+     - **1-Click Updater**: `Apply_Patch.bat` ที่คัดลอกทับอัปเดตเซิร์ฟเวอร์โดยไม่แตะต้องหรือทำลายฐานข้อมูลตัวละครและไฟล์ WZ Data เดิม พร้อมถามติดตั้ง Client Patch เข้าโฟลเดอร์ตัวเกมให้อัตโนมัติ
+  2. **มาตรฐานนโยบายไฟล์เดียว (Single Patch Policy)**:
+     - ล้างไฟล์แคชเก่าทั้งหมดในโฟลเดอร์ `Patches/` เหลือเพียงไฟล์ `Patches/Server263_Patch_Latest.zip` เพียงไฟล์เดียว 100% ตามข้อกำหนดใน [AGENTS.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/AGENTS.md)
+
 ## 📅 [2026-10-16 10:17 น.] Exhaustive Ren Class Re-Audit: Strict Zero-Skill-Injection Verification, V/HEXA Stone Stock Guarantee, Cooldown Bug Fixes (Dancing Annihilation & Burrowing Earth), and 1st-4th Job Manual SP Integrity
 
 ### 🎯 Scope & Technical Details
