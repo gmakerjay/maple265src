@@ -1036,7 +1036,8 @@ public class SkillConstants {
                  400051024,
                  5221004,
                  5241000,
-                 5241001 -> true;
+                 5241001,
+                 Ren.DANCING_ANNIHILATION -> true;
             default -> findProcessType(skillId, 11);
         };
     }
@@ -4537,7 +4538,8 @@ public class SkillConstants {
                 skillId == IceLightning.LIGHTNING_ORB ||
                 skillId == IceLightning.HEXA_LIGHTNING_ORB ||
                 skillId == IceLightning.HEXA_LIGHTNING_ORB_2 ||
-                skillId == Blaster.BALLISTIC_HURRICANE;
+                skillId == Blaster.BALLISTIC_HURRICANE ||
+                skillId == Ren.DANCING_ANNIHILATION;
     }
 
     public static boolean isSoulSummonSkill(int skillID) {
@@ -5065,7 +5067,6 @@ public class SkillConstants {
             case Ren.SOUL_IMMEASURABLE:
             case Ren.SOUL_IMMEASURABLE_ATT:
             case Ren.SOUL_IMMEASURABLE_SPE:
-            case Ren.DANCING_ANNIHILATION:
             case Ren.FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART:
             case 400011155: // Final Imugi Spirit Sword: Blade of the Unbound Heart 2
             case Ren.FINAL_IMUGI_SPIRIT_SWORD_BLADE_OF_THE_UNBOUND_HEART_ATT:

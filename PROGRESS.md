@@ -3,6 +3,43 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-16 10:17 น.] Exhaustive Ren Class Re-Audit: Strict Zero-Skill-Injection Verification, V/HEXA Stone Stock Guarantee, Cooldown Bug Fixes (Dancing Annihilation & Burrowing Earth), and 1st-4th Job Manual SP Integrity
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: ตรวจสอบและวิเคราะห์เชิงลึกรอบ 2 ของอาชีพ Ren (`16002`, `16100`–`16114`) ตามคำขอของผู้ใช้: ยืนยันคำสั่ง `!endgame` ปราศจากการยัดสกิล 100%, ปริมาณหิน V/HEXA เพียงพอ, แก้ไขบั๊กคูลดาวน์สกิล V `Dancing Annihilation` และสกิล `Burrowing Earth`, และตรวจสอบการทำงานคลาส 1–4 ละเอียดยิบ
+- **รายละเอียด**:
+  1. **การตรวจสอบคำสั่ง `!endgame` (Strict Zero-Skill-Injection 100%)**:
+     - **ข้อพิสูจน์**: ใน [`AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java) ไม่มีคำสั่ง `chr.addSkill`, `chr.setHexaSkill`, หรือ `chr.maxSkills` สำหรับ Ren เลยแม้แต่บรรทัดเดียว
+     - ระบบให้ผู้เล่นอัปเลเวลสกิลด้วยตนเอง 100% ผ่านแต้ม SP ใน `ExtendSP` (คลาส 1: 65 แต้ม, คลาส 2: 130 แต้ม, คลาส 3: 130 แต้ม, คลาส 4: 255 แต้ม)
+     - โครงสร้างไอคอนสกิลที่ปรากฏในหน้าต่าง K เกิดจาก `SkillData.getSkillsByJob` ใน `Char.setJob` ส่งโครงสร้างสกิลที่เลเวล 0 (`currentLevel = 0`) เพื่อให้ไคลเอนต์แสดงปุ่ม `+` ใน UI มิฉะนั้นหน้าต่างสกิลจะว่างเปล่า
+     - **การปรับปรุงความบริสุทธิ์ของ SP ใน [`UserStatHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/user/UserStatHandler.java)**:
+       - ตรวจพบว่า `Wish Unending` (`161111006`) และ `Unity` (`161121015`) เป็นสกิลที่มองเห็นได้ใน UI (`invisible=0`) แต่เดิมถูกผูกติดใน `syncMoXuanSubSkills` ส่งผลให้อัปสกิลอื่นแล้ว 2 สกิลนี้พลอยได้เลเวลฟรี
+       - ได้ทำการตัด `161111006` และ `161121015` ออกจากระบบ auto-sync คงเหลือเฉพาะสกิลย่อยแอ็กชันที่ซ่อนอยู่จริง (`invisible=1`) ทำให้ผู้เล่นต้องใช้แต้ม SP อัปสกิลด้วยตนเองตามธรรมชาติ 100%
+  2. **ความเพียงพอของหินอัปสกิล V Matrix และ HEXA Matrix**:
+     - **V Matrix**: แจก `Nodestones` (`2435719`) x3,000 ชิ้น (สแต็กในช่องเดียว) และ `Experience Nodestones` (`2437760`) x20 ชิ้น (เต็มพิกัดช่อง Consume) เพียงพอสำหรับการเปิดและอัปเกรดสกิล V ทุกโหนดจนเต็มเลเวล 25–30
+     - **HEXA Matrix**: แจก `Sol Erda Energy` (`2636421`) x1,000 ก้อน และ `Sol Erda Fragments` (`4009548`) x30,000 ชิ้น สำหรับเปิดและอัปเกรดแกน HEXA (Mastery I–IV, Boost Cores, Origin 1, Origin 2 / Ascent) ได้จนเต็มทุกแกน
+     - **เงินและช่องเก็บของ**: ขยายช่องกระเป๋าเป็น 128 ช่องทุกหมวดอัตโนมัติ และมอบเงิน 10,000,000,000 Mesos (10B) สำหรับค่าธรรมเนียมคราฟต์/ติดตั้งโหนด
+  3. **การตรวจสอบและแก้ไขบั๊กคูลดาวน์สกิล V และ HEXA**:
+     - **ตรวจพบและแก้ไขบั๊กกดใช้ได้ไม่จำกัดของสกิล V `Dancing Annihilation` (`400011153`)**:
+       - *ปัญหา*: สกิล `Dancing Annihilation` เป็นสกิลคลาส 5 โจมตีกระหน่ำแบบ KeyDown (updatableTime = 5s) มีคูลดาวน์ใน WZ 120 วินาที (`cooltime = 120`) แต่ถูกใส่ไว้ใน `SkillConstants.isNoCoolDownAttack` ส่งผลให้ระบบมองข้ามคูลดาวน์ ทำให้ผู้เล่นกดใช้ได้ตลอดเวลาโดยไม่ติดคูลดาวน์ 120 วินาที!
+       - *วิธีแก้*: นำ `Ren.DANCING_ANNIHILATION` ออกจาก `isNoCoolDownAttack` และนำไปลงทะเบียนใน [`SkillConstants.isKeyDownSkill`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java) และ `isKeydownCDSkill` เพื่อให้ระหว่างกดแช่โจมตีได้อย่างลื่นไหล และเมื่อปล่อยปุ่มหรือครบ 5 วินาที ระบบจะเซ็ตคูลดาวน์ 120 วินาทีตาม WZ อย่างถูกต้องสมบูรณ์
+     - **ตรวจพบและแก้ไขบั๊กคูลดาวน์ของ `Burrowing Earth` (`161110007`)**:
+       - *ปัญหา*: ใน [`Ren.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/anima/Ren.java) เมธอด `handleSetCoolDownSkill` ดักจับเฉพาะรหัสเอฟเฟกต์ `161111008` และ `161141002` ทำให้เมื่อผู้เล่นในคลาส 3 กดใช้สกิล `161110007` คูลดาวน์ 20 วินาทีไม่ทำงาน
+       - *วิธีแก้*: เพิ่ม `FIRST_IMUGI_SPIRIT_SWORD_BURROWING_EARTH` (`161110007`), `161111011`, และ `161141011` เข้าใน `handleSetCoolDownSkill` ให้ติดคูลดาวน์ 20,000 ms ครบทุกรหัส
+     - **ความถูกต้องของสกิล HEXA Matrix (6th Job)**:
+       - `HEXA Plum Blossom Sword: Storm` (`161141000`): สกิลหมุนดาบ KeyDown เคลื่อนที่ได้ คูลดาวน์ 0s ถูกต้องตาม WZ
+       - `HEXA Wish Unending` (`161140005`): เป็น Passive (psd=1) ทริกเกอร์โบนัสแอทแทค `161141006` คูลดาวน์ 1s ถูกต้องตาม WZ
+       - `HEXA Burrowing Earth` (`161141002`): คูลดาวน์ 20s ทำงานถูกต้อง
+       - `HEXA Riotous Heart` (`161141009`): คูลดาวน์ 10s (`chr.addSkillCooldown`) ทำงานถูกต้อง
+       - `HEXA Hearts United` (`161141013`): คูลดาวน์ 30s (`chr.addSkillCooldown`) ทำงานถูกต้อง
+       - `Rising Azure Dragon: Divided Heavens` (`161141500` - Origin 1): คูลดาวน์ 360s (6 นาที) + อมตะ 7s + Bind 10s + OriginDebuff 20s ทำงานถูกต้อง
+       - `Rising Azure Dragon: Heartbound Verse` (`161141506` - Origin 2 / Ascent): คูลดาวน์ 240s (4 นาที) + Ascent Summon + Bind 10s + OriginDebuff 20s ทำงานถูกต้อง
+  4. **การวิเคราะห์การทำงานของสกิลคลาส 1–4 อย่างละเอียด**:
+     - คลาส 1 (`16100`): `Slice` (โจมตีปกติ), `Serene Breeze` (พุ่งไปข้างหน้า/ถอยหลัง ซิงค์ 2 ทิศทาง), `Lilting Petal` (กระโดด 2 จังหวะ CD 5s), พาสซีฟ `Free Spirit` และ `Serene Verse` คำนวณสเตตัสถูกต้อง
+     - คลาส 2 (`16110`): `Strike` (ฟันต่อเนื่อง), `Petal Flash` (ชักดาบ/เก็บดาบ ฮีลเลือดตาม % MaxHP), `Spirit Strike` (ดาบวิญญาณอิสึกิเสริมการโจมตี), `Blossoming Blade` (Booster +2 ความเร็วโจมตี), พาสซีฟ `Sword Mastery`, `Physical Training`, `Serene Verse II` ทำงานครบถ้วน
+     - คลาส 3 (`16111`): `Torrent` (ฟันพายุ), `Raining Blossoms` (โอกาส 35% ปล่อยกลีบดอกไม้ติดตามเป้าหมาย SecondAtom), `Serpent's Blessing` (โอกาส 35% ต้านสถานะ 100% นาน 4s CD 6s), `Wish Unending` (ฟันกวาดล้าง CD 20s), `Burrowing Earth` (เสกหนามพสุธา CD 20s), พาสซีฟ `Serene Verse III`, `Ironbark Body` ทำงานครบถ้วน
+     - คลาส 4 & Hyper (`16112`): `Storm` (KeyDown หมุนดาบเดินฟัน), `Spirit Strike III` & `Ravenous Spirit` (เสริมดาบวิญญาณ), `Riotous Heart` / `Hearts United` (ระบบชาร์จเกจและยิงลูกแก้ว CD 10s / 30s), `Serpent's Fang` (Final Attack 60% สลับไปใช้ HEXA 75% อัตโนมัติ), `Unbowed Blade` (อมตะ 3s CD 70s), `Sublimation` (บัฟ Hyper CD 120s), `Plum Branch Snare` (Bind 10s CD 120s), `Years Uncounted` (Burn DoT 5s), บัฟ `Anima Warrior` และ `Anima Hero's Will` ทำงานสมบูรณ์ 100%
+
 ## 📅 [2026-10-15 23:55 น.] Deep Audit of Ren (`16002`, `16100`–`16114`): Zero-Skill-Injection Compliance, 1st–4th Job & V Matrix Condition Review, and Riotous Heart Cooldown Fix
 
 ### 🎯 Scope & Technical Details

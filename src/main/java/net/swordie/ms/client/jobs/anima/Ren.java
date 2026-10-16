@@ -758,11 +758,17 @@ public class Ren extends Job {
     @Override
     public int handleSetCoolDownSkill(int skillId) {
         switch (skillId) {
-            case FIRST_IMUGI_SPIRIT_SWORD_BURROWING_EARTH_EFF,
-                 HEXA_FINAL_IMUGI_SPIRIT_SWORD_BURROWING_EARTH -> {
+            case FIRST_IMUGI_SPIRIT_SWORD_BURROWING_EARTH,
+                 FIRST_IMUGI_SPIRIT_SWORD_BURROWING_EARTH_EFF,
+                 FIRST_IMUGI_SPIRIT_SWORD_BURROWING_EARTH_2,
+                 HEXA_FINAL_IMUGI_SPIRIT_SWORD_BURROWING_EARTH,
+                 HEXA_FINAL_IMUGI_SPIRIT_SWORD_BURROWING_EARTH_2 -> {
+                chr.addSkillCooldown(FIRST_IMUGI_SPIRIT_SWORD_BURROWING_EARTH, 20000);
                 chr.addSkillCooldown(FIRST_IMUGI_SPIRIT_SWORD_BURROWING_EARTH_EFF, 20000);
+                chr.addSkillCooldown(FIRST_IMUGI_SPIRIT_SWORD_BURROWING_EARTH_2, 20000);
                 if (chr.hasSkill(HEXA_FINAL_IMUGI_SPIRIT_SWORD_BURROWING_EARTH)) {
                     chr.addSkillCooldown(HEXA_FINAL_IMUGI_SPIRIT_SWORD_BURROWING_EARTH, 20000);
+                    chr.addSkillCooldown(HEXA_FINAL_IMUGI_SPIRIT_SWORD_BURROWING_EARTH_2, 20000);
                 }
                 return 1;
             }
