@@ -75,7 +75,9 @@ fields = {
 
 fieldID = sm.getFieldID()
 
-if parentID == 3 and (fieldID == 863010240 or fieldID == 863010330 or fieldID == 863010430):
+if fieldID in [863010600, 863010700]:
+    sm.exitBoss()
+elif parentID == 3 and (fieldID == 863010240 or fieldID == 863010330 or fieldID == 863010430):
     if fieldID == 863010240:
         if chr.getField().getLifeByTemplateId(9390612) is not None:
             sm.chatScript("You must defeat Gollux's Abdomen before you are able to move forward through this portal.")

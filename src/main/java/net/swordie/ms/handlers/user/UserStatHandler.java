@@ -729,7 +729,11 @@ public class UserStatHandler {
                     subSkill.setCurrentLevel(targetLv);
                     subSkill.setMasterLevel(Math.max(targetLv, subMax));
                     chr.addSkill(subSkill);
-                    subSkills.add(subSkill);
+                    SkillInfo subSi = SkillData.getSkillInfoById(subId);
+                    boolean isInvisible = SkillConstants.isSpecialInvisibleSkill(subId) || (subSi != null && subSi.isInvisible());
+                    if (!isInvisible) {
+                        subSkills.add(subSkill);
+                    }
                 }
             }
             if (!subSkills.isEmpty()) {

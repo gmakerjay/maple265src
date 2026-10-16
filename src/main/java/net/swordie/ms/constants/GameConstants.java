@@ -1891,7 +1891,7 @@ public class GameConstants {
         intensePowerCrystal.put(9210072, new IntensePowerCrystalData(8881710, 9210072, 273000000L)); // First Adversary (8881710 | 9210072 | 273,000,000 mesos)
         intensePowerCrystal.put(9210073, new IntensePowerCrystalData(8881710, 9210073, 588000000L)); // First Adversary (8881710 | 9210073 | 588,000,000 mesos)
         intensePowerCrystal.put(9210074, new IntensePowerCrystalData(8881710, 9210074, 1176000000L)); // First Adversary (8881710 | 9210074 | 1,176,000,000 mesos)
-        intensePowerCrystal.put(9601188, new IntensePowerCrystalData(9421589, 9601188, 840500L)); // Mori Ranmaru (9421589 | 9601188 | 840,500 mesos)
+        intensePowerCrystal.put(9601188, new IntensePowerCrystalData(9421581, 9601188, 840500L)); // Mori Ranmaru (9421581 | 9601188 | 840,500 mesos)
         intensePowerCrystal.put(9601189, new IntensePowerCrystalData(9421589, 9601189, 2664500L)); // Mori Ranmaru (9421589 | 9601189 | 2,664,500 mesos)
         intensePowerCrystal.put(9601190, new IntensePowerCrystalData(9450022, 9601190, 16200000L)); // Princess No (9450022 | 9601190 | 16,200,000 mesos)
         intensePowerCrystal.put(9601635, new IntensePowerCrystalData(9601623, 9601635, 28800000L)); // Akechi Mitsuhide (9601623 | 9601635 | 28,800,000 mesos)
@@ -1914,8 +1914,8 @@ public class GameConstants {
         // Explicit mapping for final-phase bosses and Reward Chests (v265 Official KMS values)
         switch (BossTemplateID) {
             // Suppress premature crystals on Phase 1 / Phase 2 intermediate mobs
-            case 8900100, 8900101, 8900102, 8900000, 8900001, 8900002,
-                 8920100, 8920101, 8920102, 8920103, 8920000, 8920001, 8920002, 8920003,
+            case 8900101, 8900102, 8900001, 8900002,
+                 8920101, 8920102, 8920103, 8920001, 8920002, 8920003,
                  8950100, 8950101, 8950000, 8950001,
                  8881200, 8881201, 8881202,
                  8880110, 8880100,
@@ -1937,18 +1937,54 @@ public class GameConstants {
                  8881600, 8881601, 8881614, 8881621, 8881650, 8881651, 8881664, 8881671,
                  8881710, 8881711, 8881712, 8881740, 8881741, 8881742, 8881770, 8881771, 8881772, 8881800, 8881801, 8881802,
                  9601622 -> { return 0; }
-            // Root Abyss Treasure Chests
-            case 8900103 -> { return 9210009; } // Normal Pierre Chest (968K)
-            case 8900003 -> { return 9210010; } // Chaos Pierre Chest (16.2M)
-            case 8920106 -> { return 9210013; } // Normal Crimson Queen Chest (968K)
-            case 8920006 -> { return 9210014; } // Chaos Crimson Queen Chest (16.2M)
+            // Zakum
+            case 8800022 -> { return 9210000; } // Easy Zakum (200K)
+            case 8800002 -> { return 9210001; } // Normal Zakum (612.5K)
+            case 8800102 -> { return 9210002; } // Chaos Zakum (16.2M)
+            // Magnus
+            case 8880010 -> { return 9210003; } // Easy Magnus (722K)
+            case 8880002 -> { return 9210004; } // Normal Magnus (2.592M)
+            case 8880000 -> { return 9210005; } // Hard Magnus (19.0125M)
+            // Hilla
+            case 8870000 -> { return 9210006; } // Normal Hilla (800K)
+            case 8870100 -> { return 9210007; } // Hard Hilla (11.25M)
+            // OMNI-CLN
+            case 8880200 -> { return 9210008; } // Normal OMNI-CLN (1.25M)
+            // Root Abyss
+            case 8900100, 8900103 -> { return 9210009; } // Normal Pierre (Chest / Mob) (968K)
+            case 8900000, 8900003 -> { return 9210010; } // Chaos Pierre (Chest / Mob) (16.2M)
+            case 8910100 -> { return 9210011; } // Normal Von Bon (968K)
+            case 8910000 -> { return 9210012; } // Chaos Von Bon (16.2M)
+            case 8920100, 8920106 -> { return 9210013; } // Normal Crimson Queen (Chest / Mob) (968K)
+            case 8920000, 8920006 -> { return 9210014; } // Chaos Crimson Queen (Chest / Mob) (16.2M)
+            case 8930100 -> { return 9210015; } // Normal Vellum (968K)
+            case 8930000 -> { return 9210016; } // Chaos Vellum (21.0125M)
             // Von Leon
-            case 8840000, 8840018 -> { return 9210017; } // Easy Von Leon (1.058M)
-            case 8840007, 8840010 -> { return 9210018; } // Normal Von Leon (1.458M)
+            case 8840007, 8840018 -> { return 9210017; } // Easy Von Leon (1.058M)
+            case 8840000, 8840010 -> { return 9210018; } // Normal Von Leon (1.458M)
             case 8840014, 8840013 -> { return 9210019; } // Hard Von Leon (2.45M)
+            // Horntail
+            case 8810214 -> { return 9210020; } // Easy Horntail (882K)
+            case 8810018 -> { return 9210021; } // Normal Horntail (1.0125M)
+            case 8810122 -> { return 9210022; } // Chaos Horntail (1.352M)
+            // Arkarium
+            case 8860005 -> { return 9210023; } // Easy Arkarium (1.152M)
+            case 8860000 -> { return 9210024; } // Normal Arkarium (2.5205M)
+            // Pink Bean (Supports both P1 8820101 and P2 8820212 for Chaos)
+            case 8820001 -> { return 9210025; } // Normal Pink Bean (1.4045M)
+            case 8820212, 8820101 -> { return 9210026; } // Chaos Pink Bean (12.8M)
+            // Cygnus
+            case 8850111 -> { return 9210027; } // Easy Cygnus (9.1125M)
+            case 8850011 -> { return 9210028; } // Normal Cygnus (14.45M)
+            // Papulatus
+            case 8500002 -> { return 9210035; } // Easy Papulatus P2 (684.5K)
+            case 8500012 -> { return 9210036; } // Normal Papulatus P2 (2.6645M)
+            case 8500022 -> { return 9210037; } // Chaos Papulatus P2 (26.45M)
             // Mori Ranmaru
             case 9421581 -> { return 9601188; } // Normal Ranmaru (840.5K)
             case 9421583, 9421589 -> { return 9601189; } // Hard Ranmaru (2.664M)
+            // Princess No
+            case 9450022 -> { return 9601190; } // Princess No (16.2M)
             // Gloom Reward Chests
             case 8950118 -> { return 9210042; } // Normal Gloom Chest (49.6M)
             case 8950119 -> { return 9210046; } // Chaos Gloom Chest (92.4M)

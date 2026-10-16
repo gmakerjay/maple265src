@@ -31,6 +31,7 @@ public class SkillData {
 
     private static final Int2ObjectMap<Int2IntMap> eliteMobSkills = new Int2ObjectOpenHashMap<>();
     private static final Short2ObjectMap<Short2ObjectMap<MobSkillInfo>> mobSkillInfos = new Short2ObjectOpenHashMap<>();
+    private static final Set<Short> loadedJobs = new HashSet<>();
 
     public static void saveSkills(String dir) {
         Util.makeDirIfAbsent(dir);
@@ -874,6 +875,9 @@ public class SkillData {
     }
 
     public static List<Skill> getAllSkillsByJob(short id) {
+        if (loadedJobs.add(id)) {
+            loadSkillsOfJob(id);
+        }
         List<Skill> res = new ArrayList<>();
         skills.forEach((key, si) -> {
             if (si.getRootId() == id) {
@@ -884,6 +888,9 @@ public class SkillData {
     }
 
     private static List<Skill> getSkillsByJob(short id, boolean rec) {
+        if (loadedJobs.add(id)) {
+            loadSkillsOfJob(id);
+        }
         List<Skill> res = new ArrayList<>();
         skills.forEach((key, si) -> {
             if (si.getRootId() == id && !si.isInvisible()) {
@@ -1676,6 +1683,7 @@ public class SkillData {
 
     public static void clear() {
         skills.clear();
+        loadedJobs.clear();
         mobSkillInfos.clear();
         makingSkillRecipes.clear();
     }

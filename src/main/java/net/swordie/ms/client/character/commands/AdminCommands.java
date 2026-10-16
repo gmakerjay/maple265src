@@ -2639,7 +2639,32 @@ public class AdminCommands {
         try {
             if (targetJob != null && targetJob > 0) {
                 short jobShort = targetJob.shortValue();
+                // Reset any previously auto-maxed 1st-4th job skills to base (0 or fixLevel) and purge invisible sub-skills
+                List<Short> jobLevels = JobConstants.getJobChain(jobShort);
+                List<Skill> resetSkills = new ArrayList<>();
+                for (short id : jobLevels) {
+                    if (JobConstants.isBeginnerJob(id)) continue;
+                    for (Skill baseSkill : SkillData.getAllSkillsByJob(id)) {
+                        if (baseSkill == null) continue;
+                        int sId = baseSkill.getSkillId();
+                        var si = SkillData.getSkillInfoById(sId);
+                        boolean isInvis = net.swordie.ms.constants.SkillConstants.isSpecialInvisibleSkill(sId) || (si != null && si.isInvisible());
+                        if (isInvis) {
+                            chr.removeSkill(sId);
+                        } else {
+                            int initLv = (si != null && si.getFixLevel() > 0) ? si.getFixLevel() : 0;
+                            int maxLv = baseSkill.getMaxLevel() > 0 ? baseSkill.getMaxLevel() : baseSkill.getMasterLevel();
+                            baseSkill.setCurrentLevel(initLv);
+                            baseSkill.setMasterLevel(maxLv);
+                            chr.addSkill(baseSkill);
+                            resetSkills.add(baseSkill);
+                        }
+                    }
+                }
                 chr.setJob(jobShort);
+                if (!resetSkills.isEmpty()) {
+                    chr.write(WvsContext.changeSkillRecordResult(resetSkills, true, false, false));
+                }
                 Map<Stat, Object> stats = new HashMap<>();
                 stats.put(Stat.job, jobShort);
                 chr.sendStatsPacket(stats);
@@ -2650,7 +2675,7 @@ public class AdminCommands {
 
         short job = chr.getJob();
 
-        // 1. Level to 260 and set AP
+        // 1. Level to 260 and set AP (Do NOT call handleLevelUp(260) as it triggers auto-jobAdvance & maxSkills!)
         try {
             chr.setStatAndSendPacket(Stat.level, 260);
             chr.getAvatarData().getCharacterStat().setExp(0);
@@ -2658,8 +2683,10 @@ public class AdminCommands {
             if (chr.getStat(Stat.ap) < targetAp) {
                 chr.setStatAndSendPacket(Stat.ap, targetAp);
             }
-            if (chr.getJobHandler() != null) {
-                chr.getJobHandler().handleLevelUp((short) 260);
+            if (JobConstants.isCadena(job)) {
+                chr.completeQuest(34657, true);
+                chr.completeQuest(34658, true);
+                chr.completeQuest(34659, true);
             }
         } catch (Exception e) {
             chr.chatMessage(SpeakerChannel, "[Endgame] Level warning: " + e.getMessage());

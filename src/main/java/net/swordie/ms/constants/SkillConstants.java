@@ -3186,8 +3186,9 @@ public class SkillConstants {
                 return 64121021; // Chain Arts: Thrash II
             case 64121055:
                 return 64121053; // Veteran Shadowdealer
-            case 400041033:
             case 400041034:
+                return 400041033; // Apocalypse Cannon
+            case 400041036:
                 return 400041035; // Chain Arts: Void Strike
             case 400041075:
                 return 400041074; // Muscle Memory Finale

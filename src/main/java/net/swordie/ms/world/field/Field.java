@@ -135,6 +135,12 @@ public class Field {
     private int boosterMobID = 0;
     private int boosterEXPMulti = 0;
 
+    private volatile boolean isCleared = false;
+
+    public boolean isCleared() {
+        return isCleared;
+    }
+
     protected ConcurrentLinkedQueue<Runnable> tasks;
     protected PriorityQueue<DropExpire> dropExpiry;
 
@@ -2587,7 +2593,7 @@ public class Field {
         return p == null ? getPortalByID(0) : p;
     }
 
-    private ScriptManager getScriptManager() {
+    public ScriptManagerImpl getScriptManager() {
         return scriptManagerImpl;
     }
 
@@ -2935,8 +2941,18 @@ public class Field {
     }
 
     public Mob spawnMobRespawnable(int id, int x, int y, boolean respawnable, long hp, int respawnTime) {
+        if (isCleared()) {
+            return null;
+        }
         Mob mob = spawnMob(id, x, y, respawnable, hp);
-        getTimer().addEvent(() -> spawnMobRespawnable(id, x, y, respawnable, hp, respawnTime), respawnTime * 1000L); //milliseconds to seconds.
+        if (mob != null) {
+            ScheduledFuture<?> sf = getTimer().addEvent(() -> {
+                if (!isCleared()) {
+                    spawnMobRespawnable(id, x, y, respawnable, hp, respawnTime);
+                }
+            }, respawnTime * 1000L);
+            lifeSchedules.put(mob.getObjectId(), sf);
+        }
         return mob;
     }
 
@@ -3236,6 +3252,50 @@ public class Field {
             this.destroyButterflyTimer.cancel(true);
         }
         this.destroyButterflyTimer = null;
+    }
+
+    public void clearFieldTimersAndSchedules() {
+        this.isCleared = true;
+        if (spawnButterflyTimer != null) {
+            if (!spawnButterflyTimer.isCancelled()) {
+                spawnButterflyTimer.cancel(true);
+            }
+            spawnButterflyTimer = null;
+        }
+        if (destroyButterflyTimer != null) {
+            if (!destroyButterflyTimer.isCancelled()) {
+                destroyButterflyTimer.cancel(true);
+            }
+            destroyButterflyTimer = null;
+        }
+        if (fieldEffectTimer != null) {
+            if (!fieldEffectTimer.isCancelled()) {
+                fieldEffectTimer.cancel(true);
+            }
+            fieldEffectTimer = null;
+        }
+        if (runeStoneHordesTimer != null) {
+            if (!runeStoneHordesTimer.isCancelled()) {
+                runeStoneHordesTimer.cancel(true);
+            }
+            runeStoneHordesTimer = null;
+        }
+        synchronized (lifeSchedules) {
+            for (ScheduledFuture<?> sf : lifeSchedules.values()) {
+                if (sf != null && !sf.isDone()) {
+                    sf.cancel(true);
+                }
+            }
+            lifeSchedules.clear();
+        }
+        getScriptManager().stopEvents();
+        for (Life life : new ArrayList<>(this.lifes.values())) {
+            if (life != null) {
+                removeLife(life.getObjectId(), false, false);
+            }
+        }
+        this.mobs.clear();
+        this.lifes.clear();
     }
 
     public long getDeprecationStartTime() {

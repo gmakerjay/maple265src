@@ -26,15 +26,15 @@ public class VonLeon {
         if (field.getId() == 211070104 && !field.isBossSpawned()) {
             field.setBossSpawned(true);
             sm.removeNpc(2161000);
-            field.spawnMob(8840018, 28, -181, false);
-        } else if (field.getId() == 211070102 && !field.isBossSpawned()) {
-            field.setBossSpawned(true);
-            sm.removeNpc(2161000);
-            field.spawnMob(8840013, 28, -181, false);
+            field.spawnMob(8840007, 28, -181, false);
         } else if (field.getId() == 211070100 && !field.isBossSpawned()) {
             field.setBossSpawned(true);
             sm.removeNpc(2161000);
-            field.spawnMob(8840010, 28, -181, false);
+            field.spawnMob(8840000, 28, -181, false);
+        } else if (field.getId() == 211070102 && !field.isBossSpawned()) {
+            field.setBossSpawned(true);
+            sm.removeNpc(2161000);
+            field.spawnMob(8840014, 28, -181, false);
         } else {
             sm.exitBoss();
         }

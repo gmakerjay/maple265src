@@ -95,7 +95,7 @@ public class VCore {
     public static List<VCoreData> getSkillNodes() {
         List<VCoreData> coreData = new ArrayList<>();
         for (VCoreData core : vcore.values()) {
-            if (core.getType() == SKILL) {
+            if (core.getType() == SKILL && !core.getJobs().contains("none")) {
                 coreData.add(core);
             }
         }

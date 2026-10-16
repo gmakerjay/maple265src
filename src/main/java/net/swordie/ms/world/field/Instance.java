@@ -335,12 +335,18 @@ public class Instance {
         }
         stopEvents();
         for (Char chr : getChars().values()) {
-            if (chr.getClient() == null) continue;
+            if (chr != null) {
+                chr.getScriptManager().stopEvents();
+                if (chr.getWillGaugeTimer() != null) {
+                    chr.getWillGaugeTimer().cancel(true);
+                    chr.setWillGaugeTimer(null);
+                }
+            }
+            if (chr == null || chr.getClient() == null) continue;
             Field field = chr.getField();
             chr.setDeathCount(-1);
-            chr.getScriptManager().stopEvents(); // Stops the FixedRate Event from the Field Script
             chr.setInstance(null);
-            if (getFields().containsKey(field.getId())) {
+            if (field != null && getFields().containsKey(field.getId())) {
                 if (useFieldReturn) {
                     chr.warp(field.getForcedReturn());
                 } else if (portalId == -1) {
@@ -350,6 +356,11 @@ public class Instance {
                 }
             }
             chr.getScriptManager().stopEvents();
+        }
+        for (Field field : getFields().values()) {
+            if (field != null) {
+                field.clearFieldTimersAndSchedules();
+            }
         }
         getFields().clear();
         getChars().clear();

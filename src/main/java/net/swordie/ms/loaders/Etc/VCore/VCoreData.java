@@ -130,15 +130,15 @@ public class VCoreData {
 
     public boolean isClassSkill(short job) {
         if (jobs.contains("warrior")) {
-            return (job != 100 && JobConstants.isAdventurerWarrior(job)) || JobConstants.isDawnWarrior(job) || JobConstants.isDemon(job) || JobConstants.isMihile(job) || JobConstants.isKaiser(job) || JobConstants.isZero(job) || JobConstants.isAran(job) || JobConstants.isBlaster(job) || JobConstants.isHayato(job);
+            return (job != 100 && JobConstants.isAdventurerWarrior(job)) || JobConstants.isDawnWarrior(job) || JobConstants.isDemon(job) || JobConstants.isMihile(job) || JobConstants.isKaiser(job) || JobConstants.isZero(job) || JobConstants.isAran(job) || JobConstants.isBlaster(job) || JobConstants.isHayato(job) || JobConstants.isAdele(job) || JobConstants.isRen(job);
         } else if (jobs.contains("magician")) {
-            return (job != 200 && JobConstants.isAdventurerMage(job)) || JobConstants.isLuminous(job) || JobConstants.isBattleMage(job) || JobConstants.isKinesis(job) || JobConstants.isEvan(job) || JobConstants.isBlazeWizard(job) || JobConstants.isKanna(job) || JobConstants.isBeastTamer(job);
+            return (job != 200 && JobConstants.isAdventurerMage(job)) || JobConstants.isLuminous(job) || JobConstants.isBattleMage(job) || JobConstants.isKinesis(job) || JobConstants.isEvan(job) || JobConstants.isBlazeWizard(job) || JobConstants.isKanna(job) || JobConstants.isBeastTamer(job) || JobConstants.isIllium(job) || JobConstants.isLara(job) || JobConstants.isSiaAstelle(job);
         } else if (jobs.contains("archer")) {
-            return (job != 300 && JobConstants.isAdventurerArcher(job)) || JobConstants.isWindArcher(job) || JobConstants.isWildHunter(job) || JobConstants.isMercedes(job);
+            return (job != 300 && JobConstants.isAdventurerArcher(job)) || JobConstants.isWindArcher(job) || JobConstants.isWildHunter(job) || JobConstants.isMercedes(job) || JobConstants.isPathFinder(job) || JobConstants.isKain(job);
         } else if (jobs.contains("rogue")) {
-            return (job != 400 && JobConstants.isAdventurerThief(job)) || JobConstants.isDualBlade(job) || JobConstants.isNightWalker(job) || JobConstants.isPhantom(job);
+            return (job != 400 && JobConstants.isAdventurerThief(job)) || JobConstants.isDualBlade(job) || JobConstants.isNightWalker(job) || JobConstants.isPhantom(job) || JobConstants.isCadena(job) || JobConstants.isHoYoung(job) || JobConstants.isKhali(job);
         } else if (jobs.contains("pirate")) {
-            return (job != 500 && JobConstants.isAdventurerPirate(job)) || JobConstants.isXenon(job) || JobConstants.isThunderBreaker(job) || JobConstants.isCannoneer(job) || JobConstants.isMechanic(job) || JobConstants.isShade(job) || JobConstants.isAngelicBuster(job) || JobConstants.isJett(job);
+            return (job != 500 && JobConstants.isAdventurerPirate(job)) || JobConstants.isXenon(job) || JobConstants.isThunderBreaker(job) || JobConstants.isCannoneer(job) || JobConstants.isMechanic(job) || JobConstants.isShade(job) || JobConstants.isAngelicBuster(job) || JobConstants.isJett(job) || JobConstants.isArk(job) || JobConstants.isMoXuan(job);
         }
         return false;
     }
@@ -149,11 +149,21 @@ public class VCoreData {
             return false;
         }
         for (String sJob : jobs) {
-            if (Integer.valueOf(sJob) == job) {
-                return true;
+            try {
+                if (Integer.parseInt(sJob) == job) {
+                    return true;
+                }
+            } catch (NumberFormatException ignored) {
             }
         }
         return false;
+    }
+
+    public boolean isUsableByJob(short job) {
+        if (jobs == null || jobs.isEmpty() || jobs.contains("none")) {
+            return false;
+        }
+        return jobs.contains("all") || isClassSkill(job) || isJobSkill(job);
     }
 
     public List<Integer> getConnectSkills() {

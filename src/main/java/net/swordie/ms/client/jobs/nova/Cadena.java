@@ -168,6 +168,8 @@ public class Cadena extends Job {
             MUSCLE_MEMORY_I_ATTACK,
             MUSCLE_MEMORY_II_ATTACK,
             MUSCLE_MEMORY_III_ATTACK,
+            MUSCLE_MEMORY_FINALE,
+            400041075,
             HEXA_MUSCLE_MEMORY_ATTACK,
             HEXA_MUSCLE_MEMORY_ATTACK_2,
             HEXA_MUSCLE_MEMORY_ATTACK_3,
@@ -444,15 +446,31 @@ public class Cadena extends Job {
         tsm.removeStat(DarkSight); // sent when Cadena needs to go out of DarkSight Mode from Pursuit
     }
 
+    private int getBaseWeaponSkillId(int skillId) {
+        int actual = net.swordie.ms.constants.SkillConstants.getActualSkillIDfromSkillID(skillId);
+        return switch (actual) {
+            case HEXA_SUMMON_SCIMITAR -> SUMMON_SCIMITAR;
+            case HEXA_SUMMON_CLAW -> SUMMON_CLAW;
+            case HEXA_SUMMON_SHURIKEN -> SUMMON_SHURIKEN;
+            case HEXA_SUMMON_DAGGERS -> SUMMON_DAGGERS;
+            case HEXA_SUMMON_SHOTGUN -> SUMMON_SHOTGUN;
+            case HEXA_SUMMON_DECOY_BOMB -> SUMMON_DECOY_BOMB;
+            case HEXA_SUMMON_BRICK -> SUMMON_BRICK;
+            case HEXA_SUMMON_SPIKED_BAT_1 -> SUMMON_SPIKED_BAT_1;
+            default -> actual;
+        };
+    }
+
     private void increaseMuscleMemory(int skillId) {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
+        int baseSkillId = getBaseWeaponSkillId(skillId);
         int amount = 1;
-        if (lastAttack == skillId
+        if (lastAttack == baseSkillId
                 || SUMMON_SHURIKEN2 == skillId
                 || HEXA_SUMMON_SHURIKEN2 == skillId
-                || APOCALYPSE_CANNON_SUMMON == skillId
-                || Arrays.stream(chainArtSkills).anyMatch(s -> s == skillId)
-                || Arrays.stream(muscleMemoryAttack).anyMatch(s -> s == skillId)) {
+                || APOCALYPSE_CANNON_SUMMON == baseSkillId
+                || Arrays.stream(chainArtSkills).anyMatch(s -> s == skillId || s == baseSkillId)
+                || Arrays.stream(muscleMemoryAttack).anyMatch(s -> s == skillId || s == baseSkillId)) {
             return;
         }
         if (tsm.hasStat(WeaponVariety)) {
@@ -462,7 +480,7 @@ public class Cadena extends Job {
                 amount++;
             }
         }
-        lastAttack = skillId;
+        lastAttack = baseSkillId;
         setMuscleMemory(amount);
     }
 
@@ -692,17 +710,23 @@ public class Cadena extends Job {
         super.handleLevelUp(level);
         ScriptManagerImpl sm = chr.getScriptManager();
         if (chr.getLevel() >= 30 && !chr.hasQuestCompleted(34657)) {
-            sm.jobAdvance((short) 6410);
+            if (chr.getJob() == 6400) {
+                sm.jobAdvance((short) 6410);
+            }
             sm.giveAndEquip(1143054);
             sm.completeQuestNoRewards(34657);
         }
         if (chr.getLevel() >= 60 && !chr.hasQuestCompleted(34658)) {
-            sm.jobAdvance((short) 6411);
+            if (chr.getJob() == 6410) {
+                sm.jobAdvance((short) 6411);
+            }
             sm.giveAndEquip(1143055);
             sm.completeQuestNoRewards(34658);
         }
         if (chr.getLevel() >= 100 && !chr.hasQuestCompleted(34659)) {
-            sm.jobAdvance((short) 6412);
+            if (chr.getJob() == 6411) {
+                sm.jobAdvance((short) 6412);
+            }
             sm.giveAndEquip(1143056);
             sm.completeQuestNoRewards(34659);
         }

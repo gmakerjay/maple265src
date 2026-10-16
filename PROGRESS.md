@@ -2,6 +2,30 @@
 
 This file tracks active bug fixes, feature implementations, and system optimizations.
 
+## 📅 [2026-10-16 23:00 น.] Boss Lifecycle Leak Fixes, Deterministic Crystal Economy, Matrix Sub-Skill Sanitization & All-in-One Patch Packaging
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: แก้ไขปัญหา Memory/Timer Leak ในระบบบอสและ Instance, กำหนดระบบดรอปผลึก Intense Power Crystal และเรทราคาตรงตามความยากสำหรับ 12 บอสหลัก, บล็อกการส่งแพ็กเก็ตสกิลย่อยที่ซ่อนอยู่ (Invisible Sub-Skills) สู่ไคลเอนต์, และสร้างแพ็กเกจแพตช์ All-in-One ล่าสุด [`Patches/Server263_Patch_Latest.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip)
+- **รายละเอียด**:
+  1. **การแก้ไขระบบวงจรชีวิตบอสและการคืนทรัพยากร (Boss Lifecycle & Leak Prevention)**:
+     - **ปัญหา (Problem)**: เมื่อบอสตายหรือตัวละครออกจากห้องบอส ตารางเวลาเกิดม็อบซ้ำ (`spawnMobRespawnable`), ฝูงผีเสื้อ (`spawnButterflyTimer`), เอฟเฟกต์สนามรบ, และ Will Gauge Timer บนตัวละครยังคงทำงานค้างอยู่ในหน่วยความจำ ก่อให้เกิด Memory Leak และการคืนสภาพแมพผิดปกติ
+     - **วิธีแก้ (Fix)**:
+       - ใน [`Field.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/field/Field.java): เพิ่มสถานะ `isCleared`, เมธอด `clearFieldTimersAndSchedules()`, ยกเลิก `ScheduledFuture` ของไลฟ์สเกดูลทั้งหมดอย่างปลอดภัย และดักกั้นไม่ให้ `spawnMobRespawnable` ทำงานซ้ำเมื่อแมพถูกเคลียร์แล้ว
+       - ใน [`Instance.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/field/Instance.java): ปรับปรุง `clear()` ให้ยกเลิก Will gauge timer, หยุดกิจกรรม Script Manager, ดักจับค่า Null ของ Client/Field และสั่งเคลียร์ Field ทุกลูป
+       - พัฒนาชุดทดสอบ Empirical Verification 8 ชุดใน [`BossLifecycleVerificationTest.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/test/java/net/swordie/ms/BossLifecycleVerificationTest.java) ผลการทดสอบผ่าน 100% (8 PASSED, 0 FAILED)
+  2. **ระบบ Intense Power Crystal และการปรับแมปบอส 12 ตัว (Deterministic Crystal Economy)**:
+     - ใน [`GameConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/GameConstants.java) และ [`BossHelper.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/boss/BossHelper.java): ผูกรหัสผลึกและราคาดรอปที่แน่นอนตามระดับความยาก 12 บอสหลัก (Zakum, Arkarium, Pink Bean, Von Leon, Cygnus, Hilla, Magnus, Mori Ranmaru, Papulatus P2, Root Abyss, OMNI-CLN, Princess No)
+     - ใน [`VonLeon.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/boss/VonLeon.java): แก้ไข Mob ID การเกิดของ Von Leon ให้ตรงระดับ Easy (`8840007`), Normal (`8840000`), Hard (`8840014`)
+     - ปรับปรุงสคริปต์วาร์ปออกห้องบอสและบล็อกพอร์ทัล: [`giantBossPortal.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/portal/giantBossPortal.py), [`out00.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/portal/out00.py), [`out_cygnus.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/portal/out_cygnus.py), [`out_populatus.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/portal/out_populatus.py), [`papulatusBlock.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/portal/papulatusBlock.py), [`2083002.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/2083002.py), [`2144017.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/2144017.py), [`hontale_out.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/hontale_out.py)
+  3. **การกรองสกิลย่อยขยะและการโหลดสกิล (Sub-Skill Sanitization & Lazy Job Loading)**:
+     - ใน [`Char.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java) และ [`UserStatHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/user/UserStatHandler.java): กรอง `SkillConstants.isSpecialInvisibleSkill` และ `subSi.isInvisible()` ไม่ให้แพ็กเก็ตส่งไปยังไคลเอนต์ ป้องกันการเกิดปุ่มกากบาทแดงใน UI
+     - ใน [`SkillData.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/loaders/SkillData.java): นำ `loadedJobs` มาแคชเพื่อป้องกันการโหลดข้อมูลสกิลของอาชีพซ้ำซ้อน
+  4. **การคอมไพล์ ส่งมอบ และสร้างไฟล์แพตช์ (Build, Deploy & Single Patch Packaging)**:
+     - คอมไพล์ผ่าน Apache Maven บน JDK 21 สำเร็จ (`BUILD SUCCESS`) ได้ `maplestory.jar` (~138 MB)
+     - ซิงค์ไฟล์ `maplestory.jar` ไปยัง `Server263/`, `v214 src/` และ Root Directory
+     - อัปเดตเครื่องมือสร้างแพตช์ [`tools/create_patch.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/tools/create_patch.py) ให้รวมโฟลเดอร์ `docs/` และปรับปรุง `Apply_Patch.bat`
+     - แพ็กไฟล์แพตช์เบ็ดเสร็จไฟล์เดียว **[`Patches/Server263_Patch_Latest.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip)** (173.53 MB) พร้อมใช้งานทันที 100%
+
 ## 📅 [2026-10-16 18:18 น.] Unification & Alignment of Project Agent Directives (AGENTS.md, Rules & Skills)
 
 ### 🎯 Scope & Technical Details

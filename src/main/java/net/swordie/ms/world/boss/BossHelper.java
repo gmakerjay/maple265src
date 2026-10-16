@@ -100,6 +100,26 @@ public class BossHelper {
         return false;
     }
 
+    public static void handleBossCompletion(Char chr, Mob mob) {
+        if (chr == null || mob == null) {
+            return;
+        }
+        Field field = mob.getField();
+        ScriptManagerImpl sm = chr.getScriptManager();
+        Instance instance = chr.getInstance();
+
+        sm.showFieldEffect("Map/Effect.img/killing/clear");
+        field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect.img/killing/clear")));
+        field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
+
+        sm.stopEvents();
+
+        if (instance != null) {
+            instance.stopEvents();
+            instance.setTimeout(300, true);
+        }
+    }
+
     public static void handleMobKilled(Mob mob, Char chr) {
         if (chr == null) return;
 
@@ -108,14 +128,139 @@ public class BossHelper {
         Field field = mob.getField();
         int mobID = mob.getTemplateId();
         Instance instance = chr.getInstance();
-        // Zakum & Horntail
-        if (mobID == 8800002 || mobID == 8800022 || mobID == 8800102 || mobID == 8810214 || mobID == 8810018 || mobID == 8810122) {
-            if (instance != null) {
-                for (Mob m : field.getMobs()) {
-                    if (m.getObjectId() != mob.getObjectId()) {
-                        m.removeWithAnimation();
-                    }
+        // Zakum (Easy: 8800022, Normal: 8800002, Chaos: 8800102)
+        if (mobID == 8800002 || mobID == 8800022 || mobID == 8800102) {
+            for (Mob m : field.getMobs()) {
+                if (m.getObjectId() != mob.getObjectId()) {
+                    m.removeWithAnimation();
                 }
+            }
+            handleBossCompletion(chr, mob);
+        }
+        // Arkarium (Easy: 8860005, Normal: 8860000)
+        if (mobID == 8860005 || mobID == 8860000) {
+            for (Mob m : field.getMobs()) {
+                if (m.getObjectId() != mob.getObjectId()) {
+                    m.removeWithAnimation();
+                }
+            }
+            handleBossCompletion(chr, mob);
+        }
+        // Pink Bean (Normal: 8820001, Chaos P1: 8820101, Chaos Body: 8820212)
+        if (mobID == 8820001 || mobID == 8820101 || mobID == 8820212) {
+            for (Mob m : field.getMobs()) {
+                if (m.getObjectId() != mob.getObjectId()) {
+                    m.removeWithAnimation();
+                }
+            }
+            handleBossCompletion(chr, mob);
+        }
+        // Von Leon (Easy: 8840007, Normal: 8840000, Hard: 8840014)
+        if (mobID == 8840007 || mobID == 8840000 || mobID == 8840014) {
+            for (Mob m : field.getMobs()) {
+                if (m.getObjectId() != mob.getObjectId()) {
+                    m.removeWithAnimation();
+                }
+            }
+            handleBossCompletion(chr, mob);
+        }
+        // Cygnus (Easy: 8850111, Normal: 8850011)
+        if (mobID == 8850111 || mobID == 8850011) {
+            for (Mob m : field.getMobs()) {
+                if (m.getObjectId() != mob.getObjectId()) {
+                    m.removeWithAnimation();
+                }
+            }
+            handleBossCompletion(chr, mob);
+        }
+        // Hilla (Normal: 8870000, Hard: 8870100)
+        if (mobID == 8870000 || mobID == 8870100) {
+            for (Mob m : field.getMobs()) {
+                if (m.getObjectId() != mob.getObjectId()) {
+                    m.removeWithAnimation();
+                }
+            }
+            handleBossCompletion(chr, mob);
+        }
+        // Magnus (Easy: 8880010, Normal: 8880002, Hard: 8880000)
+        if (mobID == 8880010 || mobID == 8880002 || mobID == 8880000) {
+            for (Mob m : field.getMobs()) {
+                if (m.getObjectId() != mob.getObjectId()) {
+                    m.removeWithAnimation();
+                }
+            }
+            handleBossCompletion(chr, mob);
+        }
+        // Ranmaru (Normal: 9421581, Hard: 9421589, 9421583)
+        if (mobID == 9421581 || mobID == 9421589 || mobID == 9421583) {
+            for (Mob m : field.getMobs()) {
+                if (m.getObjectId() != mob.getObjectId()) {
+                    m.removeWithAnimation();
+                }
+            }
+            handleBossCompletion(chr, mob);
+        }
+        // Papulatus Phase 2 (Easy: 8500002, Normal: 8500012, Chaos: 8500022)
+        if (mobID == 8500002 || mobID == 8500012 || mobID == 8500022) {
+            for (Mob m : field.getMobs()) {
+                if (m.getObjectId() != mob.getObjectId()) {
+                    m.removeWithAnimation();
+                }
+            }
+            handleBossCompletion(chr, mob);
+        }
+        // Root Abyss: Von Bon & Vellum
+        if (mobID == VON_BON || mobID == CHAOS_VON_BON || mobID == VELLUM || mobID == CHAOS_VELLUM) {
+            for (Mob m : field.getMobs()) {
+                if (m.getObjectId() != mob.getObjectId()) {
+                    m.removeWithAnimation();
+                }
+            }
+            handleBossCompletion(chr, mob);
+        }
+        // Root Abyss: Pierre Chests & Queen Chests
+        if (mobID == PIERRE_CHEST || mobID == CHAOS_PIERRE_CHEST || mobID == QUEEN_CHEST || mobID == CHAOS_QUEEN_CHEST) {
+            for (Mob m : field.getMobs()) {
+                if (m.getObjectId() != mob.getObjectId()) {
+                    m.removeWithAnimation();
+                }
+            }
+            handleBossCompletion(chr, mob);
+        }
+        // OMNI-CLN (8880200)
+        if (mobID == 8880200) {
+            for (Mob m : field.getMobs()) {
+                if (m.getObjectId() != mob.getObjectId()) {
+                    m.removeWithAnimation();
+                }
+            }
+            handleBossCompletion(chr, mob);
+        }
+        // Princess No (9450022)
+        if (mobID == 9450022) {
+            for (Mob m : field.getMobs()) {
+                if (m.getObjectId() != mob.getObjectId()) {
+                    m.removeWithAnimation();
+                }
+            }
+            handleBossCompletion(chr, mob);
+        }
+        // Horntail (Easy: 8810214, Normal: 8810018, Chaos: 8810122)
+        if (mobID == 8810214 || mobID == 8810018 || mobID == 8810122) {
+            for (Mob m : field.getMobs()) {
+                if (m.getObjectId() != mob.getObjectId()) {
+                    m.removeWithAnimation();
+                }
+            }
+            sm.showFieldEffect("Map/Effect.img/killing/clear");
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
+            field.broadcast(UserLocal.chatMsg(ChatType.SystemNotice, "[Horntail Defeated] Congratulations! The cave will collapse in 5 minutes. Talk to the Root Crystal on the left or wait for the timer to exit."));
+            sm.stopEvents();
+            if (instance != null) {
+                instance.setTimeout(300, true);
+            }
+            if (field.getLifeByTemplateId(2083002) == null) {
+                field.spawnNpc(2083002, -252, 215);
             }
         }
         // Lucid
@@ -538,15 +683,15 @@ public class BossHelper {
                 instance.setTimeout(90, true);
             }
         } else if (mobID == BossHelper.GOLLUX_THIRD_PHASE_HEAD) {
-            if (party != null) {
-                if (instance != null) {
-                    instance.setTimeout(90, true);
-                }
-                sm.warpParty(BossConstants.GOLLUX_REWARD_MAP, party);
-            } else {
-                sm.warpInstanceOut(chr, BossConstants.GOLLUX_REWARD_MAP);
-            }
+            sm.showFieldEffect("Map/Effect.img/killing/clear");
+            field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/Effect.img/killing/clear")));
             field.broadcast(UserPacket.effect(Effect.effectFromWZ("Map/EffectTW.img/arisan/clear")));
+            sm.stopEvents();
+            if (instance != null) {
+                instance.stopEvents();
+                instance.setTimeout(300, true);
+            }
+            warpPartyOrSolo(chr, party, instance, BossConstants.GOLLUX_REWARD_MAP);
         } else if (mobID == BossHelper.GOLLUX_LEFT_SHOULDER) {
             BossHelper.addClearedField(field, chr);
             BossHelper.openPortal(field, "clear", 7);
@@ -888,6 +1033,10 @@ public class BossHelper {
         // Boss Attempt Clear Limit
         if (chr.getParty() != null) {
             switch (mobID) {
+                case 8800022 -> sm.addPartyBoss(party, BossPartyType.ZAKUM_EASY);
+                case 8800002 -> sm.addPartyBoss(party, BossPartyType.ZAKUM_NORMAL);
+                case 8800102 -> sm.addPartyBoss(party, BossPartyType.ZAKUM_CHAOS);
+
                 case 8860005 -> sm.addPartyBoss(party, BossPartyType.ARKARIUM_EASY);
                 case 8860000 -> sm.addPartyBoss(party, BossPartyType.ARKARIUM_NORMAL);
 
@@ -908,7 +1057,7 @@ public class BossHelper {
                 case 8880000 -> sm.addPartyBoss(party, BossPartyType.MAGNUS_HARD);
 
                 case 8820001 -> sm.addPartyBoss(party, BossPartyType.PINK_BEAN_NORMAL);
-                case 8820212 -> sm.addPartyBoss(party, BossPartyType.PINK_BEAN_CHAOS);
+                case 8820101, 8820212 -> sm.addPartyBoss(party, BossPartyType.PINK_BEAN_CHAOS);
 
                 case 9421581 -> sm.addPartyBoss(party, BossPartyType.RANMARU_NORMAL);
                 case 9421589 -> sm.addPartyBoss(party, BossPartyType.RANMARU_HARD);
@@ -925,9 +1074,17 @@ public class BossHelper {
                 case PIERRE_CHEST -> sm.addPartyBoss(party, BossPartyType.PIERRE_NORMAL);
                 case CHAOS_PIERRE_CHEST -> sm.addPartyBoss(party, BossPartyType.PIERRE_CHAOS);
 
-                case 8840000 -> sm.addPartyBoss(party, BossPartyType.VON_LEON_EASY);
-                case 8840007 -> sm.addPartyBoss(party, BossPartyType.VON_LEON_NORMAL);
+                case 8840007 -> sm.addPartyBoss(party, BossPartyType.VON_LEON_EASY);
+                case 8840000 -> sm.addPartyBoss(party, BossPartyType.VON_LEON_NORMAL);
                 case 8840014 -> sm.addPartyBoss(party, BossPartyType.VON_LEON_HARD);
+
+                case 8500002 -> sm.addPartyBoss(party, BossPartyType.PAPULATUS_EASY);
+                case 8500012 -> sm.addPartyBoss(party, BossPartyType.PAPULATUS_NORMAL);
+                case 8500022 -> sm.addPartyBoss(party, BossPartyType.PAPULATUS_CHAOS);
+
+                case 8880200 -> sm.addPartyBoss(party, BossPartyType.OMNI_CLN_NORMAL);
+
+                case 9450022 -> sm.addPartyBoss(party, BossPartyType.PRINCESS_NO);
 
                 case 8880177 -> sm.addPartyBoss(party, BossPartyType.LUCID_EASY);
                 case 8880167 -> sm.addPartyBoss(party, BossPartyType.LUCID_NORMAL);
@@ -936,9 +1093,17 @@ public class BossHelper {
                 case 8880362 -> sm.addPartyBoss(party, BossPartyType.WILL_EASY);
                 case 8880342 -> sm.addPartyBoss(party, BossPartyType.WILL_NORMAL);
                 case 8880302 -> sm.addPartyBoss(party, BossPartyType.WILL_HARD);
+
+                case 8810214 -> sm.addPartyBoss(party, BossPartyType.HORNTAIL_EASY);
+                case 8810018 -> sm.addPartyBoss(party, BossPartyType.HORNTAIL_NORMAL);
+                case 8810122 -> sm.addPartyBoss(party, BossPartyType.HORNTAIL_CHAOS);
             }
         } else {
             switch (mobID) {
+                case 8800022 -> chr.addPartyboss(BossPartyType.ZAKUM_EASY);
+                case 8800002 -> chr.addPartyboss(BossPartyType.ZAKUM_NORMAL);
+                case 8800102 -> chr.addPartyboss(BossPartyType.ZAKUM_CHAOS);
+
                 case 8860005 -> chr.addPartyboss(BossPartyType.ARKARIUM_EASY);
                 case 8860000 -> chr.addPartyboss(BossPartyType.ARKARIUM_NORMAL);
 
@@ -959,7 +1124,7 @@ public class BossHelper {
                 case 8880000 -> chr.addPartyboss(BossPartyType.MAGNUS_HARD);
 
                 case 8820001 -> chr.addPartyboss(BossPartyType.PINK_BEAN_NORMAL);
-                case 8820212 -> chr.addPartyboss(BossPartyType.PINK_BEAN_CHAOS);
+                case 8820101, 8820212 -> chr.addPartyboss(BossPartyType.PINK_BEAN_CHAOS);
 
                 case 9421581 -> chr.addPartyboss(BossPartyType.RANMARU_NORMAL);
                 case 9421589 -> chr.addPartyboss(BossPartyType.RANMARU_HARD);
@@ -976,9 +1141,17 @@ public class BossHelper {
                 case PIERRE_CHEST -> chr.addPartyboss(BossPartyType.PIERRE_NORMAL);
                 case CHAOS_PIERRE_CHEST -> chr.addPartyboss(BossPartyType.PIERRE_CHAOS);
 
-                case 8840000 -> chr.addPartyboss(BossPartyType.VON_LEON_EASY);
-                case 8840007 -> chr.addPartyboss(BossPartyType.VON_LEON_NORMAL);
+                case 8840007 -> chr.addPartyboss(BossPartyType.VON_LEON_EASY);
+                case 8840000 -> chr.addPartyboss(BossPartyType.VON_LEON_NORMAL);
                 case 8840014 -> chr.addPartyboss(BossPartyType.VON_LEON_HARD);
+
+                case 8500002 -> chr.addPartyboss(BossPartyType.PAPULATUS_EASY);
+                case 8500012 -> chr.addPartyboss(BossPartyType.PAPULATUS_NORMAL);
+                case 8500022 -> chr.addPartyboss(BossPartyType.PAPULATUS_CHAOS);
+
+                case 8880200 -> chr.addPartyboss(BossPartyType.OMNI_CLN_NORMAL);
+
+                case 9450022 -> chr.addPartyboss(BossPartyType.PRINCESS_NO);
 
                 case 8880177 -> chr.addPartyboss(BossPartyType.LUCID_EASY);
                 case 8880167 -> chr.addPartyboss(BossPartyType.LUCID_NORMAL);
@@ -987,6 +1160,10 @@ public class BossHelper {
                 case 8880362 -> chr.addPartyboss(BossPartyType.WILL_EASY);
                 case 8880342 -> chr.addPartyboss(BossPartyType.WILL_NORMAL);
                 case 8880302 -> chr.addPartyboss(BossPartyType.WILL_HARD);
+
+                case 8810214 -> chr.addPartyboss(BossPartyType.HORNTAIL_EASY);
+                case 8810018 -> chr.addPartyboss(BossPartyType.HORNTAIL_NORMAL);
+                case 8810122 -> chr.addPartyboss(BossPartyType.HORNTAIL_CHAOS);
             }
         }
         if (chr.getAccount().getDailyGift() != null) {
@@ -1145,7 +1322,8 @@ public class BossHelper {
             case 8920106: // Queen (Normal)
             case VELLUM: // Vellum (Normal)
             case 9421581: // Mori Ranmaru (Normal)
-            case 8840007: // Von Leon (Normal)
+            case 8840007: // Von Leon (Easy)
+            case 8840000: // Von Leon (Normal)
             case 8860000: // Arkarium (Normal)
             case 8820001: // Pink Bean (Normal)
             case 8850011: // Cygnus (Normal)
@@ -1158,6 +1336,7 @@ public class BossHelper {
             case CHAOS_VELLUM: // Chaos Vellum
             case 8920006: // Chaos Crimson Queen
             case 8900003: // Chaos Pierre
+            case 8820101:
             case 8820212: // Chaos Pink Bean
             case 9421589: // Mori Ranmaru (Hard)
             case 8840014: // Von Leon (Hard)

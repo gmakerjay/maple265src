@@ -215,10 +215,11 @@ public class SpecialHPBossHandler {
         switch (field.getId()) {
             case 240060300: {
                 Mob horntail = (Mob) field.getLifeByTemplateId(horntailOptions[0]);
-                if (horntail != null) {
+                if (horntail != null && horntail.getHp() > 0) {
                     boolean hasLiveMob = false;
-                    for (Mob m : field.getMobs()) {
-                        if (m.isBoss() && m.getHp() > 0) {
+                    for (int mobID : horntailMobs[0]) {
+                        Mob part = (Mob) field.getLifeByTemplateId(mobID);
+                        if (part != null && part.getHp() > 0) {
                             hasLiveMob = true;
                             break;
                         }
@@ -232,10 +233,11 @@ public class SpecialHPBossHandler {
             }
             case 240060200: {
                 Mob horntail = (Mob) field.getLifeByTemplateId(horntailOptions[1]);
-                if (horntail != null) {
+                if (horntail != null && horntail.getHp() > 0) {
                     boolean hasLiveMob = false;
-                    for (Mob m : field.getMobs()) {
-                        if (m.isBoss() && m.getHp() > 0) {
+                    for (int mobID : horntailMobs[1]) {
+                        Mob part = (Mob) field.getLifeByTemplateId(mobID);
+                        if (part != null && part.getHp() > 0) {
                             hasLiveMob = true;
                             break;
                         }
@@ -249,10 +251,11 @@ public class SpecialHPBossHandler {
             }
             case 240060201: {
                 Mob horntail = (Mob) field.getLifeByTemplateId(horntailOptions[2]);
-                if (horntail != null) {
+                if (horntail != null && horntail.getHp() > 0) {
                     boolean hasLiveMob = false;
-                    for (Mob m : field.getMobs()) {
-                        if (m.isBoss() && m.getHp() > 0) {
+                    for (int mobID : horntailMobs[2]) {
+                        Mob part = (Mob) field.getLifeByTemplateId(mobID);
+                        if (part != null && part.getHp() > 0) {
                             hasLiveMob = true;
                             break;
                         }
@@ -313,7 +316,7 @@ public class SpecialHPBossHandler {
                 }
                 if (size <= 1 && !field.isChaosPinkBeanSpawned()) {
                     field.removeMobsByTemplateID(8820114);
-                    field.spawnMob(8820101, 5, -42, false);
+                    field.spawnMob(8820212, 5, -42, false);
                     field.setChaosPinkBeanSpawned(true);
                 }
                 break;

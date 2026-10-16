@@ -13410,8 +13410,12 @@ public class Char {
                     if (maxLevel <= 0) maxLevel = 1;
                     skill.setCurrentLevel(maxLevel);
                     skill.setMasterLevel(maxLevel);
-                    list.add(skill);
                     addSkill(skill);
+                    SkillInfo subSi = SkillData.getSkillInfoById(subId);
+                    boolean isInvisible = SkillConstants.isSpecialInvisibleSkill(subId) || (subSi != null && subSi.isInvisible());
+                    if (!isInvisible) {
+                        list.add(skill);
+                    }
                 }
             }
         }

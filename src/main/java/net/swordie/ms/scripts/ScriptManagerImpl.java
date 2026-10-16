@@ -4549,7 +4549,7 @@ public class ScriptManagerImpl implements ScriptManager {
             List<VCoreData> coreData = new LinkedList<>();
             byte type = 0;
             if (Randomizer.isSuccess(GameConstants.SKILL_CORE_CHANCE)) {
-                coreData.addAll(VCore.getJobNodes());
+                coreData.addAll(VCore.getSkillNodes());
                 type = 1;
             } else if (Randomizer.isSuccess(GameConstants.BOOST_CORE_CHANCE)) {
                 coreData.addAll(VCore.getBoostNodes());
@@ -4591,20 +4591,17 @@ public class ScriptManagerImpl implements ScriptManager {
     }
 
     /**
-     * Returns the given nodes that belong to the character's job (job list entry parsed safely).
+     * Returns the given nodes that belong to or are usable by the character's job.
      */
     private List<VCoreData> filterNodesByCharJob(List<VCoreData> coreData) {
         List<VCoreData> jobVCoreData = new ArrayList<>();
+        short chrJob = chr.getJob();
         for (VCoreData v : coreData) {
             if (v == null || v.getJobs() == null || v.getJobs().isEmpty()) {
                 continue;
             }
-            try {
-                if (Short.parseShort(v.getJobs().get(0)) == chr.getJob()) {
-                    jobVCoreData.add(v);
-                }
-            } catch (NumberFormatException ignored) {
-                // class/all/none nodes
+            if (v.getType() == VCore.SKILL ? v.isUsableByJob(chrJob) : v.isJobSkill(chrJob)) {
+                jobVCoreData.add(v);
             }
         }
         return jobVCoreData;
@@ -4665,7 +4662,7 @@ public class ScriptManagerImpl implements ScriptManager {
             List<VCoreData> coreData;
             byte type;
             if (Randomizer.isSuccess(GameConstants.SKILL_CORE_CHANCE)) {
-                coreData = VCore.getJobNodes();
+                coreData = VCore.getSkillNodes();
                 type = 1;
             } else if (Randomizer.isSuccess(GameConstants.BOOST_CORE_CHANCE)) {
                 coreData = VCore.getBoostNodes();
@@ -4686,14 +4683,9 @@ public class ScriptManagerImpl implements ScriptManager {
                 // reservoir sampling: không tạo jobVCoreData list
                 for (int i = 0; i < coreData.size(); i++) {
                     VCoreData v = coreData.get(i);
-                    if (v.getJobs() == null || v.getJobs().isEmpty()) continue;
-                    short job;
-                    try {
-                        job = Short.parseShort(v.getJobs().get(0));
-                    } catch (Exception e) {
-                        continue;
-                    }
-                    if (job != chrJob) continue;
+                    if (v == null || v.getJobs() == null || v.getJobs().isEmpty()) continue;
+                    boolean matches = (type == 1) ? v.isUsableByJob(chrJob) : v.isJobSkill(chrJob);
+                    if (!matches) continue;
 
                     seen++;
                     if (Randomizer.nextInt(seen) == 0) pick = i;
@@ -4752,7 +4744,7 @@ public class ScriptManagerImpl implements ScriptManager {
             List<VCoreData> coreData = new LinkedList<>();
             byte type = 0;
             if (Randomizer.isSuccess(GameConstants.SKILL_CORE_CHANCE)) {
-                coreData.addAll(VCore.getJobNodes());
+                coreData.addAll(VCore.getSkillNodes());
                 type = 1;
             } else if (Randomizer.isSuccess(GameConstants.BOOST_CORE_CHANCE)) {
                 coreData.addAll(VCore.getBoostNodes());
@@ -4796,7 +4788,7 @@ public class ScriptManagerImpl implements ScriptManager {
         int currentQuantity = chr.getInactiveMatrixCore().size();
         if (currentQuantity <= MatrixConstants.SLOT_MAX) {
             int coreID = 0, skillID1 = 0, skillID2 = 0, skillID3 = 0;
-            List<VCoreData> jobVCoreData = filterNodesByCharJob(VCore.getJobNodes());
+            List<VCoreData> jobVCoreData = filterNodesByCharJob(VCore.getSkillNodes());
             if (jobVCoreData.isEmpty()) {
                 return false;
             }
