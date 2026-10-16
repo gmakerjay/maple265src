@@ -293,11 +293,47 @@ public class Ren extends Job {
                 break;
             case DIVIDED_HEAVENS:
             case DIVIDED_HEAVENS_FINISH:
+                if (!chr.hasSkillOnCooldown(DIVIDED_HEAVENS)) {
+                    chr.addSkillCooldown(DIVIDED_HEAVENS, 360000);
+                    chr.addSkillCooldown(DIVIDED_HEAVENS_FINISH, 360000);
+                }
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
+                    if (mob == null) {
+                        continue;
+                    }
+                    MobTemporaryStat mts = mob.getTemporaryStat();
+                    EnumMap<MobStat, Option> stats = new EnumMap<>(MobStat.class);
+
+                    Option oFreeze = new Option();
+                    oFreeze.nOption = 1;
+                    oFreeze.rOption = skillID;
+                    oFreeze.tOption = 10;
+                    oFreeze.cOption = chr.getId();
+                    stats.put(MobStat.Freeze, oFreeze);
+
+                    Option oDebuff = new Option();
+                    oDebuff.nOption = 1;
+                    oDebuff.rOption = skillID;
+                    oDebuff.tOption = 20;
+                    oDebuff.cOption = chr.getId();
+                    stats.put(MobStat.OriginDebuff, oDebuff);
+
+                    mts.addStatOptions(mob, stats);
+                }
+                break;
             case HEARTBOUND_VERSE:
             case HEARTBOUND_VERSE_FALLING_FLOWER:
             case HEARTBOUND_VERSE_CLIMBING_SERPENT:
             case HEARTBOUND_VERSE_SOARING_DRAGON:
             case HEARTBOUND_VERSE_FALLING_FLOWER_ATT:
+                if (!chr.hasSkillOnCooldown(HEARTBOUND_VERSE)) {
+                    chr.addSkillCooldown(HEARTBOUND_VERSE, 240000);
+                    chr.addSkillCooldown(HEARTBOUND_VERSE_FALLING_FLOWER, 240000);
+                    chr.addSkillCooldown(HEARTBOUND_VERSE_CLIMBING_SERPENT, 240000);
+                    chr.addSkillCooldown(HEARTBOUND_VERSE_SOARING_DRAGON, 240000);
+                    chr.addSkillCooldown(HEARTBOUND_VERSE_FALLING_FLOWER_ATT, 240000);
+                }
                 for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
                     Mob mob = (Mob) chr.getField().getLifeByObjectID(mai.mobId);
                     if (mob == null) {
@@ -622,7 +658,28 @@ public class Ren extends Job {
             }
             case DIVIDED_HEAVENS:
             case DIVIDED_HEAVENS_FINISH:
+                if (!chr.hasSkillOnCooldown(DIVIDED_HEAVENS)) {
+                    chr.addSkillCooldown(DIVIDED_HEAVENS, 360000);
+                    chr.addSkillCooldown(DIVIDED_HEAVENS_FINISH, 360000);
+                }
+                o1.nValue = 1;
+                o1.nReason = skillID;
+                o1.tTerm = 7;
+                o1.tOption = 7;
+                tsm.sendStat(IndieNotDamaged, o1);
+                chr.write(UserLocal.showHexaSkillEff(chr));
+                if (chr.getParty() != null) {
+                    chr.getParty().broadcast(UserLocal.showHexaSkillEff(chr), chr);
+                }
+                break;
             case HEARTBOUND_VERSE:
+                if (!chr.hasSkillOnCooldown(HEARTBOUND_VERSE)) {
+                    chr.addSkillCooldown(HEARTBOUND_VERSE, 240000);
+                    chr.addSkillCooldown(HEARTBOUND_VERSE_FALLING_FLOWER, 240000);
+                    chr.addSkillCooldown(HEARTBOUND_VERSE_CLIMBING_SERPENT, 240000);
+                    chr.addSkillCooldown(HEARTBOUND_VERSE_SOARING_DRAGON, 240000);
+                    chr.addSkillCooldown(HEARTBOUND_VERSE_FALLING_FLOWER_ATT, 240000);
+                }
                 o1.nValue = 1;
                 o1.nReason = skillID;
                 o1.tTerm = 7;
@@ -772,6 +829,21 @@ public class Ren extends Job {
                 }
                 return 1;
             }
+            case DIVIDED_HEAVENS, DIVIDED_HEAVENS_FINISH -> {
+                chr.addSkillCooldown(DIVIDED_HEAVENS, 360000);
+                chr.addSkillCooldown(DIVIDED_HEAVENS_FINISH, 360000);
+                return 1;
+            }
+            case HEARTBOUND_VERSE, HEARTBOUND_VERSE_FALLING_FLOWER,
+                 HEARTBOUND_VERSE_CLIMBING_SERPENT, HEARTBOUND_VERSE_SOARING_DRAGON,
+                 HEARTBOUND_VERSE_FALLING_FLOWER_ATT -> {
+                chr.addSkillCooldown(HEARTBOUND_VERSE, 240000);
+                chr.addSkillCooldown(HEARTBOUND_VERSE_FALLING_FLOWER, 240000);
+                chr.addSkillCooldown(HEARTBOUND_VERSE_CLIMBING_SERPENT, 240000);
+                chr.addSkillCooldown(HEARTBOUND_VERSE_SOARING_DRAGON, 240000);
+                chr.addSkillCooldown(HEARTBOUND_VERSE_FALLING_FLOWER_ATT, 240000);
+                return 1;
+            }
         }
         return super.handleSetCoolDownSkill(skillId);
     }
@@ -779,6 +851,15 @@ public class Ren extends Job {
     @Override
     public void handleInitAfterMigrate(Char chr) {
         super.handleInitAfterMigrate(chr);
+
+        // Clean up legacy phantom sub-skills from HEXA Matrix UI
+        int[] phantomHexaSkills = new int[]{161141501, 161141502, 161141503, 161141504, 161141505};
+        for (int pSkill : phantomHexaSkills) {
+            if (chr.hasSkill(pSkill)) {
+                chr.removeSkillAndSendPacket(pSkill);
+            }
+        }
+
         ScriptManagerImpl sm = chr.getScriptManager();
         short curJob = chr.getJob();
         if (chr.getLevel() >= 100 && curJob < JobConstants.JobEnum.REN_4.getJobId()) {

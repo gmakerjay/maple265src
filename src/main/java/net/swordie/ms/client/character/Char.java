@@ -7927,10 +7927,46 @@ public class Char {
                     return true;
                 default:
                     var si = SkillData.getSkillInfoById(skillID);
-                    if (SkillConstants.isNoCoolDownAttack(skillID)
-                            || (si != null && (si.isAscentSkill() || si.isOriginSkill()))
-                            || Job.isOriginSkill(skillID)
-                            || (skillID >= 100000000 && (skillID % 100000 / 10000 == 4))) {
+                    if (SkillConstants.isNoCoolDownAttack(skillID)) {
+                        return true;
+                    }
+                    if (SkillConstants.isOriginSkill(skillID) || Job.isOriginSkill(skillID)) {
+                        int originId = SkillConstants.getActualSkillIDfromSkillID(skillID);
+                        if (hasSkillOnCooldown(originId) || hasSkillOnCooldown(skillID)) {
+                            // During active origin cutscene invincibility (7s), allow cutscene multi-hits
+                            if (tsm.hasStat(CharacterTemporaryStat.IndieNotDamaged)) {
+                                return true;
+                            }
+                            return false;
+                        }
+                        // First attack hit of origin: set the cooldown
+                        int originCd = si != null && si.hasCooltime() ? si.getValue(cooltime, getSkillLevel(originId)) * 1000 : 360000;
+                        addSkillCooldown(originId, originCd);
+                        addSkillCooldown(skillID, originCd);
+                        return true;
+                    }
+                    if (si != null && si.isAscentSkill()) {
+                        int ascentId = SkillConstants.getActualSkillIDfromSkillID(skillID);
+                        if (hasSkillOnCooldown(ascentId) || hasSkillOnCooldown(skillID)) {
+                            // Permit sub-technique hits during active ascent window (within 30s)
+                            if (tsm.hasStatBySkillId(ascentId) || tsm.hasStat(CharacterTemporaryStat.Holding) || tsm.hasStat(CharacterTemporaryStat.IndieNotDamaged)) {
+                                return true;
+                            }
+                            return false;
+                        }
+                        int ascentCd = si.hasCooltime() ? si.getValue(cooltime, getSkillLevel(ascentId)) * 1000 : 240000;
+                        addSkillCooldown(ascentId, ascentCd);
+                        addSkillCooldown(skillID, ascentCd);
+                        return true;
+                    }
+                    if (skillID >= 100000000 && (skillID % 100000 / 10000 == 4)) {
+                        if (si != null && si.hasCooltime()) {
+                            int actualSkillID = SkillConstants.getActualSkillIDfromSkillID(skillID);
+                            if (hasSkillOnCooldown(actualSkillID) || hasSkillOnCooldown(skillID)) {
+                                return false;
+                            }
+                            setSkillCooldown(actualSkillID, getSkillLevel(actualSkillID));
+                        }
                         return true;
                     }
                     break;
@@ -10622,13 +10658,10 @@ public class Char {
                 list.add(161141013);
                 break;
             case 10000050: // Ren Origin: Rising Azure Dragon: Divided Heavens
-                list.add(161141501);
+                // 161141500 is the core connect skill; internal sub-skill 161141501 must not be added to player Skill Book
                 break;
             case 10000096: // Ren Ascent: Rising Azure Dragon: Heartbound Verse
-                list.add(161141502);
-                list.add(161141503);
-                list.add(161141504);
-                list.add(161141505);
+                // 161141506 is the core connect skill; internal sub-skills 161141502-161141505 must not be added to player Skill Book
                 break;
 
             default:

@@ -3,6 +3,31 @@
 This file tracks current active bug fixes, feature implementations, and system optimizations.
 Older archives are preserved in [PROGRESS_ARCHIVE.md](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/PROGRESS_ARCHIVE.md).
 
+## 📅 [2026-10-16 10:59 น.] Fix Ren & 6th Job Origin/Ascent Cooldown Bypass, Remove Phantom Sub-Skills from HEXA Matrix UI, and Update All-in-One Patch
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: แก้ไขบั๊กสกิลคลาส 6 Origin 1 (`Divided Heavens` - 360s) และ Origin 2 / Ascent (`Heartbound Verse` / `Soaring Dragon` - 240s) ไม่มีคูลดาวน์และถูกกดสแปมได้ตลอดเวลา, ลบสกิลย่อยสเตจคัตซีนขยะ (`161141501..161141505`) ออกจากหน้าต่าง HEXA Matrix UI ตามมาตรฐานเซิร์ฟเวอร์จริง (KMS/GMS/TMS), พร้อมบิลด์และอัปเดตไฟล์แพตช์ตัวรัน `Patches/Server263_Patch_Latest.zip`
+- **รายละเอียด**:
+  1. **สาเหตุของปัญหา (Root Cause)**:
+     - ใน [`Char.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java) บรรทัด 7931-7935 เมธอด `checkAndSetSkillCooltime(skillID, true)` มีการใส่เงื่อนไข `|| (si != null && (si.isAscentSkill() || si.isOriginSkill())) || Job.isOriginSkill(skillID) || (skillID >= 100000000 && (skillID % 100000 / 10000 == 4))` ซึ่งทำให้เมื่อกดโจมตีด้วยสกิล Origin หรือสกิลคลาส 6 ระบบจะ `return true` ทันทีโดยไม่ยอมเซ็ตคูลดาวน์ลงตัวละคร
+     - ใน [`Ren.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/anima/Ren.java) ทั้งใน `handleAttack` และ `handleSkill` ไม่มีการสั่ง `chr.addSkillCooldown` ให้กับ `DIVIDED_HEAVENS` และ `HEARTBOUND_VERSE`
+     - ใน [`Char.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java) เมธอด `getSiaErdaLinkSkills` มีการใส่รหัสสกิลย่อย `161141501` และ `161141502..161141505` ส่งผลให้เมื่อเปิดแกน Core ไคลเอนต์นำสกิลย่อยทั้ง 5 ตัว (รวมถึง `Soaring Dragon` 161141504) มาแสดงเป็นไอคอนให้ผู้เล่นลากลงคีย์ลัด ทั้งที่ใน WZ สกิลเหล่านี้มี `<int name="invisible" value="1"/>` และไม่มีค่าคูลดาวน์ในตัวมันเอง ทำให้ผู้เล่นกดสแปมดาเมจ 25 ฮิต x 676% ได้ทุกวินาที
+  2. **การแก้ไขเชิงเทคนิค (Technical Implementation)**:
+     - **ระบบคูลดาวน์ Origin / Ascent ใน [`Char.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java)**:
+       - สำหรับ Origin Skill: ตรวจสอบ `hasSkillOnCooldown` หากอยู่ในช่วงคัตซีน 7 วินาที (`IndieNotDamaged`) จะอนุญาตให้ดาเมจหลายฮิตของคัตซีนทำงานได้ แต่หากพ้น 7 วินาทีแล้วหรือกดซ้ำขณะติดคูลดาวน์ จะถูกบล็อกการโจมตีทันที (`return false`) พร้อมเซ็ตคูลดาวน์ 360 วินาทีตั้งแต่ฮิตแรก
+       - สำหรับ Ascent Skill: ตรวจสอบ `hasSkillOnCooldown` หากอยู่ในช่วงเวลาใช้งาน (30s) จะอนุญาตให้คอมโบได้ แต่หากกดสแปมนอกเวลาจะถูกบล็อกทันที (`return false`) พร้อมเซ็ตคูลดาวน์ 240 วินาที
+       - สำหรับ 6th Job HEXA Skills: หากสกิลมีค่าคูลดาวน์ใน WZ จะบังคับคูลดาวน์และบล็อกการกดซ้ำทันที
+     - **การบังคับคูลดาวน์ใน [`Ren.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/anima/Ren.java)**:
+       - ใน `handleAttack`, `handleSkill`, และ `handleSetCoolDownSkill`: สั่งเซ็ตคูลดาวน์ 360 วินาที (`360000 ms`) ให้กับ `DIVIDED_HEAVENS` และ `DIVIDED_HEAVENS_FINISH`
+       - สั่งเซ็ตคูลดาวน์ 240 วินาที (`240000 ms`) ให้กับ `HEARTBOUND_VERSE` และสเตจย่อยทั้งหมด (`161141502..161141505`)
+     - **ทำความสะอาด UI หน้าต่าง HEXA Matrix**:
+       - ตัด `161141501` และ `161141502..161141505` ออกจาก `getSiaErdaLinkSkills` ใน [`Char.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java) เพื่อไม่ให้ยัดลงตัวละครอีก
+       - ใน `Ren.handleInitAfterMigrate`: เพิ่มโค้ดกวาดล้างสกิลย่อยตกค้าง (`chr.removeSkillAndSendPacket`) อัตโนมัติเมื่อตัวละครเข้าเกม ทำให้ไอคอนซ้ำซ้อน 5 ช่องหายไปจากหน้าต่าง HEXA Matrix เหลือเฉพาะ 2 สกิลหลักที่ถูกต้องตามเซิร์ฟจริง
+  3. **การทดสอบและการส่งมอบ**:
+     - คอมไพล์ Maven `BUILD SUCCESS` (138.7 MB Fat JAR)
+     - อัปเดต `maplestory.jar` ไปยัง `Server263/` และ root
+     - สร้างแพ็กเกจแพตช์เดี่ยว `Patches/Server263_Patch_Latest.zip` (173.46 MB) สมบูรณ์ 100%
+
 ## 📅 [2026-10-16 10:22 น.] Generated Single All-in-One Server Runner Incremental Patch Package (`Patches/Server263_Patch_Latest.zip`)
 
 ### 🎯 Scope & Technical Details
