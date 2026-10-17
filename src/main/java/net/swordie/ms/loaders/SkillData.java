@@ -98,7 +98,7 @@ public class SkillData {
                     dataOutputStream.writeInt(entry.getKey());
                     dataOutputStream.writeInt(entry.getValue().getSkillId());
                     dataOutputStream.writeInt(entry.getValue().getDelay());
-                    dataOutputStream.writeInt(entry.getValue().getDelay());
+                    dataOutputStream.writeInt(entry.getValue().getManual());
                 }
                 dataOutputStream.writeShort(si.getRandomSkills().size());
                 for (Map.Entry<Map<Integer, Integer>, Integer> randomSkillInfo : si.getRandomSkills().entrySet()) {
@@ -244,6 +244,7 @@ public class SkillData {
                 secondAtomInfo.setCreateDelay(dataInputStream.readInt());
                 secondAtomInfo.setEnableDelay(dataInputStream.readInt());
                 secondAtomInfo.setRotate(dataInputStream.readInt());
+                secondAtomInfo.setExpire(dataInputStream.readInt());
                 secondAtomInfo.setAttackableCount(dataInputStream.readInt());
                 secondAtomInfo.setDataIndex(dataInputStream.readInt());
                 secondAtomInfo.setFirstAngleStart(dataInputStream.readInt());
@@ -252,6 +253,7 @@ public class SkillData {
                 secondAtomInfo.setPosRandomOffset(dataInputStream.readInt());
                 secondAtomInfo.setPos(new Position(dataInputStream.readShort(), dataInputStream.readShort()));
                 secondAtomInfo.setFollowAngle(dataInputStream.readInt());
+                secondAtomInfo.setLocalOnly(dataInputStream.readInt());
                 short customs = dataInputStream.readShort();
                 for (int x = 0; x < customs; x++) {
                     secondAtomInfo.getCustoms().put(dataInputStream.readInt(), dataInputStream.readInt());

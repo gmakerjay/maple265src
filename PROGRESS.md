@@ -2,6 +2,29 @@
 
 This file tracks active bug fixes, feature implementations, and system optimizations.
 
+## 📅 3594fed8 (15:05 น.) — แก้ไขข้อผิดพลาด EOFException ใน SkillData จากไบนารี SecondAtomInfo ไม่ตรงกัน พร้อมคอมไพล์และอัปเดตแพตช์ (Fix SkillData SecondAtomInfo EOFException Desync, Build Server & Update Latest Patch)
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: แก้ไขข้อผิดพลาด `java.io.EOFException` ใน [`SkillData.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/loaders/SkillData.java#L240-L265) ที่เกิดขึ้นขณะโหลดข้อมูลสกิล `.dat` จากระบบ On-Demand Loader เมื่อรันคำสั่ง `!endgame` หรือเปลี่ยนอาชีพ, ปรับปรุงการอ่านและเขียนข้อมูลไบนารีของ `SecondAtomInfo` (expire, localOnly) และ `ExtraSkillInfo` (manual) ให้ตรงกัน 100%, คอมไพล์ Maven JDK 21 สำเร็จ (`BUILD SUCCESS`), ดีพลอย `maplestory.jar` สู่ `Server263/` และ Root, และสร้างแพ็กเกจแพตช์เดี่ยว [`Patches/Server263_Patch_Latest.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip)
+- **รายละเอียด**:
+  1. **ปัญหาที่พบ (Problem)**:
+     - เมื่อผู้เล่นรันคำสั่ง `!endgame` หรือเปลี่ยนอาชีพผ่าน `chr.setJob()` ระบบจะเรียก `SkillData.getSkillsByJob()` ซึ่งเรียก `loadSkillsOfJob()` เพื่อโหลดสกิลที่ยังไม่ได้แคชไว้จาก `Server263/data/dat265/skills/`
+     - เกิดข้อผิดพลาด `java.io.EOFException` ที่บรรทัด `SkillData.java:244` (`secondAtomInfo.setCreateDelay`) และ `SkillData.java:261` (`secondAtomInfo.getExtraPos().put`) บันทึกลงใน `ExceptionCaught/All.txt`
+  2. **สาเหตุเชิงลึกทางเทคนิค (Technical Root Cause)**:
+     - ใน [`SkillData.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/loaders/SkillData.java): ฟังก์ชัน `saveSkills()` ทำการเขียนฟิลด์ `value.getExpire()` (4 ไบต์) และ `value.getLocalOnly()` (4 ไบต์) ลงในไฟล์ไบนารี `.dat` ของ SecondAtomInfo
+     - แต่ในฟังก์ชัน `loadSkill()` กลับไม่มีคำสั่ง `readInt()` สำหรับ 2 ฟิลด์ดังกล่าว ส่งผลให้ตำแหน่งไบต์เลื่อน (Byte-shifted 8 ไบต์) ทำให้ฟังก์ชันนำข้อมูลของฟิลด์อื่นมาอ่านเป็นขนาดของ `customs` และ `extraPos` และพยายามอ่านเกินขนาดไฟล์จนเกิด `EOFException` กระทบกับ 27 สกิลในระบบ (เช่น Dawn Warrior `11121018`, `11141004`, Paladin HEXA `1241009`, Wind Archer `13121055`, `13141006`, Night Lord `4121020`, `4141006`)
+     - นอกจากนี้ ใน `saveSkills()` บรรทัด 101 มีการเขียน `entry.getValue().getDelay()` ซ้ำ แทนที่จะเป็น `entry.getValue().getManual()`
+  3. **การแก้ไข (Implementation & Fix)**:
+     - เพิ่ม `secondAtomInfo.setExpire(dataInputStream.readInt());` หลัง `setRotate` ใน [`SkillData.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/loaders/SkillData.java#L246)
+     - เพิ่ม `secondAtomInfo.setLocalOnly(dataInputStream.readInt());` หลัง `setFollowAngle` ใน [`SkillData.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/loaders/SkillData.java#L255)
+     - แก้ไข `saveSkills()` ให้เขียน `entry.getValue().getManual()` อย่างถูกต้อง
+     - ซิงค์โค้ดไปยัง Git Mirror [`maple265src/`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/maple265src/src/main/java/net/swordie/ms/loaders/SkillData.java)
+  4. **การทดสอบและผลลัพธ์ (Verification & Outcome)**:
+     - เขียนชุดทดสอบยืนยันการโหลดสกิลที่เคยมีปัญหาทั้ง 27 ไฟล์ ผ่าน Java รันไทม์โดยตรง พบว่าทุกสกิลโหลดได้สมบูรณ์ 100% ปราศจาก `EOFException` และเก็บค่า SecondAtom ครบถ้วน
+     - คอมไพล์โปรเจกต์ด้วย Apache Maven บน Portable JDK 21 ได้สถานะ `BUILD SUCCESS` ได้ไฟล์ `maplestory.jar` ขนาด ~138 MB
+     - อัปเดต `maplestory.jar` ไปยัง `Server263/`, `v214 src/` และ Root Directory
+     - รันสคริปต์ `tools/create_patch.py` สร้างแพตช์เดี่ยว All-in-One ล่าสุด [`Patches/Server263_Patch_Latest.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip) (ขนาด 173.48 MB)
+
 ## 📅 44e47f09 (13:48 น.) — Refactor & Audit Adventurer Warrior Classes (Hero, Paladin, Dark Knight), Zero Skill Injection in !endgame, Sub-Skill Matrix Sanitization, Cooldown Synchronization & Single Patch Packaging
 
 ### 🎯 Scope & Technical Details
