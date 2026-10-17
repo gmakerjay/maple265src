@@ -372,6 +372,11 @@ public class SkillData {
                                     case "invisible":
                                         skill.setInvisible(intVal != 0);
                                         break;
+                                    case "disable":
+                                        if (intVal != 0) {
+                                            skill.setInvisible(true);
+                                        }
+                                        break;
                                     case "massSpell":
                                         skill.setMassSpell(intVal != 0);
                                         break;
@@ -567,6 +572,8 @@ public class SkillData {
                                                         skill.addRect(new Rect(lt[0], lt[1], rb[0], rb[1]));
                                                     } else if (nodeName.equals("invisible")) {
                                                         skill.setInvisible(intVal != 0);
+                                                    } else if (nodeName.equals("disable") && intVal != 0) {
+                                                        skill.setInvisible(true);
                                                     } else if (nodeName.equals("massSpell")) {
                                                         skill.setMassSpell(intVal != 0);
                                                     } else if (nodeName.equals("type")) {
@@ -612,6 +619,8 @@ public class SkillData {
                                                 skill.setFinalAttack(true);
                                             } else if (nodeName.equals("invisible")) {
                                                 skill.setInvisible(intVal != 0);
+                                            } else if (nodeName.equals("disable") && intVal != 0) {
+                                                skill.setInvisible(true);
                                             } else if (nodeName.equals("massSpell")) {
                                                 skill.setMassSpell(intVal != 0);
                                             } else if (nodeName.equals("type")) {

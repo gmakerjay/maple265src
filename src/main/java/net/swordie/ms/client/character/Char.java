@@ -3500,8 +3500,15 @@ public class Char {
             if (chainSkills != null) {
                 for (Skill skill : chainSkills) {
                     if (!hasSkill(skill.getSkillId())) {
-                        addSkill(skill, true);
-                        newSkills.add(skill);
+                        SkillInfo si = SkillData.getSkillInfoById(skill.getSkillId());
+                        boolean isInvisible = SkillConstants.isSpecialInvisibleSkill(skill.getSkillId()) || (si != null && si.isInvisible());
+                        int initLv = (si != null && si.getFixLevel() > 0) ? si.getFixLevel() : 0;
+                        if (!isInvisible) {
+                            addSkill(skill, true);
+                            if (initLv > 0 || skill.getCurrentLevel() > 0) {
+                                newSkills.add(skill);
+                            }
+                        }
                     }
                 }
             }

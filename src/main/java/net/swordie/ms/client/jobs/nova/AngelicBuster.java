@@ -872,4 +872,36 @@ public class AngelicBuster extends Job {
     private Summon getSparkleBurstSummon() {
         return chr.getField().getSummons().stream().filter(s -> s.getOwnerId() == chr.getId() && s.getSkillID() == SPARKLE_BURST).findAny().orElse(null);
     }
+
+    @Override
+    public int handleSetCoolDownSkill(int skillId) {
+        switch (skillId) {
+            case SURPRISE_ENCORE_ATTACK -> {
+                chr.setSkillCooldown(SURPRISE_ENCORE, chr.getSkillLevel(SURPRISE_ENCORE));
+                return 1;
+            }
+            case GRAND_FINALE_CHEER, GRAND_FINALE_ATTACK, GRAND_FINALE_HIT -> {
+                chr.setSkillCooldown(GRAND_FINALE, chr.getSkillLevel(GRAND_FINALE));
+                return 1;
+            }
+            case 65121012 -> { // Soul Resonance sub
+                chr.setSkillCooldown(SOUL_RESONANCE, chr.getSkillLevel(SOUL_RESONANCE));
+                return 1;
+            }
+            case HEXA_SUPREME_SUPERNOVA -> {
+                chr.setSkillCooldown(SUPREME_SUPERNOVA, chr.getSkillLevel(SUPREME_SUPERNOVA));
+                chr.setSkillCooldown(HEXA_SUPREME_SUPERNOVA, chr.getSkillLevel(HEXA_SUPREME_SUPERNOVA));
+                return 1;
+            }
+            case MIGHTY_MASCOT_BREATH, MIGHTY_MASCOT_ATTACK -> {
+                chr.setSkillCooldown(MIGHTY_MASCOT, chr.getSkillLevel(MIGHTY_MASCOT));
+                return 1;
+            }
+            case SUPER_STAR_SPOTLIGHT_2 -> {
+                chr.setSkillCooldown(SUPER_STAR_SPOTLIGHT, chr.getSkillLevel(SUPER_STAR_SPOTLIGHT));
+                return 1;
+            }
+        }
+        return super.handleSetCoolDownSkill(skillId);
+    }
 }

@@ -495,6 +495,10 @@ public class Kain extends Job {
 
         switch (skillID) {
             case POSSESSION:
+                int curMalice = tsm.hasStat(CharacterTemporaryStat.NADragonGauge) ? tsm.getOption(CharacterTemporaryStat.NADragonGauge).nOption : 0;
+                if (curMalice < 100) {
+                    return;
+                }
                 o1.nOption = 1;
                 o1.rOption = POSSESSION;
                 o1.tOption = 15;
@@ -707,5 +711,104 @@ public class Kain extends Job {
                 }
                 break;
         }
+    }
+
+    @Override
+    public int handleSetCoolDownSkill(int skillId) {
+        switch (skillId) {
+            case TOTAL_ANNIHILATION_ATTACK_1, TOTAL_ANNIHILATION_ATTACK_2, TOTAL_ANNIHILATION_ATTACK_3,
+                 TOTAL_ANNIHILATION_ATTACK_4, TOTAL_ANNIHILATION_ATTACK_5 -> {
+                chr.setSkillCooldown(TOTAL_ANNIHILATION, chr.getSkillLevel(TOTAL_ANNIHILATION));
+                return 1;
+            }
+            case CHURNING_MALICE_ATTACK_1, CHURNING_MALICE_ATTACK_2 -> {
+                chr.setSkillCooldown(CHURNING_MALICE, chr.getSkillLevel(CHURNING_MALICE));
+                return 1;
+            }
+            case SHADOW_STEP_VERTICAL_UP, SHADOW_STEP_VERTICAL_DOWN -> {
+                chr.setSkillCooldown(SHADOW_STEP_HORIZONTAL, chr.getSkillLevel(SHADOW_STEP_HORIZONTAL));
+                return 1;
+            }
+            case SCATTERING_SHOT_POSSESS, HEXA_SCATTERING_SHOT_POSSESS, HEXA_SCATTERING_SHOT -> {
+                int slv = chr.getSkillLevel(SCATTERING_SHOT);
+                chr.setSkillCooldown(SCATTERING_SHOT, slv);
+                chr.setSkillCooldown(SCATTERING_SHOT_POSSESS, slv);
+                if (chr.hasSkill(HEXA_SCATTERING_SHOT)) {
+                    chr.setSkillCooldown(HEXA_SCATTERING_SHOT, chr.getSkillLevel(HEXA_SCATTERING_SHOT));
+                    chr.setSkillCooldown(HEXA_SCATTERING_SHOT_POSSESS, chr.getSkillLevel(HEXA_SCATTERING_SHOT));
+                }
+                return 1;
+            }
+            case SHAFT_BREAK_POSSESS, SHAFT_BREAK_VACUUM, SHAFT_BREAK_EXPLOSION,
+                 SHAFT_BREAK_VACUUM_POSSESS, SHAFT_BREAK_EXPLOSION_POSSESS, SHAFT_BREAK_AFTER_EFFECT_POSSESS,
+                 HEXA_SHAFT_BREAK, HEXA_SHAFT_BREAK_POSSESS -> {
+                int slv = chr.getSkillLevel(SHAFT_BREAK);
+                chr.setSkillCooldown(SHAFT_BREAK, slv);
+                chr.setSkillCooldown(SHAFT_BREAK_POSSESS, slv);
+                if (chr.hasSkill(HEXA_SHAFT_BREAK)) {
+                    chr.setSkillCooldown(HEXA_SHAFT_BREAK, chr.getSkillLevel(HEXA_SHAFT_BREAK));
+                    chr.setSkillCooldown(HEXA_SHAFT_BREAK_POSSESS, chr.getSkillLevel(HEXA_SHAFT_BREAK));
+                }
+                return 1;
+            }
+            case TEARING_KNIFE, HEXA_TEARING_KNIFE -> {
+                int cd = 4500;
+                chr.addSkillCooldown(TEARING_KNIFE, cd);
+                if (chr.hasSkill(HEXA_TEARING_KNIFE)) {
+                    chr.addSkillCooldown(HEXA_TEARING_KNIFE, cd);
+                }
+                return 1;
+            }
+            case FALLING_DUST_POSSESS, FALLING_DUST_2_POSSESS, HEXA_FALLING_DUST, HEXA_FALLING_DUST_POSSESS, HEXA_FALLING_DUST_POSSESS_2 -> {
+                int slv = chr.getSkillLevel(FALLING_DUST);
+                chr.setSkillCooldown(FALLING_DUST, slv);
+                chr.setSkillCooldown(FALLING_DUST_POSSESS, slv);
+                if (chr.hasSkill(HEXA_FALLING_DUST)) {
+                    chr.setSkillCooldown(HEXA_FALLING_DUST, chr.getSkillLevel(HEXA_FALLING_DUST));
+                    chr.setSkillCooldown(HEXA_FALLING_DUST_POSSESS, chr.getSkillLevel(HEXA_FALLING_DUST));
+                }
+                return 1;
+            }
+            case CHAIN_SICKLE_2, HEXA_CHAIN_SICKLE, HEXA_CHAIN_SICKLE_1 -> {
+                int slv = chr.getSkillLevel(CHAIN_SICKLE);
+                chr.setSkillCooldown(CHAIN_SICKLE, slv);
+                if (chr.hasSkill(HEXA_CHAIN_SICKLE)) {
+                    chr.setSkillCooldown(HEXA_CHAIN_SICKLE, chr.getSkillLevel(HEXA_CHAIN_SICKLE));
+                }
+                return 1;
+            }
+            case POISON_NEEDLE_2, HEXA_POISON_NEEDLE, HEXA_POISON_NEEDLE_1, HEXA_POISON_NEEDLE_2 -> {
+                int slv = chr.getSkillLevel(POISON_NEEDLE);
+                chr.setSkillCooldown(POISON_NEEDLE, slv);
+                if (chr.hasSkill(HEXA_POISON_NEEDLE)) {
+                    chr.setSkillCooldown(HEXA_POISON_NEEDLE, chr.getSkillLevel(HEXA_POISON_NEEDLE));
+                }
+                return 1;
+            }
+            case SNEAKY_SNIPING_2, SNEAKY_SNIPING_POSSESS, SNEAKY_SNIPING_2_POSSESS,
+                 HEXA_UNSEEN_SNIPER, HEXA_UNSEEN_SNIPER_1, HEXA_UNSEEN_SNIPER_POSSESS, HEXA_UNSEEN_SNIPER_POSSESS_1 -> {
+                int slv = chr.getSkillLevel(SNEAKY_SNIPING);
+                chr.setSkillCooldown(SNEAKY_SNIPING, slv);
+                chr.setSkillCooldown(SNEAKY_SNIPING_POSSESS, slv);
+                if (chr.hasSkill(HEXA_UNSEEN_SNIPER)) {
+                    chr.setSkillCooldown(HEXA_UNSEEN_SNIPER, chr.getSkillLevel(HEXA_UNSEEN_SNIPER));
+                    chr.setSkillCooldown(HEXA_UNSEEN_SNIPER_POSSESS, chr.getSkillLevel(HEXA_UNSEEN_SNIPER));
+                }
+                return 1;
+            }
+            case CHASING_SHOT, HEXA_CHASING_SHOT -> {
+                int slv = chr.getSkillLevel(CHASING_SHOT);
+                chr.setSkillCooldown(CHASING_SHOT, slv);
+                if (chr.hasSkill(HEXA_CHASING_SHOT)) {
+                    chr.setSkillCooldown(HEXA_CHASING_SHOT, chr.getSkillLevel(HEXA_CHASING_SHOT));
+                }
+                return 1;
+            }
+            case THANATOS_DESCENT_2, THANATOS_DESCENT_3 -> {
+                chr.setSkillCooldown(THANATOS_DESCENT, chr.getSkillLevel(THANATOS_DESCENT));
+                return 1;
+            }
+        }
+        return super.handleSetCoolDownSkill(skillId);
     }
 }

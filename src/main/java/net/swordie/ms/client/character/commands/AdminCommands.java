@@ -2639,31 +2639,8 @@ public class AdminCommands {
         try {
             if (targetJob != null && targetJob > 0) {
                 short jobShort = targetJob.shortValue();
-                // Reset any previously auto-maxed 1st-4th job skills to base (0 or fixLevel) and purge invisible sub-skills
-                List<Short> jobLevels = JobConstants.getJobChain(jobShort);
-                List<Skill> resetSkills = new ArrayList<>();
-                for (short id : jobLevels) {
-                    if (JobConstants.isBeginnerJob(id)) continue;
-                    for (Skill baseSkill : SkillData.getAllSkillsByJob(id)) {
-                        if (baseSkill == null) continue;
-                        int sId = baseSkill.getSkillId();
-                        var si = SkillData.getSkillInfoById(sId);
-                        boolean isInvis = net.swordie.ms.constants.SkillConstants.isSpecialInvisibleSkill(sId) || (si != null && si.isInvisible());
-                        if (isInvis) {
-                            chr.removeSkill(sId);
-                        } else {
-                            int initLv = (si != null && si.getFixLevel() > 0) ? si.getFixLevel() : 0;
-                            int maxLv = baseSkill.getMaxLevel() > 0 ? baseSkill.getMaxLevel() : baseSkill.getMasterLevel();
-                            baseSkill.setCurrentLevel(initLv);
-                            baseSkill.setMasterLevel(maxLv);
-                            chr.addSkill(baseSkill);
-                            resetSkills.add(baseSkill);
-                        }
-                    }
-                }
-                chr.setJob(jobShort);
-                if (!resetSkills.isEmpty()) {
-                    chr.write(WvsContext.changeSkillRecordResult(resetSkills, true, false, false));
+                if (chr.getJob() != jobShort) {
+                    chr.setJob(jobShort);
                 }
                 Map<Stat, Object> stats = new HashMap<>();
                 stats.put(Stat.job, jobShort);
@@ -2674,6 +2651,17 @@ public class AdminCommands {
         }
 
         short job = chr.getJob();
+
+        // Quietly purge any invisible or phantom sub-skills from character state
+        for (Skill s : new ArrayList<>(chr.getSkills())) {
+            if (s == null) continue;
+            int sId = s.getSkillId();
+            SkillInfo si = SkillData.getSkillInfoById(sId);
+            boolean isInvis = net.swordie.ms.constants.SkillConstants.isSpecialInvisibleSkill(sId) || (si != null && si.isInvisible());
+            if (isInvis) {
+                chr.removeSkill(sId);
+            }
+        }
 
         // 1. Level to 260 and set AP (Do NOT call handleLevelUp(260) as it triggers auto-jobAdvance & maxSkills!)
         try {
@@ -3011,6 +2999,11 @@ public class AdminCommands {
             secondaryId = 1352604; // Green Soul Ring (4th Job Secondary)
             emblemId = 1190101; // Angel Emblem (Gold Emblem)
             armors = pirateArmors;
+        } else if (JobConstants.isKain(job)) {
+            weaponId = 1292023; // Arcane Umbra Breath Shooter
+            secondaryId = 1354017; // Princess No's Immortal Weapon Belt
+            emblemId = 1190556; // Mitra Bowman Emblem
+            armors = archerArmors;
         } else if (JobConstants.isBowMaster(job)) {
             weaponId = 1452257; // Arcane Umbra Bow
             secondaryId = 1352266; // Princess No's Feather

@@ -2,6 +2,40 @@
 
 This file tracks active bug fixes, feature implementations, and system optimizations.
 
+## 📅 [2026-10-17 13:05 น.] Refactor & Audit Angelic Buster and Kain (Nova Classes), Zero Skill Injection in !endgame, Sub-Skill Matrix Sanitization, Cooldown Synchronization & Single Patch Packaging
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: ตรวจสอบและรีแฟกเตอร์คลาส Nova (Angelic Buster & Kain), ตรวจสอบความถูกต้องของสกิล Class 1-4, Hexa V, และ Origin/Ascent Skills, ป้องกันการสแปมไอคอนสกิลย่อยขยะในหน้าต่างสกิล (K Skill UI / Matrix) เมื่อผู้เล่นอัปสกิล, ซิงค์คูลดาวน์และเงื่อนไขการใช้สกิลให้ถูกต้องสมบูรณ์ 100%, ปรับคำสั่ง `!endgame` ให้ปฏิบัติตามกฎเหล็ก Strict Zero Skill Injection โดยมอบเฉพาะแต้ม SP ผ่าน ExtendSP และไอเทมจำเป็นสำหรับอัปสกิลโดยไม่อัดฉีดเลเวลสกิลลงในตัวละคร, คอมไพล์ Maven JDK 21 และสร้างแพ็กเกจแพตช์ All-in-One ล่าสุด [`Patches/Server263_Patch_Latest.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip)
+- **รายละเอียด**:
+  1. **มาตรฐาน Strict Zero Skill Injection ในคำสั่ง `!endgame` ([`AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java))**:
+     - ลบกระบวนการ inject สกิลเลเวลเต็มทิ้งทั้งหมดตามกฎเหล็กข้อ 6 (`chr.addSkill(baseSkill)` ถูกถอดออกอย่างเด็ดขาด)
+     - ปรับสถานะตัวละครเลเวล 260, ฟื้นฟู HP/MP 100%, แต้ม AP 1,250 และแต้ม SP เต็มพิกัดผ่าน `ExtendSP` สำหรับคลาส 1–4 เพื่อให้ผู้เล่นจัดสรรแต้มด้วยตนเองตามกลไกธรรมชาติ
+     - สำเร็จเควสต์คลาส 5 (1460-1466) และเควสต์คลาส 6 (1488) แบบ `noRewards = true` ป้องกันลูกแก้วขยะ
+     - มอบหิน Nodestones x3,000 (`2435719`), Experience Nodestones x20, Sol Erda Energy x1,000, Sol Erda Fragments x30,000, Power Elixir x3,000, เงิน 10B Mesos, และอุปกรณ์สวมใส่ BiS ครบเซ็ต (Kain ได้รับ Arcane Umbra Breath Shooter `1292023`, Princess No's Immortal Weapon Belt `1354017`, Mitra's Bowman Emblem `1190556`, และชุดเกราะอาร์เชอร์ครบเซ็ต)
+     - เพิ่มระบบ Silent Purge สแกนและลบสกิลย่อยขยะ/ล่องหนที่มีเลเวล 0 ออกจากสถานะตัวละครอย่างเงียบๆ
+  2. **การป้องกันปัญหาไอคอนสกิลย่อยขยะและการสแปมในหน้าต่างสกิล (Zero Phantom Sub-Skill Policy)**:
+     - ใน [`SkillData.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/loaders/SkillData.java): เพิ่มการอ่านแอตทริบิวต์ `<int name="disable" value="1"/>` จาก WZ Data v265 หากพบให้กำหนด `skill.setInvisible(true)` โดยอัตโนมัติ เพื่อป้องกันไม่ให้ส่งโหนดสกิลพาสซีฟที่ระบบปิดการทำงาน (เช่น Strike Arrow Possess Passive Dummy, Scattering Shot Possess Dummy ฯลฯ) สู่ไคลเอนต์
+     - ใน [`SkillConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java): ลงทะเบียนสกิลย่อยที่ซ่อนอยู่ทั้งหมดของ Angelic Buster และ Kain ใน `isSpecialInvisibleSkill(int skillID)` และเพิ่มความสัมพันธ์ใน `getActualSkillIDfromSkillID` เพื่อให้ระบบนำค่าเลเวลและคูลดาวน์จากสกิลหลักมาใช้อย่างถูกต้อง
+     - ใน [`Char.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/Char.java): ปรับปรุง `setJob` ให้กรองสกิลที่เป็น `isInvisible()` หรือ `isSpecialInvisibleSkill()` ออกจากแพ็กเก็ต `changeSkillRecordResult` และต้องมีเลเวลมากกว่า 0 จึงจะส่งแพ็กเก็ตอัปเดต ช่วยตัดปัญหาไอคอนสกิลกากบาทแดงโผล่ในปุ่ม K อย่างเด็ดขาด
+     - ใน [`UserStatHandler.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/handlers/user/UserStatHandler.java): แก้ไขเมธอด `syncMoXuanSubSkills` เพื่อนำโหนด dummy ที่ถูกปิดการทำงานออก ไม่ให้แอบส่งแพ็กเก็ตสกิลล่องหน
+  3. **การตรวจสอบและปรับปรุงสกิล Angelic Buster ([`AngelicBuster.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/nova/AngelicBuster.java))**:
+     - ตรวจสอบสกิลคลาส 1–4, Affinity Heart I–IV, Soul Buster, Lovely Sting, Trinity, Soul Seeker, และ Soul Resonance
+     - ตรวจสอบสกิล 5th Job V-Matrix: Energy Burst, Spotlight, Mascot Familiar, Trinity Fusion
+     - ตรวจสอบสกิล 6th Job Hexa Matrix: HEXA Trinity, HEXA Soul Seeker, HEXA Celestial Roar, HEXA Super Nova, Grand Finale (Origin), และ Surprise Encore (Ascent)
+     - เพิ่มเมธอด `handleSetCoolDownSkill(int skillId)` ซิงค์คูลดาวน์ให้ตรงระหว่างสกิลหลักและสกิลย่อย: `SURPRISE_ENCORE_ATTACK` ซิงค์กับ `SURPRISE_ENCORE`, `GRAND_FINALE_CHEER/ATTACK/HIT` ซิงค์กับ `GRAND_FINALE`, `HEXA_SUPREME_SUPERNOVA` ซิงค์กับ `SUPERNOVA`, และ `MIGHTY_MASCOT_BREATH/ATTACK` ซิงค์กับ `MIGHTY_MASCOT`
+  4. **การตรวจสอบและปรับปรุงสกิล Kain ([`Kain.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/nova/Kain.java))**:
+     - ตรวจสอบสกิลคลาส 1–4: Strike Arrow I-III, Shadow Step, Shadow Swift, Grappling Wire, Dragon Fang, Scattering Shot, Shaft Break, Falling Dust, Chain Sickle, Poison Needle, Unseen Sniper, Death's Blessing, Remain Incense
+     - ปรับปรุงเงื่อนไขเกจ Malice: ตรวจสอบเงื่อนไขการเปิดใช้งาน Possession (`case POSSESSION:`) ให้ต้องมี Malice สะสมอย่างน้อย 100 หน่วยขึ้นไป (`curMalice >= 100`) จึงจะเข้าสู่โหมด Possess ได้ ป้องกันการกดสแปมโดยไม่มีเกจ
+     - ตรวจสอบสกิล 5th Job V-Matrix: Dragon Burst, Fatal Blitz, Thanatos Descent, Grip of Agony
+     - ตรวจสอบสกิล 6th Job Hexa Matrix: HEXA Strike Arrow, HEXA Scattering Shot, HEXA Shaft Break, HEXA Falling Dust, HEXA Poison Needle, HEXA Chain Sickle, Total Annihilation (Origin), และ Churning Malice (Ascent)
+     - เพิ่มเมธอด `handleSetCoolDownSkill(int skillId)` ซิงค์คูลดาวน์ร่วมกันระหว่างท่าปกติ, ท่า Possess, และท่า Execute (เช่น Shadow Step, Scattering Shot, Shaft Break, Falling Dust, Poison Needle, Chain Sickle, Unseen Sniper, Thanatos Descent, Churning Malice) ป้องกันการสแปมสกิล 0 วินาที
+  5. **การคอมไพล์ ซิงค์มิเรอร์ และแพ็กเกจแจกจ่าย (Build, Mirror Sync & Single Patch Packaging)**:
+     - คอมไพล์ผ่าน Apache Maven บน JDK 21 สำเร็จ (`BUILD SUCCESS`) ได้ `maplestory.jar` (~138 MB)
+     - ซิงค์ไฟล์ `maplestory.jar` ไปยัง `Server263/`, `v214 src/` และ Root Directory
+     - ซิงค์โค้ดที่แก้ไขทั้งหมด 7 ไฟล์ไปยัง Git Mirror [`maple265src/`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/maple265src) ให้เท่ากัน 100%
+     - ทดสอบการรันเซิร์ฟเวอร์จริงและ MariaDB บนพอร์ต 33066 สำเร็จ 100% เชื่อมต่อฐานข้อมูลและเปิดพอร์ตทั้ง 10 แชนเนลอย่างสมบูรณ์ ปราศจาก Error
+     - แพ็กเกจไฟล์แพตช์เดี่ยว **[`Patches/Server263_Patch_Latest.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip)** (173.48 MB) พร้อมใช้งาน 100%
+
 ## 📅 [2026-10-17 11:00 น.] Fix Spaceship Doctor Boss Crash (Lotus & OMNI-CLN / Dr. Zindelblarp), Universal Boss Entry Dispatcher, Crystal Drop Integrity & Single Patch Packaging
 
 ### 🎯 Scope & Technical Details

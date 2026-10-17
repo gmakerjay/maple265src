@@ -2542,6 +2542,11 @@ public class SkillConstants {
             case 400051029: // Spiritgate Summons 2
                 return 400051022; // Spiritgate
 
+            case 65120011: // AB - Soul Seeker Expert sub
+                return AngelicBuster.SOUL_SEEKER_EXPERT;
+            case 65121012: // AB - Soul Resonance sub
+                return AngelicBuster.SOUL_RESONANCE;
+
             case AngelicBuster.SOUL_SEEKER_ATOM:
                 return AngelicBuster.SOUL_SEEKER;
 
@@ -3095,6 +3100,9 @@ public class SkillConstants {
             case 63121140:
             case 63121141:
                 return 63121040; // Sneak Attack / Unseen Sniper
+            case 400031063: // Thanatos Descent Atom
+            case 400031064: // Thanatos Descent Screen Attack
+                return 400031062; // Thanatos Descent
             case 63140100:
             case 63141100:
             case 63141101:
@@ -5373,7 +5381,91 @@ public class SkillConstants {
                 || skillID == 161121008
                 || skillID == 161121002
                 || skillID == 161121004
-                || skillID == 161121044;
+                || skillID == 161121044
+                // Angelic Buster Sub-Skills & Atoms
+                || skillID == 65001004
+                || skillID == 65101006
+                || skillID == 65111007
+                || skillID == 65120011
+                || skillID == 65121012
+                || skillID == 65121007
+                || skillID == 65121008
+                || skillID == 65141003
+                || skillID == 65141004
+                || skillID == 65141501
+                || skillID == 65141502
+                || skillID == 65141503
+                || skillID == 65141505
+                || skillID == 400051027
+                || skillID == 400051047
+                || skillID == 400051048
+                // Kain 1st-4th Job, 5th Job & 6th Job Sub-Skills
+                || skillID == 63001001
+                || skillID == 63001100
+                || skillID == 63001003
+                || skillID == 63001005
+                || skillID == 63001009
+                || skillID == 63101006
+                || skillID == 63101003
+                || skillID == 63100100
+                || skillID == 63101100
+                || skillID == 63100104
+                || skillID == 63101104
+                || skillID == 63111002
+                || skillID == 63110103
+                || skillID == 63111103
+                || skillID == 63111104
+                || skillID == 63111105
+                || skillID == 63111106
+                || skillID == 63111004
+                || skillID == 63111005
+                || skillID == 63111010
+                || skillID == 63111012
+                || skillID == 63111013
+                || skillID == 63120102
+                || skillID == 63121102
+                || skillID == 63121103
+                || skillID == 63121005
+                || skillID == 63121007
+                || skillID == 63120140
+                || skillID == 63121041
+                || skillID == 63121140
+                || skillID == 63121141
+                || skillID == 400031063
+                || skillID == 400031064
+                || skillID == 63140100
+                || skillID == 63141100
+                || skillID == 63141101
+                || skillID == 63141005
+                || skillID == 63141006
+                || skillID == 63141008
+                || skillID == 63140107
+                || skillID == 63141107
+                || skillID == 63140109
+                || skillID == 63141109
+                || skillID == 63141012
+                || skillID == 63141014
+                || skillID == 63141016
+                || skillID == 63141017
+                || skillID == 63140118
+                || skillID == 63141019
+                || skillID == 63141020
+                || skillID == 63141118
+                || skillID == 63141119
+                || skillID == 63141120
+                || skillID == 63141121
+                || skillID == 63141023
+                || skillID == 63140126
+                || skillID == 63141027
+                || skillID == 63141126
+                || skillID == 63141127
+                || skillID == 63141501
+                || skillID == 63141502
+                || skillID == 63141503
+                || skillID == 63141504
+                || skillID == 63141505
+                || skillID == 63141507
+                || skillID == 63141508;
     }
 
     public static boolean notSureRemoteAttackSkill(int skillID) {
