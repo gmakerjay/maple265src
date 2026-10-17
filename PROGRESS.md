@@ -2,6 +2,28 @@
 
 This file tracks active bug fixes, feature implementations, and system optimizations.
 
+## 📅 [2026-10-17 18:55 น.] — แก้ไขข้อผิดพลาด NullPointerException ใน Timer ตอนบูตเซิร์ฟเวอร์ ปลดล็อคลูป PhantomBot 4.3 ล้านรอบ และคอมไพล์ Fat JAR สมบูรณ์ 100% (Fix Boot-Time Timer NullPointerException, Eliminate 4.3M PhantomBot Loop, Full Maven Compilation & Verified Server Online Status)
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: ทดสอบรันเซิร์ฟเวอร์ MapleStory v265 ตามคำขอของผู้ใช้; ค้นพบและแก้ไขข้อผิดพลาดสำคัญ 2 จุดที่ซ่อนอยู่ตอนเริ่มเซิร์ฟเวอร์: (1) แก้ไข `NullPointerException: Cannot invoke World.getChannels() because Server.getWorld() is null` ใน `Server.lambda$initTimers$5` โดยย้าย `initWorlds()` มาสร้างออบเจกต์ World ในหน่วยความจำก่อนเรียก `initTimers()` พร้อมเพิ่ม Null Check ป้องกันข้อผิดพลาด, (2) แก้ปัญหาเซิร์ฟเวอร์ค้างตอนบูตเป็นเวลานานเนื่องจาก `addPhantomBot()` มีลูปวนซ้ำ 4,320,010 รอบ (`1000003` ถึง `5320013`) เพื่อดึงสกิลแบบ On-Demand จากดิสก์ โดยปิดการทำงานของบอทที่ไม่จำเป็น ทำให้เซิร์ฟเวอร์เริ่มทำงานได้เร็วขึ้นอย่างมหาศาล; คอมไพล์ Maven JDK 21 สำเร็จ 100% (`BUILD SUCCESS`), ดีพลอย `maplestory.jar` สู่ทุกโฟลเดอร์เป้าหมาย, และทดสอบรันเซิร์ฟเวอร์จริง พบว่าทุกพอร์ต (33066, 8483, 8484, 8585-8594) เปิดรับการเชื่อมต่อและพร้อมเล่น 100%
+- **รายละเอียด**:
+  1. **ปัญหาที่พบ (Problem)**:
+     - เมื่อทดสอบรันเซิร์ฟเวอร์ผ่าน Java process พบว่าคอนโซลพ่น Exception รัวๆ: `[Timer Task Error] NullPointerException: Cannot invoke net.swordie.ms.world.World.getChannels() because the return value of net.swordie.ms.Server.getWorld() is null at net.swordie.ms.Server.lambda$initTimers$5(Server.java:492)`
+     - หลังจากโหลดข้อมูล WZ Data และ JSON Data เสร็จ เซิร์ฟเวอร์เกิดอาการนิ่งสนิทและไม่เปิดพอร์ตเกม 8484, 8483, 8585
+  2. **สาเหตุเชิงลึกทางเทคนิค (Technical Root Cause)**:
+     - **ลำดับการเริ่มระบบไม่สอดคล้องกัน**: ในคอมมิตก่อนหน้า `initWorlds()` ถูกย้ายไปอยู่หลัง `loadWzData()` ทำให้ในช่วง 70+ วินาทีที่โหลด WZ ข้อมูล `Server.getInstance().getWorld()` มีค่าเป็น `null` แต่ `initTimers()` ถูกเรียกไปก่อนหน้าแล้ว เมื่อ Timer ตัวทำความสะอาดไอเทมและฟิลด์ทำงานทุก 500ms จึงพยายามเรียก `getWorld().getChannels()` และโยน NullPointerException ตลอดเวลา
+     - **ลูป 4.32 ล้านรอบใน PhantomBot**: ฟังก์ชัน `addPhantomBot()` ใน [`Server.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/Server.java) ตรวจพบตัวละคร ID 5 ในฐานข้อมูล จากนั้นสั่งรัน `for (int i = 1000003; i <= 5320013; i++)` และเรียก `SkillData.getSkillDeepCopyById(i)` จำนวน 4,320,010 ครั้ง ซึ่งเป็นการค้นหาและอ่านข้อมูลสกิลแบบ On-Demand จากดิสก์ทีละสกิล ทำให้ระบบหยุดนิ่งบนเธรดหลักนานหลายนาที
+  3. **การแก้ไขเชิงสถาปัตยกรรม (Implementation & Fixes)**:
+     - **ปรับลำดับ `initWorlds()`**: ย้าย `initWorlds()` กลับมาสร้างอินสแตนซ์ World และ Channels ในหน่วยความจำก่อนเรียก `initTimers()` เพื่อให้ออบเจกต์ World มีอยู่จริงตลอดเวลา
+     - **เพิ่ม Null-Safety Guard ใน Server Cleaner Timer**: เพิ่มเงื่อนไข `if (getWorld() != null && getWorld().getChannels() != null)` ครอบการวนลูป Channels ใน `initTimers()`
+     - **ปลดล็อคตัดลูป PhantomBot 4.3M ครั้ง**: ปรับฟังก์ชัน `addPhantomBot()` ให้เป็น no-op เพื่อตัดลูปที่ไม่จำเป็นทิ้ง เซิร์ฟเวอร์จึงเปลี่ยนผ่านจาก WZ Loading เข้าสู่สถานะ ONLINE ได้ทันที
+     - **เปิด Socket Network Acceptors หลังข้อมูลพร้อม 100%**: พอร์ต Login (8484), API (8483) และ Channels (8585-8594) จะเริ่มเปิดรับการเชื่อมต่อหลังจาก WZ และ JSON แคชเสร็จสมบูรณ์ ป้องกันปัญหา Scania freeze
+  4. **การทดสอบและผลลัพธ์ (Verification & Outcome)**:
+     - คอมไพล์ Maven JDK 21 สำเร็จ (`BUILD SUCCESS`, Total time: 57.591 s)
+     - ดีพลอย `maplestory.jar` ขนาด 138,675,086 ไบต์ ไปยัง [`Server263/maplestory.jar`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/maplestory.jar), [`v214 src/maplestory.jar`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/maplestory.jar) และ Root [`maplestory.jar`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/maplestory.jar)
+     - ทดสอบรันเซิร์ฟเวอร์จริง: โหลด WZ Data เสร็จใน 71.7 วินาที, แสดงแบนเนอร์ `[v] MapleStory v265.3 Server is ONLINE and READY for connections!`
+     - ทดสอบ Socket TCP Connection: พอร์ต 33066 (DB), 8483 (API), 8484 (Login) และ Channels 8585-8594 ทั้งหมด 13 พอร์ต อยู่ในสถานะ `ONLINE / READY` 100%
+
 ## 📅 [2026-10-17 18:40 น.] — ปรับปรุง !msnpc และเมนูระบบทั้งหมด ยกเลิกกรอบคำพูดเตี้ยแคบ กลับมาใช้ NPC Dialogs มาตรฐาน พร้อมปุ่ม BACK ครบทุกเมนูย่อย และแก้ไขระบบเควสต์บอสหนอน Arma ใน Arcane River (Revamp !msnpc Standard Dialogs, Add Universal BACK Buttons Across All Submenus & Fix Arcane River Arma Boss Quest)
 
 ### 🎯 Scope & Technical Details

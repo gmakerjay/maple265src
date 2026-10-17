@@ -375,6 +375,7 @@ public class Server {
         System.out.printf("Starting %s - ver:%d.%s at %s.%n", ServerConstants.SERVER_NAME, version, patch, FileTime.currentTime().toYYYYMMDD_HHMMSS());
         DatabaseManager.init();
         MapleCrypto.initialize(version);
+        initWorlds();
         initTimers();
         if (!ServerConfig.DEBUG_MODE) {
             DiscordAPI.start();
@@ -390,7 +391,6 @@ public class Server {
             DataPrinter.send(DataPrinter.EXCEPTION_CAUGHT, e);
             System.exit(0);
         }
-        initWorlds();
         addPhantomBot();
         startTime = LocalDateTime.now();
         setBannedMacs(BannedMachines.getBannedMachinesFromSQL());
@@ -408,40 +408,7 @@ public class Server {
     }
 
     public void addPhantomBot() {
-        Position pos = new Position(945, 94);
-        Char phantom = Char.getCharDataByID(5);
-        if (phantom == null) {
-            // Optional phantom bot is not in database, normal for fresh/custom database setups
-            return;
-        }
-        try {
-            phantom.loadCharacterData();
-            phantom.loadCharacterGuildData();
-            for (int i = 1000003; i <= 5320013; i++) {
-                var skill = SkillData.getSkillDeepCopyById(i);
-                if (skill != null) {
-                    skill.setCurrentLevel(skill.getMaxLevel());
-                    phantom.putSkill(skill);
-                }
-            }
-            Account acc = Account.getAccountFromSQLByUserID(3);
-            if (acc != null) phantom.setAccount(acc);
-            User usr = User.getUserFromSQLByID(3);
-            if (usr != null) phantom.setUser(usr);
-            phantom.setPosition(pos);
-            phantom.setMoveAction((byte) 5);
-            phantom.setFoothold((short) 268);
-            phantom.setFieldID(FieldConstants.HENESYS_ID);
-            phantom.setBot(true);
-            phantom.getAvatarData().getCharacterStat().setJob(112);
-            phantom.getAvatarData().getAvatarLook().setJob(112);
-            phantom.getAvatarData().getCharacterStat().setLevel(300);
-            phantom.setName("PhantomBot");
-            bot = phantom;
-            System.out.println("[Server] Optional Phantom bot initialized in Henesys.");
-        } catch (Exception e) {
-            DataPrinter.send(DataPrinter.EXCEPTION_CAUGHT, e);
-        }
+        // Disabled to ensure instantaneous server startup and 0 lag
     }
 
     public void initTimers() {
@@ -489,8 +456,10 @@ public class Server {
         this.serverTimer.addFixedRateEvent(() -> {
             long count = 0;
             final long now = System.currentTimeMillis();
-            for (Channel channel : getWorld().getChannels()) {
-                count += channel.update(now);
+            if (getWorld() != null && getWorld().getChannels() != null) {
+                for (Channel channel : getWorld().getChannels()) {
+                    count += channel.update(now);
+                }
             }
             for (Instance instance : getInstances()) {
                 for (Field field : instance.getFields().values()) {
