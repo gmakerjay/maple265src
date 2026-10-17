@@ -102,21 +102,50 @@ public class NettyClient {
         return ch.remoteAddress().toString().split(":")[1];
     }
 
+    public static byte[] getHostLanIp() {
+        try {
+            java.util.Enumeration<java.net.NetworkInterface> interfaces = java.net.NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                java.net.NetworkInterface ni = interfaces.nextElement();
+                if (ni.isLoopback() || !ni.isUp() || ni.isVirtual()) continue;
+                java.util.Enumeration<java.net.InetAddress> addresses = ni.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    java.net.InetAddress addr = addresses.nextElement();
+                    if (addr instanceof java.net.Inet4Address && !addr.isLoopbackAddress()) {
+                        byte[] raw = addr.getAddress();
+                        if (raw.length == 4 && raw[0] != 127) {
+                            return raw;
+                        }
+                    }
+                }
+            }
+        } catch (Exception ignored) {}
+        return new byte[] {127, 0, 0, 1};
+    }
+
     public byte[] getEffectiveChannelIp() {
         try {
             String remoteIp = getIP();
+            // Local client on the same machine connects to localhost 127.0.0.1
             if ("127.0.0.1".equals(remoteIp) || "localhost".equalsIgnoreCase(remoteIp)) {
                 return new byte[] {127, 0, 0, 1};
             }
+            // Explicit non-localhost server IP configured in server.properties
             if (!net.swordie.ms.ServerConstants.LOCAL_HOST_SERVER && net.swordie.ms.ServerConstants.CHANNEL_IP != null) {
                 return net.swordie.ms.ServerConstants.CHANNEL_IP;
             }
+            // External client connecting: if server socket has non-zero bound address
             if (ch != null && ch.localAddress() instanceof java.net.InetSocketAddress) {
                 java.net.InetSocketAddress local = (java.net.InetSocketAddress) ch.localAddress();
                 byte[] addr = local.getAddress().getAddress();
-                if (addr != null && addr.length == 4 && !(addr[0] == 0 && addr[1] == 0 && addr[2] == 0 && addr[3] == 0)) {
+                if (addr != null && addr.length == 4 && !(addr[0] == 0 && addr[1] == 0 && addr[2] == 0 && addr[3] == 0) && addr[0] != 127) {
                     return addr;
                 }
+            }
+            // Fallback for external client: auto-detect host LAN IP (prevents sending 127.0.0.1 to remote players)
+            byte[] hostLan = getHostLanIp();
+            if (hostLan != null && hostLan[0] != 127) {
+                return hostLan;
             }
         } catch (Exception ignored) {}
         return net.swordie.ms.ServerConstants.CHANNEL_IP;

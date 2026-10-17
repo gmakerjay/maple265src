@@ -91,6 +91,7 @@ public class ApiRequestHandler {
                 // Generate token
                 final int token = getTokenPacked(user.getId());
                 Server.get().addAuthToken(token, user.getId());
+                Server.get().recordRecentLogin(c.getIP(), user.getId());
                 c.write(ApiResponse.tokenRequestResult(ApiTokenResultType.Success, token));
                 DataPrinter.send(DataPrinter.LOGIN, String.format("[API Login] Account '%s' authenticated successfully from IP %s (Token: %d)", name, c.getIP(), token));
             }

@@ -212,8 +212,24 @@ public class LoginHandler {
             userID = c.getUser().getId();
             user = c.getUser();
         } else {
-            c.write(WvsContext.broadcastMsg(BroadcastMsg.popUpMessage("Account data not found, please log in again.")));
-            return;
+            // Auto-recovery for user session via recent API login or localhost fallback
+            int recoveredUserId = Server.getRecentLoginUserId(c.getIP());
+            if (recoveredUserId > 0) {
+                user = User.getUserFromSQLByID(recoveredUserId);
+            }
+            if (user == null && (c.getIP().equals("127.0.0.1") || c.getIP().equals("0:0:0:0:0:0:0:1"))) {
+                user = User.getUserFromSQLByID(1);
+            }
+            if (user != null) {
+                user.loadAccountsData();
+                userID = user.getId();
+                c.setUser(user);
+                DataPrinter.send(DataPrinter.LOGIN, "[World Select Recovery] Restored session for user '" + user.getName() + "' (ID: " + userID + ") from IP " + c.getIP());
+            } else {
+                DataPrinter.send(DataPrinter.LOGIN, "[World Select Failed] No user session found for IP " + c.getIP() + ", rejecting with UnauthorizedUser.");
+                c.write(Login.selectCharacterResult(LoginType.UnauthorizedUser, (byte) 0, 0, 0));
+                return;
+            }
         }
         boolean isBannedMachine = false;
         try {
@@ -725,12 +741,20 @@ public class LoginHandler {
         Channel channel = Server.get().getWorld().getChannelById(channelId);
         if (channel == null) {
             channel = Server.get().getWorld().getChannelById((byte) 1);
+            channelId = 1;
+            c.setChannel(channelId);
         }
-        if (c.isAuthorized() && c.getAccount().hasCharacter(characterId)) {
+        if (c.isAuthorized() && c.getAccount() != null && c.getAccount().hasCharacter(characterId)) {
             channel.addClientInTransfer(channelId, characterId, c);
             c.setNextState(Client.IN_FIELD);
-            c.write(Login.selectCharacterResult(LoginType.Success, (byte) 0, channel.getPort(), characterId, c.getEffectiveChannelIp()));
-            System.out.println(name + " is logging in!");
+            byte[] channelIp = c.getEffectiveChannelIp();
+            c.write(Login.selectCharacterResult(LoginType.Success, (byte) 0, channel.getPort(), characterId, channelIp));
+            System.out.printf("[Character Select] %s (Char ID: %d) -> Channel %d (Port %d) | Target IP: %d.%d.%d.%d%n",
+                    name, characterId, channelId, channel.getPort(),
+                    channelIp[0] & 0xFF, channelIp[1] & 0xFF, channelIp[2] & 0xFF, channelIp[3] & 0xFF);
+        } else {
+            System.out.printf("[Character Select Warning] Failed to select character %s (ID: %d) from IP %s%n", name, characterId, c.getIP());
+            c.write(Login.selectCharacterResult(LoginType.UnauthorizedUser, (byte) 0, 0, 0));
         }
     }
 
@@ -743,11 +767,22 @@ public class LoginHandler {
         Channel channel = Server.get().getWorld().getChannelById(channelId);
         if (channel == null) {
             channel = Server.get().getWorld().getChannelById((byte) 1);
+            channelId = 1;
+            c.setChannel(channelId);
         }
-        if (c.isAuthorized() && c.getAccount().hasCharacter(characterId)) {
+        if (c.isAuthorized() && c.getAccount() != null && c.getAccount().hasCharacter(characterId)) {
             channel.addClientInTransfer(channelId, characterId, c);
             c.setNextState(Client.IN_FIELD);
-            c.write(Login.selectCharacterResult(LoginType.Success, (byte) 0, channel.getPort(), characterId, c.getEffectiveChannelIp()));
+            byte[] channelIp = c.getEffectiveChannelIp();
+            c.write(Login.selectCharacterResult(LoginType.Success, (byte) 0, channel.getPort(), characterId, channelIp));
+            Char chr = c.getAccount().getCharById(characterId);
+            String charName = chr != null ? chr.getName() : String.valueOf(characterId);
+            System.out.printf("[Character Select] %s (Char ID: %d) -> Channel %d (Port %d) | Target IP: %d.%d.%d.%d%n",
+                    charName, characterId, channelId, channel.getPort(),
+                    channelIp[0] & 0xFF, channelIp[1] & 0xFF, channelIp[2] & 0xFF, channelIp[3] & 0xFF);
+        } else {
+            System.out.printf("[Character Select Warning] Failed to select character ID: %d from IP %s%n", characterId, c.getIP());
+            c.write(Login.selectCharacterResult(LoginType.UnauthorizedUser, (byte) 0, 0, 0));
         }
     }
 
@@ -804,7 +839,26 @@ public class LoginHandler {
             userID = c.getUser().getId();
             user = c.getUser();
         } else {
-            user = User.getUserFromSQLByID(userID);
+            if (userID > 0) {
+                user = User.getUserFromSQLByID(userID);
+            }
+            if (user == null) {
+                int fallbackUserId = Server.getRecentLoginUserId(c.getIP());
+                if (fallbackUserId > 0) {
+                    user = User.getUserFromSQLByID(fallbackUserId);
+                    if (user != null) {
+                        userID = fallbackUserId;
+                        DataPrinter.send(DataPrinter.LOGIN, "[Login Recovery] Recovered user '" + user.getName() + "' (ID: " + userID + ") from recent API login for IP " + c.getIP());
+                    }
+                }
+            }
+            if (user == null && (c.getIP().equals("127.0.0.1") || c.getIP().equals("0:0:0:0:0:0:0:1"))) {
+                user = User.getUserFromSQLByID(1);
+                if (user != null) {
+                    userID = 1;
+                    DataPrinter.send(DataPrinter.LOGIN, "[Login Recovery] Localhost fallback to user '" + user.getName() + "' (ID: 1) for IP " + c.getIP());
+                }
+            }
             if (user == null) {
                 c.write(Login.checkPasswordResult(false, LoginType.UnauthorizedUser, null));
                 return;

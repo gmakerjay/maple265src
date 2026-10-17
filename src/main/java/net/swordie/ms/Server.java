@@ -373,13 +373,9 @@ public class Server {
         System.out.println("                 MapleStory v265 Full Portable Server                         ");
         System.out.println("==============================================================================");
         System.out.printf("Starting %s - ver:%d.%s at %s.%n", ServerConstants.SERVER_NAME, version, patch, FileTime.currentTime().toYYYYMMDD_HHMMSS());
-        //System.out.println(Double.longBitsToDouble(4846999102216208384L));
         DatabaseManager.init();
         MapleCrypto.initialize(version);
-        new Thread(new ApiAcceptor()).start();
-        new Thread(new LoginAcceptor()).start();
         initTimers();
-        initWorlds();
         if (!ServerConfig.DEBUG_MODE) {
             DiscordAPI.start();
             ItemData.loadFacesAndHairs();
@@ -394,39 +390,58 @@ public class Server {
             DataPrinter.send(DataPrinter.EXCEPTION_CAUGHT, e);
             System.exit(0);
         }
+        initWorlds();
         addPhantomBot();
         startTime = LocalDateTime.now();
         setBannedMacs(BannedMachines.getBannedMachinesFromSQL());
+
+        // Start network acceptors ONLY after all game data, wz, and worlds are fully loaded in memory
+        startNetworkAcceptors();
+
+        System.out.println("==============================================================================");
+        System.out.println(" [v] MapleStory v265.3 Server is ONLINE and READY for connections!            ");
+        System.out.printf("     - Login Server : Port %d%n", ServerConstants.LOGIN_PORT);
+        System.out.printf("     - API Server   : Port %d%n", ServerConstants.API_PORT);
+        System.out.println("     - Channels 1-10: Ports 8585 - 8594");
+        System.out.println("     -> You can now launch Launcher.exe or Run_Game.bat to connect!           ");
+        System.out.println("==============================================================================");
     }
 
     public void addPhantomBot() {
         Position pos = new Position(945, 94);
         Char phantom = Char.getCharDataByID(5);
         if (phantom == null) {
-            System.out.println("[Server] Phantom bot (ID 5) not found in DB, skipping bot initialization.");
+            // Optional phantom bot is not in database, normal for fresh/custom database setups
             return;
         }
-        phantom.loadCharacterData();
-        phantom.loadCharacterGuildData();
-        for (int i = 1000003; i <= 5320013; i++) {
-            var skill = SkillData.getSkillDeepCopyById(i);
-            if (skill != null) {
-                skill.setCurrentLevel(skill.getMaxLevel());
-                phantom.putSkill(skill);
+        try {
+            phantom.loadCharacterData();
+            phantom.loadCharacterGuildData();
+            for (int i = 1000003; i <= 5320013; i++) {
+                var skill = SkillData.getSkillDeepCopyById(i);
+                if (skill != null) {
+                    skill.setCurrentLevel(skill.getMaxLevel());
+                    phantom.putSkill(skill);
+                }
             }
+            Account acc = Account.getAccountFromSQLByUserID(3);
+            if (acc != null) phantom.setAccount(acc);
+            User usr = User.getUserFromSQLByID(3);
+            if (usr != null) phantom.setUser(usr);
+            phantom.setPosition(pos);
+            phantom.setMoveAction((byte) 5);
+            phantom.setFoothold((short) 268);
+            phantom.setFieldID(FieldConstants.HENESYS_ID);
+            phantom.setBot(true);
+            phantom.getAvatarData().getCharacterStat().setJob(112);
+            phantom.getAvatarData().getAvatarLook().setJob(112);
+            phantom.getAvatarData().getCharacterStat().setLevel(300);
+            phantom.setName("PhantomBot");
+            bot = phantom;
+            System.out.println("[Server] Optional Phantom bot initialized in Henesys.");
+        } catch (Exception e) {
+            DataPrinter.send(DataPrinter.EXCEPTION_CAUGHT, e);
         }
-        phantom.setAccount(Account.getAccountFromSQLByUserID(3));
-        phantom.setUser(User.getUserFromSQLByID(3));
-        phantom.setPosition(pos);
-        phantom.setMoveAction((byte) 5);
-        phantom.setFoothold((short) 268);
-        phantom.setFieldID(FieldConstants.HENESYS_ID);
-        phantom.setBot(true);
-        phantom.getAvatarData().getCharacterStat().setJob(112);
-        phantom.getAvatarData().getAvatarLook().setJob(112);
-        phantom.getAvatarData().getCharacterStat().setLevel(300);
-        phantom.setName("CướpSkill");
-        bot = phantom;
     }
 
     public void initTimers() {
@@ -510,11 +525,16 @@ public class Server {
         world = new World(ServerConstants.WORLD_ID, ServerConstants.SERVER_NAME, GameConstants.CHANNELS_PER_WORLD, ServerConstants.EVENT_MSG);
         world.initGuilds();
         world.initAuctionHouse();
+    }
+
+    private void startNetworkAcceptors() {
         for (Channel channel : world.getChannels()) {
             ChannelAcceptor ca = new ChannelAcceptor();
             ca.channel = channel;
             new Thread(ca).start();
         }
+        new Thread(new LoginAcceptor()).start();
+        new Thread(new ApiAcceptor()).start();
     }
 
     private void checkAndCreateDat() {
@@ -627,6 +647,26 @@ public class Server {
         } else {
             return value.getLeft();
         }
+    }
+
+    private static final Map<String, Tuple<Integer, Long>> recentLoginsByIp = new java.util.concurrent.ConcurrentHashMap<>();
+
+    public static void recordRecentLogin(String ip, int userId) {
+        if (ip != null) {
+            recentLoginsByIp.put(ip, new Tuple<>(userId, System.currentTimeMillis()));
+        }
+    }
+
+    public static int getRecentLoginUserId(String ip) {
+        if (ip == null) return 0;
+        Tuple<Integer, Long> entry = recentLoginsByIp.get(ip);
+        if (entry != null) {
+            // Valid for 15 minutes
+            if (System.currentTimeMillis() - entry.getRight() < 15 * 60 * 1000) {
+                return entry.getLeft();
+            }
+        }
+        return 0;
     }
 
     public List<Instance> getInstances() {
