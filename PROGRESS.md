@@ -2,6 +2,32 @@
 
 This file tracks active bug fixes, feature implementations, and system optimizations.
 
+## 📅 [2026-10-17 11:00 น.] Fix Spaceship Doctor Boss Crash (Lotus & OMNI-CLN / Dr. Zindelblarp), Universal Boss Entry Dispatcher, Crystal Drop Integrity & Single Patch Packaging
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: แก้ไขบัคบอสที่เป็นด็อกเตอร์บนยานอวกาศ (Lotus & Dr. Gelimer บนยานรบ Black Heaven และ OMNI-CLN & Dr. Zindelblarp บนยานแม่ Omega Sector) อาการเข้าห้องบอสแล้วเกมหลุดเด้งออกสู่ Desktop, จัดระบบเกิดบอสและสคริปต์ทางเข้า/ออกให้สมบูรณ์ 100%, ปรับแก้การดรอปผลึก Intense Power Crystal, และสร้างแพ็กเกจแพตช์ All-in-One ล่าสุด [`Patches/Server263_Patch_Latest.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip)
+- **รายละเอียด**:
+  1. **การแก้ไขบอส Lotus & Dr. Gelimer (Black Heaven Airship / Spaceship)**:
+     - **ปัญหา (Problem)**: เมื่อผู้เล่นเดินทางเข้าสู่ห้องบอส Lotus (`350060700` Normal, `350060400` Hard) เกมจะเด้งหลุดออกจากเกมทันที (Client Crash / Desktop Disconnect ด้วย unhandled exception `0x01208491` / MSVC `ZException` ใน `CrashLog.txt`)
+     - **สาเหตุ (Root Cause)**: ใน [`Lotus.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/boss/Lotus.java) มีการบรอดแคสต์แพ็กเก็ตอุปสรรคตกจากเพดานและลำแสงเลเซอร์ (`FieldPacket.clearObtacle()`, `FieldPacket.createObtacle()`, `MobPool.laserControl()`) ซึ่งเป็นโครงสร้างแพ็กเก็ตของเวอร์ชันเก่า v214 เมื่อส่งมายังตัวเกมไคลเอนต์ v265 ทำให้เอนจิน C++ กราฟิกเกิด Crash ทันที
+     - **วิธีแก้ (Fix)**:
+       - ใน [`Lotus.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/boss/Lotus.java): ลบการส่งแพ็กเก็ตอุปสรรคและเลเซอร์เก่าทิ้งทั้งหมด เปลี่ยนเป็นการเสกตัวบอสพร้อมค่า HP และสกิลโจมตีตามธรรมชาติของ WZ Data v265 อย่างสะอาด พร้อมเพิ่มโอเวอร์โหลด `spawn(Field field, Char chr, LotusPhase phase, LotusMode mode)`
+       - ใน [`BossEntry.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/boss/BossEntry.java): เพิ่มและปรับปรุงเคส `LOTUS_NORMAL`, `LOTUS_HARD`, และ `LOTUS_EXTREME` ให้วาร์ปและเสกม็อบเข้า Instance พร้อมกำหนดพิกัดฟุตโฮลด์จริง `(0, 398)`
+       - ใน [`BossHelper.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/boss/BossHelper.java): เพิ่มการจัดการเคลียร์บอสและรางวัลสำหรับ Lotus Phase 3 (`8950102`, `8950002`) และ Extreme Lotus Reward Chest (`8881203`, `8881300`)
+       - ใน [`GameConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/GameConstants.java): ผูกผลึก Intense Power Crystal สำหรับ Lotus P3 และกล่อง Extreme อย่างแม่นยำ
+  2. **การแก้ไขบอส OMNI-CLN & Dr. Zindelblarp (Omega Sector Mothership UFO)**:
+     - **ปัญหา (Problem)**: บอสด็อกเตอร์บนยานอวกาศ Omega Sector (ด็อกเตอร์จินเดลบลาฟ `8880202` ผู้บังคับหุ่นยนต์ทำความสะอาด OMNI-CLN `8880200`) พิกัดเกิดในห้องเดิมลอยฟ้า `(700, 150)` ขาดตัวด็อกเตอร์ และไม่มีสคริปต์คุยกับ NPC รวมถึงไม่มีพอร์ทัลทางออก
+     - **วิธีแก้ (Fix)**:
+       - ใน [`BossEntry.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/world/boss/BossEntry.java): ปรับปรุงเคส `OMNI_CLN_NORMAL` ให้เสกทั้ง OMNI-CLN (`8880200`) และ Dr. Zindelblarp (`8880202`) ลงบนฟุตโฮลด์จริง `(615, 298)` ในแผนที่ Air Vent D-77 (`221030910`)
+       - สร้างสคริปต์ NPC ประจำตัว Dr. Zindelblarp: [`2052044.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/2052044.py), [`Caoong_accept.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/Caoong_accept.py), [`2052008.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/2052008.py) ใน Cockpit (`221030900`) รองรับการเข้าบอสทั้งแบบเดี่ยวและปาร์ตี้ผ่าน `BossEntry.enter`
+       - สร้างสคริปต์เข้าแมพและพอร์ทัลทางออก: [`Fenter_221030910.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/field/Fenter_221030910.py), [`enter_221030910.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/field/enter_221030910.py) และ [`pt2_221030910.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/portal/pt2_221030910.py) ผ่าน `sm.exitBoss()`
+       - ใน [`boss_arena.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/boss_arena.py): สลับ Map ID ของ Normal Lotus (`350060700`) และ Hard Lotus (`350060400`) ให้ถูกต้องตาม WZ Data, เพิ่ม Extreme Lotus (`350068100`), และเพิ่มเมนู Normal OMNI-CLN (1.68B HP) ในหมวด Classic & Early Bosses
+  3. **การคอมไพล์ ส่งมอบ และแพ็กเกจแจกจ่าย (Build, Deploy & Single Patch Packaging)**:
+     - คอมไพล์ผ่าน Apache Maven บน OpenJDK 21 สำเร็จ (`BUILD SUCCESS`) ได้ `maplestory.jar` (~138 MB)
+     - ซิงค์ไฟล์ `maplestory.jar` และสคริปต์ไปยัง `Server263/`, `v214 src/`, และ Root Directory
+     - ทดสอบการรันเซิร์ฟเวอร์จริงและ MariaDB ผ่านพอร์ต 33066 สำเร็จ 100% ปราศจาก Error
+     - แพ็กไฟล์แพตช์เดี่ยว **[`Patches/Server263_Patch_Latest.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip)** (173.48 MB) ตามกฎเหล็กข้อที่ 4
+
 ## 📅 [2026-10-16 23:00 น.] Boss Lifecycle Leak Fixes, Deterministic Crystal Economy, Matrix Sub-Skill Sanitization & All-in-One Patch Packaging
 
 ### 🎯 Scope & Technical Details

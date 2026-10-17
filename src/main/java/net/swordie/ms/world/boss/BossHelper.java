@@ -400,6 +400,7 @@ public class BossHelper {
                 if (instance != null) {
                     instance.setTimeout(300, true);
                 }
+                handleBossCompletion(chr, mob);
             }
         }
         // Remastered Extreme Lotus (P1 -> P2 -> P3 -> Reward Room)
@@ -409,6 +410,8 @@ public class BossHelper {
             transitionToBossMap(chr, field, 350068500, 8881202, 0, 396, false);
         } else if (mobID == 8881202) {
             transitionToBossMap(chr, field, 350068600, 8881203, 0, 498, true);
+        } else if (mobID == 8881203 || mobID == 8881300) {
+            handleBossCompletion(chr, mob);
         }
         // Black Mage (Hard & Extreme)
         if (mobID == 8880500 || mobID == 8880501 || mobID == 8880530 || mobID == 8880531) { // Phase 1
@@ -1327,6 +1330,7 @@ public class BossHelper {
             case 8860000: // Arkarium (Normal)
             case 8820001: // Pink Bean (Normal)
             case 8850011: // Cygnus (Normal)
+            case 8880200: // OMNI-CLN (Normal)
                 return 0; // Quà thường
             case 8800102: // Zakum Chaos
             case 8810122: // Horntail Chaos
@@ -1348,6 +1352,8 @@ public class BossHelper {
             case 8880177: // Final Music Box (Lucid Easy)
             case 8880167: // Final Music Box (Lucid Normal)
             case 8880156: // Final Music Box (Lucid Hard)
+            case 8881203: // Extreme Lotus Chest
+            case 8881300:
                 return 2; // Quà Siêu khó 100,000 - 500,000
         }
         return -1;

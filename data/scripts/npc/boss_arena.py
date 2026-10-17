@@ -61,6 +61,7 @@ BOSS_CATEGORIES = [
         ("Easy Magnus", 401060300, "magnus", 0, 10000000, "Lv. 115+ | Blue Zone & Meteors (400M HP)"),
         ("Normal Magnus", 401060200, "magnus", 1, 30000000, "Lv. 155+ | Blue Zone & Meteors (6B HP)"),
         ("Hard Magnus", 401060100, "magnus", 2, 150000000, "Lv. 175+ | Tyrant of Heliseum (120B HP)"),
+        ("Normal OMNI-CLN (카웅 / Dr. Zindelblarp)", 221030910, "omni_cln", 0, 15000000, "Lv. 180+ | Alien Mothership Cleaner Robot (1.68B HP)"),
     ]),
     ("Root Abyss 4 Guardians", [
         ("Normal Pierre", 105200100, "pierre", 0, 20000000, "Lv. 125+ | Clown with Hat split (315M HP)"),
@@ -73,9 +74,9 @@ BOSS_CATEGORIES = [
         ("Chaos Vellum", 105200800, "root_abyss", "bellumChaos", 100000000, "Lv. 180+ | Stalactites & Deep Dive (200B HP)"),
     ]),
     ("Arcane River & Mid-Tier Bosses", [
-        ("Normal Lotus (Suu)", 350060400, "lotus", 0, 250000000, "Lv. 190+ | 3 Phases, Laser & Debris (1.5T HP)"),
-        ("Hard Lotus (Suu)", 350060700, "lotus", 1, 750000000, "Lv. 210+ | 3 Phases, Laser & Debris (33T HP)"),
-        ("Extreme Lotus (Suu)", 350060700, "mob_hp", (8881300, 120000000000000, 0, -16), 2500000000, "Lv. 260+ | Ultra High-Speed Lasers (120T HP)"),
+        ("Normal Lotus (Suu)", 350060700, "lotus", 0, 250000000, "Lv. 190+ | 3 Phases, Laser & Debris (1.5T HP)"),
+        ("Hard Lotus (Suu)", 350060400, "lotus", 1, 750000000, "Lv. 210+ | 3 Phases, Laser & Debris (33T HP)"),
+        ("Extreme Lotus (Suu)", 350068100, "lotus_extreme", 0, 2500000000, "Lv. 260+ | Ultra High-Speed Lasers (120T HP)"),
         ("Normal Damien (Demian)", 350160200, "damien", 0, 250000000, "Lv. 190+ | 2 Phases, Flying Sword & Corruption (1.2T HP)"),
         ("Hard Damien (Demian)", 350160100, "damien", 1, 750000000, "Lv. 210+ | 2 Phases, Flying Sword & Corruption (36T HP)"),
         ("Normal Guardian Angel Slime", 160080000, "mob_hp", (8880700, 5000000000000, 0, 208), 300000000, "Lv. 210+ | Ramuramu Altar & Slime Wave (5T HP)"),
@@ -259,6 +260,11 @@ def enter_boss_arena(sm, chr, boss_name, map_id, spawn_type, spawn_val):
         elif spawn_type == "lotus":
             mode = Lotus.LotusMode.NORMAL if spawn_val == 0 else Lotus.LotusMode.HARD
             Lotus.spawn(chr, Lotus.LotusPhase.FIRST, mode)
+        elif spawn_type == "lotus_extreme":
+            field.spawnMob(8881200, 0, 398, False)
+        elif spawn_type == "omni_cln":
+            field.spawnMob(8880200, 615, 298, False)
+            field.spawnMob(8880202, 615, 298, False)
         elif spawn_type == "damien":
             Damien.init(chr)
         elif spawn_type == "lucid":

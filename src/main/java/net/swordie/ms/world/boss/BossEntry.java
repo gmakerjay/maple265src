@@ -236,7 +236,8 @@ public class BossEntry {
                 Ranmaru.spawn(chr, Ranmaru.RanmaruMode.HARD);
             }
             case OMNI_CLN_NORMAL -> {
-                spawnSnappedMob(field, 8880200, 700, 150);
+                spawnSnappedMob(field, 8880200, 615, 298);
+                spawnSnappedMob(field, 8880202, 615, 298);
                 field.setBossSpawned(true);
             }
             case PAPULATUS_EASY -> {
@@ -398,15 +399,15 @@ public class BossEntry {
                 field.setBossSpawned(true);
             }
             case LOTUS_NORMAL -> {
-                Lotus.spawn(chr, Lotus.LotusPhase.FIRST, Lotus.LotusMode.NORMAL);
+                Lotus.spawn(field, chr, Lotus.LotusPhase.FIRST, Lotus.LotusMode.NORMAL);
                 field.setBossSpawned(true);
             }
             case LOTUS_HARD -> {
-                Lotus.spawn(chr, Lotus.LotusPhase.FIRST, Lotus.LotusMode.HARD);
+                Lotus.spawn(field, chr, Lotus.LotusPhase.FIRST, Lotus.LotusMode.HARD);
                 field.setBossSpawned(true);
             }
             case LOTUS_EXTREME -> {
-                spawnSnappedMob(field, 8881200, 0, -16);
+                spawnSnappedMob(field, 8881200, 0, 398);
                 field.setBossSpawned(true);
             }
             case DAMIEN_NORMAL, DAMIEN_HARD -> {

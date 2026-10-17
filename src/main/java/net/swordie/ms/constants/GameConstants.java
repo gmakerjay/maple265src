@@ -2032,7 +2032,7 @@ public class GameConstants {
             // Lotus
             case 8950102 -> { return 9210029; } // Normal Lotus P3 (32.5M)
             case 8950002 -> { return 9210030; } // Hard Lotus P3 (74.1M)
-            case 8881203 -> { return 9210066; } // Extreme Lotus Chest (279.5M)
+            case 8881203, 8881300 -> { return 9210066; } // Extreme Lotus Chest (279.5M)
             // Damien
             case 8880111 -> { return 9210031; } // Normal Damien P2 (33.8M)
             case 8880101 -> { return 9210032; } // Hard Damien P2 (70.3M)
