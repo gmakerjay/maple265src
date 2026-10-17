@@ -2,6 +2,25 @@
 
 This file tracks active bug fixes, feature implementations, and system optimizations.
 
+## 📅 bb2fdc2f (16:30 น.) — วิเคราะห์และจัดทำเอกสารคู่มือระบบ Arcane & Sacred Symbol และการปลดล็อคเควสต์ (Analyze & Document Arcane & Sacred Symbol Mechanics and Quest Unlocking Guide)
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: ตรวจสอบและวิเคราะห์ข้อเท็จจริงกรณีผู้เล่นสอบถามการปลดล็อคช่อง Arcane และ Sacred Symbol ("Arcane กับ sacred มันปลดล็อคยังไงหรอครับ มันไม่มีเควสให้ทำแล้ว"), ยืนยันสถานะการทำงานของเควสต์ Arcane River ทั้ง 6 ดินแดน (Vanishing Journey, Chu Chu Island, Lachelein, Arcana, Morass, Esfera) ว่าทำงานได้สมบูรณ์ 100% พร้อมระบบข้ามเควสต์ด่วน (Skip Prequest Option) ในคลิกเดียว, ชี้แจงสาเหตุที่เควสต์ไม่แสดงในหน้าต่างหลอดไฟเนื่องจากเป็นเควสต์ประจำพื้นที่ (Area Trigger), ตรวจสอบโครงสร้าง Sacred Symbol ของ Grandis, จัดทำเอกสารคู่มือแม่บท [`docs/Arcane_Sacred_Symbol_Guide.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/docs/Arcane_Sacred_Symbol_Guide.md) และข้อความสคริปต์สำหรับ Support ตอบผู้เล่น
+- **รายละเอียด**:
+  1. **ปัญหาที่พบ (Problem)**:
+     - ผู้เล่นส่งภาพหน้าจอหน้าต่างสวมใส่อุปกรณ์แท็บ ARCANE ที่ปลดล็อคเฉพาะช่อง 1 (Vanishing Journey) ส่วนอีก 5 ช่องติดรูปแม่กุญแจล็อค (`disablebox`) พร้อมสอบถามว่า *"Arcane กับ sacred มันปลดล็อคยังไงหรอครับ มันไม่มีเควสให้ทำแล้ว"*
+  2. **สาเหตุเชิงลึกทางเทคนิค (Technical Root Cause)**:
+     - **เควสต์ Arcane River ไม่ใช่เควสต์ประเภท Auto-Notifier (หลอดไฟข้างจอ)**: ใน MapleStory เควสต์เนื้อเรื่องของเมืองต่อๆ ไป (เช่น Chu Chu Island เควสต์ `34200`, Lachelein `34300`, Arcana `34450`, Morass `34249`, Esfera `34561`) ถูกออกแบบให้เป็น Map / Area Trigger ผู้เล่นจะต้องเดินทางไปยังแผนที่รอยต่อของดินแดนนั้นๆ เควสต์จึงจะเริ่มต้นขึ้น (เช่น Chu Chu ต้องเดินไปที่ท้ายแมพ Cave of Repose แล้วกระโดดลงน้ำตกเข้าสู่แมพ `450002021`)
+     - **ระบบเควสต์และ Fast-Track Skip ทำงานได้ 100%**: ในโฟลเดอร์สคริปต์ `Server263/data/scripts/quest/` มีไฟล์สคริปต์เควสต์เนื้อเรื่องครบทุกเมือง (`q34100s.py`, `q34200s.py`, `q34300s.py`, `q34450s.py`, `q34249s.py`, `q34561s.py`) และมีตัวเลือก `Skip the prequests and receive your Arcane Symbol immediately` ให้ผู้เล่นข้ามเนื้อเรื่องทั้งหมดและปลดล็อคช่อง + รับ Symbol ไปใส่ได้ทันทีใน 1 วินาที
+     - **สถานะของ Sacred Symbol (Grandis)**: ตัวระบบช่องสวมใส่ `AUSBase` (`1700-1705`), ไอเทมลูกแก้ว Sacred Symbol (`1713000-1713005`), และค่า Authentic Force (AUT) รองรับในเซิร์ฟเวอร์สมบูรณ์ 100% แต่เควสต์เนื้อเรื่อง Grandis (Cernium `1484`, Hotel Arcus `38120`, Odium `38319` ฯลฯ) ใน SwordieMS ปัจจุบันยังไม่มีสคริปต์วิ่งเนื้อเรื่องในเกม ทำให้ไม่มีเควสต์ให้ผู้เล่นกดวิ่งทำเองตามธรรมชาติ
+  3. **การแก้ไขและการจัดทำเอกสาร (Implementation & Documentation)**:
+     - จัดทำเอกสารคู่มือฉบับสมบูรณ์ [`docs/Arcane_Sacred_Symbol_Guide.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/docs/Arcane_Sacred_Symbol_Guide.md)
+     - ซิงค์เอกสารไปยัง [`v214 src/docs/Arcane_Sacred_Symbol_Guide.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/docs/Arcane_Sacred_Symbol_Guide.md) และ [`maple265src/docs/Arcane_Sacred_Symbol_Guide.md`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/maple265src/docs/Arcane_Sacred_Symbol_Guide.md)
+     - รวบรวมตารางสรุปเมือง, เลเวลขั้นต่ำ, รหัสเควสต์, จุดเดินทาง, สคริปต์ข้อความสำหรับทีมงาน Support นำไปตอบผู้เล่น และคำสั่ง Admin ที่เกี่ยวข้อง
+  4. **ผลลัพธ์ (Outcome)**:
+     - เอกสารถูกจัดระเบียบไว้ใน `docs/` ตามมาตรฐาน Zero-Scratch Directory Standard
+     - ทีมงานมีคำตอบและข้อเท็จจริงที่ชัดเจนในการชี้แจงผู้เล่นได้อย่างถูกต้อง แม่นยำ และรวดเร็ว
+
 ## 📅 3594fed8 (15:05 น.) — แก้ไขข้อผิดพลาด EOFException ใน SkillData จากไบนารี SecondAtomInfo ไม่ตรงกัน พร้อมคอมไพล์และอัปเดตแพตช์ (Fix SkillData SecondAtomInfo EOFException Desync, Build Server & Update Latest Patch)
 
 ### 🎯 Scope & Technical Details
