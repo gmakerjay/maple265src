@@ -99,6 +99,8 @@ if exist "%~dp0bin\maplestory-219.5-jar-with-dependencies.jar" (
         copy /y "%~dp0bin\maplestory-219.5-jar-with-dependencies.jar" "%~dp0..\Server263\maplestory.jar" >nul
         echo [v] Deployed to Server263: %~dp0..\Server263\maplestory.jar
     )
+    copy /y "%~dp0bin\maplestory-219.5-jar-with-dependencies.jar" "%~dp0..\maplestory.jar" >nul
+    echo [v] Deployed to Root: %~dp0..\maplestory.jar
 )
 
 echo.

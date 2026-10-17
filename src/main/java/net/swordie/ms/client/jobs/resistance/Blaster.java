@@ -119,6 +119,7 @@ public class Blaster extends Citizen {
     public static final int HEXA_BUNKER_BUSTER_EXPLOSION_3 = 37141005;
     public static final int HEXA_BUNKER_BUSTER_EXPLOSION_4 = 37141006;
     public static final int HEXA_BUNKER_BUSTER_EXPLOSION_5 = 37141007;
+    public static final int BURST_PILE_BUNKER = 37141007;
     public static final int HEXA_REVOLVING_CANON_MASTERY = 37141008;
     public static final int HEXA_HAMMER_SMASH = 37141009;
     public static final int HEXA_HAMMER_SMASH_CHARGE = 37141010;
@@ -126,6 +127,9 @@ public class Blaster extends Citizen {
     public static final int HEXA_REVOLVING_CANNON = 37141012;
     public static final int HEXA_REVOLVING_CANNON_2 = 37141013;
     public static final int HEXA_REVOLVING_CANNON_3 = 37141014;
+    public static final int HEXA_BALLISTIC_HURRICANE = 37141015;
+    public static final int VANGUARD_STRIKE = 37141502;
+    public static final int VANGUARD_STRIKE_FINISH = 37141503;
 
     private final int[] addedSkills = new int[]{
             SECRET_ASSEMBLY,};
@@ -310,7 +314,7 @@ public class Blaster extends Citizen {
             case HEXA_BUNKER_BUSTER_EXPLOSION_2:
             case HEXA_BUNKER_BUSTER_EXPLOSION_3:
             case HEXA_BUNKER_BUSTER_EXPLOSION_4:
-            case HEXA_BUNKER_BUSTER_EXPLOSION_5:
+            case BURST_PILE_BUNKER:
                 if (tsm.hasStat(RWOverHeat)) {
                     return;
                 }
@@ -331,10 +335,13 @@ public class Blaster extends Citizen {
             case SHOTGUN_PUNCH:
             case SHOTGUN_PUNCH_SHOCKWAVE:
             case REVOLVING_CANON_MASTERY:
+            case BALLISTIC_HURRICANE:
+            case BALLISTIC_HURRICANE_1:
             case HEXA_MAGNUM_PUNCH:
             case HEXA_DOUBLE_BLAST:
             case HEXA_SHOTGUN_PUNCH:
-            case HEXA_REVOLVING_CANON_MASTERY: {
+            case HEXA_REVOLVING_CANON_MASTERY:
+            case HEXA_BALLISTIC_HURRICANE: {
                 if (hasHitMobs) {
                     if (getGauge() < getMaxAmmo() && !tsm.hasStat(RWOverHeat)) {
                         addGauge();
@@ -587,7 +594,9 @@ public class Blaster extends Citizen {
                 tsm.sendStat(TempSecondaryStat, o1);
                 break;
             case FINAL_DESTROYER:
+            case FINAL_DESTROYER_1:
             case ASCENT_BLASTER_1:
+            case ASCENT_BLASTER_2:
                 o1.nOption = 1;
                 o1.rOption = skillID;
                 o1.tOption = 7;
@@ -601,7 +610,90 @@ public class Blaster extends Citizen {
                     }
                 }
                 break;
+            case BUNKER_BUSTER_EXPLOSION:
+            case BUNKER_BUSTER_EXPLOSION_2ND:
+            case BUNKER_BUSTER_EXPLOSION_3RD:
+            case BUNKER_BUSTER_EXPLOSION_4TH:
+            case HEXA_BUNKER_BUSTER_EXPLOSION:
+                if (tsm.hasStat(RWOverHeat) || getGauge() < 1) {
+                    chr.dispose();
+                    return;
+                }
+                break;
         }
+    }
+
+    @Override
+    public int handleSetCoolDownSkill(int skillId) {
+        SkillInfo si = SkillData.getSkillInfoById(skillId);
+        int slv = chr.getSkillLevel(skillId);
+        int cdMs = 0;
+        if (si != null) {
+            int cdSec = si.getValue(cooltime, slv > 0 ? slv : 1);
+            cdMs = cdSec > 0 ? cdSec * 1000 : si.getValue(cooltimeMS, slv > 0 ? slv : 1);
+        }
+        switch (skillId) {
+            case FINAL_DESTROYER, FINAL_DESTROYER_1 -> {
+                if (cdMs <= 0) cdMs = 360000;
+                chr.addSkillCooldown(FINAL_DESTROYER, cdMs);
+                chr.addSkillCooldown(FINAL_DESTROYER_1, cdMs);
+                return 1;
+            }
+            case ASCENT_BLASTER_1, ASCENT_BLASTER_2 -> {
+                if (cdMs <= 0) cdMs = 240000;
+                chr.addSkillCooldown(ASCENT_BLASTER_1, cdMs);
+                chr.addSkillCooldown(ASCENT_BLASTER_2, cdMs);
+                return 1;
+            }
+            case BALLISTIC_HURRICANE, HEXA_BALLISTIC_HURRICANE -> {
+                chr.setSkillCooldown(BALLISTIC_HURRICANE, chr.getSkillLevel(BALLISTIC_HURRICANE));
+                if (chr.hasSkill(HEXA_BALLISTIC_HURRICANE)) {
+                    chr.setSkillCooldown(HEXA_BALLISTIC_HURRICANE, chr.getSkillLevel(HEXA_BALLISTIC_HURRICANE));
+                }
+                return 1;
+            }
+            case HYPER_MAGNUM_PUNCH, 37120055, 37120056, 37120057, 37120058, 37120059 -> {
+                chr.setSkillCooldown(HYPER_MAGNUM_PUNCH, chr.getSkillLevel(HYPER_MAGNUM_PUNCH));
+                for (int s = 37120055; s <= 37120059; s++) {
+                    if (cdMs > 0) chr.addSkillCooldown(s, cdMs);
+                }
+                return 1;
+            }
+            case REVOLVING_BLAST, 37120014, 37120015, 37120016, 37120017, 37120018, 37120019, 37120023 -> {
+                chr.setSkillCooldown(REVOLVING_BLAST, chr.getSkillLevel(REVOLVING_BLAST));
+                for (int s = 37120014; s <= 37120019; s++) {
+                    if (cdMs > 0) chr.addSkillCooldown(s, cdMs);
+                }
+                if (cdMs > 0) chr.addSkillCooldown(37120023, cdMs);
+                return 1;
+            }
+            case ROCKET_PUNCH, ROCKET_PUNCH_EXTRA_SKILL -> {
+                chr.setSkillCooldown(ROCKET_PUNCH, chr.getSkillLevel(ROCKET_PUNCH));
+                chr.setSkillCooldown(ROCKET_PUNCH_EXTRA_SKILL, chr.getSkillLevel(ROCKET_PUNCH));
+                return 1;
+            }
+            case GATLING_PUNCH, 400010028 -> {
+                chr.setSkillCooldown(GATLING_PUNCH, chr.getSkillLevel(GATLING_PUNCH));
+                if (cdMs > 0) chr.addSkillCooldown(400010028, cdMs);
+                return 1;
+            }
+            case BULLET_BLAST, 400011092, 400011093, BULLET_BLAST_2 -> {
+                chr.setSkillCooldown(BULLET_BLAST, chr.getSkillLevel(BULLET_BLAST));
+                if (cdMs > 0) {
+                    chr.addSkillCooldown(400011092, cdMs);
+                    chr.addSkillCooldown(400011093, cdMs);
+                    chr.addSkillCooldown(BULLET_BLAST_2, cdMs);
+                }
+                return 1;
+            }
+            case AFTERIMAGE_SHOCK_1, AFTERIMAGE_SHOCK_2, 400011133 -> {
+                chr.setSkillCooldown(AFTERIMAGE_SHOCK_1, chr.getSkillLevel(AFTERIMAGE_SHOCK_1));
+                chr.setSkillCooldown(AFTERIMAGE_SHOCK_2, chr.getSkillLevel(AFTERIMAGE_SHOCK_1));
+                if (cdMs > 0) chr.addSkillCooldown(400011133, cdMs);
+                return 1;
+            }
+        }
+        return super.handleSetCoolDownSkill(skillId);
     }
 
     // Hit related methods ---------------------------------------------------------------------------------------------

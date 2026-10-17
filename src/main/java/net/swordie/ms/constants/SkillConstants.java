@@ -3236,33 +3236,99 @@ public class SkillConstants {
                 return 64141500; // Chain Arts: Grand Arsenal
             case 64141504:
                 return 64141503; // Brutal Rampage
-            // Resistance 6th Job & Ascent Mappings
-            case 37141002:
+            // Blaster 1st - 4th Job Sub-Skills
+            case 37000005: // Detonate Up
+                return 37001004; // Detonate
+            case 37000008:
+            case 37000011:
+            case 37000012:
+            case 37000013:
+            case 37100009:
+            case 37110010:
+            case 37120013:
+                return 37001002; // Bunker Buster Explosion
+            case 37100002:
+                return 37101001; // Bobbing
+            case 37110001:
+                return 37111000; // Hammer Smash
+            case 37110004:
+                return 37111003; // Weaving
+            case 37110011:
+                return 37111005; // Rocket Rush
+            case 37120014:
+            case 37120015:
+            case 37120016:
+            case 37120017:
+            case 37120018:
+            case 37120019:
+            case 37120023:
+                return 37121004; // Revolving Blast
+            case 37120055:
+            case 37120056:
+            case 37120057:
+            case 37120058:
+            case 37120059:
+                return 37121052; // Hyper Magnum Punch
+            // Blaster 5th Job V-Matrix Skills
+            case 400011019:
+                return 400011017; // Rocket Punch
+            case 400010028:
+                return 400011028; // Gatling Punch
+            case 400011092:
+            case 400011093:
+            case 400011103:
+                return 400011091; // Bullet Blast
+            case 400011117:
+            case 400011133:
+                return 400011116; // Afterimage Shock
+            // Blaster 6th Job HEXA & Ascent Skills
             case 37141003:
             case 37141004:
             case 37141005:
             case 37141006:
             case 37141007:
-                return 37141000; // Blaster HEXA Bunker Buster Explosion -> HEXA Magnum Punch
+                return 37141002; // HEXA Bunker Buster Explosion
             case 37141010:
-                return 37141009; // Blaster HEXA Hammer Smash
+                return 37141009; // HEXA Hammer Smash
             case 37141013:
             case 37141014:
-                return 37141012; // Blaster HEXA Revolving Cannon
-            case 37141502:
+                return 37141012; // HEXA Revolving Cannon
+            case 37141501:
+                return 37141500; // Final Destroyer Origin
             case 37141503:
-                return 37141502; // Blaster 2nd 6th Job Ascent
+                return 37141502; // Vanguard Strike Ascent
+
+            // Battle Mage 1st - 4th Job Sub-Skills
+            case 32001018:
+                return 32001002; // Combat Teleport
+            case 32110020:
+                return 32111016; // Dark Shock
+            case 32121011:
+                return 32121004; // Dark Genesis FA
+            case 32120055:
+                return 32121052; // Sweeping Staff
+            // Battle Mage 5th Job V-Matrix Skills
+            case 400021007:
+                return 400021006; // Aura Scythe
+            case 400021088:
+            case 400021089:
+            case 400021113:
+                return 400021087; // Abyssal Lightning
+            // Battle Mage 6th Job HEXA & Ascent Skills
             case 32141003:
-                return 32141002; // Battle Mage HEXA Sweeping Staff
+                return 32141002; // HEXA Sweeping Staff
+            case 32141004:
+                return 400021006; // HEXA Aura Scythe -> Aura Scythe
             case 32141006:
             case 32141007:
-                return 32141005; // Battle Mage HEXA Dark Shock
+                return 32141005; // HEXA Dark Shock
             case 32141009:
             case 32141010:
-                return 32141008; // Battle Mage HEXA Dark Genesis
-            case 32141502:
+                return 32141008; // HEXA Dark Genesis
+            case 32141501:
+                return 32141500; // Crimson Pact Origin
             case 32141503:
-                return 32141502; // Battle Mage 2nd 6th Job Ascent
+                return 32141502; // Duskbound Aura Ascent
             case 33141001:
             case 33141002:
             case 33141003:
@@ -5465,7 +5531,72 @@ public class SkillConstants {
                 || skillID == 63141504
                 || skillID == 63141505
                 || skillID == 63141507
-                || skillID == 63141508;
+                || skillID == 63141508
+                // Blaster 1st-4th Job, 5th Job & 6th Job Invisible Sub-Skills
+                || skillID == 37000005 // Detonate Up
+                || skillID == 37000008
+                || skillID == 37000009
+                || skillID == 37000010 // Reload
+                || skillID == 37000011
+                || skillID == 37000012
+                || skillID == 37000013
+                || skillID == 37100002 // Bobbing Charged
+                || skillID == 37100008
+                || skillID == 37100009
+                || skillID == 37110001 // Hammer Smash Charged
+                || skillID == 37110004 // Weaving Charged
+                || skillID == 37110010
+                || skillID == 37110011
+                || skillID == 37120013
+                || skillID == 37120014
+                || skillID == 37120015
+                || skillID == 37120016
+                || skillID == 37120017
+                || skillID == 37120018
+                || skillID == 37120019
+                || skillID == 37120023
+                || skillID == 37120055
+                || skillID == 37120056
+                || skillID == 37120057
+                || skillID == 37120058
+                || skillID == 37120059
+                || skillID == 400011019 // Rocket Punch Extra
+                || skillID == 400010028 // Gatling Punch Finisher
+                || skillID == 400011092 // Bullet Blast Sub
+                || skillID == 400011093 // Bullet Blast Sub
+                || skillID == 400011103 // Burning Breaker Sub
+                || skillID == 400011117 // Afterimage Shock Passive
+                || skillID == 400011133 // Afterimage Shock Active
+                || skillID == 37141003
+                || skillID == 37141004
+                || skillID == 37141005
+                || skillID == 37141006
+                || skillID == 37141010 // HEXA Hammer Smash Charged
+                || skillID == 37141013
+                || skillID == 37141014
+                || skillID == 37141501 // Final Destroyer Origin Finish
+                || skillID == 37141503 // Vanguard Strike Ascent Finish
+                // Battle Mage 1st-4th Job, 5th Job & 6th Job Invisible Sub-Skills
+                || skillID == 32000012 // Elemental Weakness
+                || skillID == 32001018 // Blink Jump
+                || skillID == 32110020 // Dark Shock Explosion
+                || skillID == 32121011 // Dark Genesis FA
+                || skillID == 32120001 // Advanced Yellow Aura
+                || skillID == 32120000 // Advanced Dark Aura
+                || skillID == 32121054 // Unification Aura
+                || skillID == 32120055 // Sweeping Staff Sub
+                || skillID == 400021007 // Aura Scythe Sub
+                || skillID == 400021088 // Abyssal Lightning Portal Attack
+                || skillID == 400021089 // Abyssal Lightning Portal
+                || skillID == 400021113 // Abyssal Lightning Sub
+                || skillID == 32141003 // HEXA Sweeping Staff Sub
+                || skillID == 32141004 // HEXA Aura Scythe
+                || skillID == 32141006 // HEXA Dark Shock Sub
+                || skillID == 32141007 // HEXA Dark Shock Explosion
+                || skillID == 32141009 // HEXA Dark Genesis Sub
+                || skillID == 32141010 // HEXA Dark Genesis FA
+                || skillID == 32141501 // Crimson Pact Origin Finish
+                || skillID == 32141503; // Duskbound Aura Ascent Finish
     }
 
     public static boolean notSureRemoteAttackSkill(int skillID) {

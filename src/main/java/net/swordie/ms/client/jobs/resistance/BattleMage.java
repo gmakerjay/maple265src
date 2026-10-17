@@ -34,6 +34,7 @@ import java.util.*;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import net.swordie.ms.client.character.skills.SkillStat;
 import static net.swordie.ms.client.character.skills.SkillStat.*;
 import static net.swordie.ms.client.character.skills.temp.CharacterTemporaryStat.*;
 
@@ -95,6 +96,9 @@ public class BattleMage extends Citizen {
     public static final int HEXA_DARK_GENESIS_1 = 32141009;
     public static final int HEXA_DARK_GENESIS_FA = 32141010; // Final Attack  attack if DarkGenesis is on CD
 
+    public static final int DUSKBOUND_AURA = 32141502;
+    public static final int DUSKBOUND_AURA_FINISH = 32141503;
+
     private final int[] addedSkills = new int[]{
             SECRET_ASSEMBLY,};
 
@@ -104,7 +108,8 @@ public class BattleMage extends Citizen {
             BLUE_AURA,
             DARK_AURA,
             WEAKENING_AURA,
-            AURA_SCYTHE,};
+            AURA_SCYTHE,
+            HEXA_AURA_SCYTHE,};
 
     private Summon death;
     private long drainAuraCD = Long.MIN_VALUE;
@@ -230,6 +235,17 @@ public class BattleMage extends Citizen {
     }
 
     @Override
+    public int getFinalAttackSkill(int faSkill) {
+        if (chr.hasSkill(HEXA_DARK_GENESIS) && chr.hasSkillOnCooldown(HEXA_DARK_GENESIS)) {
+            return HEXA_DARK_GENESIS_FA;
+        }
+        if (chr.hasSkill(DARK_GENESIS) && chr.hasSkillOnCooldown(DARK_GENESIS)) {
+            return DARK_GENESIS_FA;
+        }
+        return super.getFinalAttackSkill(faSkill);
+    }
+
+    @Override
     public void handleAttack(Client c, AttackInfo attackInfo, SkillInfo si, long now) {
         Char chr = c.getChr();
         super.handleAttack(c, attackInfo, si, now);
@@ -252,6 +268,20 @@ public class BattleMage extends Citizen {
             }
             drainAuraActiveHPRecovery(attackInfo, now);
             drainAuraPassiveHPRecovery(attackInfo);
+
+            // Dark Genesis Final Attack proc when on cooldown
+            int dgSkill = chr.hasSkill(HEXA_DARK_GENESIS) ? HEXA_DARK_GENESIS : (chr.hasSkill(DARK_GENESIS) ? DARK_GENESIS : 0);
+            if (dgSkill > 0 && chr.hasSkillOnCooldown(dgSkill)
+                    && skillID != DARK_GENESIS && skillID != HEXA_DARK_GENESIS
+                    && skillID != DARK_GENESIS_FA && skillID != HEXA_DARK_GENESIS_FA) {
+                SkillInfo dgSi = SkillData.getSkillInfoById(dgSkill);
+                int chance = dgSi != null ? dgSi.getValue(SkillStat.prop, chr.getSkillLevel(dgSkill)) : 60;
+                if (Util.succeedProp(chance)) {
+                    int faSkill = dgSkill == HEXA_DARK_GENESIS ? HEXA_DARK_GENESIS_FA : DARK_GENESIS_FA;
+                    int targetMobId = attackInfo.mobAttackInfo.get(0).mobId;
+                    chr.write(UserLocal.userBonusAttackRequest(faSkill, Collections.singletonList(targetMobId)));
+                }
+            }
         }
         switch (skillID) {
             case CRIMSON_PACT:
@@ -523,6 +553,7 @@ public class BattleMage extends Citizen {
                 tsm.removeAllDebuffs();
                 break;
             case AURA_SCYTHE:
+            case HEXA_AURA_SCYTHE:
                 for (int aura : auras) {
                     tsm.removeStatsBySkill(aura);
                 }
@@ -714,7 +745,9 @@ public class BattleMage extends Citizen {
                 tsm.sendStat(newStats);
                 break;
             case CRIMSON_PACT:
+            case CRIMSON_PACT_1:
             case ASCENT_BAM_1:
+            case ASCENT_BAM_2:
                 o1.nOption = 1;
                 o1.rOption = skillID;
                 o1.tOption = 7;
@@ -761,6 +794,81 @@ public class BattleMage extends Citizen {
                 tsm.sendStat(IndieEmpty, o1);
                 break;
         }
+    }
+
+    @Override
+    public int handleSetCoolDownSkill(int skillId) {
+        SkillInfo si = SkillData.getSkillInfoById(skillId);
+        int slv = chr.getSkillLevel(skillId);
+        int cdMs = 0;
+        if (si != null) {
+            int cdSec = si.getValue(cooltime, slv > 0 ? slv : 1);
+            cdMs = cdSec > 0 ? cdSec * 1000 : si.getValue(cooltimeMS, slv > 0 ? slv : 1);
+        }
+        switch (skillId) {
+            case CRIMSON_PACT, CRIMSON_PACT_1 -> {
+                if (cdMs <= 0) cdMs = 360000;
+                chr.addSkillCooldown(CRIMSON_PACT, cdMs);
+                chr.addSkillCooldown(CRIMSON_PACT_1, cdMs);
+                return 1;
+            }
+            case ASCENT_BAM_1, ASCENT_BAM_2 -> {
+                if (cdMs <= 0) cdMs = 240000;
+                chr.addSkillCooldown(ASCENT_BAM_1, cdMs);
+                chr.addSkillCooldown(ASCENT_BAM_2, cdMs);
+                return 1;
+            }
+            case DARK_GENESIS, HEXA_DARK_GENESIS, HEXA_DARK_GENESIS_1 -> {
+                chr.setSkillCooldown(DARK_GENESIS, chr.getSkillLevel(DARK_GENESIS));
+                if (chr.hasSkill(HEXA_DARK_GENESIS)) {
+                    chr.setSkillCooldown(HEXA_DARK_GENESIS, chr.getSkillLevel(HEXA_DARK_GENESIS));
+                    if (cdMs > 0) chr.addSkillCooldown(HEXA_DARK_GENESIS_1, cdMs);
+                }
+                return 1;
+            }
+            case 32121052, HEXA_SWEEPING_STAFF, HEXA_SWEEPING_STAFF_1 -> {
+                chr.setSkillCooldown(32121052, chr.getSkillLevel(32121052));
+                if (chr.hasSkill(HEXA_SWEEPING_STAFF)) {
+                    chr.setSkillCooldown(HEXA_SWEEPING_STAFF, chr.getSkillLevel(HEXA_SWEEPING_STAFF));
+                    if (cdMs > 0) chr.addSkillCooldown(HEXA_SWEEPING_STAFF_1, cdMs);
+                }
+                return 1;
+            }
+            case AURA_SCYTHE, 400021007, HEXA_AURA_SCYTHE -> {
+                chr.setSkillCooldown(AURA_SCYTHE, chr.getSkillLevel(AURA_SCYTHE));
+                if (cdMs > 0) chr.addSkillCooldown(400021007, cdMs);
+                if (chr.hasSkill(HEXA_AURA_SCYTHE)) {
+                    chr.setSkillCooldown(HEXA_AURA_SCYTHE, chr.getSkillLevel(HEXA_AURA_SCYTHE));
+                }
+                return 1;
+            }
+            case ABYSSAL_LIGHTNING, ABYSSAL_LIGHTNING_PORTAL_ATTACK, ABYSSAL_LIGHTNING_PORTAL, 400021113 -> {
+                chr.setSkillCooldown(ABYSSAL_LIGHTNING, chr.getSkillLevel(ABYSSAL_LIGHTNING));
+                if (cdMs > 0) {
+                    chr.addSkillCooldown(ABYSSAL_LIGHTNING_PORTAL_ATTACK, cdMs);
+                    chr.addSkillCooldown(ABYSSAL_LIGHTNING_PORTAL, cdMs);
+                    chr.addSkillCooldown(400021113, cdMs);
+                }
+                return 1;
+            }
+            case GRIM_HARVEST -> {
+                chr.setSkillCooldown(GRIM_HARVEST, chr.getSkillLevel(GRIM_HARVEST));
+                return 1;
+            }
+            case PARTY_SHIELD -> {
+                chr.setSkillCooldown(PARTY_SHIELD, chr.getSkillLevel(PARTY_SHIELD));
+                return 1;
+            }
+            case MASTER_OF_DEATH -> {
+                chr.setSkillCooldown(MASTER_OF_DEATH, chr.getSkillLevel(MASTER_OF_DEATH));
+                return 1;
+            }
+            case FOR_LIBERTY_BAM -> {
+                chr.setSkillCooldown(FOR_LIBERTY_BAM, chr.getSkillLevel(FOR_LIBERTY_BAM));
+                return 1;
+            }
+        }
+        return super.handleSetCoolDownSkill(skillId);
     }
 
     // Hit related methods ---------------------------------------------------------------------------------------------

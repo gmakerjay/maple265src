@@ -2,6 +2,40 @@
 
 This file tracks active bug fixes, feature implementations, and system optimizations.
 
+## 📅 [2026-10-17 13:30 น.] — Refactor & Audit Resistance Classes (Blaster & Battle Mage), Zero Skill Injection in !endgame, Sub-Skill Matrix Sanitization, Cooldown Synchronization & Single Patch Packaging
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: ตรวจสอบและรีแฟกเตอร์คลาส Resistance (Blaster & Battle Mage), ตรวจสอบความถูกต้องของสกิล Class 1-4, Hexa V, และ Origin/Ascent Skills, ป้องกันการสแปมไอคอนสกิลย่อยขยะในหน้าต่างสกิล (K Skill UI / Matrix) เมื่อผู้เล่นอัปสกิล, ซิงค์คูลดาวน์และเงื่อนไขการใช้สกิลให้ถูกต้องสมบูรณ์ 100%, ปรับคำสั่ง `!endgame` ให้ปฏิบัติตามกฎเหล็ก Strict Zero Skill Injection โดยมอบเฉพาะแต้ม SP ผ่าน ExtendSP และอุปกรณ์ BiS โดยไม่อัดฉีดเลเวลสกิลลงในตัวละคร, คอมไพล์ Maven JDK 21 และสร้างแพ็กเกจแพตช์ All-in-One ล่าสุด [`Patches/Server263_Patch_Latest.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip)
+- **รายละเอียด**:
+  1. **มาตรฐาน Strict Zero Skill Injection ในคำสั่ง `!endgame` ([`AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java))**:
+     - ตรวจสอบคำสั่ง `!endgame` สำหรับ Resistance: Battle Mage (`3212`) และ Blaster (`3712`) ให้ปฏิบัติตามกฎเหล็ก Strict Zero Skill Injection โดยเด็ดขาด
+     - ปรับสถานะตัวละครเลเวล 260, ฟื้นฟู HP/MP 100%, แต้ม AP 1,250 และแต้ม SP เต็มพิกัดผ่าน `ExtendSP` สำหรับคลาส 1–4 (65, 130, 130, 255) เพื่อให้ผู้เล่นจัดสรรแต้มด้วยตนเองตามกลไกธรรมชาติ
+     - สำเร็จเควสต์คลาส 5 (1460-1466) และเควสต์คลาส 6 (1488) แบบ `noRewards = true` ป้องกันลูกแก้วขยะ
+     - มอบหิน Nodestones x3,000 (`2435719`), Experience Nodestones x20, Sol Erda Energy x1,000, Sol Erda Fragments x30,000, Power Elixir x3,000, เงิน 10B Mesos, และอุปกรณ์สวมใส่ BiS ครบเซ็ต:
+       - Battle Mage: Arcane Umbra Staff (`1382265`), Princess No's Accursed Crest (`1352957`), Mitra's Magician Emblem (`1190601`), และชุดเกราะ Mage ครบเซ็ต
+       - Blaster: Arcane Umbra Ellaha (`1582023`), Princess No's Megaton Charge Fist (`1353405`), Mitra's Warrior Emblem (`1190601`), และชุดเกราะ Warrior ครบเซ็ต
+  2. **การป้องกันปัญหาไอคอนสกิลย่อยขยะและการสแปมในหน้าต่างสกิล (Zero Phantom Sub-Skill Policy)**:
+     - ใน [`SkillConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java): ลงทะเบียนสกิลย่อยที่ซ่อนอยู่ทั้งหมดของ Blaster และ Battle Mage ใน `isSpecialInvisibleSkill(int skillID)`:
+       - Blaster: Revolving Cannon Sub (37000009, 37100008), Bunker Buster Explosion Subs (37000008, 37000011-37000013, 37100009, 37110010, 37120013), Bobbing (37100002), Hammer Smash (37110001), Weaving (37110004), Rocket Rush (37110011), Revolving Blast Subs (37120014-37120019, 37120023), Hyper Magnum Punch Subs (37120055-37120059), Rocket Punch Extra (400011025), Gatling Punch Sub (400010028), Bullet Blast Subs (400011092, 400011093, 400011094), Afterimage Shock Subs (400011132, 400011133), Hexa Subs (37141003-37141007, 37141010, 37141013, 37141014, 37141016, 37141503)
+       - Battle Mage: Condemnation Subs (32001015, 32100011, 32110018, 32120020), Dark Chain Sub (32100008), Staff Boost Sub (32100004), Dark Genesis FA (32121011), Sweeping Staff Subs (32120053, 32120054), Aura Scythe Subs (400021006, 400021007), Union Aura Subs (400021043, 400021044), Abyssal Lightning Subs (400021111, 400021112, 400021113), Hexa Subs (32141001, 32141003, 32141007, 32141009, 32141011, 32141013, 32141014, 32141503)
+     - ผูกความสัมพันธ์ใน `getActualSkillIDfromSkillID` เพื่อให้ระบบดึงค่าเลเวลและสถานะจากสกิลหลัก ป้องกันปุ่มกากบาทแดงโผล่ในหน้าต่างสกิล K
+  3. **การตรวจสอบและปรับปรุงสกิล Blaster ([`Blaster.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/resistance/Blaster.java))**:
+     - ตรวจสอบระบบ Cylinder Ammo & Gauge: Revolving Cannon, Bunker Buster Explosion, Overheat, Reload
+     - รองรับสกิล 5th Job V-Matrix: Rocket Punch, Gatling Punch, Bullet Blast, Afterimage Shock
+     - พัฒนาสกิล 6th Job Hexa Matrix & Origin/Ascent: HEXA Bunker Buster Explosion, HEXA Shotgun Punch, HEXA Hammer Smash, Final Destroyer (Origin Skill: อมตะ 7 วินาที, ติด Absolute Bind Freeze 10 วินาที, OriginDebuff 20 วินาที, คูลดาวน์ 360 วินาที), และ Vanguard Strike (Ascent Skill)
+     - พัฒนาเมธอด `handleSetCoolDownSkill(int skillId)` คืนค่า `int` เพื่อซิงค์คูลดาวน์ระหว่างสกิลหลักกับสกิลย่อย: Final Destroyer, Ascent Blaster, Ballistic Hurricane, Hyper Magnum Punch, Revolving Blast, Rocket Punch, Gatling Punch, Bullet Blast, และ Afterimage Shock
+  4. **การตรวจสอบและปรับปรุงสกิล Battle Mage ([`BattleMage.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/resistance/BattleMage.java))**:
+     - ตรวจสอบระบบเกจและออร่า: Hasty Aura, Draining Aura, Blue Aura, Dark Aura, Debuff Aura, และ Condemnation I–III (Death Summon)
+     - พัฒนาการทำงาน Dark Genesis Final Attack proc: เมื่อ Dark Genesis หรือ Hexa Dark Genesis อยู่ระหว่างติดคูลดาวน์ การโจมตีด้วยสกิลอื่นจะมีโอกาสตาม WZ (60%) เรียกการโจมตีโบนัส Dark Genesis FA อัตโนมัติ
+     - รองรับสกิล 5th Job V-Matrix: Aura Scythe, Union Aura, Black Magic Altar, Grim Harvest, Abyssal Lightning
+     - พัฒนาสกิล 6th Job Hexa Matrix & Origin/Ascent: HEXA Finishing Blow, HEXA Dark Genesis, HEXA Dark Shock, HEXA Sweeping Staff, HEXA Aura Scythe, Crimson Pact (Origin Skill: อมตะ 7 วินาที, Absolute Bind Freeze 10 วินาที, OriginDebuff 20 วินาที, คูลดาวน์ 360 วินาที), และ Abyssal Reckoning (Ascent Skill)
+     - พัฒนาเมธอด `handleSetCoolDownSkill(int skillId)` คืนค่า `int` ซิงค์คูลดาวน์ระหว่างสกิลหลักกับสกิลย่อย: Crimson Pact, Ascent BaM, Dark Genesis, Sweeping Staff, Aura Scythe, Abyssal Lightning, Grim Harvest, Party Shield, Master of Death, และ For Liberty
+  5. **การคอมไพล์ ซิงค์มิเรอร์ และแพ็กเกจแจกจ่าย (Build, Mirror Sync & Single Patch Packaging)**:
+     - คอมไพล์ผ่าน Apache Maven บน JDK 21 สำเร็จ 100% (`BUILD SUCCESS`) ได้ `maplestory.jar` (138,769,122 bytes)
+     - ซิงค์ไฟล์ `maplestory.jar` ไปยัง `Server263/`, `v214 src/` และ Root Directory
+     - ซิงค์โค้ดที่แก้ไขทั้งหมดไปยัง Git Mirror [`maple265src/`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/maple265src) ให้เท่ากัน 100%
+     - รันสคริปต์สร้างแพตช์เดี่ยว **[`Patches/Server263_Patch_Latest.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip)** (173.48 MB) พร้อมใช้งาน
+
 ## 📅 070e11a3 (13:05 น.) — Refactor & Audit Angelic Buster and Kain (Nova Classes), Zero Skill Injection in !endgame, Sub-Skill Matrix Sanitization, Cooldown Synchronization & Single Patch Packaging
 
 ### 🎯 Scope & Technical Details

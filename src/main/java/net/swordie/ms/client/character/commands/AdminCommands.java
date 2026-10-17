@@ -2631,6 +2631,14 @@ public class AdminCommands {
                 targetJob = 522;
             } else if (JobConstants.isCannoneer(curJob)) {
                 targetJob = 532;
+            } else if (JobConstants.isBattleMage(curJob)) {
+                targetJob = 3212;
+            } else if (JobConstants.isWildHunter(curJob)) {
+                targetJob = 3312;
+            } else if (JobConstants.isMechanic(curJob)) {
+                targetJob = 3512;
+            } else if (JobConstants.isBlaster(curJob)) {
+                targetJob = 3712;
             } else if (curJob % 100 < 12 && (curJob % 100 == 0 || curJob % 100 == 10 || curJob % 100 == 11)) {
                 targetJob = (curJob / 100) * 100 + 12;
             }
