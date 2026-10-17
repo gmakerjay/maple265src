@@ -357,6 +357,26 @@ public class DarkKnight extends Warrior {
                 o1.tTerm = 2;
                 tsm.sendStat(IndieAllHitDamR, o1);
                 break;
+            case DEAD_SPACE:
+            case DEAD_SPACE_ATTACK:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Life life = chr.getField().getLifeByObjectID(mai.mobId);
+                    if (life instanceof Mob mob) {
+                        MobTemporaryStat mts = mob.getTemporaryStat();
+                        Option freezeOpt = new Option();
+                        freezeOpt.nOption = 1;
+                        freezeOpt.rOption = skillID;
+                        freezeOpt.tOption = 10;
+                        mts.addStatOptions(mob, MobStat.Freeze, freezeOpt);
+
+                        Option originOpt = new Option();
+                        originOpt.nOption = 1;
+                        originOpt.rOption = skillID;
+                        originOpt.tOption = 20;
+                        mts.addStatOptions(mob, MobStat.OriginDebuff, originOpt);
+                    }
+                }
+                break;
         }
     }
 
@@ -598,8 +618,44 @@ public class DarkKnight extends Warrior {
                 }
                 break;
             case DEAD_SPACE:
+                chr.heal(chr.getMaxHP());
+                chr.healMP(chr.getMaxMP());
+                Option dsImm = new Option();
+                dsImm.nOption = 1;
+                dsImm.rOption = skillID;
+                dsImm.tOption = 7;
+                tsm.sendStat(IndieNotDamaged, dsImm);
+                chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
+                if (chr.hasSkill(DARK_RESONANCE)) {
+                    Skill drSkill = chr.getSkill(DARK_RESONANCE);
+                    SkillInfo drSi = SkillData.getSkillInfoById(drSkill.getSkillId());
+                    int drSlv = drSkill.getCurrentLevel();
+                    Option drO1 = new Option();
+                    Option drO2 = new Option();
+                    Option drO3 = new Option();
+                    drO1.nReason = drSkill.getSkillId();
+                    drO1.nValue = drSi.getValue(indiePMdR, drSlv);
+                    drO1.tTerm = drSi.getValue(time, drSlv);
+                    newStats.put(IndiePMdR, drO1);
+                    drO2.nReason = drSkill.getSkillId();
+                    drO2.nValue = drSi.getValue(indieIgnoreMobpdpR, drSlv);
+                    drO2.tTerm = drSi.getValue(time, drSlv);
+                    newStats.put(IndieIgnoreMobpdpR, drO2);
+                    drO3.nReason = drSkill.getSkillId();
+                    drO3.nValue = drSi.getValue(indieBDR, drSlv);
+                    drO3.tTerm = drSi.getValue(time, drSlv);
+                    newStats.put(IndieBDR, drO3);
+                    tsm.sendStat(newStats);
+                }
+                break;
             case DARK_HALIDOM:
                 chr.heal(chr.getMaxHP());
+                chr.healMP(chr.getMaxMP());
+                Option dhImm = new Option();
+                dhImm.nOption = 1;
+                dhImm.rOption = skillID;
+                dhImm.tOption = 5;
+                tsm.sendStat(IndieNotDamaged, dhImm);
                 if (chr.hasSkill(DARK_RESONANCE)) {
                     Skill drSkill = chr.getSkill(DARK_RESONANCE);
                     SkillInfo drSi = SkillData.getSkillInfoById(drSkill.getSkillId());
@@ -629,7 +685,7 @@ public class DarkKnight extends Warrior {
     public int alterCooldownSkill(int skillId) {
         TemporaryStatManager tsm = chr.getTemporaryStatManager();
         if (skillId == GUNGNIR_DESCENT || skillId == HEXA_GUNGNIR_DESCENT) {
-            if (tsm.hasStatBySkillId(DARK_RESONANCE)) {
+            if (tsm.hasStatBySkillId(DARK_RESONANCE) || tsm.hasStat(Reincarnation)) {
                 return 0;
             }
         }
@@ -832,21 +888,85 @@ public class DarkKnight extends Warrior {
 
     @Override
     public int handleSetCoolDownSkill(int skillId) {
+        SkillInfo si = SkillData.getSkillInfoById(skillId);
+        int slv = chr.getSkillLevel(skillId);
+        int cdMs = 0;
+        if (si != null) {
+            int cdSec = si.getValue(cooltime, slv > 0 ? slv : 1);
+            cdMs = cdSec > 0 ? cdSec * 1000 : si.getValue(cooltimeMS, slv > 0 ? slv : 1);
+        }
         switch (skillId) {
+            case DEAD_SPACE, DEAD_SPACE_ATTACK -> {
+                if (cdMs <= 0) cdMs = 360000;
+                chr.addSkillCooldown(DEAD_SPACE, cdMs);
+                chr.addSkillCooldown(DEAD_SPACE_ATTACK, cdMs);
+                return 1;
+            }
+            case DARK_HALIDOM, DARK_HALIDOM_ATTACK -> {
+                if (cdMs <= 0) cdMs = 240000;
+                chr.addSkillCooldown(DARK_HALIDOM, cdMs);
+                chr.addSkillCooldown(DARK_HALIDOM_ATTACK, cdMs);
+                return 1;
+            }
             case DARK_BIDENT -> {
-                chr.addSkillCooldown(skillId, 6000);
+                chr.addSkillCooldown(DARK_BIDENT, 6000);
                 return 1;
             }
-            case HEXA_NIGHTSHADE_EXPLOSION -> {
-                int skillID = NIGHTSHADE_EXPLOSION;
-                int slv = chr.getSkillLevel(skillID);
-                chr.setSkillCooldown(skillID, slv);
+            case NIGHTSHADE_EXPLOSION, HEXA_NIGHTSHADE_EXPLOSION -> {
+                chr.setSkillCooldown(NIGHTSHADE_EXPLOSION, chr.getSkillLevel(NIGHTSHADE_EXPLOSION));
+                if (chr.hasSkill(HEXA_NIGHTSHADE_EXPLOSION)) {
+                    chr.setSkillCooldown(HEXA_NIGHTSHADE_EXPLOSION, chr.getSkillLevel(HEXA_NIGHTSHADE_EXPLOSION));
+                }
                 return 1;
             }
-            case HEXA_EVIL_EYE_SHOCK, HEXA_EVIL_EYE_SHOCK_SHOOT -> {
-                int skillID = EVIL_EYE_SHOCK;
-                int slv = chr.getSkillLevel(skillID);
-                chr.setSkillCooldown(skillID, slv);
+            case EVIL_EYE_SHOCK, 1311019, 1321024, HEXA_EVIL_EYE_SHOCK, HEXA_EVIL_EYE_SHOCK_SHOOT -> {
+                chr.setSkillCooldown(EVIL_EYE_SHOCK, chr.getSkillLevel(EVIL_EYE_SHOCK));
+                if (chr.hasSkill(HEXA_EVIL_EYE_SHOCK)) {
+                    chr.setSkillCooldown(HEXA_EVIL_EYE_SHOCK, chr.getSkillLevel(HEXA_EVIL_EYE_SHOCK));
+                }
+                if (cdMs > 0) {
+                    chr.addSkillCooldown(1311019, cdMs);
+                    chr.addSkillCooldown(1321024, cdMs);
+                    chr.addSkillCooldown(HEXA_EVIL_EYE_SHOCK_SHOOT, cdMs);
+                }
+                return 1;
+            }
+            case DARK_RESONANCE -> {
+                chr.setSkillCooldown(DARK_RESONANCE, chr.getSkillLevel(DARK_RESONANCE));
+                return 1;
+            }
+            case DARK_THIRST -> {
+                chr.setSkillCooldown(DARK_THIRST, chr.getSkillLevel(DARK_THIRST));
+                return 1;
+            }
+            case EPIC_ADVENTURE -> {
+                chr.setSkillCooldown(EPIC_ADVENTURE, chr.getSkillLevel(EPIC_ADVENTURE));
+                return 1;
+            }
+            case MAGIC_CRASH -> {
+                chr.setSkillCooldown(MAGIC_CRASH, chr.getSkillLevel(MAGIC_CRASH));
+                return 1;
+            }
+            case SPEAR_OF_DARKNESS -> {
+                chr.setSkillCooldown(SPEAR_OF_DARKNESS, chr.getSkillLevel(SPEAR_OF_DARKNESS));
+                return 1;
+            }
+            case DARKNESS_AURA, DARKNESS_AURA_2 -> {
+                chr.setSkillCooldown(DARKNESS_AURA, chr.getSkillLevel(DARKNESS_AURA));
+                if (cdMs > 0) {
+                    chr.addSkillCooldown(DARKNESS_AURA_2, cdMs);
+                }
+                return 1;
+            }
+            case RADIANT_EVIL -> {
+                chr.setSkillCooldown(RADIANT_EVIL, chr.getSkillLevel(RADIANT_EVIL));
+                return 1;
+            }
+            case CALAMITOUS_CYCLONE, CALAMITOUS_CYCLONE_FINAL_ATTACK -> {
+                chr.setSkillCooldown(CALAMITOUS_CYCLONE, chr.getSkillLevel(CALAMITOUS_CYCLONE));
+                if (cdMs > 0) {
+                    chr.addSkillCooldown(CALAMITOUS_CYCLONE_FINAL_ATTACK, cdMs);
+                }
                 return 1;
             }
         }

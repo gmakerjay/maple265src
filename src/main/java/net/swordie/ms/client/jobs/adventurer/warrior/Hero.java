@@ -424,6 +424,26 @@ public class Hero extends Warrior {
                 }
                 decreaseBeamBlade();
                 break;
+            case SPIRIT_CALIBUR:
+            case SPIRIT_CALIBUR_ATTACK:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Life life = chr.getField().getLifeByObjectID(mai.mobId);
+                    if (life instanceof Mob mob) {
+                        MobTemporaryStat mts = mob.getTemporaryStat();
+                        Option freezeOpt = new Option();
+                        freezeOpt.nOption = 1;
+                        freezeOpt.rOption = skillID;
+                        freezeOpt.tOption = 10;
+                        mts.addStatOptions(mob, MobStat.Freeze, freezeOpt);
+
+                        Option originOpt = new Option();
+                        originOpt.nOption = 1;
+                        originOpt.rOption = skillID;
+                        originOpt.tOption = 20;
+                        mts.addStatOptions(mob, MobStat.OriginDebuff, originOpt);
+                    }
+                }
+                break;
         }
     }
 
@@ -549,8 +569,23 @@ public class Hero extends Warrior {
         Field field = chr.getField();
         switch (skillID) {
             case SPIRIT_CALIBUR:
-            case ULTRASONIC_SLASH:
+                chr.heal(chr.getMaxHP());
+                chr.healMP(chr.getMaxMP());
                 addCombo(getMaxCombo());
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 7;
+                tsm.sendStat(IndieNotDamaged, o1);
+                chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
+                break;
+            case ULTRASONIC_SLASH:
+                chr.heal(chr.getMaxHP());
+                chr.healMP(chr.getMaxMP());
+                addCombo(getMaxCombo());
+                o1.nOption = 1;
+                o1.rOption = skillID;
+                o1.tOption = 5;
+                tsm.sendStat(IndieNotDamaged, o1);
                 break;
             case SPIRIT_BLADE:
                 o1.nReason = skillID;
@@ -729,17 +764,69 @@ public class Hero extends Warrior {
 
     @Override
     public int handleSetCoolDownSkill(int skillId) {
+        SkillInfo si = SkillData.getSkillInfoById(skillId);
+        int slv = chr.getSkillLevel(skillId);
+        int cdMs = 0;
+        if (si != null) {
+            int cdSec = si.getValue(cooltime, slv > 0 ? slv : 1);
+            cdMs = cdSec > 0 ? cdSec * 1000 : si.getValue(cooltimeMS, slv > 0 ? slv : 1);
+        }
         switch (skillId) {
-            case HEXA_RISING_RAGE -> {
-                int skillID = RISING_RAGE;
-                int slv = chr.getSkillLevel(skillID);
-                chr.setSkillCooldown(skillID, slv);
+            case SPIRIT_CALIBUR, SPIRIT_CALIBUR_ATTACK -> {
+                if (cdMs <= 0) cdMs = 360000;
+                chr.addSkillCooldown(SPIRIT_CALIBUR, cdMs);
+                chr.addSkillCooldown(SPIRIT_CALIBUR_ATTACK, cdMs);
                 return 1;
             }
-            case HEXA_CRY_VALHALLA -> {
-                int skillID = CRY_VALHALLA;
-                int slv = chr.getSkillLevel(skillID);
-                chr.setSkillCooldown(skillID, slv);
+            case ULTRASONIC_SLASH -> {
+                if (cdMs <= 0) cdMs = 240000;
+                chr.addSkillCooldown(ULTRASONIC_SLASH, cdMs);
+                return 1;
+            }
+            case RISING_RAGE, HEXA_RISING_RAGE -> {
+                chr.setSkillCooldown(RISING_RAGE, chr.getSkillLevel(RISING_RAGE));
+                if (chr.hasSkill(HEXA_RISING_RAGE)) {
+                    chr.setSkillCooldown(HEXA_RISING_RAGE, chr.getSkillLevel(HEXA_RISING_RAGE));
+                }
+                return 1;
+            }
+            case CRY_VALHALLA, HEXA_CRY_VALHALLA, CRY_VALHALLA_S, HEXA_CRY_VALHALLA_S -> {
+                chr.setSkillCooldown(CRY_VALHALLA, chr.getSkillLevel(CRY_VALHALLA));
+                if (chr.hasSkill(HEXA_CRY_VALHALLA)) {
+                    chr.setSkillCooldown(HEXA_CRY_VALHALLA, chr.getSkillLevel(HEXA_CRY_VALHALLA));
+                }
+                if (cdMs > 0) {
+                    chr.addSkillCooldown(CRY_VALHALLA_S, cdMs);
+                    chr.addSkillCooldown(HEXA_CRY_VALHALLA_S, cdMs);
+                }
+                return 1;
+            }
+            case BURNING_SOUL_BLADE, BURNING_SOUL_BLADE_STATIONARY -> {
+                chr.setSkillCooldown(BURNING_SOUL_BLADE, chr.getSkillLevel(BURNING_SOUL_BLADE));
+                chr.setSkillCooldown(BURNING_SOUL_BLADE_STATIONARY, chr.getSkillLevel(BURNING_SOUL_BLADE_STATIONARY));
+                return 1;
+            }
+            case WORLDREAVER -> {
+                chr.setSkillCooldown(WORLDREAVER, chr.getSkillLevel(WORLDREAVER));
+                return 1;
+            }
+            case COMBO_INSTINCT -> {
+                chr.setSkillCooldown(COMBO_INSTINCT, chr.getSkillLevel(COMBO_INSTINCT));
+                return 1;
+            }
+            case SWORD_ILLUSION -> {
+                chr.setSkillCooldown(SWORD_ILLUSION, chr.getSkillLevel(SWORD_ILLUSION));
+                return 1;
+            }
+            case BEAM_BLADE, HEXA_BEAM_BLADE -> {
+                chr.setSkillCooldown(BEAM_BLADE, chr.getSkillLevel(BEAM_BLADE));
+                if (chr.hasSkill(HEXA_BEAM_BLADE)) {
+                    chr.setSkillCooldown(HEXA_BEAM_BLADE, chr.getSkillLevel(HEXA_BEAM_BLADE));
+                }
+                return 1;
+            }
+            case MAGIC_CRASH -> {
+                chr.setSkillCooldown(MAGIC_CRASH, chr.getSkillLevel(MAGIC_CRASH));
                 return 1;
             }
         }

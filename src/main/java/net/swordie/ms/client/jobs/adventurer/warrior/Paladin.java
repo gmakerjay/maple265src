@@ -253,6 +253,28 @@ public class Paladin extends Warrior {
             case DOMINUS_OBLIVION_HIT:
                 giveChargeBuff(skillID, tsm);
                 break;
+            case SACRED_BASTION:
+            case SACRED_BASTION_TILE:
+            case SACRED_BASTION_AFTER_ATTACK:
+            case SACRED_BASTION_EXTRA:
+                for (MobAttackInfo mai : attackInfo.mobAttackInfo) {
+                    Life life = chr.getField().getLifeByObjectID(mai.mobId);
+                    if (life instanceof Mob mob) {
+                        MobTemporaryStat mts = mob.getTemporaryStat();
+                        Option freezeOpt = new Option();
+                        freezeOpt.nOption = 1;
+                        freezeOpt.rOption = skillID;
+                        freezeOpt.tOption = 10;
+                        mts.addStatOptions(mob, MobStat.Freeze, freezeOpt);
+
+                        Option originOpt = new Option();
+                        originOpt.nOption = 1;
+                        originOpt.rOption = skillID;
+                        originOpt.tOption = 20;
+                        mts.addStatOptions(mob, MobStat.OriginDebuff, originOpt);
+                    }
+                }
+                break;
         }
     }
 
@@ -645,6 +667,8 @@ public class Paladin extends Warrior {
                 break;
             case SACRED_BASTION:
             case SACRED_BASTION_TILE:
+                chr.heal(chr.getMaxHP());
+                chr.healMP(chr.getMaxMP());
                 slv = chr.getSkillLevel(SACRED_BASTION);
                 si = SkillData.getSkillInfoById(SACRED_BASTION);
                 AffectedArea aa = AffectedArea.getPassiveAA(chr, SACRED_BASTION_TILE, slv);
@@ -661,12 +685,25 @@ public class Paladin extends Warrior {
                     o1.tOption = si.getValue(time, slv);
                     tsm.sendStat(SacredBastion, o1);
                 }
+                Option bastImm = new Option();
+                bastImm.nOption = 1;
+                bastImm.rOption = SACRED_BASTION;
+                bastImm.tOption = 7;
+                tsm.sendStat(IndieNotDamaged, bastImm);
+                chr.getField().broadcast(UserLocal.showHexaSkillEff(chr));
                 giveChargeBuff(skillID, tsm);
                 break;
             case DOMINUS_OBLIVION:
+                chr.heal(chr.getMaxHP());
+                chr.healMP(chr.getMaxMP());
                 if (tsm.hasStat(SacredBastion)) {
                     tsm.removeStatsBySkill(SACRED_BASTION);
                 }
+                Option domImm = new Option();
+                domImm.nOption = 1;
+                domImm.rOption = DOMINUS_OBLIVION;
+                domImm.tOption = 5;
+                tsm.sendStat(IndieNotDamaged, domImm);
                 giveChargeBuff(skillID, tsm);
                 break;
         }
@@ -1048,17 +1085,89 @@ public class Paladin extends Warrior {
 
     @Override
     public int handleSetCoolDownSkill(int skillId) {
+        SkillInfo si = SkillData.getSkillInfoById(skillId);
+        int slv = chr.getSkillLevel(skillId);
+        int cdMs = 0;
+        if (si != null) {
+            int cdSec = si.getValue(cooltime, slv > 0 ? slv : 1);
+            cdMs = cdSec > 0 ? cdSec * 1000 : si.getValue(cooltimeMS, slv > 0 ? slv : 1);
+        }
         switch (skillId) {
-            case HEXA_DIVINE_MARK -> {
-                int skillID = DIVINE_MARK;
-                int slv = chr.getSkillLevel(skillID);
-                chr.setSkillCooldown(skillID, slv);
+            case SACRED_BASTION, SACRED_BASTION_TILE, SACRED_BASTION_EXTRA, SACRED_BASTION_AFTER_ATTACK -> {
+                if (cdMs <= 0) cdMs = 360000;
+                chr.addSkillCooldown(SACRED_BASTION, cdMs);
+                chr.addSkillCooldown(SACRED_BASTION_TILE, cdMs);
+                chr.addSkillCooldown(SACRED_BASTION_EXTRA, cdMs);
+                chr.addSkillCooldown(SACRED_BASTION_AFTER_ATTACK, cdMs);
                 return 1;
             }
-            case HEXA_HEAVENS_HAMMER -> {
-                int skillID = HEAVENS_HAMMER;
-                int slv = chr.getSkillLevel(skillID);
-                chr.setSkillCooldown(skillID, slv);
+            case DOMINUS_OBLIVION, DOMINUS_OBLIVION_HIT -> {
+                if (cdMs <= 0) cdMs = 240000;
+                chr.addSkillCooldown(DOMINUS_OBLIVION, cdMs);
+                chr.addSkillCooldown(DOMINUS_OBLIVION_HIT, cdMs);
+                return 1;
+            }
+            case DIVINE_MARK, HEXA_DIVINE_MARK -> {
+                chr.setSkillCooldown(DIVINE_MARK, chr.getSkillLevel(DIVINE_MARK));
+                if (chr.hasSkill(HEXA_DIVINE_MARK)) {
+                    chr.setSkillCooldown(HEXA_DIVINE_MARK, chr.getSkillLevel(HEXA_DIVINE_MARK));
+                }
+                return 1;
+            }
+            case HEAVENS_HAMMER, HEXA_HEAVENS_HAMMER, HEXA_HEAVENS_HAMMER_IMPACT, 1221020 -> {
+                chr.setSkillCooldown(HEAVENS_HAMMER, chr.getSkillLevel(HEAVENS_HAMMER));
+                if (chr.hasSkill(HEXA_HEAVENS_HAMMER)) {
+                    chr.setSkillCooldown(HEXA_HEAVENS_HAMMER, chr.getSkillLevel(HEXA_HEAVENS_HAMMER));
+                }
+                if (cdMs > 0) {
+                    chr.addSkillCooldown(HEXA_HEAVENS_HAMMER_IMPACT, cdMs);
+                    chr.addSkillCooldown(1221020, cdMs);
+                }
+                return 1;
+            }
+            case FALLING_JUSTICE, FALLING_JUSTICE_2 -> {
+                chr.setSkillCooldown(FALLING_JUSTICE, chr.getSkillLevel(FALLING_JUSTICE));
+                if (cdMs > 0) {
+                    chr.addSkillCooldown(FALLING_JUSTICE_2, cdMs);
+                }
+                return 1;
+            }
+            case SMITE_SHIELD -> {
+                chr.setSkillCooldown(SMITE_SHIELD, chr.getSkillLevel(SMITE_SHIELD));
+                return 1;
+            }
+            case SACROSANCTITY -> {
+                chr.setSkillCooldown(SACROSANCTITY, chr.getSkillLevel(SACROSANCTITY));
+                return 1;
+            }
+            case EPIC_ADVENTURE -> {
+                chr.setSkillCooldown(EPIC_ADVENTURE, chr.getSkillLevel(EPIC_ADVENTURE));
+                return 1;
+            }
+            case MAGIC_CRASH -> {
+                chr.setSkillCooldown(MAGIC_CRASH, chr.getSkillLevel(MAGIC_CRASH));
+                return 1;
+            }
+            case GUARDIAN -> {
+                chr.setSkillCooldown(GUARDIAN, chr.getSkillLevel(GUARDIAN));
+                return 1;
+            }
+            case DIVINE_ECHO, HEXA_DIVINE_ECHO -> {
+                chr.setSkillCooldown(DIVINE_ECHO, chr.getSkillLevel(DIVINE_ECHO));
+                if (chr.hasSkill(HEXA_DIVINE_ECHO)) {
+                    chr.setSkillCooldown(HEXA_DIVINE_ECHO, chr.getSkillLevel(HEXA_DIVINE_ECHO));
+                }
+                return 1;
+            }
+            case HAMMERS_OF_THE_RIGHTEOUS, HAMMERS_OF_THE_RIGHTEOUS_2 -> {
+                chr.setSkillCooldown(HAMMERS_OF_THE_RIGHTEOUS, chr.getSkillLevel(HAMMERS_OF_THE_RIGHTEOUS));
+                if (cdMs > 0) {
+                    chr.addSkillCooldown(HAMMERS_OF_THE_RIGHTEOUS_2, cdMs);
+                }
+                return 1;
+            }
+            case GRAND_GUARDIAN -> {
+                chr.setSkillCooldown(GRAND_GUARDIAN, chr.getSkillLevel(GRAND_GUARDIAN));
                 return 1;
             }
         }

@@ -12,7 +12,7 @@
    - [กลุ่มที่ 1: Resistance (Blaster, Battle Mage)](#กลุ่มที่-1-resistance-blaster-battle-mage)
    - [กลุ่มที่ 2: Nova (Angelic Buster, Kain, Cadena, Kaiser)](#กลุ่มที่-2-nova-angelic-buster-kain-cadena-kaiser)
    - [กลุ่มที่ 3: Flora & Anima (Khali, Adele, Lara, Hoyoung, Ren)](#กลุ่มที่-3-flora--anima-khali-adele-lara-hoyoung-ren)
-   - [กลุ่มที่ 4: Explorer, Cygnus & Legends](#กลุ่มที่-4-explorer-cygnus--legends)
+   - [กลุ่มที่ 4: Explorer Warriors (Hero, Paladin, Dark Knight)](#กลุ่มที่-4-explorer-warriors-hero-paladin-dark-knight)
 5. [คำสั่งช่วยเหลือพิเศษสำหรับ Admin & Testing](#5-คำสั่งช่วยเหลือพิเศษสำหรับ-admin--testing)
 
 ---
@@ -208,6 +208,55 @@
   - ทดสอบคอมโบต่อเนื่อง 3 จังหวะ: Falling Flower ➔ Climbing Serpent ➔ Soaring Dragon (ปุ่มสกิลบน Hotbar จะเปลี่ยนตามสเตจ)
 - **Origin Skill**:
   - `Heavenly Imugi` (Origin Skill `161141500`): คัทซีนอัญเชิญพญานาคราชมังกร
+
+---
+
+### กลุ่มที่ 4: Explorer Warriors (Hero, Paladin, Dark Knight)
+
+#### ⚔️ Hero (`!endgame hero`)
+- **Combo Counter System**:
+  - อัปและเปิดใช้งาน `Combo Attack` (คลาส 2) และ `Advanced Combo` (คลาส 4) เพื่อสะสมลูกแก้วคอมโบสูงสุด 10 ลูก (แสดงผลรอบตัวละคร)
+  - ทดสอบการใช้ `Combo Fury` พุ่งดึงศัตรู และ `Beam Blade` ฟันปล่อยคลื่นพลัง (คูลดาวน์ 7 วิ)
+- **V-Matrix (5th Job)**:
+  - `Burning Soul Blade`: ซัมมอนดาบวิญญาณเพลิงตามหลังตัวละคร หรือกดคีย์ซ้ำเพื่อปักดาบลงพื้นโจมตีศัตรูต่อเนื่อง
+  - `Worldreaver`: ดาบฟันทำลายมิติผ่าทั้งฉาก มอบสถานะอมตะ I-frame ขณะร่าย
+  - `Combo Instinct`: ปลดปล่อยสัญชาตญาณคอมโบ เรียกดาบอัญเชิญฟันตามการโจมตีทุกครั้ง
+  - `Sword Illusion`: ดาบภาพลวงตาฟันรัวระเบิดดาเมจ
+- **HEXA Matrix & 6th Job**:
+  - `Spirit Calibur` (Origin Skill `1141500`): รวมจิตวิญญาณฟันดาบยักษ์ คัทซีนเต็มจอ มอบบัฟอมตะ 7 วินาที (`IndieNotDamaged`), เติมลูกแก้ว Combo Counter เต็ม 10 ลูกทันที, ศัตรูติด Absolute Bind Freeze 10 วินาที + OriginDebuff 20 วินาที คูลดาวน์ 360 วินาที
+  - `Ultrasonic Slash` (Ascent Skill `1141502`): ท่าฟันดาบความเร็วเหนือเสียง มอบบัฟอมตะ 5 วินาที, เติมคอมโบเต็ม คูลดาวน์ 240 วินาที
+  - `handleSetCoolDownSkill`: ซิงค์คูลดาวน์ท่าย่อยของ Spirit Calibur, Ultrasonic Slash, Rising Rage, Cry Valhalla, Burning Soul Blade, Worldreaver, Combo Instinct, Sword Illusion, Beam Blade บล็อกสแปม 0 วินาที
+
+#### 🛡️ Paladin (`!endgame paladin`)
+- **Elemental Charge System**:
+  - โจมตีสลับธาตุด้วย Flame Charge, Blizzard Charge, Lightning Charge, Divine Charge เพื่อสะสมสแตก Elemental Charge (สูงสุด 5 สแตก) ช่วยลดดาเมจและเพิ่มพลังโจมตี
+  - ทดสอบ `Divine Mark` ตราประทับเทพเจ้า (คูลดาวน์ 7 วิ)
+- **V-Matrix (5th Job)**:
+  - `Hammers of the Righteous`: ค้อนศักดิ์สิทธิ์ 3 เล่มหมุนวนรอบตัวละคร หรือกดซ้ำเพื่อขยายวงรัศมีค้อนหมุนรวดเร็ว
+  - `Grand Guardian`: กางตรากางเขนศักดิ์สิทธิ์ยิงลำแสงโจมตีมหาศาล
+  - `Divine Echo`: เชื่อมโยงจิตวิญญาณกับเพื่อนร่วมปาร์ตี้ เลียนแบบสกิลโจมตีและบัฟ
+  - `Mighty Mjolnir`: ขว้างค้อนโยเนียร์กระดอนกระแทกศัตรู
+- **HEXA Matrix & 6th Job**:
+  - `Sacred Bastion` (Origin Skill `1241500`): ปักดาบศักดิ์สิทธิ์กางอาณาเขตแห่งแสง คัทซีนอลังการ มอบบัฟอมตะ 7 วินาที (`IndieNotDamaged`), สร้างพื้นที่แสงศักดิ์สิทธิ์ฟื้นฟูเลือดและโจมตีต่อเนื่อง, ศัตรูติด Absolute Bind Freeze 10 วินาที + OriginDebuff 20 วินาที คูลดาวน์ 360 วินาที
+  - `Dominus Oblivion` (Ascent Skill `1241504`): ปลดปล่อยทัณฑ์สวรรค์ มอบบัฟอมตะ 5 วินาที, บัฟชาร์จธาตุ คูลดาวน์ 240 วินาที
+  - `handleSetCoolDownSkill`: ซิงค์คูลดาวน์ท่าย่อยของ Sacred Bastion, Dominus Oblivion, Divine Mark, Heaven's Hammer, Falling Justice, Smite Shield, Sacrosanctity, Divine Echo, Hammers of the Righteous, Grand Guardian บล็อกสแปม 0 วินาที
+
+#### 🔱 Dark Knight (`!endgame darkknight` หรือ `!endgame drk`)
+- **Evil Eye & Final Pact (Reincarnation)**:
+  - เรียก `Evil Eye` ออกมาช่วยฮีลเลือดและสะสมพลัง
+  - สกิล `Final Pact`: เมื่อ HP หมดจะฟื้นคืนชีพทันทีพร้อมโหมดอมตะ
+- **Gungnir's Descent 0 Cooldown Mechanism**:
+  - ทดสอบเปิดใช้งาน `Dark Resonance` หรืออยู่ในโหมด `Final Pact`
+  - สกิล `Gungnir's Descent` และ HEXA Gungnir จะต้อง **ไม่มีคูลดาวน์ (0 วินาที)** สามารถกดสแปมแทงหอกรัวได้ตามกลไกแท้ของเกม
+- **V-Matrix (5th Job)**:
+  - `Spear of Darkness`: พุ่งหอกทมิฬเสียบทะลวงต่อเนื่อง
+  - `Darkness Aura`: กางออร่าความมืดดูดซับวิญญาณและระเบิดดาเมจปิดท้าย
+  - `Radiant Evil`: คลื่นวิญญาณความมืดกระจายรอบตัว
+  - `Calamitous Cyclone`: หมุนควงหอกพายุทมิฬเป็นวงกว้าง
+- **HEXA Matrix & 6th Job**:
+  - `Dead Space` (Origin Skill `1341500`): ผ่ามิติแห่งความตาย คัทซีนทมิฬ มอบบัฟอมตะ 7 วินาที (`IndieNotDamaged`), เปิดใช้งานบัฟ Dark Resonance ทันที, ศัตรูติด Absolute Bind Freeze 10 วินาที + OriginDebuff 20 วินาที คูลดาวน์ 360 วินาที
+  - `Dark Halidom` (Ascent Skill `1341502`): ท่าหอกทมิฬสังหาร มอบบัฟอมตะ 5 วินาที, บัฟ Dark Resonance คูลดาวน์ 240 วินาที
+  - `handleSetCoolDownSkill`: ซิงค์คูลดาวน์ท่าย่อยของ Dead Space, Dark Halidom, Dark Bident, Nightshade Explosion, Evil Eye Shock, Dark Resonance, Dark Thirst, Spear of Darkness, Darkness Aura, Radiant Evil, Calamitous Cyclone บล็อกสแปม 0 วินาที
 
 ---
 

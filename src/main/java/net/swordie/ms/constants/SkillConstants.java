@@ -2641,6 +2641,8 @@ public class SkillConstants {
             case 175141502:
                 return 175141500;
             // Hero Sub-Skills & 2nd 6th Job Ascent
+            case 1100012:
+                return 1101012; // Combo Fury Down
             case 1120017:
                 return 1121008; // Raging Blow Enrage
             case 1121055:
@@ -2648,11 +2650,13 @@ public class SkillConstants {
             case 1141001:
                 return 1141000; // HEXA Raging Blow Enrage
             case 1141004:
-                return 1141003; // HEXA Rending Edge
+                return 1141003; // HEXA Beam Blade -> Final Blade
             case 1140010:
                 return 1140005; // HEXA Rending Edge Passive
             case 1141007:
                 return 1141006; // HEXA Cry Valhalla Attack
+            case 1141501:
+                return 1141500; // Spirit Calibur Attack
             case 1141502:
                 return 1141502; // Ultrasonic Slash (Ascent Root)
             case 400011002:
@@ -2669,22 +2673,37 @@ public class SkillConstants {
             // Paladin Sub-Skills & 2nd 6th Job Ascent
             case 1221020:
                 return 1221019; // Heaven's Hammer Tile
+            case 1221021:
+                return 1211018; // Divine Charge IV
             case 1221023:
                 return 1220022; // Divine Judgment Attack
             case 1241002:
                 return 1240001; // HEXA Divine Judgment Attack
             case 1241006:
-                return 1241005; // HEXA Divine Mark Explosion
+                return 1241005; // Falling Justice 2
             case 1241010:
                 return 1241007; // HEXA Heaven's Hammer Tile
+            case 1241501:
+            case 1241502:
+            case 1241503:
+                return 1241500; // Sacred Bastion Subs
             case 1241504:
             case 1241505:
                 return 1241504; // Dominus Oblivion (Ascent Root)
+            case 400011021:
+                return 400011003; // Divine Echo Mimic
             case 400011053:
                 return 400011052; // Hammers of the Righteous Active
             case 400011132:
                 return 400011131; // Mighty Mjolnir Explosion
+            case 500061001:
+                return 500061000; // HEXA Divine Echo Mimic
             // Dark Knight Sub-Skills & 2nd 6th Job Ascent
+            case 1320021:
+            case 1320022:
+            case 1320023:
+            case 1321020:
+                return 1320016; // Final Pact Modes
             case 1321024:
             case 1321025:
             case 1321026:
@@ -2695,14 +2714,16 @@ public class SkillConstants {
             case 1341006:
                 return 1340004; // HEXA Revenge of the Evil Eye
             case 1341009:
-                return 1341008; // HEXA Nightshade Explosion Sub
+                return 1341008; // HEXA Evil Eye Shock Shoot
+            case 1341501:
+                return 1341500; // Dead Space Attack
             case 1341502:
             case 1341503:
                 return 1341502; // Dark Halidom (Ascent Root)
             case 400011069:
-                return 400011068; // Radiant Evil Sub
+                return 400011068; // Calamitous Cyclone Final Attack
             case 400011085:
-                return 400011047; // Spear of Darkness Atom
+                return 400011047; // Darkness Aura 2
             // Fire/Poison Sub-Skills & 2nd 6th Job Ascent
             case 2100010:
                 return 2101010; // Ignite Tile
@@ -4955,6 +4976,30 @@ public class SkillConstants {
         switch (skillID) {
             case DarkKnight.GUNGNIR_DESCENT:
             case DarkKnight.HEXA_GUNGNIR_DESCENT:
+            case 1141501: // Hero Spirit Calibur Attack
+            case 1121055: // Cry Valhalla Attack
+            case 1141007: // HEXA Cry Valhalla Attack
+            case 1140010: // Rending Edge Sub
+            case 400011074: // Combo Instinct Slash Up
+            case 400011075: // Combo Instinct Slash Down
+            case 400011076: // Combo Instinct Slash Straight
+            case 400011125: // Sword Illusion Sub 1
+            case 400011126: // Sword Illusion Sub 2
+            case 1241501: // Sacred Bastion Tile
+            case 1241502: // Sacred Bastion Extra
+            case 1241503: // Sacred Bastion After Attack
+            case 1241505: // Dominus Oblivion Hit
+            case 1221023: // Divine Judgment Debuff
+            case 1241002: // HEXA Divine Judgment Debuff
+            case 1241006: // Falling Justice 2
+            case 1241010: // HEXA Heaven's Hammer Impact
+            case 400011132: // Mighty Mjolnir Explosion
+            case 1341501: // Dead Space Origin Attack
+            case 1341503: // Dark Halidom Attack
+            case 1341006: // Evil Eye Punishment
+            case 1341009: // HEXA Evil Eye Shock Shoot
+            case 400011069: // Calamitous Cyclone Final Attack
+            case 400011085: // Darkness Aura 2
             case Bishop.HEAL:
             case Bishop.TRIUMPH_FEATHER_ATOM:
             case Bishop.HEXA_TRIUMPH_FEATHER_ATOM:
@@ -5596,7 +5641,55 @@ public class SkillConstants {
                 || skillID == 32141009 // HEXA Dark Genesis Sub
                 || skillID == 32141010 // HEXA Dark Genesis FA
                 || skillID == 32141501 // Crimson Pact Origin Finish
-                || skillID == 32141503; // Duskbound Aura Ascent Finish
+                || skillID == 32141503 // Duskbound Aura Ascent Finish
+                // Hero 1st-4th Job, 5th Job & 6th Job Invisible Sub-Skills
+                || skillID == 1100012 // Combo Fury Down
+                || skillID == 1120017 // Raging Blow Enrage
+                || skillID == 1121055 // Cry Valhalla Attack
+                || skillID == 1141001 // HEXA Raging Blow Enrage
+                || skillID == 1141004 // Final Blade
+                || skillID == 1140010 // Rending Edge Sub
+                || skillID == 1141007 // HEXA Cry Valhalla Attack
+                || skillID == 1141501 // Spirit Calibur Origin Attack
+                || skillID == 400011002 // Burning Soul Blade Stationary
+                || skillID == 400011074 // Combo Instinct Slash Up
+                || skillID == 400011075 // Combo Instinct Slash Down
+                || skillID == 400011076 // Combo Instinct Slash Straight
+                || skillID == 400011156 // Combo Instinct Sub
+                || skillID == 400011125 // Sword Illusion Sub 1
+                || skillID == 400011126 // Sword Illusion Sub 2
+                || skillID == 400011143 // Sword Illusion Combo Detonation
+                // Paladin 1st-4th Job, 5th Job & 6th Job Invisible Sub-Skills
+                || skillID == 1221021 // Divine Charge IV
+                || skillID == 1221023 // Divine Judgment Attack
+                || skillID == 1221020 // Divine Mark / Heaven's Hammer Tile
+                || skillID == 1241002 // HEXA Divine Judgment Attack
+                || skillID == 1241006 // Falling Justice 2
+                || skillID == 1241010 // HEXA Heaven's Hammer Tile
+                || skillID == 1241501 // Sacred Bastion Tile
+                || skillID == 1241502 // Sacred Bastion Extra
+                || skillID == 1241503 // Sacred Bastion After Attack
+                || skillID == 1241505 // Dominus Oblivion Hit
+                || skillID == 400011021 // Divine Echo Mimic
+                || skillID == 400011053 // Hammers of the Righteous Active
+                || skillID == 400011132 // Mighty Mjolnir Explosion
+                || skillID == 500061001 // HEXA Divine Echo Mimic
+                // Dark Knight 1st-4th Job, 5th Job & 6th Job Invisible Sub-Skills
+                || skillID == 1320021 // Lesser Pact
+                || skillID == 1320022 // Moderate Pact
+                || skillID == 1320023 // Greater Pact
+                || skillID == 1321020 // Accept Final Pact
+                || skillID == 1321024 // Evil Eye Shock III
+                || skillID == 1321025 // Evil Eye Shock III Sub
+                || skillID == 1321026 // Revenge of the Evil Eye Sub
+                || skillID == 1341002 // Dark Bident
+                || skillID == 1341005 // HEXA Revenge of the Evil Eye Sub
+                || skillID == 1341006 // Evil Eye Punishment
+                || skillID == 1341009 // HEXA Evil Eye Shock Shoot
+                || skillID == 1341501 // Dead Space Origin Attack
+                || skillID == 1341503 // Dark Halidom Attack
+                || skillID == 400011069 // Calamitous Cyclone Final Attack
+                || skillID == 400011085; // Darkness Aura 2
     }
 
     public static boolean notSureRemoteAttackSkill(int skillID) {
