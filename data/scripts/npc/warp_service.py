@@ -112,47 +112,56 @@ WARP_CATEGORIES = [
 
 def open_warp_service(sm, chr):
     NPC_HOYOUNG = 3003938
-    sm.setNpcBoxChat(NPC_HOYOUNG)
-    current_map_id = chr.getFieldID()
+    sm.setSpeakerID(NPC_HOYOUNG)
     
     total_locations = sum(len(locs) for _, locs in WARP_CATEGORIES)
     
-    menu_text = "#face0##fc0xFFFFFFFF##fs14##e#b[Hoyoung - Universal Warp Center]#fc0xFFFFFFFF##n\r\n"
-    menu_text += "Yo! I am Hoyoung, the mischievous Anima sage! Where across the worlds would you like to travel today, #h0#?\r\n"
-    menu_text += "#fc0xFFCCCCCC##fs11#Current Map ID: " + str(current_map_id) + " (" + str(total_locations) + " total destinations available)#fc0xFFFFFFFF##fs13#\r\n\r\n"
-    
-    for i, (cat_name, locations) in enumerate(WARP_CATEGORIES):
-        menu_text += "#L" + str(i) + "##e#b" + cat_name + "#fc0xFFFFFFFF##n (" + str(len(locations)) + " destinations)#l\r\n"
-    menu_text += "#L99##dShow All Destinations Alphabetically (A - Z)#k#l\r\n"
-    
-    cat_sel = sm.sendNext(menu_text)
-    
-    selected_list = []
-    category_title = ""
-    if cat_sel == 99:
-        category_title = "All Destinations (A - Z)"
-        for _, locs in WARP_CATEGORIES:
-            selected_list.extend(locs)
-        selected_list.sort(key=lambda x: x[0])
-    elif 0 <= cat_sel < len(WARP_CATEGORIES):
-        category_title = WARP_CATEGORIES[cat_sel][0]
-        selected_list = WARP_CATEGORIES[cat_sel][1]
-    else:
-        return
+    while True:
+        current_map_id = chr.getFieldID()
+        menu_text = "#fs14##e#b[Hoyoung - Universal Warp Center]#k#n\r\n"
+        menu_text += "Yo! I am Hoyoung, the mischievous Anima sage! Where across the worlds would you like to travel today, #h0#?\r\n"
+        menu_text += "#d#fs11#Current Map ID: " + str(current_map_id) + " (" + str(total_locations) + " total destinations available)#k#fs13#\r\n\r\n"
         
-    if not selected_list:
-        return
+        for i, (cat_name, locations) in enumerate(WARP_CATEGORIES):
+            menu_text += "#L" + str(i) + "##e#b" + cat_name + "#k#n (" + str(len(locations)) + " destinations)#l\r\n"
+        menu_text += "#L99##dShow All Destinations Alphabetically (A - Z)#k#l\r\n"
+        menu_text += "#L1000##r[Back to Main NPC Menu]#k#l\r\n"
         
-    dest_menu = "#fs14##e#b[" + category_title + "]#k#n\r\n"
-    dest_menu += "#fs12#Select your destination:\r\n\r\n"
-    for idx, (name, map_id, desc) in enumerate(selected_list):
-        dest_menu += "#L" + str(idx) + "##e#b" + name + "#k#n - #fs11#" + desc + "#fs12##l\r\n"
+        cat_sel = sm.sendNext(menu_text)
+        if cat_sel == 1000 or cat_sel < 0:
+            return
         
-    dest_sel = sm.sendNext(dest_menu)
-    if 0 <= dest_sel < len(selected_list):
-        dest_name, dest_map, _ = selected_list[dest_sel]
-        if chr.getFieldID() == dest_map:
-            sm.sendSayOkay("#fs13#You are already at #b" + dest_name + "#k (Field ID: " + str(dest_map) + ").")
+        selected_list = []
+        category_title = ""
+        if cat_sel == 99:
+            category_title = "All Destinations (A - Z)"
+            for _, locs in WARP_CATEGORIES:
+                selected_list.extend(locs)
+            selected_list.sort(key=lambda x: x[0])
+        elif 0 <= cat_sel < len(WARP_CATEGORIES):
+            category_title = WARP_CATEGORIES[cat_sel][0]
+            selected_list = WARP_CATEGORIES[cat_sel][1]
         else:
-            sm.setReturnField(chr.getFieldID())
-            sm.warp(dest_map, 0)
+            return
+            
+        if not selected_list:
+            continue
+            
+        while True:
+            dest_menu = "#fs14##e#b[" + category_title + "]#k#n\r\n"
+            dest_menu += "#fs12#Select your destination:\r\n\r\n"
+            for idx, (name, map_id, desc) in enumerate(selected_list):
+                dest_menu += "#L" + str(idx) + "##e#b" + name + "#k#n - #fs11#" + desc + "#fs12##l\r\n"
+            dest_menu += "#L999##r[Back to Warp Categories]#k#l\r\n"
+            
+            dest_sel = sm.sendNext(dest_menu)
+            if dest_sel == 999 or dest_sel < 0:
+                break
+            if 0 <= dest_sel < len(selected_list):
+                dest_name, dest_map, _ = selected_list[dest_sel]
+                if chr.getFieldID() == dest_map:
+                    sm.sendSayOkay("#fs13#You are already at #b" + dest_name + "#k (Field ID: " + str(dest_map) + ").")
+                else:
+                    sm.setReturnField(chr.getFieldID())
+                    sm.warp(dest_map, 0)
+                    return

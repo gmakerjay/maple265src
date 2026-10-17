@@ -63,93 +63,96 @@ ALL_IN_ONE_BUFFS = [
 ALL_IN_ONE_COST = 45000000
 
 def open_potion_shop(sm, chr):
-    sm.setNpcBoxChat(NPC_ID)
+    sm.setSpeakerID(NPC_ID)
     while True:
         cur_mesos = chr.getMoney()
-        menu = "#face0##fc0xFFFFFFFF##fs13#Greetings, #h0#! I am #bAdele#fc0xFFFFFFFF#.\r\n"
+        menu = "#fs13#Greetings, #h0#! I am #bAdele#k.\r\n"
         menu += "Welcome to the Knight's Military General Store & Combat Buff Depot.\r\n\r\n"
-        menu += "Current Meso Balance: #e#y" + format_num(cur_mesos) + " Mesos#fc0xFFFFFFFF##n\r\n\r\n"
+        menu += "Current Meso Balance: #e#y" + format_num(cur_mesos) + " Mesos#k#n\r\n\r\n"
         menu += "#b#L1##e[1] General Utility Supplies#n#k\r\n"
-        menu += "   #fc0xFFEEEEEE##fs11#Town Scrolls, Arrows, Throwing-Stars, All-Cure Potions (Standard Prices)#fc0xFFFFFFFF##fs13#\r\n"
+        menu += "   #d#fs11#Town Scrolls, Arrows, Throwing-Stars, All-Cure Potions (Standard Prices)#k#fs13#\r\n"
         menu += "#b#L2##e[2] HP / MP Recovery Potions (Elixirs)#n#k\r\n"
-        menu += "   #fc0xFFEEEEEE##fs11#Ginger Ale (75%), Power Elixir (100%), Elixir (50%) in 100 / 1,000 packs#fc0xFFFFFFFF##fs13#\r\n"
+        menu += "   #d#fs11#Ginger Ale (75%), Power Elixir (100%), Elixir (50%) in 100 / 1,000 packs#k#fs13#\r\n"
         menu += "#b#L3##e[3] Boss Combat Buff Bundles (10-Bottle Sets)#n#k\r\n"
-        menu += "   #fc0xFFEEEEEE##fs11#Onyx Apple, Adv Boss Rush, IED, Extreme Potions, EAP, WAP in sets of 10#fc0xFFFFFFFF##fs13#\r\n"
+        menu += "   #d#fs11#Onyx Apple, Adv Boss Rush, IED, Extreme Potions, EAP, WAP in sets of 10#k#fs13#\r\n"
         menu += "#b#L4##e[4] Ultimate All-in-One Bossing Bundle#n#k\r\n"
-        menu += "   #fc0xFFEEEEEE##fs11#Complete bundle of 8 top bossing buffs (10x each = 80 bottles) for 45M Mesos#fc0xFFFFFFFF##fs13#\r\n"
-        menu += "#d#L99#Exit Store#l#k\r\n"
+        menu += "   #d#fs11#Complete bundle of 8 top bossing buffs (10x each = 80 bottles) for 45M Mesos#k#fs13#\r\n"
+        menu += "#d#L99#[Back to Main NPC Menu]#k#l\r\n"
 
         cat = sm.sendNext(menu)
 
         if cat == 1:
             # General supplies
-            gen_menu = "#face0#Select utility supplies to purchase:\r\n"
-            gen_menu += "Current Mesos: #e#d" + format_num(chr.getMoney()) + " Mesos#k#n\r\n\r\n"
-            for idx, (g_id, g_name, g_qty, g_cost, g_desc) in enumerate(GENERAL_SUPPLIES):
-                gen_menu += "#L" + str(idx) + "##i" + str(g_id) + "# #e#b" + g_name + "#k#n - #r" + format_num(g_cost) + " Mesos#k\r\n    #fs11#" + g_desc + "#fs13##l\r\n"
-            gen_menu += "#L99##d[Back to Main Menu]#k#l\r\n"
+            while True:
+                gen_menu = "Select utility supplies to purchase:\r\n"
+                gen_menu += "Current Mesos: #e#d" + format_num(chr.getMoney()) + " Mesos#k#n\r\n\r\n"
+                for idx, (g_id, g_name, g_qty, g_cost, g_desc) in enumerate(GENERAL_SUPPLIES):
+                    gen_menu += "#L" + str(idx) + "##i" + str(g_id) + "# #e#b" + g_name + "#k#n - #r" + format_num(g_cost) + " Mesos#k\r\n    #fs11#" + g_desc + "#fs13##l\r\n"
+                gen_menu += "#L99##d[Back to Store Categories]#k#l\r\n"
 
-            g_sel = sm.sendNext(gen_menu)
-            if g_sel == 99 or g_sel < 0 or g_sel >= len(GENERAL_SUPPLIES):
-                continue
+                g_sel = sm.sendNext(gen_menu)
+                if g_sel == 99 or g_sel < 0 or g_sel >= len(GENERAL_SUPPLIES):
+                    break
 
-            g_id, g_name, g_qty, g_cost, g_desc = GENERAL_SUPPLIES[g_sel]
-            if chr.getMoney() < g_cost:
-                sm.sendSayOkay("#face2#You do not have enough mesos!\r\nRequired: #r" + format_num(g_cost) + " Mesos#k")
-            elif not sm.canHold(g_id, g_qty):
-                sm.sendSayOkay("#face2#Your inventory is full! Please make some space.")
-            else:
-                chr.deductMoney(g_cost)
-                chr.addItemToInventory(g_id, g_qty)
-                sm.sendSayOkay("#face1#Purchase completed!\r\nReceived: #i" + str(g_id) + "# #b" + g_name + "#k\r\nDeducted: #r" + format_num(g_cost) + " Mesos#k")
+                g_id, g_name, g_qty, g_cost, g_desc = GENERAL_SUPPLIES[g_sel]
+                if chr.getMoney() < g_cost:
+                    sm.sendSayOkay("You do not have enough mesos!\r\nRequired: #r" + format_num(g_cost) + " Mesos#k")
+                elif not sm.canHold(g_id, g_qty):
+                    sm.sendSayOkay("Your inventory is full! Please make some space.")
+                else:
+                    chr.deductMoney(g_cost)
+                    chr.addItemToInventory(g_id, g_qty)
+                    sm.sendSayOkay("Purchase completed!\r\nReceived: #i" + str(g_id) + "# #b" + g_name + "#k\r\nDeducted: #r" + format_num(g_cost) + " Mesos#k")
 
         elif cat == 2:
             # Recovery potions
-            rec_menu = "#face0#Select recovery potion package to purchase:\r\n"
-            rec_menu += "Current Mesos: #e#d" + format_num(chr.getMoney()) + " Mesos#k#n\r\n\r\n"
-            for idx, (r_id, r_name, r_qty, r_cost, r_desc) in enumerate(RECOVERY_POTIONS):
-                rec_menu += "#L" + str(idx) + "##i" + str(r_id) + "# #e#b" + r_name + "#k#n - #r" + format_num(r_cost) + " Mesos#k\r\n    #fs11#" + r_desc + "#fs13##l\r\n"
-            rec_menu += "#L99##d[Back to Main Menu]#k#l\r\n"
+            while True:
+                rec_menu = "Select recovery potion package to purchase:\r\n"
+                rec_menu += "Current Mesos: #e#d" + format_num(chr.getMoney()) + " Mesos#k#n\r\n\r\n"
+                for idx, (r_id, r_name, r_qty, r_cost, r_desc) in enumerate(RECOVERY_POTIONS):
+                    rec_menu += "#L" + str(idx) + "##i" + str(r_id) + "# #e#b" + r_name + "#k#n - #r" + format_num(r_cost) + " Mesos#k\r\n    #fs11#" + r_desc + "#fs13##l\r\n"
+                rec_menu += "#L99##d[Back to Store Categories]#k#l\r\n"
 
-            r_sel = sm.sendNext(rec_menu)
-            if r_sel == 99 or r_sel < 0 or r_sel >= len(RECOVERY_POTIONS):
-                continue
+                r_sel = sm.sendNext(rec_menu)
+                if r_sel == 99 or r_sel < 0 or r_sel >= len(RECOVERY_POTIONS):
+                    break
 
-            r_id, r_name, r_qty, r_cost, r_desc = RECOVERY_POTIONS[r_sel]
-            if chr.getMoney() < r_cost:
-                sm.sendSayOkay("#face2#You do not have enough mesos!\r\nRequired: #r" + format_num(r_cost) + " Mesos#k")
-            elif not sm.canHold(r_id, r_qty):
-                sm.sendSayOkay("#face2#Your USE inventory tab is full! Please make some space.")
-            else:
-                chr.deductMoney(r_cost)
-                chr.addItemToInventory(r_id, r_qty)
-                sm.sendSayOkay("#face1#Supplies delivered!\r\nReceived: #i" + str(r_id) + "# #b" + r_name + "#k\r\nDeducted: #r" + format_num(r_cost) + " Mesos#k")
+                r_id, r_name, r_qty, r_cost, r_desc = RECOVERY_POTIONS[r_sel]
+                if chr.getMoney() < r_cost:
+                    sm.sendSayOkay("You do not have enough mesos!\r\nRequired: #r" + format_num(r_cost) + " Mesos#k")
+                elif not sm.canHold(r_id, r_qty):
+                    sm.sendSayOkay("Your USE inventory tab is full! Please make some space.")
+                else:
+                    chr.deductMoney(r_cost)
+                    chr.addItemToInventory(r_id, r_qty)
+                    sm.sendSayOkay("Supplies delivered!\r\nReceived: #i" + str(r_id) + "# #b" + r_name + "#k\r\nDeducted: #r" + format_num(r_cost) + " Mesos#k")
 
         elif cat == 3:
             # Boss buff 10-packs
-            buff_menu = "#face0#Select a boss combat buff set (10 bottles per set):\r\n"
-            buff_menu += "Current Mesos: #e#d" + format_num(chr.getMoney()) + " Mesos#k#n\r\n\r\n"
-            for idx, (b_id, b_name, b_qty, b_cost, b_desc) in enumerate(BOSS_BUFF_10PACKS):
-                buff_menu += "#L" + str(idx) + "##i" + str(b_id) + "# #e#b" + b_name + "#k#n - #r" + format_num(b_cost) + " Mesos#k\r\n    #fs11#" + b_desc + "#fs13##l\r\n"
-            buff_menu += "#L99##d[Back to Main Menu]#k#l\r\n"
+            while True:
+                buff_menu = "Select a boss combat buff set (10 bottles per set):\r\n"
+                buff_menu += "Current Mesos: #e#d" + format_num(chr.getMoney()) + " Mesos#k#n\r\n\r\n"
+                for idx, (b_id, b_name, b_qty, b_cost, b_desc) in enumerate(BOSS_BUFF_10PACKS):
+                    buff_menu += "#L" + str(idx) + "##i" + str(b_id) + "# #e#b" + b_name + "#k#n - #r" + format_num(b_cost) + " Mesos#k\r\n    #fs11#" + b_desc + "#fs13##l\r\n"
+                buff_menu += "#L99##d[Back to Store Categories]#k#l\r\n"
 
-            b_sel = sm.sendNext(buff_menu)
-            if b_sel == 99 or b_sel < 0 or b_sel >= len(BOSS_BUFF_10PACKS):
-                continue
+                b_sel = sm.sendNext(buff_menu)
+                if b_sel == 99 or b_sel < 0 or b_sel >= len(BOSS_BUFF_10PACKS):
+                    break
 
-            b_id, b_name, b_qty, b_cost, b_desc = BOSS_BUFF_10PACKS[b_sel]
-            if chr.getMoney() < b_cost:
-                sm.sendSayOkay("#face2#You do not have enough mesos!\r\nRequired: #r" + format_num(b_cost) + " Mesos#k")
-            elif not sm.canHold(b_id, b_qty):
-                sm.sendSayOkay("#face2#Your USE inventory tab is full! Please make some space.")
-            else:
-                chr.deductMoney(b_cost)
-                chr.addItemToInventory(b_id, b_qty)
-                sm.sendSayOkay("#face1#Buff pack received!\r\nReceived: #i" + str(b_id) + "# #b" + b_name + "#k\r\nDeducted: #r" + format_num(b_cost) + " Mesos#k")
+                b_id, b_name, b_qty, b_cost, b_desc = BOSS_BUFF_10PACKS[b_sel]
+                if chr.getMoney() < b_cost:
+                    sm.sendSayOkay("You do not have enough mesos!\r\nRequired: #r" + format_num(b_cost) + " Mesos#k")
+                elif not sm.canHold(b_id, b_qty):
+                    sm.sendSayOkay("Your USE inventory tab is full! Please make some space.")
+                else:
+                    chr.deductMoney(b_cost)
+                    chr.addItemToInventory(b_id, b_qty)
+                    sm.sendSayOkay("Buff pack received!\r\nReceived: #i" + str(b_id) + "# #b" + b_name + "#k\r\nDeducted: #r" + format_num(b_cost) + " Mesos#k")
 
         elif cat == 4:
             # All-in-one bundle
-            bundle_text = "#face0#Would you like to purchase the #e#b[Ultimate All-in-One Bossing Bundle]#k#n?\r\n\r\n"
+            bundle_text = "Would you like to purchase the #e#b[Ultimate All-in-One Bossing Bundle]#k#n?\r\n\r\n"
             bundle_text += "The bundle contains 10 bottles of each essential buff (80 bottles total):\r\n"
             for b_id, b_name, b_qty in ALL_IN_ONE_BUFFS:
                 bundle_text += "- #i" + str(b_id) + "# #b" + b_name + "#k x" + str(b_qty) + "\r\n"
@@ -157,7 +160,7 @@ def open_potion_shop(sm, chr):
 
             if sm.sendAskYesNo(bundle_text):
                 if chr.getMoney() < ALL_IN_ONE_COST:
-                    sm.sendSayOkay("#face2#You do not have enough mesos!\r\nRequired: #r" + format_num(ALL_IN_ONE_COST) + " Mesos#k")
+                    sm.sendSayOkay("You do not have enough mesos!\r\nRequired: #r" + format_num(ALL_IN_ONE_COST) + " Mesos#k")
                 else:
                     can_hold_all = True
                     for b_id, b_name, b_qty in ALL_IN_ONE_BUFFS:
@@ -165,13 +168,12 @@ def open_potion_shop(sm, chr):
                             can_hold_all = False
                             break
                     if not can_hold_all:
-                        sm.sendSayOkay("#face2#You need at least 8 free slots in your USE inventory tab!")
+                        sm.sendSayOkay("You need at least 8 free slots in your USE inventory tab!")
                     else:
                         chr.deductMoney(ALL_IN_ONE_COST)
                         for b_id, b_name, b_qty in ALL_IN_ONE_BUFFS:
                             chr.addItemToInventory(b_id, b_qty)
-                        sm.sendSayOkay("#face1#Combat provisions delivered! May victory follow your blades in battle!")
+                        sm.sendSayOkay("Combat provisions delivered! May victory follow your blades in battle!")
 
-        elif cat == 99:
-            sm.sendSayOkay("#face0#Safe travels, warrior. Return when you need reinforcements.")
-            break
+        elif cat == 99 or cat < 0:
+            return

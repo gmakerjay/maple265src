@@ -2,7 +2,7 @@
 # Cash & Fashion Mall Grand Emporium (Lucid - 9063159)
 # Complete Outfit Bundles, Master Label, Collabs (BTS / BLACKPINK), Golden Hand Sets,
 # Universal Weapons, Transparent Equips, Wings, Hats, Suits, Cubes & Flames
-# Pure English 100% | High-Contrast Pure White Font (#fc0xFFFFFFFF#)
+# Pure English 100% | High-Contrast Pure White Font ()
 # 100% Crash-Proof Direct-Unpack Set Delivery Architecture
 # ==============================================================================
 from net.swordie.ms.util import Util
@@ -580,10 +580,10 @@ def get_char_gender(chr):
 
 def get_gender_label(gender):
     if gender == 0:
-        return "#b[Male]#fc0xFFFFFFFF#"
+        return "#b[Male]"
     elif gender == 1:
-        return "#r[Female]#fc0xFFFFFFFF#"
-    return "#g[Unisex]#fc0xFFFFFFFF#"
+        return "#r[Female]"
+    return "#g[Unisex]"
 
 def get_points(chr):
     user = chr.getUser()
@@ -594,17 +594,17 @@ def get_points(chr):
 def buy_stackable_item(sm, chr, item_id, item_name, unit_cost, desc):
     while True:
         mp, dp = get_points(chr)
-        text = "#face0##fc0xFFFFFFFF##fs13#=== #e#b" + item_name + "#fc0xFFFFFFFF##n ===\r\n"
-        text += "Item: #i" + str(item_id) + "# #b#z" + str(item_id) + "##fc0xFFFFFFFF#\r\n"
-        text += "Description: #fc0xFFCCCCCC##fs11#" + desc + "#fc0xFFFFFFFF##fs13#\r\n"
-        text += "Price: #r" + format_num(unit_cost) + " Maple Points#fc0xFFFFFFFF# each\r\n"
-        text += "Your Balance: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n\r\n"
+        text = "#fs13#=== #e#b" + item_name + "#n ===\r\n"
+        text += "Item: #i" + str(item_id) + "# #b#z" + str(item_id) + "#\r\n"
+        text += "Description: #d#fs11#" + desc + "#fs13#\r\n"
+        text += "Price: #r" + format_num(unit_cost) + " Maple Points each\r\n"
+        text += "Your Balance: #e#b" + format_num(mp) + " Maple Points#n\r\n\r\n"
         text += "Select quantity to purchase:\r\n"
         text += "#b#L1#Buy 1x (" + format_num(unit_cost) + " Points)#l\r\n"
         text += "#L10#Buy 10x (" + format_num(unit_cost * 10) + " Points)#l\r\n"
         text += "#L50#Buy 50x (" + format_num(unit_cost * 50) + " Points)#l\r\n"
         text += "#L100#Buy 100x (" + format_num(unit_cost * 100) + " Points)#l\r\n"
-        text += "#d#L0#[Cancel]#l#k\r\n"
+        text += "#d#L0#[Back to Item List]#k#l\r\n"
 
         qty_sel = sm.sendNext(text)
         qty = 0
@@ -616,11 +616,11 @@ def buy_stackable_item(sm, chr, item_id, item_name, unit_cost, desc):
         total_cost = int(qty) * unit_cost
         mp, dp = get_points(chr)
         if mp < total_cost:
-            sm.sendSayOkay("#face2##fc0xFFFFFFFF#You do not have enough Maple Points!\r\nRequired: #r" + format_num(total_cost) + " Points#fc0xFFFFFFFF#")
+            sm.sendSayOkay("You do not have enough Maple Points!\r\nRequired: #r" + format_num(total_cost) + " Points")
             continue
 
         if not sm.canHold(item_id, qty):
-            sm.sendSayOkay("#face2##fc0xFFFFFFFF#Your inventory is full! Please make some space.")
+            sm.sendSayOkay("Your inventory is full! Please make some space.")
             continue
 
         chr.getUser().deductMaplePoints(total_cost)
@@ -630,10 +630,10 @@ def buy_stackable_item(sm, chr, item_id, item_name, unit_cost, desc):
             pass
         chr.addItemToInventory(item_id, qty)
         new_mp, _ = get_points(chr)
-        sm.sendSayOkay("#face1##fc0xFFFFFFFF##e#b[Purchase Successful!]#fc0xFFFFFFFF##n\r\n\r\n"
-                       "Received: #i" + str(item_id) + "# #b" + item_name + " x" + str(qty) + "#fc0xFFFFFFFF#\r\n"
-                       "Deducted: #r" + format_num(total_cost) + " Maple Points#fc0xFFFFFFFF#\r\n"
-                       "Remaining Balance: #b" + format_num(new_mp) + " Maple Points#fc0xFFFFFFFF#")
+        sm.sendSayOkay("#e#b[Purchase Successful!]#n\r\n\r\n"
+                       "Received: #i" + str(item_id) + "# #b" + item_name + " x" + str(qty) + "\r\n"
+                       "Deducted: #r" + format_num(total_cost) + " Maple Points\r\n"
+                       "Remaining Balance: #b" + format_num(new_mp) + " Maple Points")
         return
 
 def buy_single_equip(sm, chr, item_id, item_name, cost, days, desc, target_gender):
@@ -642,17 +642,17 @@ def buy_single_equip(sm, chr, item_id, item_name, cost, days, desc, target_gende
 
     warn_text = ""
     if target_gender == 0 and char_gender != 0:
-        warn_text = "\r\n#r(Notice: This item is for Male characters, but your character is Female!)#fc0xFFFFFFFF#\r\n"
+        warn_text = "\r\n#r(Notice: This item is for Male characters, but your character is Female!)\r\n"
     elif target_gender == 1 and char_gender != 1:
-        warn_text = "\r\n#r(Notice: This item is for Female characters, but your character is Male!)#fc0xFFFFFFFF#\r\n"
+        warn_text = "\r\n#r(Notice: This item is for Female characters, but your character is Male!)\r\n"
 
-    text = "#face0##fc0xFFFFFFFF##fs13#=== #e#b" + item_name + "#fc0xFFFFFFFF##n ===\r\n\r\n"
-    text += "Item: #i" + str(item_id) + "# #b#z" + str(item_id) + "##fc0xFFFFFFFF#\r\n"
+    text = "#fs13#=== #e#b" + item_name + "#n ===\r\n\r\n"
+    text += "Item: #i" + str(item_id) + "# #b#z" + str(item_id) + "#\r\n"
     text += "Gender: " + get_gender_label(target_gender) + "\r\n"
-    text += "Description: #fc0xFFCCCCCC##fs11#" + desc + "#fc0xFFFFFFFF##fs13#\r\n"
-    text += "Duration: #gPermanent#fc0xFFFFFFFF#\r\n" if days == 0 else "Duration: #r" + str(days) + " Days#fc0xFFFFFFFF#\r\n"
-    text += "Price: #e#r" + format_num(cost) + " Maple Points#fc0xFFFFFFFF##n\r\n"
-    text += "Your Balance: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n"
+    text += "Description: #d#fs11#" + desc + "#fs13#\r\n"
+    text += "Duration: #gPermanent\r\n" if days == 0 else "Duration: #r" + str(days) + " Days\r\n"
+    text += "Price: #e#r" + format_num(cost) + " Maple Points#n\r\n"
+    text += "Your Balance: #e#b" + format_num(mp) + " Maple Points#n\r\n"
     text += warn_text + "\r\n"
     text += "Would you like to purchase this item?"
 
@@ -662,11 +662,11 @@ def buy_single_equip(sm, chr, item_id, item_name, cost, days, desc, target_gende
 
     mp, dp = get_points(chr)
     if mp < cost:
-        sm.sendSayOkay("#face2##fc0xFFFFFFFF#You do not have enough Maple Points!\r\nRequired: #r" + format_num(cost) + " Points#fc0xFFFFFFFF#")
+        sm.sendSayOkay("You do not have enough Maple Points!\r\nRequired: #r" + format_num(cost) + " Points")
         return
 
     if not sm.canHold(item_id, 1):
-        sm.sendSayOkay("#face2##fc0xFFFFFFFF#Your Cash inventory tab is full! Please make some space.")
+        sm.sendSayOkay("Your Cash inventory tab is full! Please make some space.")
         return
 
     chr.getUser().deductMaplePoints(cost)
@@ -680,25 +680,25 @@ def buy_single_equip(sm, chr, item_id, item_name, cost, days, desc, target_gende
         chr.addItemToInventory(item_id, 1)
 
     new_mp, _ = get_points(chr)
-    sm.sendSayOkay("#face1##fc0xFFFFFFFF##e#b[Purchase Successful!]#fc0xFFFFFFFF##n\r\n\r\n"
-                   "You received: #i" + str(item_id) + "# #b" + item_name + "#fc0xFFFFFFFF#\r\n"
-                   "Deducted: #r" + format_num(cost) + " Maple Points#fc0xFFFFFFFF#\r\n"
-                   "Remaining Balance: #b" + format_num(new_mp) + " Maple Points#fc0xFFFFFFFF#")
+    sm.sendSayOkay("#e#b[Purchase Successful!]#n\r\n\r\n"
+                   "You received: #i" + str(item_id) + "# #b" + item_name + "\r\n"
+                   "Deducted: #r" + format_num(cost) + " Maple Points\r\n"
+                   "Remaining Balance: #b" + format_num(new_mp) + " Maple Points")
 
 def buy_outfit_package(sm, chr, pkg):
     pkg_id, pkg_name, cost, target_gender, desc, items = pkg
     char_gender = get_char_gender(chr)
     mp, _ = get_points(chr)
 
-    text = "#face0##fc0xFFFFFFFF##fs13#=== #e#b" + pkg_name + "#fc0xFFFFFFFF##n ===\r\n\r\n"
-    text += "Description: #fc0xFFCCCCCC##fs11#" + desc + "#fc0xFFFFFFFF##fs13#\r\n"
-    text += "#g[100% Crash-Proof: All items will be directly unpacked into your Cash tab!]#fc0xFFFFFFFF#\r\n\r\n"
-    text += "#e#bIncluded Items in Set (" + str(len(items)) + " Pieces):#fc0xFFFFFFFF##n\r\n"
+    text = "#fs13#=== #e#b" + pkg_name + "#n ===\r\n\r\n"
+    text += "Description: #d#fs11#" + desc + "#fs13#\r\n"
+    text += "#g[100% Crash-Proof: All items will be directly unpacked into your Cash tab!]\r\n\r\n"
+    text += "#e#bIncluded Items in Set (" + str(len(items)) + " Pieces):#n\r\n"
     for item_id, item_name, slot in items:
-        text += "- #i" + str(item_id) + "# #b" + item_name + "#fc0xFFFFFFFF# [" + slot + "]\r\n"
+        text += "- #i" + str(item_id) + "# #b" + item_name + " [" + slot + "]\r\n"
 
-    text += "\r\nPackage Price: #e#r" + format_num(cost) + " Maple Points#fc0xFFFFFFFF##n\r\n"
-    text += "Your Balance: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n\r\n"
+    text += "\r\nPackage Price: #e#r" + format_num(cost) + " Maple Points#n\r\n"
+    text += "Your Balance: #e#b" + format_num(mp) + " Maple Points#n\r\n\r\n"
     text += "Would you like to purchase and immediately unpack this complete set?"
 
     if not sm.sendAskYesNo(text):
@@ -706,12 +706,12 @@ def buy_outfit_package(sm, chr, pkg):
 
     mp, _ = get_points(chr)
     if mp < cost:
-        sm.sendSayOkay("#face2##fc0xFFFFFFFF#You do not have enough Maple Points!\r\nRequired: #r" + format_num(cost) + " Points#fc0xFFFFFFFF#")
+        sm.sendSayOkay("You do not have enough Maple Points!\r\nRequired: #r" + format_num(cost) + " Points")
         return
 
     free_slots = chr.getInventoryByType(InvType.CASH).getEmptySlots()
     if free_slots < len(items):
-        sm.sendSayOkay("#face2##fc0xFFFFFFFF#You need at least #r" + str(len(items)) + " empty slots#fc0xFFFFFFFF# in your Cash inventory tab!\r\nCurrent free Cash slots: " + str(free_slots))
+        sm.sendSayOkay("You need at least #r" + str(len(items)) + " empty slots in your Cash inventory tab!\r\nCurrent free Cash slots: " + str(free_slots))
         return
 
     chr.getUser().deductMaplePoints(cost)
@@ -724,31 +724,31 @@ def buy_outfit_package(sm, chr, pkg):
         chr.addItemToInventory(item_id, 1)
 
     new_mp, _ = get_points(chr)
-    sm.sendSayOkay("#face1##fc0xFFFFFFFF##e#b[Package Unpacked Successfully!]#fc0xFFFFFFFF##n\r\n\r\n"
-                   "All #r" + str(len(items)) + " items#fc0xFFFFFFFF# from #b" + pkg_name + "#fc0xFFFFFFFF# have been placed directly into your Cash inventory!\r\n\r\n"
-                   "Deducted: #r" + format_num(cost) + " Maple Points#fc0xFFFFFFFF#\r\n"
-                   "Remaining Balance: #b" + format_num(new_mp) + " Maple Points#fc0xFFFFFFFF#")
+    sm.sendSayOkay("#e#b[Package Unpacked Successfully!]#n\r\n\r\n"
+                   "All #r" + str(len(items)) + " items from #b" + pkg_name + " have been placed directly into your Cash inventory!\r\n\r\n"
+                   "Deducted: #r" + format_num(cost) + " Maple Points\r\n"
+                   "Remaining Balance: #b" + format_num(new_mp) + " Maple Points")
 
 def buy_transparent_bundle(sm, chr):
     BUNDLE_COST = 100000
     mp, _ = get_points(chr)
-    text = "#face0##fc0xFFFFFFFF##fs13#=== #e#b[Complete 9-Piece Transparent Bundle]#fc0xFFFFFFFF##n ===\r\n\r\n"
+    text = "#fs13#=== #e#b[Complete 9-Piece Transparent Bundle]#n ===\r\n\r\n"
     text += "This package includes all 9 permanent transparent pieces:\r\n"
     for tid, tname, _, _, _ in TRANSPARENT_EQUIPS:
-        text += "- #i" + str(tid) + "# #b" + tname + "#fc0xFFFFFFFF#\r\n"
-    text += "\r\nBundle Price: #e#r" + format_num(BUNDLE_COST) + " Maple Points#fc0xFFFFFFFF##n (Save 35,000 Points!)\r\n"
-    text += "Your Balance: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n\r\n"
+        text += "- #i" + str(tid) + "# #b" + tname + "\r\n"
+    text += "\r\nBundle Price: #e#r" + format_num(BUNDLE_COST) + " Maple Points#n (Save 35,000 Points!)\r\n"
+    text += "Your Balance: #e#b" + format_num(mp) + " Maple Points#n\r\n\r\n"
     text += "Would you like to purchase the complete transparent bundle?"
 
     if sm.sendAskYesNo(text):
         mp, _ = get_points(chr)
         if mp < BUNDLE_COST:
-            sm.sendSayOkay("#face2##fc0xFFFFFFFF#You do not have enough Maple Points!\r\nRequired: #r" + format_num(BUNDLE_COST) + " Points#fc0xFFFFFFFF#")
+            sm.sendSayOkay("You do not have enough Maple Points!\r\nRequired: #r" + format_num(BUNDLE_COST) + " Points")
             return
 
         free_slots = chr.getInventoryByType(InvType.CASH).getEmptySlots()
         if free_slots < len(TRANSPARENT_EQUIPS):
-            sm.sendSayOkay("#face2##fc0xFFFFFFFF#You need at least 9 empty slots in your Cash inventory tab!")
+            sm.sendSayOkay("You need at least 9 empty slots in your Cash inventory tab!")
             return
 
         chr.getUser().deductMaplePoints(BUNDLE_COST)
@@ -759,42 +759,42 @@ def buy_transparent_bundle(sm, chr):
         for tid, _, _, _, _ in TRANSPARENT_EQUIPS:
             chr.addItemToInventory(tid, 1)
 
-        sm.sendSayOkay("#face1##fc0xFFFFFFFF#Transparent bundle delivered successfully! Enjoy your sleek minimalist aesthetic!")
+        sm.sendSayOkay("Transparent bundle delivered successfully! Enjoy your sleek minimalist aesthetic!")
 
 def open_point_shop(sm, chr):
-    sm.setNpcBoxChat(NPC_ID)
+    sm.setSpeakerID(NPC_ID)
     while True:
         char_gender = get_char_gender(chr)
         mp, dp = get_points(chr)
 
-        menu = "#face0##fc0xFFFFFFFF##fs13#=== #e#d[Lucid - Cash & Fashion Grand Mall]#fc0xFFFFFFFF##n ===\r\n"
+        menu = "#fs13#=== #e#d[Lucid - Cash & Fashion Grand Mall]#n ===\r\n"
         menu += "Welcome to the dream realm of fashion, #h0#! What stunning attire can I prepare for you?\r\n"
-        menu += "Character: " + get_gender_label(char_gender) + "  |  Cash: #e#b" + format_num(mp) + " Points#fc0xFFFFFFFF##n  |  DP: #e#r" + format_num(dp) + "#fc0xFFFFFFFF##n\r\n\r\n"
+        menu += "Character: " + get_gender_label(char_gender) + "  |  Cash: #e#b" + format_num(mp) + " Points#n  |  DP: #e#r" + format_num(dp) + "#n\r\n\r\n"
         menu += "#r#L1##e[1] Complete Outfit Bundles & Set Boxes (100% Crash-Proof Unpack)#n#k\r\n"
-        menu += "   #fc0xFFEEEEEE##fs11#BLACKPINK, BTS, Golden Hand Winners, Checkmate, Cygnus, M-Label sets.#fc0xFFFFFFFF##fs13#\r\n"
+        menu += "   #d#fs11#BLACKPINK, BTS, Golden Hand Winners, Checkmate, Cygnus, M-Label sets.#fs13#\r\n"
         menu += "#b#L2##e[2] Universal Weapon Covers (Massive Arsenal - All Weapons)#n#k\r\n"
-        menu += "   #fc0xFFEEEEEE##fs11#Death's Scythe, True Hilla, Moon Slayer, Black Blade, Star Record, Guitars.#fc0xFFFFFFFF##fs13#\r\n"
+        menu += "   #d#fs11#Death's Scythe, True Hilla, Moon Slayer, Black Blade, Star Record, Guitars.#fs13#\r\n"
         menu += "#b#L3##e[3] Full Transparent Equipment Collection (Singles & Bundle)#n#k\r\n"
-        menu += "   #fc0xFFEEEEEE##fs11#Complete 9-piece Transparent Set + 35k Discount Bundle option.#fc0xFFFFFFFF##fs13#\r\n"
+        menu += "   #d#fs11#Complete 9-piece Transparent Set + 35k Discount Bundle option.#fs13#\r\n"
         menu += "#b#L4##e[4] Wings, Capes & Back Auras (Divine, Demonic & Floating)#n#k\r\n"
-        menu += "   #fc0xFFEEEEEE##fs11#Nine-Tailed Fox Tails, Cherubim, Succubus, Dream Wings, Starlight Auras.#fc0xFFFFFFFF##fs13#\r\n"
+        menu += "   #d#fs11#Nine-Tailed Fox Tails, Cherubim, Succubus, Dream Wings, Starlight Auras.#fs13#\r\n"
         menu += "#b#L5##e[5] Hats, Horns, Ribbons, Helmets & Halos#n#k\r\n"
-        menu += "   #fc0xFFEEEEEE##fs11#Golden Hand crowns, Kitsune mask, BTS feathers, Blackpink helmets, Ribbons.#fc0xFFFFFFFF##fs13#\r\n"
+        menu += "   #d#fs11#Golden Hand crowns, Kitsune mask, BTS feathers, Blackpink helmets, Ribbons.#fs13#\r\n"
         menu += "#b#L6##e[6] Male Fashion & Suits (Male Only)#n#k\r\n"
-        menu += "   #fc0xFFEEEEEE##fs11#Starry Night Ruling, Slayer Robes, Pure Dignity, Officer Uniforms, Boots.#fc0xFFFFFFFF##fs13#\r\n"
+        menu += "   #d#fs11#Starry Night Ruling, Slayer Robes, Pure Dignity, Officer Uniforms, Boots.#fs13#\r\n"
         menu += "#r#L7##e[7] Female Fashion & Dresses (Female Only)#n#k\r\n"
-        menu += "   #fc0xFFEEEEEE##fs11#Starry Night Judgment, Kunoichi, Duchess Gowns, BLACKPINK Stage, Heels.#fc0xFFFFFFFF##fs13#\r\n"
+        menu += "   #d#fs11#Starry Night Judgment, Kunoichi, Duchess Gowns, BLACKPINK Stage, Heels.#fs13#\r\n"
         menu += "#g#L8##e[8] Unisex Costumes, Onesies & Robes (All Characters)#n#k\r\n"
-        menu += "   #fc0xFFEEEEEE##fs11#BTS Love Swan, Time Cantabile, Pink Bean Onesie, Executor Garbs.#fc0xFFFFFFFF##fs13#\r\n"
+        menu += "   #d#fs11#BTS Love Swan, Time Cantabile, Pink Bean Onesie, Executor Garbs.#fs13#\r\n"
         menu += "#b#L9##e[9] Face & Eye Accessories, Rings & Name Tags#n#k\r\n"
-        menu += "   #fc0xFFEEEEEE##fs11#BLACKPINK/BTS Chat & Label Rings, Labyrinth Eye, Chewin' Grass Face.#fc0xFFFFFFFF##fs13#\r\n"
+        menu += "   #d#fs11#BLACKPINK/BTS Chat & Label Rings, Labyrinth Eye, Chewin' Grass Face.#fs13#\r\n"
         menu += "#b#L10##e[10] Cubes & Potential System (Unisex)#n#k\r\n"
-        menu += "   #fc0xFFEEEEEE##fs11#Red Cube, Black Cube, Bonus Potential, Violet, Glowing & Bright Cubes.#fc0xFFFFFFFF##fs13#\r\n"
+        menu += "   #d#fs11#Red Cube, Black Cube, Bonus Potential, Violet, Glowing & Bright Cubes.#fs13#\r\n"
         menu += "#b#L11##e[11] Rebirth Flames & Scrolls (Unisex)#n#k\r\n"
-        menu += "   #fc0xFFEEEEEE##fs11#Powerful / Eternal / Black Flames, Protection, Safety, Slate Scrolls.#fc0xFFFFFFFF##fs13#\r\n"
+        menu += "   #d#fs11#Powerful / Eternal / Black Flames, Protection, Safety, Slate Scrolls.#fs13#\r\n"
         menu += "#b#L12##e[12] Utility & Inventory Slot Expansion#n#k\r\n"
-        menu += "   #fc0xFFEEEEEE##fs11#Hyper Teleport Rock, Pendant Slot (30D), Revives, Megaphones.#fc0xFFFFFFFF##fs13#\r\n"
-        menu += "#d#L99#Exit Grand Mall#l#k\r\n"
+        menu += "   #d#fs11#Hyper Teleport Rock, Pendant Slot (30D), Revives, Megaphones.#fs13#\r\n"
+        menu += "#d#L99#[Back to Main NPC Menu]#k#l\r\n"
 
         cat = sm.sendNext(menu)
         if cat == 99 or cat < 1 or cat > 12:
@@ -804,13 +804,13 @@ def open_point_shop(sm, chr):
             # Complete Outfit Packages
             while True:
                 mp, dp = get_points(chr)
-                pkg_menu = "#face0##fc0xFFFFFFFF##fs13#=== #e#d[Complete Outfit Bundles & Set Boxes]#fc0xFFFFFFFF##n ===\r\n"
-                pkg_menu += "#g(All sets are directly unpacked into your Cash tab - 100% crash-proof!)#fc0xFFFFFFFF#\r\n"
-                pkg_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n\r\n"
+                pkg_menu = "#fs13#=== #e#d[Complete Outfit Bundles & Set Boxes]#n ===\r\n"
+                pkg_menu += "#g(All sets are directly unpacked into your Cash tab - 100% crash-proof!)\r\n"
+                pkg_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#n\r\n\r\n"
                 for idx, pkg in enumerate(OUTFIT_PACKAGES):
-                    pkg_menu += "#L" + str(idx) + "##b" + pkg[1] + "#fc0xFFFFFFFF# - #r" + format_num(pkg[2]) + " Points#fc0xFFFFFFFF#\r\n"
-                    pkg_menu += "    #fc0xFFCCCCCC##fs11#" + pkg[4] + "#fc0xFFFFFFFF##fs13##l\r\n"
-                pkg_menu += "#d#L99#[Back to Main Menu]#k#l\r\n"
+                    pkg_menu += "#L" + str(idx) + "##b" + pkg[1] + " - #r" + format_num(pkg[2]) + " Points\r\n"
+                    pkg_menu += "    #d#fs11#" + pkg[4] + "#fs13##l\r\n"
+                pkg_menu += "#d#L99#[Back to Store Categories]#k#l\r\n"
 
                 p_sel = sm.sendNext(pkg_menu)
                 if p_sel == 99 or p_sel < 0 or p_sel >= len(OUTFIT_PACKAGES):
@@ -821,12 +821,12 @@ def open_point_shop(sm, chr):
             # Universal Weapons
             while True:
                 mp, _ = get_points(chr)
-                w_menu = "#face0##fc0xFFFFFFFF##fs13#=== #e#b[Universal Weapon Covers (All Weapons)]#fc0xFFFFFFFF##n ===\r\n"
-                w_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n\r\n"
+                w_menu = "#fs13#=== #e#b[Universal Weapon Covers (All Weapons)]#n ===\r\n"
+                w_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#n\r\n\r\n"
                 for idx, (iid, iname, icost, idays, idesc) in enumerate(WEAPON_COVERS):
-                    w_menu += "#L" + str(idx) + "##i" + str(iid) + "# #b" + iname + "#fc0xFFFFFFFF# - #r" + format_num(icost) + " Points#fc0xFFFFFFFF#\r\n"
-                    w_menu += "    #fc0xFFCCCCCC##fs11#" + idesc + "#fc0xFFFFFFFF##fs13##l\r\n"
-                w_menu += "#d#L99#[Back to Main Menu]#k#l\r\n"
+                    w_menu += "#L" + str(idx) + "##i" + str(iid) + "# #b" + iname + " - #r" + format_num(icost) + " Points\r\n"
+                    w_menu += "    #d#fs11#" + idesc + "#fs13##l\r\n"
+                w_menu += "#d#L99#[Back to Store Categories]#k#l\r\n"
 
                 w_sel = sm.sendNext(w_menu)
                 if w_sel == 99 or w_sel < 0 or w_sel >= len(WEAPON_COVERS):
@@ -838,13 +838,13 @@ def open_point_shop(sm, chr):
             # Transparent Equips
             while True:
                 mp, _ = get_points(chr)
-                t_menu = "#face0##fc0xFFFFFFFF##fs13#=== #e#b[Transparent Equipment Collection]#fc0xFFFFFFFF##n ===\r\n"
-                t_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n\r\n"
-                t_menu += "#e#r#L100#[* Purchase Complete 9-Item Transparent Bundle (100,000 Points - Save 35k!)]#fc0xFFFFFFFF##n#l\r\n\r\n"
+                t_menu = "#fs13#=== #e#b[Transparent Equipment Collection]#n ===\r\n"
+                t_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#n\r\n\r\n"
+                t_menu += "#e#r#L100#[* Purchase Complete 9-Item Transparent Bundle (100,000 Points - Save 35k!)]#n#l\r\n\r\n"
                 for tidx, (tid, tname, tcost, tdays, tdesc) in enumerate(TRANSPARENT_EQUIPS):
-                    t_menu += "#L" + str(tidx) + "##i" + str(tid) + "# #b" + tname + "#fc0xFFFFFFFF# - #r" + format_num(tcost) + " Points#fc0xFFFFFFFF#\r\n"
-                    t_menu += "    #fc0xFFCCCCCC##fs11#" + tdesc + "#fc0xFFFFFFFF##fs13##l\r\n"
-                t_menu += "#d#L99#[Back to Main Menu]#k#l\r\n"
+                    t_menu += "#L" + str(tidx) + "##i" + str(tid) + "# #b" + tname + " - #r" + format_num(tcost) + " Points\r\n"
+                    t_menu += "    #d#fs11#" + tdesc + "#fs13##l\r\n"
+                t_menu += "#d#L99#[Back to Store Categories]#k#l\r\n"
 
                 t_sel = sm.sendNext(t_menu)
                 if t_sel == 99:
@@ -859,12 +859,12 @@ def open_point_shop(sm, chr):
             # Wings & Capes
             while True:
                 mp, _ = get_points(chr)
-                c_menu = "#face0##fc0xFFFFFFFF##fs13#=== #e#b[Wings, Capes & Back Auras]#fc0xFFFFFFFF##n ===\r\n"
-                c_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n\r\n"
+                c_menu = "#fs13#=== #e#b[Wings, Capes & Back Auras]#n ===\r\n"
+                c_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#n\r\n\r\n"
                 for idx, (iid, iname, icost, idays, idesc) in enumerate(WINGS_AND_CAPES):
-                    c_menu += "#L" + str(idx) + "##i" + str(iid) + "# #b" + iname + "#fc0xFFFFFFFF# - #r" + format_num(icost) + " Points#fc0xFFFFFFFF#\r\n"
-                    c_menu += "    #fc0xFFCCCCCC##fs11#" + idesc + "#fc0xFFFFFFFF##fs13##l\r\n"
-                c_menu += "#d#L99#[Back to Main Menu]#k#l\r\n"
+                    c_menu += "#L" + str(idx) + "##i" + str(iid) + "# #b" + iname + " - #r" + format_num(icost) + " Points\r\n"
+                    c_menu += "    #d#fs11#" + idesc + "#fs13##l\r\n"
+                c_menu += "#d#L99#[Back to Store Categories]#k#l\r\n"
 
                 c_sel = sm.sendNext(c_menu)
                 if c_sel == 99 or c_sel < 0 or c_sel >= len(WINGS_AND_CAPES):
@@ -876,12 +876,12 @@ def open_point_shop(sm, chr):
             # Hats & Headwear
             while True:
                 mp, _ = get_points(chr)
-                h_menu = "#face0##fc0xFFFFFFFF##fs13#=== #e#b[Hats, Horns, Ribbons & Halos]#fc0xFFFFFFFF##n ===\r\n"
-                h_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n\r\n"
+                h_menu = "#fs13#=== #e#b[Hats, Horns, Ribbons & Halos]#n ===\r\n"
+                h_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#n\r\n\r\n"
                 for idx, (iid, iname, icost, idays, idesc) in enumerate(HATS_AND_HEADWEAR):
-                    h_menu += "#L" + str(idx) + "##i" + str(iid) + "# #b" + iname + "#fc0xFFFFFFFF# - #r" + format_num(icost) + " Points#fc0xFFFFFFFF#\r\n"
-                    h_menu += "    #fc0xFFCCCCCC##fs11#" + idesc + "#fc0xFFFFFFFF##fs13##l\r\n"
-                h_menu += "#d#L99#[Back to Main Menu]#k#l\r\n"
+                    h_menu += "#L" + str(idx) + "##i" + str(iid) + "# #b" + iname + " - #r" + format_num(icost) + " Points\r\n"
+                    h_menu += "    #d#fs11#" + idesc + "#fs13##l\r\n"
+                h_menu += "#d#L99#[Back to Store Categories]#k#l\r\n"
 
                 h_sel = sm.sendNext(h_menu)
                 if h_sel == 99 or h_sel < 0 or h_sel >= len(HATS_AND_HEADWEAR):
@@ -893,12 +893,12 @@ def open_point_shop(sm, chr):
             # Male Fashion & Suits
             while True:
                 mp, _ = get_points(chr)
-                m_menu = "#face0##fc0xFFFFFFFF##fs13#=== #e#b[Male Fashion & Suits (Male Only)]#fc0xFFFFFFFF##n ===\r\n"
-                m_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n\r\n"
+                m_menu = "#fs13#=== #e#b[Male Fashion & Suits (Male Only)]#n ===\r\n"
+                m_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#n\r\n\r\n"
                 for idx, (iid, iname, icost, idays, idesc) in enumerate(MALE_FASHION):
-                    m_menu += "#L" + str(idx) + "##i" + str(iid) + "# #b" + iname + "#fc0xFFFFFFFF# - #r" + format_num(icost) + " Points#fc0xFFFFFFFF#\r\n"
-                    m_menu += "    #fc0xFFCCCCCC##fs11#" + idesc + "#fc0xFFFFFFFF##fs13##l\r\n"
-                m_menu += "#d#L99#[Back to Main Menu]#k#l\r\n"
+                    m_menu += "#L" + str(idx) + "##i" + str(iid) + "# #b" + iname + " - #r" + format_num(icost) + " Points\r\n"
+                    m_menu += "    #d#fs11#" + idesc + "#fs13##l\r\n"
+                m_menu += "#d#L99#[Back to Store Categories]#k#l\r\n"
 
                 m_sel = sm.sendNext(m_menu)
                 if m_sel == 99 or m_sel < 0 or m_sel >= len(MALE_FASHION):
@@ -910,12 +910,12 @@ def open_point_shop(sm, chr):
             # Female Fashion & Dresses
             while True:
                 mp, _ = get_points(chr)
-                f_menu = "#face0##fc0xFFFFFFFF##fs13#=== #e#b[Female Fashion & Dresses (Female Only)]#fc0xFFFFFFFF##n ===\r\n"
-                f_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n\r\n"
+                f_menu = "#fs13#=== #e#b[Female Fashion & Dresses (Female Only)]#n ===\r\n"
+                f_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#n\r\n\r\n"
                 for idx, (iid, iname, icost, idays, idesc) in enumerate(FEMALE_FASHION):
-                    f_menu += "#L" + str(idx) + "##i" + str(iid) + "# #b" + iname + "#fc0xFFFFFFFF# - #r" + format_num(icost) + " Points#fc0xFFFFFFFF#\r\n"
-                    f_menu += "    #fc0xFFCCCCCC##fs11#" + idesc + "#fc0xFFFFFFFF##fs13##l\r\n"
-                f_menu += "#d#L99#[Back to Main Menu]#k#l\r\n"
+                    f_menu += "#L" + str(idx) + "##i" + str(iid) + "# #b" + iname + " - #r" + format_num(icost) + " Points\r\n"
+                    f_menu += "    #d#fs11#" + idesc + "#fs13##l\r\n"
+                f_menu += "#d#L99#[Back to Store Categories]#k#l\r\n"
 
                 f_sel = sm.sendNext(f_menu)
                 if f_sel == 99 or f_sel < 0 or f_sel >= len(FEMALE_FASHION):
@@ -927,12 +927,12 @@ def open_point_shop(sm, chr):
             # Unisex Costumes & Onesies
             while True:
                 mp, _ = get_points(chr)
-                u_menu = "#face0##fc0xFFFFFFFF##fs13#=== #e#b[Unisex Costumes & Onesies (All Characters)]#fc0xFFFFFFFF##n ===\r\n"
-                u_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n\r\n"
+                u_menu = "#fs13#=== #e#b[Unisex Costumes & Onesies (All Characters)]#n ===\r\n"
+                u_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#n\r\n\r\n"
                 for idx, (iid, iname, icost, idays, idesc) in enumerate(UNISEX_COSTUMES):
-                    u_menu += "#L" + str(idx) + "##i" + str(iid) + "# #b" + iname + "#fc0xFFFFFFFF# - #r" + format_num(icost) + " Points#fc0xFFFFFFFF#\r\n"
-                    u_menu += "    #fc0xFFCCCCCC##fs11#" + idesc + "#fc0xFFFFFFFF##fs13##l\r\n"
-                u_menu += "#d#L99#[Back to Main Menu]#k#l\r\n"
+                    u_menu += "#L" + str(idx) + "##i" + str(iid) + "# #b" + iname + " - #r" + format_num(icost) + " Points\r\n"
+                    u_menu += "    #d#fs11#" + idesc + "#fs13##l\r\n"
+                u_menu += "#d#L99#[Back to Store Categories]#k#l\r\n"
 
                 u_sel = sm.sendNext(u_menu)
                 if u_sel == 99 or u_sel < 0 or u_sel >= len(UNISEX_COSTUMES):
@@ -944,12 +944,12 @@ def open_point_shop(sm, chr):
             # Face, Eye, Rings
             while True:
                 mp, _ = get_points(chr)
-                a_menu = "#face0##fc0xFFFFFFFF##fs13#=== #e#b[Face & Eye Accessories, Rings & Auras]#fc0xFFFFFFFF##n ===\r\n"
-                a_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n\r\n"
+                a_menu = "#fs13#=== #e#b[Face & Eye Accessories, Rings & Auras]#n ===\r\n"
+                a_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#n\r\n\r\n"
                 for idx, (iid, iname, icost, idays, idesc) in enumerate(ACCESSORY_ITEMS):
-                    a_menu += "#L" + str(idx) + "##i" + str(iid) + "# #b" + iname + "#fc0xFFFFFFFF# - #r" + format_num(icost) + " Points#fc0xFFFFFFFF#\r\n"
-                    a_menu += "    #fc0xFFCCCCCC##fs11#" + idesc + "#fc0xFFFFFFFF##fs13##l\r\n"
-                a_menu += "#d#L99#[Back to Main Menu]#k#l\r\n"
+                    a_menu += "#L" + str(idx) + "##i" + str(iid) + "# #b" + iname + " - #r" + format_num(icost) + " Points\r\n"
+                    a_menu += "    #d#fs11#" + idesc + "#fs13##l\r\n"
+                a_menu += "#d#L99#[Back to Store Categories]#k#l\r\n"
 
                 a_sel = sm.sendNext(a_menu)
                 if a_sel == 99 or a_sel < 0 or a_sel >= len(ACCESSORY_ITEMS):
@@ -961,12 +961,12 @@ def open_point_shop(sm, chr):
             # Cubes
             while True:
                 mp, dp = get_points(chr)
-                cb_menu = "#face0##fc0xFFFFFFFF##fs13#=== #e#b[Cubes & Potential System]#fc0xFFFFFFFF##n ===\r\n"
-                cb_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n\r\n"
+                cb_menu = "#fs13#=== #e#b[Cubes & Potential System]#n ===\r\n"
+                cb_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#n\r\n\r\n"
                 for idx, (cid, cname, ccost, cdesc) in enumerate(CUBE_ITEMS):
-                    cb_menu += "#L" + str(idx) + "##i" + str(cid) + "# #b" + cname + "#fc0xFFFFFFFF# - #r" + format_num(ccost) + " Points#fc0xFFFFFFFF#\r\n"
-                    cb_menu += "    #fc0xFFCCCCCC##fs11#" + cdesc + "#fc0xFFFFFFFF##fs13##l\r\n"
-                cb_menu += "#d#L99#[Back to Main Menu]#k#l\r\n"
+                    cb_menu += "#L" + str(idx) + "##i" + str(cid) + "# #b" + cname + " - #r" + format_num(ccost) + " Points\r\n"
+                    cb_menu += "    #d#fs11#" + cdesc + "#fs13##l\r\n"
+                cb_menu += "#d#L99#[Back to Store Categories]#k#l\r\n"
 
                 cb_sel = sm.sendNext(cb_menu)
                 if cb_sel == 99 or cb_sel < 0 or cb_sel >= len(CUBE_ITEMS):
@@ -978,12 +978,12 @@ def open_point_shop(sm, chr):
             # Flames & Scrolls
             while True:
                 mp, dp = get_points(chr)
-                fl_menu = "#face0##fc0xFFFFFFFF##fs13#=== #e#b[Rebirth Flames & Scrolls]#fc0xFFFFFFFF##n ===\r\n"
-                fl_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n\r\n"
+                fl_menu = "#fs13#=== #e#b[Rebirth Flames & Scrolls]#n ===\r\n"
+                fl_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#n\r\n\r\n"
                 for idx, (fid, fname, fcost, fdesc) in enumerate(FLAME_SCROLL_ITEMS):
-                    fl_menu += "#L" + str(idx) + "##i" + str(fid) + "# #b" + fname + "#fc0xFFFFFFFF# - #r" + format_num(fcost) + " Points#fc0xFFFFFFFF#\r\n"
-                    fl_menu += "    #fc0xFFCCCCCC##fs11#" + fdesc + "#fc0xFFFFFFFF##fs13##l\r\n"
-                fl_menu += "#d#L99#[Back to Main Menu]#k#l\r\n"
+                    fl_menu += "#L" + str(idx) + "##i" + str(fid) + "# #b" + fname + " - #r" + format_num(fcost) + " Points\r\n"
+                    fl_menu += "    #d#fs11#" + fdesc + "#fs13##l\r\n"
+                fl_menu += "#d#L99#[Back to Store Categories]#k#l\r\n"
 
                 fl_sel = sm.sendNext(fl_menu)
                 if fl_sel == 99 or fl_sel < 0 or fl_sel >= len(FLAME_SCROLL_ITEMS):
@@ -995,13 +995,13 @@ def open_point_shop(sm, chr):
             # Utility & Slots
             while True:
                 mp, dp = get_points(chr)
-                ut_menu = "#face0##fc0xFFFFFFFF##fs13#=== #e#b[Utility & Inventory Expansion]#fc0xFFFFFFFF##n ===\r\n"
-                ut_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#fc0xFFFFFFFF##n\r\n\r\n"
+                ut_menu = "#fs13#=== #e#b[Utility & Inventory Expansion]#n ===\r\n"
+                ut_menu += "Current Points: #e#b" + format_num(mp) + " Maple Points#n\r\n\r\n"
                 for idx, (uid, uname, ucost, udays, udesc) in enumerate(UTILITY_ITEMS):
                     dur_str = " (30 Days)" if udays > 0 else ""
-                    ut_menu += "#L" + str(idx) + "##i" + str(uid) + "# #b" + uname + "#fc0xFFFFFFFF# - #r" + format_num(ucost) + " Points#fc0xFFFFFFFF#" + dur_str + "\r\n"
-                    ut_menu += "    #fc0xFFCCCCCC##fs11#" + udesc + "#fc0xFFFFFFFF##fs13##l\r\n"
-                ut_menu += "#d#L99#[Back to Main Menu]#k#l\r\n"
+                    ut_menu += "#L" + str(idx) + "##i" + str(uid) + "# #b" + uname + " - #r" + format_num(ucost) + " Points" + dur_str + "\r\n"
+                    ut_menu += "    #d#fs11#" + udesc + "#fs13##l\r\n"
+                ut_menu += "#d#L99#[Back to Store Categories]#k#l\r\n"
 
                 ut_sel = sm.sendNext(ut_menu)
                 if ut_sel == 99 or ut_sel < 0 or ut_sel >= len(UTILITY_ITEMS):

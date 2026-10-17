@@ -129,83 +129,93 @@ BOSS_CATEGORIES = [
 
 def open_boss_arena(sm, chr):
     NPC_SEREN = 3006703
-    sm.setNpcBoxChat(NPC_SEREN)
-    current_meso = chr.getMoney()
-    party = chr.getParty()
-    is_party = (party is not None)
+    sm.setSpeakerID(NPC_SEREN)
     
-    menu_text = "#face0##fc0xFFFFFFFF##fs14##e#r[Chosen Seren - Boss Arena & Warp]#fc0xFFFFFFFF##n\r\n"
-    menu_text += "I am Seren, the guardian of the Holy Sword. Welcome #h0# to the Boss Arena of Maple World!\r\n"
-    menu_text += "#fc0xFFEEEEEE##fs11#0 Prequests | Unlimited Attempts | 30 Mins | 15 Deaths | " + ("Party Mode" if is_party else "Solo Mode") + "#fc0xFFFFFFFF##fs13#\r\n\r\n"
-    menu_text += "#bYour Meso Balance:#fc0xFFFFFFFF# #e#y" + "{:,}".format(current_meso) + " Mesos#fc0xFFFFFFFF##n\r\n"
-    menu_text += "#fc0xFFCCCCCC##fs11#(Entry fee scales with the difficulty and power of each boss)#fc0xFFFFFFFF##fs13#\r\n\r\n"
-    
-    for i, (cat_name, bosses) in enumerate(BOSS_CATEGORIES):
-        menu_text += "#L" + str(i) + "##e#b" + cat_name + "#fc0xFFFFFFFF##n (" + str(len(bosses)) + " Bosses)#l\r\n"
-    menu_text += "#L99##dShow All Bosses (A-Z)#k#l\r\n"
-    menu_text += "#L999##rLeave Boss Arena (Return to Henesys)#k#l\r\n"
-    
-    cat_sel = sm.sendNext(menu_text)
-    if cat_sel == 999:
-        if chr.getInstance() is not None:
-            sm.warpInstanceOut(chr, 100000000)
+    while True:
+        current_meso = chr.getMoney()
+        party = chr.getParty()
+        is_party = (party is not None)
+        
+        menu_text = "#fs14##e#r[Chosen Seren - Boss Arena & Warp]#k#n\r\n"
+        menu_text += "I am Seren, the guardian of the Holy Sword. Welcome #h0# to the Boss Arena of Maple World!\r\n"
+        menu_text += "#d#fs11#0 Prequests | Unlimited Attempts | 30 Mins | 15 Deaths | " + ("Party Mode" if is_party else "Solo Mode") + "#k#fs13#\r\n\r\n"
+        menu_text += "#bYour Meso Balance:#k #e#y" + "{:,}".format(current_meso) + " Mesos#k#n\r\n"
+        menu_text += "#d#fs11#(Entry fee scales with the difficulty and power of each boss)#k#fs13#\r\n\r\n"
+        
+        for i, (cat_name, bosses) in enumerate(BOSS_CATEGORIES):
+            menu_text += "#L" + str(i) + "##e#b" + cat_name + "#k#n (" + str(len(bosses)) + " Bosses)#l\r\n"
+        menu_text += "#L99##dShow All Bosses (A-Z)#k#l\r\n"
+        menu_text += "#L998##g[Return to Henesys]#k#l\r\n"
+        menu_text += "#L1000##r[Back to Main NPC Menu]#k#l\r\n"
+        
+        cat_sel = sm.sendNext(menu_text)
+        if cat_sel == 1000 or cat_sel < 0:
+            return
+        elif cat_sel == 998:
+            if chr.getInstance() is not None:
+                sm.warpInstanceOut(chr, 100000000)
+            else:
+                sm.warp(100000000, 0)
+            return
+        
+        selected_bosses = []
+        if cat_sel == 99:
+            for _, bosses in BOSS_CATEGORIES:
+                selected_bosses.extend(bosses)
+            selected_bosses.sort(key=lambda x: x[0])
+        elif 0 <= cat_sel < len(BOSS_CATEGORIES):
+            selected_bosses = BOSS_CATEGORIES[cat_sel][1]
         else:
-            sm.warp(100000000, 0)
-        return
-    
-    selected_bosses = []
-    if cat_sel == 99:
-        for _, bosses in BOSS_CATEGORIES:
-            selected_bosses.extend(bosses)
-        selected_bosses.sort(key=lambda x: x[0])
-    elif 0 <= cat_sel < len(BOSS_CATEGORIES):
-        selected_bosses = BOSS_CATEGORIES[cat_sel][1]
-    else:
-        return
-        
-    if not selected_bosses:
-        return
-        
-    boss_menu = "#fs13#Select the boss you want to challenge (Balance: #g" + "{:,}".format(chr.getMoney()) + " Mesos#k):\r\n\r\n"
-    for idx, item in enumerate(selected_bosses):
-        b_name = item[0]
-        fee = item[4]
-        desc = item[5]
-        fee_str = format_meso(fee)
-        boss_menu += "#L" + str(idx) + "##e#r" + b_name + "#k#n - #fs11##g[" + fee_str + "]#k | #b" + desc + "#k#fs13##l\r\n"
-        
-    boss_sel = sm.sendNext(boss_menu)
-    if 0 <= boss_sel < len(selected_bosses):
-        b_name, map_id, spawn_type, spawn_val, fee, desc = selected_bosses[boss_sel]
-        
-        # Check Meso Balance
-        if chr.getMoney() < fee:
-            err_msg = "#fs13##e#r[Insufficient Mesos!]#k#n\r\n\r\n"
-            err_msg += "Challenging #b" + b_name + "#k requires an entry fee of:\r\n"
-            err_msg += "#r" + "{:,}".format(fee) + " Mesos (" + format_meso(fee) + ")#k\r\n\r\n"
-            err_msg += "Your Current Balance:\r\n"
-            err_msg += "#d" + "{:,}".format(chr.getMoney()) + " Mesos#k\r\n\r\n"
-            err_msg += "#rMissing:#k " + "{:,}".format(fee - chr.getMoney()) + " Mesos\r\n\r\n"
-            err_msg += "Please farm or trade items to earn enough Mesos, then return to challenge!"
-            sm.sendSayOkay(err_msg)
             return
             
-        confirm_text = "#fs13#Confirm challenge for #e#r" + b_name + "#k#n?\r\n\r\n"
-        confirm_text += "#b- Entry Fee:#k #e#r" + "{:,}".format(fee) + " Mesos#k#n (" + format_meso(fee) + ")\r\n"
-        confirm_text += "#b- Balance After Fee:#k #g" + "{:,}".format(chr.getMoney() - fee) + " Mesos#k\r\n"
-        confirm_text += "#b- Battle Time:#k 30 Minutes\r\n"
-        confirm_text += "#b- Death Count:#k 15 Deaths\r\n"
-        confirm_text += "#b- Challenge Mode:#k " + ("Party Instance" if is_party else "Solo Instance") + "\r\n\r\n"
-        confirm_text += "#dMesos will be deducted upon confirmation and you will be warped immediately!#k"
-        
-        if sm.sendAskYesNo(confirm_text):
-            # Double check Meso right before deduct
-            if chr.getMoney() < fee:
-                sm.sendSayOkay("#rYour Mesos are insufficient!#k")
-                return
-            chr.deductMoney(fee)
-            chr.chatMessage("[Boss Arena] Entry fee of " + "{:,}".format(fee) + " Mesos paid for " + b_name + ". (Remaining: " + "{:,}".format(chr.getMoney()) + " Mesos)")
-            enter_boss_arena(sm, chr, b_name, map_id, spawn_type, spawn_val)
+        if not selected_bosses:
+            continue
+            
+        while True:
+            boss_menu = "#fs13#Select the boss you want to challenge (Balance: #g" + "{:,}".format(chr.getMoney()) + " Mesos#k):\r\n\r\n"
+            for idx, item in enumerate(selected_bosses):
+                b_name = item[0]
+                fee = item[4]
+                desc = item[5]
+                fee_str = format_meso(fee)
+                boss_menu += "#L" + str(idx) + "##e#r" + b_name + "#k#n - #fs11##g[" + fee_str + "]#k | #b" + desc + "#k#fs13##l\r\n"
+            boss_menu += "#L999##r[Back to Boss Categories]#k#l\r\n"
+            
+            boss_sel = sm.sendNext(boss_menu)
+            if boss_sel == 999 or boss_sel < 0:
+                break
+                
+            if 0 <= boss_sel < len(selected_bosses):
+                b_name, map_id, spawn_type, spawn_val, fee, desc = selected_bosses[boss_sel]
+                
+                # Check Meso Balance
+                if chr.getMoney() < fee:
+                    err_msg = "#fs13##e#r[Insufficient Mesos!]#k#n\r\n\r\n"
+                    err_msg += "Challenging #b" + b_name + "#k requires an entry fee of:\r\n"
+                    err_msg += "#r" + "{:,}".format(fee) + " Mesos (" + format_meso(fee) + ")#k\r\n\r\n"
+                    err_msg += "Your Current Balance:\r\n"
+                    err_msg += "#d" + "{:,}".format(chr.getMoney()) + " Mesos#k\r\n\r\n"
+                    err_msg += "#rMissing:#k " + "{:,}".format(fee - chr.getMoney()) + " Mesos\r\n\r\n"
+                    err_msg += "Please farm or trade items to earn enough Mesos, then return to challenge!"
+                    sm.sendSayOkay(err_msg)
+                    continue
+                    
+                confirm_text = "#fs13#Confirm challenge for #e#r" + b_name + "#k#n?\r\n\r\n"
+                confirm_text += "#b- Entry Fee:#k #e#r" + "{:,}".format(fee) + " Mesos#k#n (" + format_meso(fee) + ")\r\n"
+                confirm_text += "#b- Balance After Fee:#k #g" + "{:,}".format(chr.getMoney() - fee) + " Mesos#k\r\n"
+                confirm_text += "#b- Battle Time:#k 30 Minutes\r\n"
+                confirm_text += "#b- Death Count:#k 15 Deaths\r\n"
+                confirm_text += "#b- Challenge Mode:#k " + ("Party Instance" if is_party else "Solo Instance") + "\r\n\r\n"
+                confirm_text += "#dMesos will be deducted upon confirmation and you will be warped immediately!#k"
+                
+                if sm.sendAskYesNo(confirm_text):
+                    if chr.getMoney() < fee:
+                        sm.sendSayOkay("#rYour Mesos are insufficient!#k")
+                        continue
+                    chr.deductMoney(fee)
+                    chr.chatMessage("[Boss Arena] Entry fee of " + "{:,}".format(fee) + " Mesos paid for " + b_name + ". (Remaining: " + "{:,}".format(chr.getMoney()) + " Mesos)")
+                    enter_boss_arena(sm, chr, b_name, map_id, spawn_type, spawn_val)
+                    return
 
 
 def enter_boss_arena(sm, chr, boss_name, map_id, spawn_type, spawn_val):

@@ -2,6 +2,36 @@
 
 This file tracks active bug fixes, feature implementations, and system optimizations.
 
+## 📅 [2026-10-17 18:40 น.] — ปรับปรุง !msnpc และเมนูระบบทั้งหมด ยกเลิกกรอบคำพูดเตี้ยแคบ กลับมาใช้ NPC Dialogs มาตรฐาน พร้อมปุ่ม BACK ครบทุกเมนูย่อย และแก้ไขระบบเควสต์บอสหนอน Arma ใน Arcane River (Revamp !msnpc Standard Dialogs, Add Universal BACK Buttons Across All Submenus & Fix Arcane River Arma Boss Quest)
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: ปรับปรุงหน้าต่างเมนูคำสั่ง `!msnpc` (`@admin`, `@adminnpc`, `@ea`) ทั้งระบบตามคำขอของผู้ใช้: ยกเลิกการใช้กรอบคำพูดด้านล่าง (`setNpcBoxChat`) ที่เตี้ยและแคบเกินไป กลับมาใช้กรอบข้อความ NPC Dialogs มาตรฐาน (`setSpeakerID`) ที่กว้าง สูง อ่านง่าย ชัดเจน; เพิ่มปุ่ม **[BACK]** ครบถ้วนในทุกเมนูย่อย (Dimensional Mirror, Hoyoung Warp Center, Seren Boss Arena, Adele General Store, Lara Pet Sanctuary, Lucid Point Mall) เพื่อให้สามารถกดย้อนกลับไปมาระหว่างเมนูย่อยและเมนูหลักได้โดยไม่หลุดออกจาก NPC; ลบแท็กฟอนต์สีขาว `#fc0xFFFFFFFF#` และ `#face` ออกทั้งหมดเพื่อให้อ่านง่ายบนพื้นหลัง NPC มาตรฐาน; พร้อมทั้งแก้ไขระบบเควสต์บอสหนอน Arma (`8641010`) ใน Arcane River (Vanishing Journey) ให้วาร์ปเข้าแมพและมี NPC คุยจบเควสต์ 100%
+- **รายละเอียด**:
+  1. **ปัญหาที่พบ (Problem)**:
+     - เมนู `!msnpc` ใช้ `sm.setNpcBoxChat` ทำให้กล่องข้อความอยู่ขอบล่างของหน้าจอ มีความสูงน้อย (เตี้ยมาก) ตัวหนังสืออัดแน่น และใช้ฟอนต์สีขาว
+     - เมนูย่อยหลายรายการเมื่อกดเข้าไปแล้วไม่มีปุ่ม BACK หรือเมื่อกดยกเลิก/ซื้อไอเทมแล้วจะปิดเมนูหลุดออกไปทันที ทำให้ผู้ใช้ต้องพิมพ์คำสั่ง `!msnpc` ใหม่ซ้ำๆ
+     - บอสหนอน Arma ในเควสต์ Arcane River Vanishing Journey (เควสต์ `34119`) วาร์ปเข้าห้องไม่ได้เนื่องจากวาร์ปพอร์ทัลลูปกลับมาแมพเดิม และไม่มี NPC ดำเนินเนื้อเรื่อง
+  2. **สาเหตุเชิงลึกทางเทคนิค (Technical Root Cause)**:
+     - `setNpcBoxChat(npcId)` เป็นฟังก์ชันสำหรับแสดง Cinematic Box Chat ที่มีพื้นที่จำกัด 3-4 บรรทัด
+     - สคริปต์เมนูย่อย (`warp_service.py`, `boss_arena.py`, `potion_shop.py`, `pet_shop.py`) ขาดการวนลูป `while True:` หรือไม่มี Option รหัสย้อนกลับไปยังสคริปต์หลัก (`quick_adminNPC.py`)
+     - พอร์ทัล [`450001219_PS01.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/portal/450001219_PS01.py) เขียนคำสั่ง `sm.warp(450001219)` ซึ่งเป็นแมพเดิม ทำให้ไม่สามารถเดินเข้าถ้ำของ Arma (`450001340`) ได้
+  3. **การแก้ไขและการปรับปรุงระบบ (Implementation & Fixes)**:
+     - **ปรับเปลี่ยนเป็น Standard NPC Dialogs ทั้งหมด**:
+       - แก้ไข [`quick_adminNPC.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/quick_adminNPC.py): สลับมาใช้ `sm.setSpeakerID(NPC)` พร้อมจัดเลย์เอาต์เมนูสูง โปร่ง สบายตา และมีปุ่ม `#L1000##r[Close Menu / Exit]#k#l`
+       - แก้ไข [`warp_service.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/warp_service.py): ใช้ `sm.setSpeakerID(NPC_HOYOUNG)` พร้อมปุ่ม `#L1000##r[Back to Main NPC Menu]#k#l` และ `#L999##r[Back to Warp Categories]#k#l`
+       - แก้ไข [`boss_arena.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/boss_arena.py): ใช้ `sm.setSpeakerID(NPC_SEREN)` พร้อมปุ่ม `#L1000##r[Back to Main NPC Menu]#k#l` และ `#L999##r[Back to Boss Categories]#k#l`
+       - แก้ไข [`potion_shop.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/potion_shop.py): ใช้ `sm.setSpeakerID(NPC_ID)` พร้อมลูปหมวดหมู่และปุ่ม `#L99##d[Back to Store Categories]#k#l` / `[Back to Main NPC Menu]`
+       - แก้ไข [`pet_shop.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/pet_shop.py): ใช้ `sm.setSpeakerID(NPC_ID)` พร้อมลูปหมวดหมู่และปุ่ม `#L99##d[Back to Sanctuary Categories]#k#l` / `[Back to Pet List]`
+       - แก้ไข [`point_shop.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/point_shop.py): สลับจาก `setNpcBoxChat` เป็น `sm.setSpeakerID(NPC_ID)`, ลบแท็ก `#face` และ `#fc0xFFFFFFFF#` ทั้งหมด, เพิ่มปุ่ม `#L99#[Back to Store Categories]` และ `[Back to Main NPC Menu]`
+       - แก้ไข [`9072303.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/9072303.py): เปลี่ยนเป็น `sm.setSpeakerID(1530330)`
+     - **แก้ไขระบบบอสหนอน Arma ใน Arcane River**:
+       - แก้ไขพอร์ทัล [`450001219_PS01.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/portal/450001219_PS01.py) ให้วาร์ปเข้าสู่แมพ Arma's Hideout (`450001340`)
+       - สร้างสคริปต์ NPC Kao [`3003140.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/npc/3003140.py) สำหรับคุยจบเควสต์ `34119` หรือเลือกข้ามเควสต์ได้ทันที
+       - อัปเดตสคริปต์ฟิลด์ [`enter_450001340.py`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/data/scripts/field/enter_450001340.py)
+  4. **การทดสอบและการส่งมอบไฟล์ (Testing & Deployment)**:
+     - ทดสอบไวยากรณ์ Python ของทุกสคริปต์ (`py_compile`) ผ่านฉลุย 100% ปราศจาก Error
+     - ซิงค์ไฟล์สคริปต์ทั้งหมดไปยังโฟลเดอร์แจกจ่าย [`Server263/data/scripts/`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Server263/data/scripts/) และ Git Mirror [`maple265src/data/scripts/`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/maple265src/data/scripts/) ครบถ้วนตามนโยบาย
+
 ## 📅 8f8f9ab4 (17:35 น.) — ปรับปรุงเสถียรภาพตัวรันเซิร์ฟเวอร์ แก้ปัญหาเลือก Scania แล้วค้าง เข้า Channel ไม่ได้จาก Race Condition ตอนบูต และเพิ่มระบบ Auto-Recovery กู้คืนเซสชันพร้อม LAN IP Routing (Server Runner Hardening, Fix Scania World Selection Freeze, Startup Race Condition, Session Auto-Recovery & Dynamic LAN IP Routing)
 
 ### 🎯 Scope & Technical Details

@@ -78,26 +78,26 @@ PET_SKILLS = [
 ]
 
 def open_pet_shop(sm, chr):
-    sm.setNpcBoxChat(NPC_ID)
+    sm.setSpeakerID(NPC_ID)
     while True:
         cur_mesos = chr.getMoney()
         cur_cash = get_user_cash(chr)
 
-        menu = "#face0##fc0xFFFFFFFF##fs13#Hello, #h0#! Welcome to Lara's #bPet Sanctuary#fc0xFFFFFFFF#!\r\n"
+        menu = "#fs13#Hello, #h0#! Welcome to Lara's #bPet Sanctuary#k!\r\n"
         menu += "Adopt loyal companions, vacuum pets, and automated helper skills!\r\n\r\n"
-        menu += "Your Mesos: #e#y" + format_num(cur_mesos) + " Mesos#fc0xFFFFFFFF##n\r\n"
-        menu += "Cash Points (NX): #e#b" + format_num(cur_cash) + " Points#fc0xFFFFFFFF##n\r\n\r\n"
+        menu += "Your Mesos: #e#y" + format_num(cur_mesos) + " Mesos#k#n\r\n"
+        menu += "Cash Points (NX): #e#b" + format_num(cur_cash) + " Points#k#n\r\n\r\n"
         menu += "#b#L1##e[1] Vacuum Pets (Vac Pets / Petite Luna)#n#k\r\n"
-        menu += "   #fc0xFFEEEEEE##fs11#Sherbet, Lil Death, Lil Pony, Lil Glowy, Petite Pico (Screen-wide loot)#fc0xFFFFFFFF##fs13#\r\n"
+        menu += "   #d#fs11#Sherbet, Lil Death, Lil Pony, Lil Glowy, Petite Pico (Screen-wide loot)#k#fs13#\r\n"
         menu += "#b#L2##e[2] Classic & Cute Animal Pets#n#k\r\n"
-        menu += "   #fc0xFFEEEEEE##fs11#Puppy, Kitty, Bunny, Husky, Panda, Monkey, White Tiger, Penguin#fc0xFFFFFFFF##fs13#\r\n"
+        menu += "   #d#fs11#Puppy, Kitty, Bunny, Husky, Panda, Monkey, White Tiger, Penguin#k#fs13#\r\n"
         menu += "#b#L3##e[3] Fantasy & Monster Superstar Pets#n#k\r\n"
-        menu += "   #fc0xFFEEEEEE##fs11#Pink Bean, Mini Yeti, Pepe, Slime, Orange Mushroom, Dragon#fc0xFFFFFFFF##fs13#\r\n"
+        menu += "   #d#fs11#Pink Bean, Mini Yeti, Pepe, Slime, Orange Mushroom, Dragon#k#fs13#\r\n"
         menu += "#b#L4##e[4] Pet Supplies & Multi-Pet Skill#n#k\r\n"
-        menu += "   #fc0xFFEEEEEE##fs11#Pet Food x100, Water of Life (90D Revive), Pet Snack (3 Pets)#fc0xFFFFFFFF##fs13#\r\n"
+        menu += "   #d#fs11#Pet Food x100, Water of Life (90D Revive), Pet Snack (3 Pets)#k#fs13#\r\n"
         menu += "#b#L5##e[5] Automated Pet Skills#n#k\r\n"
-        menu += "   #fc0xFFEEEEEE##fs11#Auto Buff, Auto HP/MP, Auto Move, Expanded Range, Auto Feed#fc0xFFFFFFFF##fs13#\r\n"
-        menu += "#d#L99#Exit Sanctuary#l#k\r\n"
+        menu += "   #d#fs11#Auto Buff, Auto HP/MP, Auto Move, Expanded Range, Auto Feed#k#fs13#\r\n"
+        menu += "#d#L99#[Back to Main NPC Menu]#k#l\r\n"
 
         cat = sm.sendNext(menu)
 
@@ -110,106 +110,108 @@ def open_pet_shop(sm, chr):
             items_list = FANTASY_PETS
 
         if items_list is not None:
-            pet_menu = "#face0##fc0xFFFFFFFF##fs13#Select the pet companion you wish to adopt:\r\n\r\n"
-            for idx, (p_id, p_name, p_mesos, p_cash, days, desc) in enumerate(items_list):
-                pet_menu += "#L" + str(idx) + "##i" + str(p_id) + "# #e#b" + p_name + "#fc0xFFFFFFFF##n\r\n"
-                pet_menu += "    Price: #r" + format_num(p_mesos) + " Mesos#fc0xFFFFFFFF# or #b" + format_num(p_cash) + " Cash#fc0xFFFFFFFF#\r\n"
-                pet_menu += "    #fc0xFFCCCCCC##fs11#" + desc + "#fc0xFFFFFFFF##fs13##l\r\n"
-            pet_menu += "#L99##d[Back to Main Menu]#k#l\r\n"
+            while True:
+                pet_menu = "Select the pet companion you wish to adopt:\r\n\r\n"
+                for idx, (p_id, p_name, p_mesos, p_cash, days, desc) in enumerate(items_list):
+                    pet_menu += "#L" + str(idx) + "##i" + str(p_id) + "# #e#b" + p_name + "#k#n\r\n"
+                    pet_menu += "    Price: #r" + format_num(p_mesos) + " Mesos#k or #b" + format_num(p_cash) + " Cash#k\r\n"
+                    pet_menu += "    #d#fs11#" + desc + "#k#fs13##l\r\n"
+                pet_menu += "#L99##d[Back to Sanctuary Categories]#k#l\r\n"
 
-            p_sel = sm.sendNext(pet_menu)
-            if p_sel == 99 or p_sel < 0 or p_sel >= len(items_list):
-                continue
+                p_sel = sm.sendNext(pet_menu)
+                if p_sel == 99 or p_sel < 0 or p_sel >= len(items_list):
+                    break
 
-            p_id, p_name, p_mesos, p_cash, days, desc = items_list[p_sel]
-            pay_menu = "#face0##fc0xFFFFFFFF##fs13#How would you like to purchase #i" + str(p_id) + "# #b" + p_name + "#fc0xFFFFFFFF#?\r\n\r\n"
-            pay_menu += "#L1##bPay with Mesos: #r" + format_num(p_mesos) + " Mesos#fc0xFFFFFFFF##l\r\n"
-            pay_menu += "#L2##dPay with Cash Points: #b" + format_num(p_cash) + " Points#fc0xFFFFFFFF##l\r\n"
-            pay_menu += "#L99##g[Cancel]#k#l\r\n"
+                p_id, p_name, p_mesos, p_cash, days, desc = items_list[p_sel]
+                pay_menu = "How would you like to purchase #i" + str(p_id) + "# #b" + p_name + "#k?\r\n\r\n"
+                pay_menu += "#L1##bPay with Mesos: #r" + format_num(p_mesos) + " Mesos#k#l\r\n"
+                pay_menu += "#L2##dPay with Cash Points: #b" + format_num(p_cash) + " Points#k#l\r\n"
+                pay_menu += "#L99##g[Back to Pet List]#k#l\r\n"
 
-            pay_sel = sm.sendNext(pay_menu)
-            if pay_sel == 1:
-                if chr.getMoney() < p_mesos:
-                    sm.sendSayOkay("#face2##fc0xFFFFFFFF#You do not have enough mesos!\r\nRequired: #r" + format_num(p_mesos) + " Mesos#fc0xFFFFFFFF#")
-                elif not sm.canHold(p_id):
-                    sm.sendSayOkay("#face2##fc0xFFFFFFFF#Your Cash inventory tab is full! Please make some space.")
-                else:
-                    chr.deductMoney(p_mesos)
-                    chr.addItemToInventory(p_id, 1, "day", days)
-                    sm.sendSayOkay("#face1##fc0xFFFFFFFF#Congratulations! You have received #i" + str(p_id) + "# #b" + p_name + "#fc0xFFFFFFFF#. Enjoy your adventure together!")
-            elif pay_sel == 2:
-                cur_cash = get_user_cash(chr)
-                if cur_cash < p_cash:
-                    sm.sendSayOkay("#face2##fc0xFFFFFFFF#You do not have enough Cash Points!\r\nRequired: #r" + format_num(p_cash) + " Points#fc0xFFFFFFFF#\r\nYou have: #b" + format_num(cur_cash) + " Points#fc0xFFFFFFFF#")
-                elif not sm.canHold(p_id):
-                    sm.sendSayOkay("#face2##fc0xFFFFFFFF#Your Cash inventory tab is full! Please make some space.")
-                else:
-                    deduct_user_cash(chr, p_cash)
-                    chr.addItemToInventory(p_id, 1, "day", days)
-                    sm.sendSayOkay("#face1##fc0xFFFFFFFF#Congratulations! You have received #i" + str(p_id) + "# #b" + p_name + "#fc0xFFFFFFFF#. Enjoy your adventure together!")
+                pay_sel = sm.sendNext(pay_menu)
+                if pay_sel == 1:
+                    if chr.getMoney() < p_mesos:
+                        sm.sendSayOkay("You do not have enough mesos!\r\nRequired: #r" + format_num(p_mesos) + " Mesos#k")
+                    elif not sm.canHold(p_id):
+                        sm.sendSayOkay("Your Cash inventory tab is full! Please make some space.")
+                    else:
+                        chr.deductMoney(p_mesos)
+                        chr.addItemToInventory(p_id, 1, "day", days)
+                        sm.sendSayOkay("Congratulations! You have received #i" + str(p_id) + "# #b" + p_name + "#k. Enjoy your adventure together!")
+                elif pay_sel == 2:
+                    cur_cash = get_user_cash(chr)
+                    if cur_cash < p_cash:
+                        sm.sendSayOkay("You do not have enough Cash Points!\r\nRequired: #r" + format_num(p_cash) + " Points#k\r\nYou have: #b" + format_num(cur_cash) + " Points#k")
+                    elif not sm.canHold(p_id):
+                        sm.sendSayOkay("Your Cash inventory tab is full! Please make some space.")
+                    else:
+                        deduct_user_cash(chr, p_cash)
+                        chr.addItemToInventory(p_id, 1, "day", days)
+                        sm.sendSayOkay("Congratulations! You have received #i" + str(p_id) + "# #b" + p_name + "#k. Enjoy your adventure together!")
 
         elif cat == 4:
             # Supplies
-            sup_menu = "#face0##fc0xFFFFFFFF##fs13#Select pet supplies to purchase:\r\n\r\n"
-            for idx, (s_id, s_name, s_mesos, s_cash, s_qty, desc) in enumerate(PET_SUPPLIES):
-                sup_menu += "#L" + str(idx) + "##i" + str(s_id) + "# #e#b" + s_name + "#fc0xFFFFFFFF##n - #r" + format_num(s_mesos) + " Mesos#fc0xFFFFFFFF#\r\n"
-                sup_menu += "    #fc0xFFCCCCCC##fs11#" + desc + "#fc0xFFFFFFFF##fs13##l\r\n"
-            sup_menu += "#L99##d[Back to Main Menu]#k#l\r\n"
+            while True:
+                sup_menu = "Select pet supplies to purchase:\r\n\r\n"
+                for idx, (s_id, s_name, s_mesos, s_cash, s_qty, desc) in enumerate(PET_SUPPLIES):
+                    sup_menu += "#L" + str(idx) + "##i" + str(s_id) + "# #e#b" + s_name + "#k#n - #r" + format_num(s_mesos) + " Mesos#k\r\n"
+                    sup_menu += "    #d#fs11#" + desc + "#k#fs13##l\r\n"
+                sup_menu += "#L99##d[Back to Sanctuary Categories]#k#l\r\n"
 
-            s_sel = sm.sendNext(sup_menu)
-            if s_sel == 99 or s_sel < 0 or s_sel >= len(PET_SUPPLIES):
-                continue
+                s_sel = sm.sendNext(sup_menu)
+                if s_sel == 99 or s_sel < 0 or s_sel >= len(PET_SUPPLIES):
+                    break
 
-            s_id, s_name, s_mesos, s_cash, s_qty, desc = PET_SUPPLIES[s_sel]
-            if chr.getMoney() < s_mesos:
-                sm.sendSayOkay("#face2##fc0xFFFFFFFF#You do not have enough mesos!\r\nRequired: #r" + format_num(s_mesos) + " Mesos#fc0xFFFFFFFF#")
-            elif not sm.canHold(s_id, s_qty):
-                sm.sendSayOkay("#face2##fc0xFFFFFFFF#Your inventory is full! Please make some space.")
-            else:
-                chr.deductMoney(s_mesos)
-                chr.addItemToInventory(s_id, s_qty)
-                sm.sendSayOkay("#face1##fc0xFFFFFFFF#Purchase successful! You received #i" + str(s_id) + "# #b" + s_name + "#fc0xFFFFFFFF#.")
+                s_id, s_name, s_mesos, s_cash, s_qty, desc = PET_SUPPLIES[s_sel]
+                if chr.getMoney() < s_mesos:
+                    sm.sendSayOkay("You do not have enough mesos!\r\nRequired: #r" + format_num(s_mesos) + " Mesos#k")
+                elif not sm.canHold(s_id, s_qty):
+                    sm.sendSayOkay("Your inventory is full! Please make some space.")
+                else:
+                    chr.deductMoney(s_mesos)
+                    chr.addItemToInventory(s_id, s_qty)
+                    sm.sendSayOkay("Purchase successful! You received #i" + str(s_id) + "# #b" + s_name + "#k.")
 
         elif cat == 5:
             # Skills
-            skl_menu = "#face0##fc0xFFFFFFFF##fs13#Select automated skills to teach your pets:\r\n\r\n"
-            for idx, (k_id, k_name, k_mesos, k_cash, desc) in enumerate(PET_SKILLS):
-                skl_menu += "#L" + str(idx) + "##i" + str(k_id) + "# #e#b" + k_name + "#fc0xFFFFFFFF##n\r\n"
-                skl_menu += "    Price: #r" + format_num(k_mesos) + " Mesos#fc0xFFFFFFFF# or #b" + format_num(k_cash) + " Cash#fc0xFFFFFFFF#\r\n"
-                skl_menu += "    #fc0xFFCCCCCC##fs11#" + desc + "#fc0xFFFFFFFF##fs13##l\r\n"
-            skl_menu += "#L99##d[Back to Main Menu]#k#l\r\n"
+            while True:
+                skl_menu = "Select automated skills to teach your pets:\r\n\r\n"
+                for idx, (k_id, k_name, k_mesos, k_cash, desc) in enumerate(PET_SKILLS):
+                    skl_menu += "#L" + str(idx) + "##i" + str(k_id) + "# #e#b" + k_name + "#k#n\r\n"
+                    skl_menu += "    Price: #r" + format_num(k_mesos) + " Mesos#k or #b" + format_num(k_cash) + " Cash#k\r\n"
+                    skl_menu += "    #d#fs11#" + desc + "#k#fs13##l\r\n"
+                skl_menu += "#L99##d[Back to Sanctuary Categories]#k#l\r\n"
 
-            k_sel = sm.sendNext(skl_menu)
-            if k_sel == 99 or k_sel < 0 or k_sel >= len(PET_SKILLS):
-                continue
+                k_sel = sm.sendNext(skl_menu)
+                if k_sel == 99 or k_sel < 0 or k_sel >= len(PET_SKILLS):
+                    break
 
-            k_id, k_name, k_mesos, k_cash, desc = PET_SKILLS[k_sel]
-            pay_menu = "#face0##fc0xFFFFFFFF##fs13#How would you like to purchase #i" + str(k_id) + "# #b" + k_name + "#fc0xFFFFFFFF#?\r\n\r\n"
-            pay_menu += "#L1##bPay with Mesos: #r" + format_num(k_mesos) + " Mesos#fc0xFFFFFFFF##l\r\n"
-            pay_menu += "#L2##dPay with Cash Points: #b" + format_num(k_cash) + " Points#fc0xFFFFFFFF##l\r\n"
-            pay_menu += "#L99##g[Cancel]#k#l\r\n"
+                k_id, k_name, k_mesos, k_cash, desc = PET_SKILLS[k_sel]
+                pay_menu = "How would you like to purchase #i" + str(k_id) + "# #b" + k_name + "#k?\r\n\r\n"
+                pay_menu += "#L1##bPay with Mesos: #r" + format_num(k_mesos) + " Mesos#k#l\r\n"
+                pay_menu += "#L2##dPay with Cash Points: #b" + format_num(k_cash) + " Points#k#l\r\n"
+                pay_menu += "#L99##g[Back to Skill List]#k#l\r\n"
 
-            pay_sel = sm.sendNext(pay_menu)
-            if pay_sel == 1:
-                if chr.getMoney() < k_mesos:
-                    sm.sendSayOkay("#face2##fc0xFFFFFFFF#You do not have enough mesos!\r\nRequired: #r" + format_num(k_mesos) + " Mesos#fc0xFFFFFFFF#")
-                elif not sm.canHold(k_id):
-                    sm.sendSayOkay("#face2##fc0xFFFFFFFF#Your Cash inventory tab is full! Please make some space.")
-                else:
-                    chr.deductMoney(k_mesos)
-                    chr.addItemToInventory(k_id, 1)
-                    sm.sendSayOkay("#face1##fc0xFFFFFFFF#Purchase successful! Double-click #i" + str(k_id) + "# in your Cash tab to teach the skill to your pet.")
-            elif pay_sel == 2:
-                cur_cash = get_user_cash(chr)
-                if cur_cash < k_cash:
-                    sm.sendSayOkay("#face2##fc0xFFFFFFFF#You do not have enough Cash Points!\r\nRequired: #r" + format_num(k_cash) + " Points#fc0xFFFFFFFF#\r\nYou have: #b" + format_num(cur_cash) + " Points#fc0xFFFFFFFF#")
-                elif not sm.canHold(k_id):
-                    sm.sendSayOkay("#face2##fc0xFFFFFFFF#Your Cash inventory tab is full! Please make some space.")
-                else:
-                    deduct_user_cash(chr, k_cash)
-                    chr.addItemToInventory(k_id, 1)
-                    sm.sendSayOkay("#face1##fc0xFFFFFFFF#Purchase successful! Double-click #i" + str(k_id) + "# in your Cash tab to teach the skill to your pet.")
+                pay_sel = sm.sendNext(pay_menu)
+                if pay_sel == 1:
+                    if chr.getMoney() < k_mesos:
+                        sm.sendSayOkay("You do not have enough mesos!\r\nRequired: #r" + format_num(k_mesos) + " Mesos#k")
+                    elif not sm.canHold(k_id):
+                        sm.sendSayOkay("Your Cash inventory tab is full! Please make some space.")
+                    else:
+                        chr.deductMoney(k_mesos)
+                        chr.addItemToInventory(k_id, 1)
+                        sm.sendSayOkay("Purchase successful! Double-click #i" + str(k_id) + "# in your Cash tab to teach the skill to your pet.")
+                elif pay_sel == 2:
+                    cur_cash = get_user_cash(chr)
+                    if cur_cash < k_cash:
+                        sm.sendSayOkay("You do not have enough Cash Points!\r\nRequired: #r" + format_num(k_cash) + " Points#k\r\nYou have: #b" + format_num(cur_cash) + " Points#k")
+                    elif not sm.canHold(k_id):
+                        sm.sendSayOkay("Your Cash inventory tab is full! Please make some space.")
+                    else:
+                        deduct_user_cash(chr, k_cash)
+                        chr.addItemToInventory(k_id, 1)
+                        sm.sendSayOkay("Purchase successful! Double-click #i" + str(k_id) + "# in your Cash tab to teach the skill to your pet.")
 
-        elif cat == 99:
-            sm.sendSayOkay("#face0##fc0xFFFFFFFF#Come back anytime to visit the pets! Goodbye~")
-            break
+        elif cat == 99 or cat < 0:
+            return
