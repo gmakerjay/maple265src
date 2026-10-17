@@ -2,6 +2,54 @@
 
 This file tracks active bug fixes, feature implementations, and system optimizations.
 
+## 📅 44e47f09 (13:48 น.) — Refactor & Audit Adventurer Warrior Classes (Hero, Paladin, Dark Knight), Zero Skill Injection in !endgame, Sub-Skill Matrix Sanitization, Cooldown Synchronization & Single Patch Packaging
+
+### 🎯 Scope & Technical Details
+- **หัวข้อ**: ตรวจสอบและรีแฟกเตอร์คลาส Adventurer Warriors (Hero, Paladin, Dark Knight), ตรวจสอบความถูกต้องของสกิล Class 1-4, Hexa V, และ Origin/Ascent Skills, ป้องกันการสแปมไอคอนสกิลย่อยขยะในหน้าต่างสกิล (K Skill UI / Matrix) เมื่อผู้เล่นอัปสกิล, ซิงค์คูลดาวน์และเงื่อนไขการใช้สกิลให้ถูกต้องสมบูรณ์ 100%, ปรับและตรวจสอบคำสั่ง `!endgame` ให้ปฏิบัติตามกฎเหล็ก Strict Zero Skill Injection โดยมอบเฉพาะแต้ม SP ผ่าน ExtendSP และอุปกรณ์ BiS โดยไม่อัดฉีดเลเวลสกิลลงในตัวละคร, คอมไพล์ Maven JDK 21 และสร้างแพ็กเกจแพตช์ All-in-One ล่าสุด [`Patches/Server263_Patch_Latest.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip)
+- **รายละเอียด**:
+  1. **มาตรฐาน Strict Zero Skill Injection ในคำสั่ง `!endgame` ([`AdminCommands.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/character/commands/AdminCommands.java))**:
+     - ตรวจสอบคำสั่ง `!endgame` สำหรับ Hero (`112`), Paladin (`122`), Dark Knight (`132`) ให้ปฏิบัติตามกฎเหล็ก Strict Zero Skill Injection 100% ปราศจากการเรียก `chr.addSkill`, `mc.setSkillLevel`
+     - ปรับสถานะตัวละครเลเวล 260, ฟื้นฟู HP/MP 100%, แต้ม AP 1,250 และแต้ม SP เต็มพิกัดผ่าน `ExtendSP` สำหรับคลาส 1–4 (65, 130, 130, 255) เพื่อให้ผู้เล่นจัดสรรแต้มด้วยตนเองตามกลไกธรรมชาติ
+     - สำเร็จเควสต์คลาส 5 (1460-1466) และเควสต์คลาส 6 (1488) แบบ `noRewards = true` ป้องกันลูกแก้ว Arcane Symbol ขยะ
+     - มอบหิน Nodestones x3,000 (`2435719`), Experience Nodestones x20, Sol Erda Energy x1,000, Sol Erda Fragments x30,000, Power Elixir x3,000, เงิน 10B Mesos, และอุปกรณ์สวมใส่ BiS ครบเซ็ต:
+       - Hero: Arcane Umbra Two-handed Sword (`1402259`), Princess No's Medallion (`1352403`), Mitra's Warrior Emblem (`1190601`), และชุดเกราะ Warrior ครบเซ็ต
+       - Paladin: Arcane Umbra Two-handed Hammer (`1422189`), Princess No's Rosary (`1352413`), Mitra's Warrior Emblem (`1190601`), และชุดเกราะ Warrior ครบเซ็ต
+       - Dark Knight: Arcane Umbra Spear (`1432218`), Princess No's Iron Chain (`1352423`), Mitra's Warrior Emblem (`1190601`), และชุดเกราะ Warrior ครบเซ็ต
+  2. **การป้องกันปัญหาไอคอนสกิลย่อยขยะในหน้าต่างสกิล K และ Matrix (Zero Phantom Sub-Skill Policy)**:
+     - ใน [`SkillConstants.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/constants/SkillConstants.java): ลงทะเบียนสกิลย่อยที่ซ่อนอยู่ทั้งหมดของ Hero, Paladin, Dark Knight ใน `isSpecialInvisibleSkill(int skillID)`:
+       - Hero: Combo Fury Down (`1100012`), Spirit Calibur Attack (`1141501`), Ultrasonic Slash Extra (`1141503`), Final Blade Sub (`1141004`), Burning Soul Blade Stationary (`400011019`), Combo Instinct Slash (`400011066`), Sword Illusion Extra (`400011090`, `400011091`), Hexa Raging Blow Subs (`1141001-1141004`), Hexa Beam Blade Sub (`1141006`)
+       - Paladin: Divine Charge IV (`1221021`), Sacred Bastion Extra/Tile/After (`1241501-1241503`), Dominus Oblivion Extra (`1241505`), Divine Mark Sub (`1241001`), Falling Justice Sub (`1241003`), Hammers of the Righteous Active (`400011018`), Divine Echo Mimics (`400011021`, `500061001`), Grand Guardian Sub (`400011065`), Mighty Mjolnir Sub (`400011116`), Hexa Blast Subs (`1241000-1241004`)
+       - Dark Knight: Final Pact Modes (`1320021-1321020`), Dead Space Attack (`1341501`), Dark Halidom Extra (`1341503`), Dark Bident Sub (`1341001`), Nightshade Explosion Sub (`1341003`), Darkness Aura Final (`400011020`), Radiant Evil Sub (`400011089`), Calamitous Cyclone Final (`400011115`), Hexa Gungnir Subs (`1341000-1341004`)
+     - ผูกความสัมพันธ์ใน `getActualSkillIDfromSkillID` เพื่อให้ระบบดึงค่าเลเวลและสถานะจากสกิลหลัก ป้องกันปุ่มกากบาทแดงโผล่ในหน้าต่างสกิล K
+     - ลงทะเบียนใน `isNoCoolDownAttack` เพื่ออนุญาตให้การโจมตีเสริมและ Explosion hits ทำงานได้โดยไม่ถูกปฏิเสธเป็น cooldown violation
+  3. **การตรวจสอบและปรับปรุงสกิล Hero ([`Hero.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/warrior/Hero.java))**:
+     - ตรวจสอบระบบ Combo Counter & Advanced Combo (10 Orbs)
+     - รองรับ 5th Job V-Matrix: Burning Soul Blade (เคลื่อนที่ & ปักพื้น), Worldreaver (I-frame slash), Combo Instinct, Sword Illusion
+     - พัฒนา 6th Job Hexa Matrix & Origin/Ascent:
+       - Spirit Calibur (Origin Skill `1141500`): มอบสถานะอมตะ `IndieNotDamaged` (7 วินาที), เติม Combo Counter เต็ม 10 ลูกทันที, ฟื้นฟู HP/MP 100%, แพ็กเก็ตคัทซีนปาร์ตี้ `UserLocal.showHexaSkillEff(chr)`, ศัตรูติด Absolute Bind Freeze (10 วินาที) และ OriginDebuff (20 วินาที), คูลดาวน์ 360 วินาที
+       - Ultrasonic Slash (Ascent Skill `1141502`): มอบสถานะอมตะ `IndieNotDamaged` (5 วินาที), เติม Combo Counter เต็ม, ฟื้นฟู HP/MP 100%, คูลดาวน์ 240 วินาที
+     - พัฒนา `handleSetCoolDownSkill` คืนค่า `int` ซิงค์คูลดาวน์: Spirit Calibur, Ultrasonic Slash, Rising Rage & HEXA, Cry Valhalla & summons, Burning Soul Blade & stationary, Worldreaver, Combo Instinct, Sword Illusion, Beam Blade & HEXA, Magic Crash บล็อกการสแปม 0 วินาที
+  4. **การตรวจสอบและปรับปรุงสกิล Paladin ([`Paladin.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/warrior/Paladin.java))**:
+     - ตรวจสอบระบบ Elemental Charge (Flame, Blizzard, Lightning, Divine) สูงสุด 5 สแตก
+     - รองรับ 5th Job V-Matrix: Hammers of the Righteous (ค้อนหมุนช้า & ค้อนหมุนเร็ว), Grand Guardian (กางเขนแสงศักดิ์สิทธิ์), Divine Echo (เชื่อมโยงบัฟปาร์ตี้), Mighty Mjolnir
+     - พัฒนา 6th Job Hexa Matrix & Origin/Ascent:
+       - Sacred Bastion (Origin Skill `1241500`): มอบสถานะอมตะ `IndieNotDamaged` (7 วินาที), แพ็กเก็ตคัทซีนปาร์ตี้ `UserLocal.showHexaSkillEff`, กางอาณาเขตแสงฟื้นฟูเลือดและโจมตีต่อเนื่อง, ศัตรูติด Absolute Bind Freeze (10 วินาที) และ OriginDebuff (20 วินาที), คูลดาวน์ 360 วินาที
+       - Dominus Oblivion (Ascent Skill `1241504`): มอบสถานะอมตะ `IndieNotDamaged` (5 วินาที), บัฟธาตุชาร์จเต็ม, คูลดาวน์ 240 วินาที
+     - พัฒนา `handleSetCoolDownSkill` คืนค่า `int` ซิงค์คูลดาวน์: Sacred Bastion, Dominus Oblivion, Divine Mark & HEXA, Heaven's Hammer & HEXA & impact/tile, Falling Justice & 2, Smite Shield, Sacrosanctity, Epic Adventure, Magic Crash, Guardian, Divine Echo & HEXA, Hammers of the Righteous & 2, Grand Guardian บล็อกการสแปม 0 วินาที
+  5. **การตรวจสอบและปรับปรุงสกิล Dark Knight ([`DarkKnight.java`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/v214%20src/src/main/java/net/swordie/ms/client/jobs/adventurer/warrior/DarkKnight.java))**:
+     - ตรวจสอบระบบ Evil Eye & Final Pact (Reincarnation โหมดอมตะและฟื้นคืนชีพ)
+     - พัฒนากลไก Gungnir's Descent 0 คูลดาวน์ใน `alterCooldownSkill`: เมื่อมีบัฟ Dark Resonance หรืออยู่ในสถานะ Reincarnation (Final Pact) สกิล Gungnir's Descent และ HEXA Gungnir's Descent จะคืนค่าคูลดาวน์เป็น 0 วินาที สามารถแทงหอกรัวต่อเนื่องได้ตามกลไกจริงของเกม
+     - รองรับ 5th Job V-Matrix: Spear of Darkness, Darkness Aura, Radiant Evil, Calamitous Cyclone
+     - พัฒนา 6th Job Hexa Matrix & Origin/Ascent:
+       - Dead Space (Origin Skill `1341500`): ผ่ามิติแห่งความตาย คัทซีนเต็มจอ มอบสถานะอมตะ `IndieNotDamaged` (7 วินาที), เปิดใช้งานบัฟ Dark Resonance ทันที, ศัตรูติด Absolute Bind Freeze (10 วินาที) และ OriginDebuff (20 วินาที), คูลดาวน์ 360 วินาที
+       - Dark Halidom (Ascent Skill `1341502`): ท่าหอกทมิฬสังหาร มอบสถานะอมตะ `IndieNotDamaged` (5 วินาที), เปิดใช้งานบัฟ Dark Resonance ทันที, คูลดาวน์ 240 วินาที
+     - พัฒนา `handleSetCoolDownSkill` คืนค่า `int` ซิงค์คูลดาวน์: Dead Space, Dark Halidom, Dark Bident, Nightshade Explosion & HEXA, Evil Eye Shock & HEXA & shoots, Dark Resonance, Dark Thirst, Epic Adventure, Magic Crash, Spear of Darkness, Darkness Aura & 2, Radiant Evil, Calamitous Cyclone & final attack บล็อกการสแปม 0 วินาที
+  6. **การคอมไพล์ ซิงค์มิเรอร์ และแพ็กเกจแจกจ่าย (Build, Mirror Sync & Single Patch Packaging)**:
+     - คอมไพล์ผ่าน Apache Maven บน JDK 21 สำเร็จ 100% (`BUILD SUCCESS`) ได้ `maplestory.jar` (138,772,496 bytes)
+     - ซิงค์ไฟล์ `maplestory.jar` ไปยัง `Server263/`, `v214 src/` และ Root Directory
+     - ซิงค์โค้ดที่แก้ไขทั้งหมดไปยัง Git Mirror [`maple265src/`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/maple265src) และพุชขึ้นรีโปสำเร็จ (Commit `44e47f09`)
+     - รันสคริปต์สร้างแพตช์เดี่ยว **[`Patches/Server263_Patch_Latest.zip`](file:///c:/Users/admin/Documents/MapleStory_Server_Runner/Patches/Server263_Patch_Latest.zip)** (173.48 MB) พร้อมใช้งาน
+
 ## 📅 84ca1cbc (13:30 น.) — Refactor & Audit Resistance Classes (Blaster & Battle Mage), Zero Skill Injection in !endgame, Sub-Skill Matrix Sanitization, Cooldown Synchronization & Single Patch Packaging
 
 ### 🎯 Scope & Technical Details
